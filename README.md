@@ -1,1 +1,59 @@
 # Nexus-_-Ostave-for-ONLINE
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus:_:Ostave for ONLINE</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 50px 20px;
+    }
+    button {
+      padding: 20px 40px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #fff;
+      background: #00b4d8;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
+    }
+    #status {
+      margin-top: 30px;
+      font-size: 1rem;
+      color: #00f5d4;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Nexus:_:Ostave for ONLINE</h1>
+  <p>サウンド再生テスト</p>
+
+  <button id="btn-play" onclick="playTestSound()">🎵 TAP TO PLAY</button>
+
+  <div id="status">ボタンを押すと音源が再生されます</div>
+
+  <audio id="test-audio" src="bgm.mp3" preload="auto"></audio>
+
+  <script>
+    function playTestSound() {
+      const audio = document.getElementById('test-audio');
+      const status = document.getElementById('status');
+      
+      audio.play().then(() => {
+        status.innerText = "▶ 再生中！音は鳴っていますか？";
+      }).catch(error => {
+        console.log("再生エラー:", error);
+        status.innerText = "❌ 再生に失敗しました。ファイル名を確認してください。";
+      });
+    }
+  </script>
+</body>
+</html>
