@@ -15,15 +15,16 @@
     h1 {
       font-size: 1.5rem;
       margin-bottom: 5px;
+      color: #00f5d4;
     }
     .playlist {
       margin: 20px 0;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
     button {
-      padding: 15px;
+      padding: 16px;
       font-size: 1rem;
       font-weight: bold;
       color: #fff;
@@ -38,38 +39,49 @@
       box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
     }
     #now-playing {
-      margin-top: 25px;
-      font-size: 0.9rem;
+      margin-top: 20px;
+      font-size: 0.95rem;
       color: #00f5d4;
+      font-weight: bold;
     }
     audio {
       margin-top: 20px;
       width: 100%;
-      max-width: 300px;
+      max-width: 320px;
     }
   </style>
 </head>
 <body>
 
   <h1>Nexus:_:Ostave for ONLINE</h1>
-  <p>楽曲プレイヤー (テスト4曲)</p>
+  <p>楽曲プレイヤー (全4曲)</p>
 
   <div id="now-playing">曲を選んでください</div>
 
   <!-- 4曲を切り替えるボタンのリスト -->
-  <div class="playlist" id="playlist">
-    <!-- JavaScriptで自動的にボタンが生成されます -->
-  </div>
+  <div class="playlist" id="playlist"></div>
 
   <audio id="audio-player" controls preload="auto"></audio>
 
   <script>
-    // 🎵 ここに曲名とURL（Catboxなどで取得したリンク）を入れていきます
+    // 🎵 あなたのアップロードした4曲のプレイリストデータ
     const songs = [
-      { title: "テスト曲 1", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-      { title: "テスト曲 2", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-      { title: "テスト曲 3", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-      { title: "テスト曲 4", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" }
+      { 
+        title: "SPECIALZ", 
+        url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" 
+      },
+      { 
+        title: "ハウトゥー世界征服", 
+        url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" 
+      },
+      { 
+        title: "ロストワンの号哭", 
+        url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%AD%E3%82%B9%E3%83%88%E3%83%AF%E3%83%B3%E3%81%의%E5%8F%B7%E5%93%AD.mp3" 
+      },
+      { 
+        title: "一途", 
+        url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E4%B8%80%E9%80%94.mp3" 
+      }
     ];
 
     const audioPlayer = document.getElementById('audio-player');
@@ -100,7 +112,7 @@
         updateActiveButton();
       }).catch(err => {
         console.log("再生エラー:", err);
-        nowPlaying.innerText = `❌ 再生失敗: ${song.title}`;
+        nowPlaying.innerText = `❌ 再生失敗: ${song.title} (読み込み中...)`;
       });
     }
 
