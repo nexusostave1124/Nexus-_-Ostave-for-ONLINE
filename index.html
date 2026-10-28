@@ -10,49 +10,115 @@
       color: #fff;
       font-family: sans-serif;
       text-align: center;
-      padding: 50px 20px;
+      padding: 30px 20px;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 5px;
+    }
+    .playlist {
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     button {
-      padding: 20px 40px;
-      font-size: 1.2rem;
+      padding: 15px;
+      font-size: 1rem;
       font-weight: bold;
       color: #fff;
-      background: #00b4d8;
-      border: none;
-      border-radius: 30px;
+      background: #1f1f1f;
+      border: 2px solid #00b4d8;
+      border-radius: 12px;
       cursor: pointer;
+      transition: 0.2s;
+    }
+    button.active {
+      background: #00b4d8;
       box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
     }
-    #status {
-      margin-top: 30px;
-      font-size: 1rem;
+    #now-playing {
+      margin-top: 25px;
+      font-size: 0.9rem;
       color: #00f5d4;
+    }
+    audio {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 300px;
     }
   </style>
 </head>
 <body>
 
   <h1>Nexus:_:Ostave for ONLINE</h1>
-  <p>サウンド再生テスト</p>
+  <p>楽曲プレイヤー (テスト4曲)</p>
 
-  <button id="btn-play" onclick="playTestSound()">🎵 TAP TO PLAY</button>
+  <div id="now-playing">曲を選んでください</div>
 
-  <div id="status">ボタンを押すと音源が再生されます</div>
+  <!-- 4曲を切り替えるボタンのリスト -->
+  <div class="playlist" id="playlist">
+    <!-- JavaScriptで自動的にボタンが生成されます -->
+  </div>
 
-  <audio id="test-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
+  <audio id="audio-player" controls preload="auto"></audio>
 
   <script>
-    function playTestSound() {
-      const audio = document.getElementById('test-audio');
-      const status = document.getElementById('status');
-      
-      audio.play().then(() => {
-        status.innerText = "▶ 再生中！音は鳴っていますか？";
-      }).catch(error => {
-        console.log("再生エラー:", error);
-        status.innerText = "❌ 再生に失敗しました。ファイル名を確認してください。";
+    // 🎵 ここに曲名とURL（Catboxなどで取得したリンク）を入れていきます
+    const songs = [
+      { title: "テスト曲 1", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+      { title: "テスト曲 2", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+      { title: "テスト曲 3", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+      { title: "テスト曲 4", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" }
+    ];
+
+    const audioPlayer = document.getElementById('audio-player');
+    const playlistContainer = document.getElementById('playlist');
+    const nowPlaying = document.getElementById('now-playing');
+    
+    let currentIndex = 0;
+
+    // プレイリストのボタンを画面に並べる
+    function initPlaylist() {
+      playlistContainer.innerHTML = "";
+      songs.forEach((song, index) => {
+        const btn = document.createElement('button');
+        btn.innerText = `▶ ${song.title}`;
+        btn.onclick = () => playSong(index);
+        playlistContainer.appendChild(btn);
       });
     }
+
+    // 指定した曲を再生する
+    function playSong(index) {
+      currentIndex = index;
+      const song = songs[currentIndex];
+      
+      audioPlayer.src = song.url;
+      audioPlayer.play().then(() => {
+        nowPlaying.innerText = `再生中: ${song.title}`;
+        updateActiveButton();
+      }).catch(err => {
+        console.log("再生エラー:", err);
+        nowPlaying.innerText = `❌ 再生失敗: ${song.title}`;
+      });
+    }
+
+    // 選ばれているボタンの色を変える
+    function updateActiveButton() {
+      const buttons = playlistContainer.getElementsByTagName('button');
+      for (let i = 0; i < buttons.length; i++) {
+        if (i === currentIndex) {
+          buttons[i].classList.add('active');
+        } else {
+          buttons[i].classList.remove('active');
+        }
+      }
+    }
+
+    // 初期化実行
+    initPlaylist();
   </script>
+
 </body>
 </html>
