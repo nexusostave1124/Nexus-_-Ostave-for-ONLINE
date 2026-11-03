@@ -30,7 +30,7 @@
       overflow: hidden;
     }
 
-    /* 🖼️ 背景スライドショー (横長・縦長イラストを中央に綺麗にフィット) */
+    /* 🖼️ 背景スライドショー */
     .bg-slideshow {
       position: absolute;
       top: 0;
@@ -54,7 +54,7 @@
       opacity: 1;
     }
 
-    /* 🎯 画面の上部・下部のグラデーションシャドウ（文字を見やすくする） */
+    /* 上下グラデーションシャドウ */
     .overlay-top {
       position: absolute;
       top: 0;
@@ -127,7 +127,7 @@
       font-weight: bold;
     }
 
-    /* ⏰ 中央上：現在時刻・充電 */
+    /* ⏰ 中央上：現在時刻・バッテリー表示 */
     .top-center-info {
       position: absolute;
       top: 15px;
@@ -142,6 +142,12 @@
       font-weight: bold;
       color: #fff;
       font-family: monospace;
+    }
+    .battery-status {
+      font-size: 0.7rem;
+      color: #00f5d4;
+      margin-top: 2px;
+      font-weight: bold;
     }
 
     /* ✉️ 右上：プレゼント・お知らせアイコン */
@@ -338,16 +344,15 @@
 
   <div class="app-container">
     
-    <!-- 🖼️ 背景スライドショー (画像4枚がゆっくり切り替わります) -->
+    <!-- 🖼️ 背景スライドショー -->
     <div class="bg-slideshow">
-      <!-- 1枚目：ご提示いただいた画像を最優先で表示 -->
       <img src="https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/images/home_bg.jpg" class="slide-img active" onerror="this.src='https://picsum.photos/id/1069/800/1200'" alt="背景1">
       <img src="https://picsum.photos/id/1074/800/1200" class="slide-img" alt="背景2">
       <img src="https://picsum.photos/id/1080/800/1200" class="slide-img" alt="背景3">
       <img src="https://picsum.photos/id/1084/800/1200" class="slide-img" alt="背景4">
     </div>
 
-    <!-- 上下陰影グラデーション -->
+    <!-- 上下陰影ングラデーション -->
     <div class="overlay-top"></div>
     <div class="overlay-bottom"></div>
 
@@ -363,10 +368,11 @@
       </div>
     </div>
 
-    <!-- ⏰ 中央上：リアルタイム時刻・端末表示 -->
+    <!-- ⏰ 中央上：リアルタイム時刻 ＆ 🔋 バッテリー残量表示 -->
     <div class="top-center-info">
-      <div>現在時刻</div>
+      <div style="font-size:0.65rem; color:#aaa;">現在時刻</div>
       <div id="real-clock" class="clock-time">00:00:00</div>
+      <div id="battery-info" class="battery-status">充電中 100%</div>
     </div>
 
     <!-- ✉️ 右上：プレゼント & お知らせ -->
@@ -383,7 +389,7 @@
       </div>
     </div>
 
-    <!-- 🎵 右下：ミニ楽曲プレイヤー（タップで選曲画面へ） -->
+    <!-- 🎵 右下：ミニ楽曲プレイヤー -->
     <div class="mini-player" onclick="openScreen('player')">
       <span class="music-icon">🎵</span>
       <div>
@@ -420,9 +426,7 @@
 
   </div>
 
-  <!-- ================= 📄 各種サブ画面（オーバーレイ表示） ================= -->
-
-  <!-- 🎵 楽曲プレイヤー画面 -->
+  <!-- ================= 📄 各種サブ画面 ================= -->
   <div id="screen-player" class="sub-screen">
     <div class="sub-header">
       <span class="sub-title">🎵 楽曲選択</span>
@@ -433,7 +437,6 @@
     <div class="playlist-box" id="playlist"></div>
   </div>
 
-  <!-- 🎪 イベント画面 -->
   <div id="screen-event" class="sub-screen">
     <div class="sub-header">
       <span class="sub-title">🎪 イベント情報</span>
@@ -445,7 +448,6 @@
     </div>
   </div>
 
-  <!-- 🎁 ガチャ画面 -->
   <div id="screen-gacha" class="sub-screen">
     <div class="sub-header">
       <span class="sub-title">🎂 ガチャ</span>
@@ -454,7 +456,6 @@
     <p>2周年特別ガチャを準備中...</p>
   </div>
 
-  <!-- 🎰 遊戯画面 -->
   <div id="screen-play" class="sub-screen">
     <div class="sub-header">
       <span class="sub-title">🎰 遊戯</span>
@@ -463,7 +464,6 @@
     <p>ミニゲーム・演出画面を準備中...</p>
   </div>
 
-  <!-- 🎁 プレゼント画面 -->
   <div id="screen-present" class="sub-screen">
     <div class="sub-header">
       <span class="sub-title">🎁 プレゼントBOX</span>
@@ -472,7 +472,6 @@
     <p>受取可能なプレゼントが8件あります。</p>
   </div>
 
-  <!-- ⚙️ その他画面 -->
   <div id="screen-other" class="sub-screen">
     <div class="sub-header">
       <span class="sub-title">⚙️ その他メニュー</span>
@@ -492,6 +491,28 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
+
+    // 🔋 バッテリー残量＆充電状態の自動取得
+    async function initBattery() {
+      if ('getBattery' in navigator) {
+        try {
+          const battery = await navigator.getBattery();
+          function updateBatteryUI() {
+            const level = Math.floor(battery.level * 100);
+            const charging = battery.charging ? '⚡充電中' : '';
+            document.getElementById('battery-info').innerText = `${charging} ${level}%`;
+          }
+          updateBatteryUI();
+          battery.addEventListener('levelchange', updateBatteryUI);
+          battery.addEventListener('chargingchange', updateBatteryUI);
+        } catch (e) {
+          document.getElementById('battery-info').innerText = "⚡充電中 88%"; // フォールバック
+        }
+      } else {
+        document.getElementById('battery-info').innerText = "⚡充電中 88%"; // 非対応ブラウザ用
+      }
+    }
+    initBattery();
 
     // 🖼️ スライドショー切替 (4秒毎)
     let currentSlide = 0;
@@ -534,7 +555,7 @@
     const songs = [
       { title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" },
       { title: "ハウトゥー世界征服", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" },
-      { title: "ロストワンの号哭", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%AD%E3%82%B9%E3%83%88%E3%83%AF%E3%83%B3%E3%81%AE%E5%8F%B7%E5%93%AD.mp3" },
+      { title: "ロストワンの号哭", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%AD%E3%83%89%E3%83%88%E3%83%AF%E3%83%B3%E3%81%AE%E5%8F%B7%E5%93%AD.mp3" },
       { title: "一途", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E4%B8%80%E9%80%94.mp3" }
     ];
 
