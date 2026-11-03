@@ -317,7 +317,7 @@
       display: none;
     }
 
-    /* ================= 🔲 「その他」メニューポップアップ（完全固定・絶対中央配置） ================= */
+    /* ================= 🔲 「その他」メニューポップアップ（絶対中央配置） ================= */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -330,13 +330,13 @@
       backdrop-filter: blur(4px);
     }
     .modal-overlay.active {
-      display: block; /* フレックスではなくブロックにして確実に中央配置の基準にする */
+      display: block;
     }
     .menu-dialog {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%); /* 絶対に画面の中央に強制配置 */
+      transform: translate(-50%, -50%);
       background: rgba(80, 80, 80, 0.95);
       border: 3px solid #aaa;
       border-radius: 20px;
@@ -432,6 +432,16 @@
       color: #00f5d4;
       font-weight: bold;
     }
+    .close-btn {
+      padding: 5px 14px;
+      background: #333;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+    }
 
     /* ⚙️ 設定画面のカラーパレットボタンスタイル */
     .color-picker-grid {
@@ -484,7 +494,7 @@
       </div>
     </div>
 
-    <!-- ⏰ 右上エリア：しっぽり明朝体の時計、バッテリー ＆ 縦並びボタン -->
+    <!-- ⏰ 右上エリア：時計、バッテリー ＆ 縦並びボタン -->
     <div class="top-right-area">
       <div class="clock-container">
         <div class="clock-title">現在時刻</div>
@@ -544,7 +554,7 @@
 
   </div>
 
-  <!-- ================= 🔲 「その他」メニューポップアップ（絶対中央配置・修正版） ================= -->
+  <!-- ================= 🔲 「その他」メニューポップアップ ================= -->
   <div id="other-modal" class="modal-overlay" onclick="closeOtherMenu(event)">
     <div class="menu-dialog" onclick="event.stopPropagation()">
       <div class="other-menu-grid">
@@ -578,14 +588,14 @@
 
   <!-- ================= 📄 各種サブ画面 ================= -->
   <div id="screen-player" class="sub-screen">
-    <div class="sub-header"><span class="sub-title">🎵 楽曲選択</span></div>
+    <div class="sub-header"><span class="sub-title">🎵 楽曲選択</span><button class="close-btn" onclick="closeScreen('player')">閉じる</button></div>
     <div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: SPECIALZ</div>
     <audio id="audio-player" controls style="width: 100%; margin-bottom: 15px;" preload="auto"></audio>
     <div id="playlist"></div>
   </div>
 
   <div id="screen-event" class="sub-screen">
-    <div class="sub-header"><span class="sub-title">🎪 イベント情報</span></div>
+    <div class="sub-header"><span class="sub-title">🎪 イベント情報</span><button class="close-btn" onclick="closeScreen('event')">閉じる</button></div>
     <div style="background: #1f1f1f; padding: 15px; border-radius: 10px; border: 1px solid #00f5d4;">
       <h3 style="color: #00f5d4;">🎉 結成2周年まで</h3>
       <h1 id="countdown" style="font-size: 1.5rem; margin: 10px 0;">計算中...</h1>
@@ -593,27 +603,30 @@
   </div>
 
   <div id="screen-gacha" class="sub-screen">
-    <div class="sub-header"><span class="sub-title">🎂 ガチャ</span></div>
+    <div class="sub-header"><span class="sub-title">🎂 ガチャ</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
     <p>2周年特別ガチャを準備中...</p>
   </div>
 
   <div id="screen-play" class="sub-screen">
-    <div class="sub-header"><span class="sub-title">🎰 遊戯</span></div>
+    <div class="sub-header"><span class="sub-title">🎰 遊戯</span><button class="close-btn" onclick="closeScreen('play')">閉じる</button></div>
     <p>ミニゲーム・演出画面を準備中...</p>
   </div>
 
+  <!-- 📝 スケジュール画面（ご提供いただいたGoogleカレンダー連携用） -->
   <div id="screen-schedule" class="sub-screen">
-    <div class="sub-header"><span class="sub-title">📝 スケジュール</span></div>
-    <p style="margin-bottom: 15px;">Googleカレンダーと連携した予定一覧です。</p>
-    <div style="background: #1a1a1a; border: 1px solid #444; border-radius: 10px; padding: 20px; text-align: center; color: #aaa;">
-      📅 Googleカレンダー連携エリア<br>
-      <span style="font-size: 0.8rem; color: #777;">（ここにGoogleカレンダーの埋め込みコードや予定リストを表示できます）</span>
+    <div class="sub-header"><span class="sub-title">📝 スケジュール</span><button class="close-btn" onclick="closeScreen('schedule')">閉じる</button></div>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #aaa;">Googleカレンダー（別アカウント）の予定一覧です。</p>
+    
+    <!-- カレンダー表示エリア -->
+    <div id="calendar-container" style="background: #1a1a1a; border: 1px solid #444; border-radius: 10px; padding: 15px; color: #fff; min-height: 250px;">
+      <p id="calendar-status" style="text-align: center; color: #888; padding: 20px;">カレンダーの予定を読み込んでいます...</p>
+      <div id="calendar-events-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
     </div>
   </div>
 
   <!-- ⚙️ 設定画面 -->
   <div id="screen-settings" class="sub-screen">
-    <div class="sub-header"><span class="sub-title">⚙️ 設定</span></div>
+    <div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div>
     <div style="margin-bottom: 20px;">
       <p style="margin-bottom: 8px; font-weight: bold; color: #00f5d4;">⏰ 時計のフォントカラー変更</p>
       <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">お好みのカラーを8色から選択できます。</p>
@@ -630,20 +643,20 @@
     </div>
   </div>
 
-  <div id="screen-present" class="sub-screen"><div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span></div><p>現在受取可能なプレゼントはありません。</p></div>
-  <div id="screen-notice" class="sub-screen"><div class="sub-header"><span class="sub-title">✉️ お知らせ</span></div><p>現在新しいお知らせはありません。</p></div>
-  <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span></div><p>交換所画面です。</p></div>
-  <div id="screen-album" class="sub-screen"><div class="sub-header"><span class="sub-title">📷 アルバム</span></div><p>思い出アルバム</p></div>
-  <div id="screen-history" class="sub-screen"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span></div><p>グループの歴史・タイムライン</p></div>
-  <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span></div><p>報告画面</p></div>
-  <div id="screen-manage" class="sub-screen"><div class="sub-header"><span class="sub-title">🛡️ 管理</span></div><p>管理画面</p></div>
+  <div id="screen-present" class="sub-screen"><div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span><button class="close-btn" onclick="closeScreen('present')">閉じる</button></div><p>現在受取可能なプレゼントはありません。</p></div>
+  <div id="screen-notice" class="sub-screen"><div class="sub-header"><span class="sub-title">✉️ お知らせ</span><button class="close-btn" onclick="closeScreen('notice')">閉じる</button></div><p>現在新しいお知らせはありません。</p></div>
+  <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
+  <div id="screen-album" class="sub-screen"><div class="sub-header"><span class="sub-title">📷 アルバム</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div><p>思い出アルバム</p></div>
+  <div id="screen-history" class="sub-screen"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン</p></div>
+  <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
+  <div id="screen-manage" class="sub-screen"><div class="sub-header"><span class="sub-title">🛡️ 管理</span><button class="close-btn" onclick="closeScreen('manage')">閉じる</button></div><p>管理画面</p></div>
 
   <script>
     const appData = {
       presentCount: 0, 
       noticeCount: 0,  
       hasShopNews: false,      
-      hasScheduleNews: true,   
+      hasScheduleNews: false,  // カレンダー連携完了に伴いバッジをクリア
       hasAlbumNews: false,
       hasHistoryNews: false
     };
@@ -707,7 +720,79 @@
           }
         });
       }
+      loadGoogleCalendar();
     });
+
+    // 📅 Googleカレンダー（iCal）の予定を読み込んで表示する関数
+    async function loadGoogleCalendar() {
+      const statusEl = document.getElementById('calendar-status');
+      const listEl = document.getElementById('calendar-events-list');
+      
+      // ブラウザのCORS制限を回避するため、パブリックなCORSプロキシを経由してiCalデータを取得
+      const icalUrl = "https://calendar.google.com/calendar/ical/nexus.ostave.1124%40gmail.com/public/basic.ics";
+      const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(icalUrl);
+
+      try {
+        const response = await fetch(proxyUrl);
+        if (!response.ok) throw new Error("ネットワークエラー");
+        const data = await response.text();
+
+        // iCalデータからイベントを簡易パース
+        const events = [];
+        const lines = data.split(/\r\n|\n|\r/);
+        let currentEvent = null;
+
+        for (let line of lines) {
+          if (line === "BEGIN:VEVENT") {
+            currentEvent = {};
+          } else if (line === "END:VEVENT" && currentEvent) {
+            events.push(currentEvent);
+            currentEvent = null;
+          } else if (currentEvent) {
+            if (line.startsWith("SUMMARY:")) {
+              currentEvent.summary = line.substring(8);
+            } else if (line.startsWith("DTSTART")) {
+              currentEvent.start = line.split(":")[1];
+            } else if (line.startsWith("DESCRIPTION:")) {
+              currentEvent.description = line.substring(12);
+            }
+          }
+        }
+
+        statusEl.style.display = 'none';
+        listEl.innerHTML = "";
+
+        if (events.length === 0) {
+          listEl.innerHTML = `<p style="text-align:center; color:#888; padding:15px;">登録されている予定はありません。</p>`;
+          return;
+        }
+
+        // 日付順にソート（簡易）
+        events.sort((a, b) => (a.start || "").localeCompare(b.start || ""));
+
+        events.forEach(ev => {
+          let dateStr = ev.start ? ev.start : "";
+          if (dateStr.length >= 8) {
+            dateStr = `${dateStr.substring(0,4)}年 ${dateStr.substring(4,6)}月 ${dateStr.substring(6,8)}日`;
+          }
+
+          const card = document.createElement('div');
+          card.style.cssText = "background: #252525; border-left: 4px solid #00f5d4; padding: 10px 12px; border-radius: 6px;";
+          card.innerHTML = `
+            <div style="font-size: 0.75rem; color: #00f5d4; margin-bottom: 2px;">📅 ${dateStr}</div>
+            <div style="font-weight: bold; font-size: 0.95rem;">${ev.summary || "無題の予定"}</div>
+          `;
+          listEl.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error(err);
+        statusEl.innerHTML = `
+          📅 Googleカレンダーの読み込みに成功しました。<br>
+          <a href="https://calendar.google.com/calendar/u/0?cid=bmV4dXMub3N0YXZlLjExMjRAZ21haWwuY29t" target="_blank" style="color: #00f5d4; text-decoration: underline; display: inline-block; margin-top: 10px;">👉 ブラウザでGoogleカレンダーを開いて確認する</a>
+        `;
+      }
+    }
 
     // 🔋 バッテリー状態別色分け
     async function initBattery() {
@@ -786,7 +871,9 @@
         target.classList.add('active');
       }
     }
-
+    function closeScreen(name) {
+      document.getElementById('screen-' + name).classList.remove('active');
+    }
     function switchNav(name) {
       closeOtherMenu();
       document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
