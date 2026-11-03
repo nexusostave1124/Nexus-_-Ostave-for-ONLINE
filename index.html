@@ -14,7 +14,8 @@
     body {
       background-color: #050505;
       color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      /* 🖋️ 全体フォントを上品な「明朝体」に指定 */
+      font-family: "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", "Hiragino Mincho ProN", "MS P明朝", serif;
       height: 100vh;
       overflow: hidden;
       display: flex;
@@ -54,7 +55,7 @@
       opacity: 1;
     }
 
-    /* 上下グラデーションシャドウ */
+    /* 上下グラデーション */
     .overlay-top {
       position: absolute;
       top: 0;
@@ -76,7 +77,7 @@
       pointer-events: none;
     }
 
-    /* 📊 左上：ユーザー情報ステータス */
+    /* 📊 左上：ステータスバー */
     .user-status {
       position: absolute;
       top: 15px;
@@ -108,7 +109,6 @@
       display: flex;
       flex-direction: column;
       gap: 2px;
-      font-family: monospace;
     }
     .status-row {
       display: flex;
@@ -127,7 +127,7 @@
       font-weight: bold;
     }
 
-    /* ⏰ 中央上：現在時刻・バッテリー表示 */
+    /* ⏰ 中央上：時計 ＆ 🔋 バッテリー */
     .top-center-info {
       position: absolute;
       top: 15px;
@@ -141,7 +141,6 @@
       font-size: 1.1rem;
       font-weight: bold;
       color: #fff;
-      font-family: monospace;
     }
     .battery-status {
       font-size: 0.7rem;
@@ -150,7 +149,7 @@
       font-weight: bold;
     }
 
-    /* ✉️ 右上：プレゼント・お知らせアイコン */
+    /* ✉️ 右上：プレゼント & お知らせ */
     .top-right-menu {
       position: absolute;
       top: 15px;
@@ -227,7 +226,7 @@
       color: #aaa;
     }
 
-    /* 🏠 下部：固定ナビゲーションバー */
+    /* 🏠 下部：ナビゲーションバー */
     .bottom-nav {
       position: absolute;
       bottom: 0;
@@ -276,7 +275,91 @@
       padding: 1px 6px;
     }
 
-    /* 📄 各サブ画面（フルスクリーンオーバーレイ） */
+    /* ================= 🔲 「その他」モーダルダイアログ ================= */
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 40;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(3px);
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .menu-dialog {
+      background: rgba(100, 100, 100, 0.85);
+      border: 3px solid #888;
+      border-radius: 20px;
+      width: 86%;
+      max-width: 360px;
+      padding: 20px 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+    }
+    .other-menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px 12px;
+    }
+    .other-menu-card {
+      position: relative;
+      background: rgba(60, 60, 60, 0.8);
+      border: 2px solid #aaa;
+      border-radius: 35px;
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.2s;
+    }
+    .other-menu-card:active {
+      transform: scale(0.95);
+      background: rgba(100, 100, 100, 0.9);
+    }
+    .other-icon-circle {
+      width: 50px;
+      height: 50px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    /* 🔴 条件付きビックリマーク「！」バッジ */
+    .exclamation-badge {
+      position: absolute;
+      top: -4px;
+      right: 12px;
+      background: #ff334b;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    }
+
+    /* 📄 各サブ画面 */
     .sub-screen {
       position: absolute;
       top: 0;
@@ -284,7 +367,7 @@
       width: 100%;
       height: 100%;
       background: #121212;
-      z-index: 30;
+      z-index: 50;
       display: none;
       flex-direction: column;
       padding: 20px;
@@ -315,28 +398,7 @@
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
-    }
-
-    /* 🎵 楽曲プレイヤーモーダル */
-    .playlist-box {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 15px;
-    }
-    .song-card {
-      background: #1f1f1f;
-      border: 1px solid #333;
-      padding: 14px;
-      border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-    .song-card.playing {
-      border-color: #00f5d4;
-      background: #002b33;
+      font-family: inherit;
     }
   </style>
 </head>
@@ -352,7 +414,7 @@
       <img src="https://picsum.photos/id/1084/800/1200" class="slide-img" alt="背景4">
     </div>
 
-    <!-- 上下陰影ングラデーション -->
+    <!-- 上下陰影グラデーション -->
     <div class="overlay-top"></div>
     <div class="overlay-bottom"></div>
 
@@ -368,7 +430,7 @@
       </div>
     </div>
 
-    <!-- ⏰ 中央上：リアルタイム時刻 ＆ 🔋 バッテリー残量表示 -->
+    <!-- ⏰ 中央上：リアルタイム時刻 ＆ 🔋 バッテリー -->
     <div class="top-center-info">
       <div style="font-size:0.65rem; color:#aaa;">現在時刻</div>
       <div id="real-clock" class="clock-time">00:00:00</div>
@@ -379,12 +441,13 @@
     <div class="top-right-menu">
       <div class="icon-badge-btn" onclick="openScreen('present')">
         🎁
-        <span class="badge">8</span>
+        <!-- お知らせ/変化がある場合のみ数字・バッジを表示 -->
+        <span class="badge" id="badge-present">8</span>
         <span class="icon-label">プレゼント</span>
       </div>
-      <div class="icon-badge-btn" onclick="openScreen('other')">
+      <div class="icon-badge-btn" onclick="openScreen('notice')">
         ✉️
-        <span class="badge">12</span>
+        <span class="badge" id="badge-notice">12</span>
         <span class="icon-label">お知らせ</span>
       </div>
     </div>
@@ -407,18 +470,19 @@
       <div class="nav-item" onclick="openScreen('event')">
         <span class="nav-icon">🎪</span>
         <span>イベント</span>
-        <span class="nav-badge">残り3日</span>
+        <span class="nav-badge" id="badge-event">残り3日</span>
       </div>
       <div class="nav-item" onclick="openScreen('gacha')">
         <span class="nav-icon">🎂</span>
-        <span class="nav-badge">!</span>
+        <span class="nav-badge" id="badge-gacha">!</span>
         <span>ガチャ</span>
       </div>
       <div class="nav-item" onclick="openScreen('play')">
         <span class="nav-icon">🎰</span>
         <span>遊戯</span>
       </div>
-      <div class="nav-item" onclick="openScreen('other')">
+      <!-- 右下の「その他」でダイアログを開く -->
+      <div class="nav-item" onclick="toggleOtherMenu()">
         <span class="nav-icon">•••</span>
         <span>その他</span>
       </div>
@@ -426,22 +490,75 @@
 
   </div>
 
+  <!-- ================= 🔲 「その他」メニューポップアップダイアログ ================= -->
+  <div id="other-modal" class="modal-overlay" onclick="closeOtherMenu(event)">
+    <div class="menu-dialog" onclick="event.stopPropagation()">
+      <div class="other-menu-grid">
+        
+        <!-- 交換所 -->
+        <div class="other-menu-card" onclick="openScreen('shop')">
+          <div class="other-icon-circle">💖</div>
+          <!-- 変化/お知らせがある場合のみ '!' を表示 -->
+          <span class="exclamation-badge" id="has-shop-news">!</span>
+          <span>交換所</span>
+        </div>
+
+        <!-- スケジュール -->
+        <div class="other-menu-card" onclick="openScreen('schedule')">
+          <div class="other-icon-circle">📝</div>
+          <span class="exclamation-badge" id="has-schedule-news">!</span>
+          <span>スケジュール</span>
+        </div>
+
+        <!-- アルバム -->
+        <div class="other-menu-card" onclick="openScreen('album')">
+          <div class="other-icon-circle">📷</div>
+          <!-- 変化がない場合は非表示 (display:none) -->
+          <span class="exclamation-badge" id="has-album-news" style="display:none;">!</span>
+          <span>アルバム</span>
+        </div>
+
+        <!-- ヒストリー -->
+        <div class="other-menu-card" onclick="openScreen('history')">
+          <div class="other-icon-circle">📖</div>
+          <span class="exclamation-badge" id="has-history-news">!</span>
+          <span>ヒストリー</span>
+        </div>
+
+        <!-- 設定 -->
+        <div class="other-menu-card" onclick="openScreen('settings')">
+          <span>設定</span>
+        </div>
+
+        <!-- 報告 -->
+        <div class="other-menu-card" onclick="openScreen('report')">
+          <span>報告</span>
+        </div>
+
+        <!-- 管理 -->
+        <div class="other-menu-card" onclick="openScreen('manage')">
+          <span>管理</span>
+        </div>
+
+        <!-- ログアウト -->
+        <div class="other-menu-card" onclick="closeOtherMenu()">
+          <span>ログアウト</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- ================= 📄 各種サブ画面 ================= -->
   <div id="screen-player" class="sub-screen">
-    <div class="sub-header">
-      <span class="sub-title">🎵 楽曲選択</span>
-      <button class="close-btn" onclick="closeScreen('player')">閉じる</button>
-    </div>
+    <div class="sub-header"><span class="sub-title">🎵 楽曲選択</span><button class="close-btn" onclick="closeScreen('player')">閉じる</button></div>
     <div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: SPECIALZ</div>
     <audio id="audio-player" controls style="width: 100%; margin-bottom: 15px;" preload="auto"></audio>
-    <div class="playlist-box" id="playlist"></div>
+    <div id="playlist"></div>
   </div>
 
   <div id="screen-event" class="sub-screen">
-    <div class="sub-header">
-      <span class="sub-title">🎪 イベント情報</span>
-      <button class="close-btn" onclick="closeScreen('event')">閉じる</button>
-    </div>
+    <div class="sub-header"><span class="sub-title">🎪 イベント情報</span><button class="close-btn" onclick="closeScreen('event')">閉じる</button></div>
     <div style="background: #1f1f1f; padding: 15px; border-radius: 10px; border: 1px solid #00f5d4;">
       <h3 style="color: #00f5d4;">🎉 結成2周年まで</h3>
       <h1 id="countdown" style="font-size: 1.5rem; margin: 10px 0;">計算中...</h1>
@@ -449,39 +566,22 @@
   </div>
 
   <div id="screen-gacha" class="sub-screen">
-    <div class="sub-header">
-      <span class="sub-title">🎂 ガチャ</span>
-      <button class="close-btn" onclick="closeScreen('gacha')">閉じる</button>
-    </div>
+    <div class="sub-header"><span class="sub-title">🎂 ガチャ</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
     <p>2周年特別ガチャを準備中...</p>
   </div>
 
   <div id="screen-play" class="sub-screen">
-    <div class="sub-header">
-      <span class="sub-title">🎰 遊戯</span>
-      <button class="close-btn" onclick="closeScreen('play')">閉じる</button>
-    </div>
+    <div class="sub-header"><span class="sub-title">🎰 遊戯</span><button class="close-btn" onclick="closeScreen('play')">閉じる</button></div>
     <p>ミニゲーム・演出画面を準備中...</p>
   </div>
 
-  <div id="screen-present" class="sub-screen">
-    <div class="sub-header">
-      <span class="sub-title">🎁 プレゼントBOX</span>
-      <button class="close-btn" onclick="closeScreen('present')">閉じる</button>
-    </div>
-    <p>受取可能なプレゼントが8件あります。</p>
-  </div>
-
-  <div id="screen-other" class="sub-screen">
-    <div class="sub-header">
-      <span class="sub-title">⚙️ その他メニュー</span>
-      <button class="close-btn" onclick="closeScreen('other')">閉じる</button>
-    </div>
-    <p>設定・お知らせ・各種機能</p>
-  </div>
+  <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面を準備中...</p></div>
+  <div id="screen-schedule" class="sub-screen"><div class="sub-header"><span class="sub-title">📝 スケジュール</span><button class="close-btn" onclick="closeScreen('schedule')">閉じる</button></div><p>スケジュールカレンダー...</p></div>
+  <div id="screen-album" class="sub-screen"><div class="sub-header"><span class="sub-title">📷 アルバム</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div><p>思い出アルバム...</p></div>
+  <div id="screen-history" class="sub-screen"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン...</p></div>
 
   <script>
-    // ⏰ リアルタイム時計
+    // ⏰ 時計
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
@@ -492,29 +592,29 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // 🔋 バッテリー残量＆充電状態の自動取得
+    // 🔋 バッテリー
     async function initBattery() {
       if ('getBattery' in navigator) {
         try {
-          const battery = await navigator.getBattery();
-          function updateBatteryUI() {
-            const level = Math.floor(battery.level * 100);
-            const charging = battery.charging ? '⚡充電中' : '';
-            document.getElementById('battery-info').innerText = `${charging} ${level}%`;
-          }
-          updateBatteryUI();
-          battery.addEventListener('levelchange', updateBatteryUI);
-          battery.addEventListener('chargingchange', updateBatteryUI);
+          const b = await navigator.getBattery();
+          const update = () => {
+            const l = Math.floor(b.level * 100);
+            const c = b.charging ? '⚡充電中' : '';
+            document.getElementById('battery-info').innerText = `${c} ${l}%`;
+          };
+          update();
+          b.addEventListener('levelchange', update);
+          b.addEventListener('chargingchange', update);
         } catch (e) {
-          document.getElementById('battery-info').innerText = "⚡充電中 88%"; // フォールバック
+          document.getElementById('battery-info').innerText = "⚡充電中 88%";
         }
       } else {
-        document.getElementById('battery-info').innerText = "⚡充電中 88%"; // 非対応ブラウザ用
+        document.getElementById('battery-info').innerText = "⚡充電中 88%";
       }
     }
     initBattery();
 
-    // 🖼️ スライドショー切替 (4秒毎)
+    // 🖼️ スライドショー (4秒毎)
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide-img');
     setInterval(() => {
@@ -523,14 +623,24 @@
       slides[currentSlide].classList.add('active');
     }, 4000);
 
-    // 📄 画面切り替えシステム
+    // 🔲 「その他」モーダルの開閉
+    function toggleOtherMenu() {
+      document.getElementById('other-modal').classList.add('active');
+    }
+    function closeOtherMenu() {
+      document.getElementById('other-modal').classList.remove('active');
+    }
+
+    // 📄 サブ画面制御
     function openScreen(name) {
+      closeOtherMenu();
       document.getElementById('screen-' + name).classList.add('active');
     }
     function closeScreen(name) {
       document.getElementById('screen-' + name).classList.remove('active');
     }
     function switchNav(name) {
+      closeOtherMenu();
       document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
     }
 
@@ -551,7 +661,7 @@
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    // 🎵 楽曲データ＆再生機能
+    // 🎵 楽曲プレイヤー
     const songs = [
       { title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" },
       { title: "ハウトゥー世界征服", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" },
@@ -568,8 +678,8 @@
       playlist.innerHTML = "";
       songs.forEach((song, i) => {
         const item = document.createElement('div');
-        item.className = 'song-card' + (i === 0 ? ' playing' : '');
-        item.innerHTML = `<span>▶ ${song.title}</span><span style="font-size:0.75rem; color:#888;">再生</span>`;
+        item.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; cursor:pointer;";
+        item.innerHTML = `<span>▶ ${song.title}</span><span style="color:#888;">再生</span>`;
         item.onclick = () => playSong(i);
         playlist.appendChild(item);
       });
@@ -581,11 +691,6 @@
       audioPlayer.play();
       miniTitle.innerText = song.title;
       nowPlayingText.innerText = "再生中の曲: " + song.title;
-
-      const cards = playlist.getElementsByClassName('song-card');
-      for (let i = 0; i < cards.length; i++) {
-        cards[i].classList.toggle('playing', i === index);
-      }
     }
 
     initPlaylist();
