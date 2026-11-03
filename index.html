@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Nexus:_:Ostave for ONLINE</title>
+  <!-- ネオン数字風のデザインを再現するためのGoogle Fonts（Orbitron）を導入 -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -14,8 +16,7 @@
     body {
       background-color: #050505;
       color: #fff;
-      /* 🖋️ ガチガチの本格的な明朝体指定 */
-      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", "Hiragino Mincho ProN", serif;
+      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, serif;
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
@@ -130,43 +131,40 @@
       font-weight: bold;
     }
 
-    /* ⏰ 右上：大きくした現在時刻 ＆ その下に配置するプレゼント・お知らせボタン */
-    .top-right-area {
+    /* ⏰ 中央上：時計 ＆ バッテリー（ネオン風デジタル数字フォント適用） */
+    .top-center-info {
       position: absolute;
       top: 15px;
-      right: 15px;
+      right: 140px;
       z-index: 10;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
-    }
-    .clock-container {
       text-align: right;
     }
     .clock-title {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       color: #aaa;
       letter-spacing: 1px;
     }
     .clock-time {
-      font-size: 1.6rem; /* 時計をさらに大きく */
-      font-weight: bold;
-      color: #fff;
-      letter-spacing: 1.5px;
+      font-family: 'Orbitron', sans-serif; /* ネオン風デジタル数字 */
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #ff334b; /* 赤ネオン風 */
+      text-shadow: 0 0 8px rgba(255, 51, 75, 0.8), 0 0 20px rgba(255, 51, 75, 0.4);
+      letter-spacing: 1px;
     }
     .battery-status {
-      font-size: 0.85rem;
-      margin-top: 1px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+      margin-top: 2px;
       font-weight: bold;
     }
 
-    /* 🔋 バッテリー状態別の色分けクラス */
-    .battery-green { color: #00ff66; }
-    .battery-yellow { color: #ffee00; }
-    .battery-orange { color: #ff9900; }
-    .battery-red { color: #ff3333; }
-    .battery-charging { color: #00bfff; } /* 充電中は青 */
+    /* 🔋 バッテリー状態別のネオンカラー分け（電池マークなし） */
+    .battery-green { color: #00ff66; text-shadow: 0 0 6px rgba(0,255,102,0.6); }
+    .battery-yellow { color: #ffee00; text-shadow: 0 0 6px rgba(255,238,0,0.6); }
+    .battery-orange { color: #ff9900; text-shadow: 0 0 6px rgba(255,153,0,0.6); }
+    .battery-red { color: #ff3333; text-shadow: 0 0 6px rgba(255,51,51,0.6); }
+    .battery-charging { color: #00bfff; text-shadow: 0 0 6px rgba(0,191,255,0.6); } /* 充電中は青ネオン */
     @keyframes blink {
       0% { opacity: 1; }
       50% { opacity: 0.2; }
@@ -174,49 +172,50 @@
     }
     .battery-blink {
       color: #ff3333;
-      animation: blink 0.8s infinite; /* 3〜1%は赤・点滅 */
+      text-shadow: 0 0 8px rgba(255,51,51,0.9);
+      animation: blink 0.8s infinite;
     }
 
-    /* 🎁✉️ 時計の下（右側）にマークの下に文字が来る元の配置で並べるボタン群 */
-    .top-buttons-row {
+    /* ✉️🎁 右上：プレゼント＆お知らせを縦に並べるエリア（最初と同じ位置・形） */
+    .top-right-menu {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 10;
       display: flex;
-      gap: 8px;
-      margin-top: 4px;
+      flex-direction: column;
+      gap: 10px;
     }
     .icon-badge-btn {
       position: relative;
-      background: rgba(20, 20, 20, 0.8);
+      width: 42px;
+      height: 42px;
+      background: rgba(20, 20, 20, 0.75);
       border: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 10px;
-      width: 52px;
-      height: 48px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      font-size: 1.2rem;
       cursor: pointer;
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(4px);
     }
-    .btn-icon {
-      font-size: 1.1rem;
-      line-height: 1;
-    }
-    .btn-text {
-      font-size: 0.55rem;
-      color: #ddd;
-      margin-top: 2px;
-      font-weight: bold;
+    .icon-label {
+      font-size: 0.5rem;
+      color: #ccc;
+      margin-top: -2px;
     }
     .badge {
       position: absolute;
-      top: -4px;
-      right: -4px;
+      top: -5px;
+      right: -5px;
       background: #ff334b;
       color: #fff;
-      font-size: 0.6rem;
+      font-size: 0.65rem;
       font-weight: bold;
-      border-radius: 8px;
-      padding: 1px 4px;
+      border-radius: 10px;
+      padding: 1px 5px;
       border: 1px solid #000;
       display: none; /* 0件なら非表示 */
     }
@@ -457,26 +456,24 @@
       </div>
     </div>
 
-    <!-- ⏰ 右上：大きくした時計 ＆ その下に配置するプレゼント・お知らせボタン -->
-    <div class="top-right-area">
-      <div class="clock-container">
-        <div class="clock-title">現在時刻</div>
-        <div id="real-clock" class="clock-time">00:00:00</div>
-        <div id="battery-info" class="battery-status battery-green">⚡充電中 100%</div>
-      </div>
+    <!-- ⏰ 中央上：時計 ＆ バッテリー情報（ネオン風フォント） -->
+    <div class="top-center-info">
+      <div class="clock-title">現在時刻</div>
+      <div id="real-clock" class="clock-time">00:00:00</div>
+      <div id="battery-info" class="battery-status battery-charging">充電中 100%</div>
+    </div>
 
-      <!-- プレゼント・お知らせボタン（マークの下に文字が並ぶ元の形） -->
-      <div class="top-buttons-row">
-        <div class="icon-badge-btn" onclick="openScreen('present')">
-          <span class="btn-icon">🎁</span>
-          <span class="btn-text">プレゼント</span>
-          <span class="badge" id="badge-present">0</span>
-        </div>
-        <div class="icon-badge-btn" onclick="openScreen('notice')">
-          <span class="btn-icon">✉️</span>
-          <span class="btn-text">お知らせ</span>
-          <span class="badge" id="badge-notice">0</span>
-        </div>
+    <!-- ✉️🎁 右上：プレゼント＆お知らせを縦に並べるエリア（最初と同じ位置） -->
+    <div class="top-right-menu">
+      <div class="icon-badge-btn" onclick="openScreen('present')">
+        🎁
+        <span class="badge" id="badge-present">0</span>
+        <span class="icon-label">プレゼント</span>
+      </div>
+      <div class="icon-badge-btn" onclick="openScreen('notice')">
+        ✉️
+        <span class="badge" id="badge-notice">0</span>
+        <span class="icon-label">お知らせ</span>
       </div>
     </div>
 
@@ -521,11 +518,13 @@
   <div id="other-modal" class="modal-overlay" onclick="closeOtherMenu(event)">
     <div class="menu-dialog" onclick="event.stopPropagation()">
       <div class="other-menu-grid">
+        <!-- 交換所（更新なしなら「！」非表示） -->
         <div class="other-menu-card" onclick="openScreen('shop')">
           <div class="other-icon-circle">💖</div>
           <span class="exclamation-badge" id="news-shop">!</span>
           <span>交換所</span>
         </div>
+        <!-- スケジュール -->
         <div class="other-menu-card" onclick="openScreen('schedule')">
           <div class="other-icon-circle">📝</div>
           <span class="exclamation-badge" id="news-schedule">!</span>
@@ -575,10 +574,20 @@
     <p>ミニゲーム・演出画面を準備中...</p>
   </div>
 
-  <div id="screen-present" class="sub-screen"><div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span><button class="close-btn" onclick="closeScreen('present')">閉じる</button></div><p>現在受取可能なプレゼントはありません（0件でも閲覧可能）。</p></div>
+  <!-- スケジュール画面（Googleカレンダー連携もここに埋め込み可能です！） -->
+  <div id="screen-schedule" class="sub-screen">
+    <div class="sub-header"><span class="sub-title">📝 スケジュール</span><button class="close-btn" onclick="closeScreen('schedule')">閉じる</button></div>
+    <p style="margin-bottom: 15px;">Googleカレンダーと連携した予定一覧です。</p>
+    <!-- Googleカレンダーを埋め込む場合のプレイスペース -->
+    <div style="background: #1a1a1a; border: 1px solid #444; border-radius: 10px; padding: 20px; text-align: center; color: #aaa;">
+      📅 Googleカレンダー連携エリア<br>
+      <span style="font-size: 0.8rem; color: #777;">（ここにGoogleカレンダーの埋め込みコードや予定リストを表示できます）</span>
+    </div>
+  </div>
+
+  <div id="screen-present" class="sub-screen"><div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span><button class="close-btn" onclick="closeScreen('present')">閉じる</button></div><p>現在受取可能なプレゼントはありません。</p></div>
   <div id="screen-notice" class="sub-screen"><div class="sub-header"><span class="sub-title">✉️ お知らせ</span><button class="close-btn" onclick="closeScreen('notice')">閉じる</button></div><p>現在新しいお知らせはありません。</p></div>
   <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
-  <div id="screen-schedule" class="sub-screen"><div class="sub-header"><span class="sub-title">📝 スケジュール</span><button class="close-btn" onclick="closeScreen('schedule')">閉じる</button></div><p>スケジュールカレンダーです。</p></div>
   <div id="screen-album" class="sub-screen"><div class="sub-header"><span class="sub-title">📷 アルバム</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div><p>思い出アルバム</p></div>
   <div id="screen-history" class="sub-screen"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン</p></div>
   <div id="screen-settings" class="sub-screen"><div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div><p>アプリ設定画面</p></div>
@@ -587,10 +596,10 @@
 
   <script>
     const appData = {
-      presentCount: 0, // 0件ならバッジ非表示
-      noticeCount: 0,  // 0件ならバッジ非表示
-      hasShopNews: true,
-      hasScheduleNews: false,
+      presentCount: 0, 
+      noticeCount: 0,  
+      hasShopNews: false,      // 例: 交換所は更新なしなのでfalse（「！」非表示）
+      hasScheduleNews: true,   // 例: スケジュールに更新ありならtrue
       hasAlbumNews: false,
       hasHistoryNews: false
     };
@@ -630,7 +639,7 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // 🔋 ご指定のルールに基づくバッテリー残量・充電状態の色分け＆表示制御
+    // 🔋 バッテリー状態別色分け（電池マークなし、指定ルール適用）
     async function initBattery() {
       const bEl = document.getElementById('battery-info');
       
@@ -642,16 +651,14 @@
             const level = Math.floor(battery.level * 100);
             const charging = battery.charging;
             
-            // クラスを一旦すべてリセット
             bEl.className = "battery-status";
             
             if (charging) {
-              bEl.innerText = `⚡充電中 ${level}%`;
+              bEl.innerText = `充電中 ${level}%`;
               bEl.classList.add('battery-charging'); // 充電中は青
             } else {
-              bEl.innerText = `🔋 ${level}%`;
+              bEl.innerText = `${level}%`;
               
-              // 残量ごとの色・点滅分け
               if (level >= 71) {
                 bEl.classList.add('battery-green');    // 100〜71%: 緑
               } else if (level >= 41) {
@@ -671,13 +678,11 @@
           battery.addEventListener('chargingchange', updateBattery);
           
         } catch (e) {
-          // 取得できない環境用のフォールバック表示
-          bEl.innerText = "⚡充電中 100%";
+          bEl.innerText = "充電中 100%";
           bEl.className = "battery-status battery-charging";
         }
       } else {
-        // 非対応ブラウザ用のフォールバック表示
-        bEl.innerText = "⚡充電中 100%";
+        bEl.innerText = "充電中 100%";
         bEl.className = "battery-status battery-charging";
       }
     }
