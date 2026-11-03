@@ -82,7 +82,7 @@
       pointer-events: none;
     }
 
-    /* 📊 左上：ステータスバー（文字幅を縮めてすっきり調整） */
+    /* 📊 左上：ステータスバー */
     .user-status {
       position: absolute;
       top: 15px;
@@ -132,7 +132,7 @@
     .status-val { color: #fff; font-weight: bold; }
     .gem-val { color: #00f5d4; font-weight: bold; text-shadow: 0 0 6px rgba(0,245,212,0.6); }
 
-    /* ⏰ 右上エリア：しっぽり明朝体の時計、バッテリー ＆ 縦並びボタン */
+    /* ⏰ 右上エリア：時計、バッテリー ＆ 縦並びボタン */
     .top-right-area {
       position: absolute;
       top: 15px;
@@ -152,7 +152,7 @@
       letter-spacing: 1px;
     }
     
-    /* 🎰 時計（設定で変更した色が反映される） */
+    /* 🎰 しっぽり明朝体時計 */
     .clock-time {
       font-family: "Shippori Mincho", serif;
       font-size: 1.8rem;
@@ -194,7 +194,7 @@
       animation: blink 0.8s infinite;
     }
 
-    /* 🎁✉️ 時計の下に縦に並ぶプレゼント＆お知らせボタン */
+    /* 🎁✉️ プレゼント＆お知らせボタン */
     .top-buttons-column {
       display: flex;
       flex-direction: column;
@@ -234,7 +234,7 @@
       display: none;
     }
 
-    /* 🎵 右下：ミニ楽曲プレイヤー */
+    /* 🎵 ミニ楽曲プレイヤー */
     .mini-player {
       position: absolute;
       bottom: 75px;
@@ -317,7 +317,7 @@
       display: none;
     }
 
-    /* ================= 🔲 「その他」メニューポップアップダイアログ（完全固定・絶対中央） ================= -->
+    /* ================= 🔲 「その他」メニューポップアップ（完全固定・絶対中央配置） ================= */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -325,23 +325,25 @@
       width: 100vw;
       height: 100vh;
       background: rgba(0, 0, 0, 0.75);
-      z-index: 999;
+      z-index: 9999;
       display: none;
-      justify-content: center;
-      align-items: center;
       backdrop-filter: blur(4px);
     }
     .modal-overlay.active {
-      display: flex;
+      display: block; /* フレックスではなくブロックにして確実に中央配置の基準にする */
     }
     .menu-dialog {
-      background: rgba(80, 80, 80, 0.92);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); /* 絶対に画面の中央に強制配置 */
+      background: rgba(80, 80, 80, 0.95);
       border: 3px solid #aaa;
       border-radius: 20px;
       width: 88%;
       max-width: 340px;
       padding: 20px 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.95);
       backdrop-filter: blur(10px);
     }
     .other-menu-grid {
@@ -542,7 +544,7 @@
 
   </div>
 
-  <!-- ================= 🔲 「その他」メニューポップアップダイアログ（完全固定・最前面） ================= -->
+  <!-- ================= 🔲 「その他」メニューポップアップ（絶対中央配置・修正版） ================= -->
   <div id="other-modal" class="modal-overlay" onclick="closeOtherMenu(event)">
     <div class="menu-dialog" onclick="event.stopPropagation()">
       <div class="other-menu-grid">
