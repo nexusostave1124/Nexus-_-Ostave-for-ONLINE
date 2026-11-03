@@ -412,9 +412,9 @@
       z-index: 100;
       display: none;
       flex-direction: column;
-      padding: 20px 20px 80px 20px;
+      padding: 15px;
       box-sizing: border-box;
-      overflow-y: auto;
+      overflow: hidden;
     }
     .sub-screen.active {
       display: flex;
@@ -423,9 +423,10 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 12px;
+      padding-bottom: 10px;
       border-bottom: 1px solid #333;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
+      flex-shrink: 0;
     }
     .sub-title {
       font-size: 1.1rem;
@@ -443,17 +444,16 @@
       font-family: inherit;
     }
 
-    /* 📅 スケジュール画面のカレンダー埋め込み調整 */
+    /* 📅 スケジュール画面：カレンダーを画面いっぱいに綺麗に表示 */
     .calendar-wrapper {
-      width: 100%;
       flex: 1;
-      background: #1a1a1a;
-      border: 1px solid #444;
+      width: 100%;
+      background: #fff; /* Googleカレンダー自体の背景に合わせて白ベースに */
       border-radius: 12px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      min-height: 350px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
     .calendar-wrapper iframe {
       width: 100%;
@@ -606,14 +606,14 @@
   </div>
 
   <!-- ================= 📄 各種サブ画面 ================= -->
-  <div id="screen-player" class="sub-screen">
+  <div id="screen-player" class="sub-screen" style="overflow-y:auto;">
     <div class="sub-header"><span class="sub-title">🎵 楽曲選択</span><button class="close-btn" onclick="closeScreen('player')">閉じる</button></div>
     <div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: SPECIALZ</div>
     <audio id="audio-player" controls style="width: 100%; margin-bottom: 15px;" preload="auto"></audio>
     <div id="playlist"></div>
   </div>
 
-  <div id="screen-event" class="sub-screen">
+  <div id="screen-event" class="sub-screen" style="overflow-y:auto;">
     <div class="sub-header"><span class="sub-title">🎪 イベント情報</span><button class="close-btn" onclick="closeScreen('event')">閉じる</button></div>
     <div style="background: #1f1f1f; padding: 15px; border-radius: 10px; border: 1px solid #00f5d4;">
       <h3 style="color: #00f5d4;">🎉 結成2周年まで</h3>
@@ -621,26 +621,29 @@
     </div>
   </div>
 
-  <div id="screen-gacha" class="sub-screen">
+  <div id="screen-gacha" class="sub-screen" style="overflow-y:auto;">
     <div class="sub-header"><span class="sub-title">🎂 ガチャ</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
     <p>2周年特別ガチャを準備中...</p>
   </div>
 
-  <div id="screen-play" class="sub-screen">
+  <div id="screen-play" class="sub-screen" style="overflow-y:auto;">
     <div class="sub-header"><span class="sub-title">🎰 遊戯</span><button class="close-btn" onclick="closeScreen('play')">閉じる</button></div>
     <p>ミニゲーム・演出画面を準備中...</p>
   </div>
 
-  <!-- 📝 スケジュール画面（Googleカレンダー埋め込み） -->
+  <!-- 📝 スケジュール画面（Googleカレンダーを埋め込み表示） -->
   <div id="screen-schedule" class="sub-screen">
-    <div class="sub-header"><span class="sub-title">📝 スケジュール</span><button class="close-btn" onclick="closeScreen('schedule')">閉じる</button></div>
+    <div class="sub-header">
+      <span class="sub-title">📝 スケジュール</span>
+      <button class="close-btn" onclick="closeScreen('schedule')">閉じる</button>
+    </div>
     <div class="calendar-wrapper">
       <iframe src="https://calendar.google.com/calendar/embed?src=nexus.ostave.1124%40gmail.com&ctz=Asia%2FTokyo" frameborder="0" scrolling="no"></iframe>
     </div>
   </div>
 
   <!-- ⚙️ 設定画面 -->
-  <div id="screen-settings" class="sub-screen">
+  <div id="screen-settings" class="sub-screen" style="overflow-y:auto;">
     <div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div>
     <div style="margin-bottom: 20px;">
       <p style="margin-bottom: 8px; font-weight: bold; color: #00f5d4;">⏰ 時計のフォントカラー変更</p>
@@ -658,20 +661,20 @@
     </div>
   </div>
 
-  <div id="screen-present" class="sub-screen"><div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span><button class="close-btn" onclick="closeScreen('present')">閉じる</button></div><p>現在受取可能なプレゼントはありません。</p></div>
-  <div id="screen-notice" class="sub-screen"><div class="sub-header"><span class="sub-title">✉️ お知らせ</span><button class="close-btn" onclick="closeScreen('notice')">閉じる</button></div><p>現在新しいお知らせはありません。</p></div>
-  <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
-  <div id="screen-album" class="sub-screen"><div class="sub-header"><span class="sub-title">📷 アルバム</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div><p>思い出アルバム</p></div>
-  <div id="screen-history" class="sub-screen"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン</p></div>
-  <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
-  <div id="screen-manage" class="sub-screen"><div class="sub-header"><span class="sub-title">🛡️ 管理</span><button class="close-btn" onclick="closeScreen('manage')">閉じる</button></div><p>管理画面</p></div>
+  <div id="screen-present" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span><button class="close-btn" onclick="closeScreen('present')">閉じる</button></div><p>現在受取可能なプレゼントはありません。</p></div>
+  <div id="screen-notice" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">✉️ お知らせ</span><button class="close-btn" onclick="closeScreen('notice')">閉じる</button></div><p>現在新しいお知らせはありません。</p></div>
+  <div id="screen-shop" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
+  <div id="screen-album" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">📷 アルバム</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div><p>思い出アルバム</p></div>
+  <div id="screen-history" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン</p></div>
+  <div id="screen-report" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
+  <div id="screen-manage" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">🛡️ 管理</span><button class="close-btn" onclick="closeScreen('manage')">閉じる</button></div><p>管理画面</p></div>
 
   <script>
     const appData = {
       presentCount: 0, 
       noticeCount: 0,  
       hasShopNews: false,      
-      hasScheduleNews: false,  // カレンダー連携に伴いバッジをクリア
+      hasScheduleNews: false,  
       hasAlbumNews: false,
       hasHistoryNews: false
     };
