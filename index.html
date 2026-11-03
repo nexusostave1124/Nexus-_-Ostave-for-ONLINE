@@ -14,8 +14,8 @@
     body {
       background-color: #050505;
       color: #fff;
-      /* 🖋️ ガチガチの本格的な明朝体（MS明朝 / 游明朝）を指定 */
-      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", serif;
+      /* 🖋️ アプリ全体のフォントを徹底的に本格的な明朝体に指定 */
+      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", "Hiragino Mincho ProN", serif;
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
@@ -143,19 +143,20 @@
       color: #aaa;
       letter-spacing: 1px;
     }
-    /* 🎰 写真のような明朝体＋ネオン風の光る数字スタイル */
+    
+    /* 🖋️ 【MS明朝などの本格明朝体 ＋ ネオン発光スタイル】 */
     .clock-time {
-      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, serif;
-      font-size: 1.6rem;
-      font-weight: bold;
+      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", serif;
+      font-size: 1.8rem;
+      font-weight: 900; /* 太字にして明朝体のハネ・ウロコをくっきり強調 */
       color: #ff334b;
-      text-shadow: 0 0 8px rgba(255, 51, 75, 0.9), 0 0 20px rgba(255, 51, 75, 0.5);
-      letter-spacing: 1.5px;
+      text-shadow: 0 0 10px rgba(255, 51, 75, 0.9), 0 0 25px rgba(255, 51, 75, 0.5);
+      letter-spacing: 2px;
     }
     .battery-status {
       font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, serif;
-      font-size: 0.85rem;
-      margin-top: 1px;
+      font-size: 0.9rem;
+      margin-top: 2px;
       font-weight: bold;
     }
 
@@ -299,7 +300,7 @@
       display: none;
     }
 
-    /* ================= 🔲 「その他」モーダルダイアログ ================= */
+    /* ================= 🔲 「その他」モーダルダイアログ ================= -->
     .modal-overlay {
       position: absolute;
       top: 0;
@@ -452,7 +453,7 @@
       </div>
     </div>
 
-    <!-- ⏰ 右上エリア：明朝体ネオン風時計、バッテリー ＆ その下に縦に並ぶプレゼント・お知らせ -->
+    <!-- ⏰ 右上エリア：MS明朝体ネオン風時計、バッテリー ＆ その下に縦に並ぶプレゼント・お知らせ -->
     <div class="top-right-area">
       <div class="clock-container">
         <div class="clock-title">現在時刻</div>
@@ -735,7 +736,7 @@
       { title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" },
       { title: "ハウトゥー世界征服", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" },
       { title: "ロストワンの号哭", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%AD%E3%83%89%E3%83%88%E3%83%AF%E3%83%B3%E3%81%AE%E5%8F%B7%E5%93%AD.mp3" },
-      { title: "一途", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE%20(4).mp3" }
+      { title: "一途", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E4%B8%80%E9%80%94.mp3" }
     ];
 
     const audioPlayer = document.getElementById('audio-player');
