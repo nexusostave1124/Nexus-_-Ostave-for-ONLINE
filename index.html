@@ -82,7 +82,7 @@
       pointer-events: none;
     }
 
-    /* 📊 左上：ステータスバー（NAMEとIDの文字幅を少し縮めてすっきり見やすく調整） */
+    /* 📊 左上：ステータスバー（文字幅を縮めてすっきり調整） */
     .user-status {
       position: absolute;
       top: 15px;
@@ -123,7 +123,7 @@
       justify-content: space-between;
       gap: 10px;
       font-size: 0.9rem;
-      letter-spacing: -0.2px; /* 文字幅を少し縮める調整 */
+      letter-spacing: -0.2px;
     }
     .status-label {
       color: #aaa;
@@ -268,7 +268,7 @@
       color: #aaa;
     }
 
-    /* 🏠 下部：メインナビゲーションバー（常に最前面で下部に固定、いつでも他画面へ切り替え可能） */
+    /* 🏠 下部：メインナビゲーションバー */
     .bottom-nav {
       position: absolute;
       bottom: 0;
@@ -280,7 +280,7 @@
       display: flex;
       justify-content: space-around;
       align-items: center;
-      z-index: 300;
+      z-index: 500;
       backdrop-filter: blur(10px);
     }
     .nav-item {
@@ -317,15 +317,15 @@
       display: none;
     }
 
-    /* ================= 🔲 「その他」メニューポップアップダイアログ ================= -->
+    /* ================= 🔲 「その他」メニューポップアップダイアログ（完全固定・絶対中央） ================= -->
     .modal-overlay {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       background: rgba(0, 0, 0, 0.75);
-      z-index: 200;
+      z-index: 999;
       display: none;
       justify-content: center;
       align-items: center;
@@ -399,13 +399,13 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     }
 
-    /* 📄 各種サブ画面（下部ナビの邪魔をせず、閉じるボタンなしでも下メニューで直接切り替え可能） */
+    /* 📄 各種サブ画面 */
     .sub-screen {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
-      height: calc(100% - 62px); /* 下部ナビ分のスペースを空けて、いつでも下メニューで動かせるように調整 */
+      height: calc(100% - 62px);
       background: #121212;
       z-index: 100;
       display: none;
@@ -430,7 +430,6 @@
       color: #00f5d4;
       font-weight: bold;
     }
-    /* 閉じるボタンは削除し、下部メニューや他の操作でシームレスに動かせるようにしました */
 
     /* ⚙️ 設定画面のカラーパレットボタンスタイル */
     .color-picker-grid {
@@ -471,7 +470,7 @@
     <div class="overlay-top"></div>
     <div class="overlay-bottom"></div>
 
-    <!-- 📊 左上：ステータスバー（NAMEとIDの文字幅を調整） -->
+    <!-- 📊 左上：ステータスバー -->
     <div class="user-status">
       <div class="avatar-box">
         <img src="https://picsum.photos/id/1069/100/100" alt="アイコン">
@@ -515,7 +514,7 @@
       </div>
     </div>
 
-    <!-- 🏠 下部：メインナビゲーションバー（下部はそのまま固定で常にどの画面からも直接切り替え可能） -->
+    <!-- 🏠 下部：メインナビゲーションバー -->
     <div class="bottom-nav">
       <div class="nav-item active" id="nav-home" onclick="switchNav('home')">
         <span class="nav-icon">🏠</span>
@@ -543,7 +542,7 @@
 
   </div>
 
-  <!-- ================= 🔲 「その他」メニューポップアップダイアログ ================= -->
+  <!-- ================= 🔲 「その他」メニューポップアップダイアログ（完全固定・最前面） ================= -->
   <div id="other-modal" class="modal-overlay" onclick="closeOtherMenu(event)">
     <div class="menu-dialog" onclick="event.stopPropagation()">
       <div class="other-menu-grid">
@@ -575,7 +574,7 @@
     </div>
   </div>
 
-  <!-- ================= 📄 各種サブ画面（閉じるボタンなし・下メニュー等でシームレスに操作可能） ================= -->
+  <!-- ================= 📄 各種サブ画面 ================= -->
   <div id="screen-player" class="sub-screen">
     <div class="sub-header"><span class="sub-title">🎵 楽曲選択</span></div>
     <div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: SPECIALZ</div>
@@ -610,7 +609,7 @@
     </div>
   </div>
 
-  <!-- ⚙️ 設定画面（時計のフォントカラー8色変更機能付き） -->
+  <!-- ⚙️ 設定画面 -->
   <div id="screen-settings" class="sub-screen">
     <div class="sub-header"><span class="sub-title">⚙️ 設定</span></div>
     <div style="margin-bottom: 20px;">
@@ -774,7 +773,7 @@
       document.getElementById('other-modal').classList.remove('active');
     }
 
-    // 📄 サブ画面制御（下部メニューから直接他の画面へシームレスに切り替え可能）
+    // 📄 サブ画面制御
     function openScreen(name) {
       closeOtherMenu();
       document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
