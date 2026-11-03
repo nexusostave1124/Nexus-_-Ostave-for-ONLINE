@@ -448,7 +448,7 @@
     .calendar-wrapper {
       flex: 1;
       width: 100%;
-      background: #fff; /* Googleカレンダー自体の背景に合わせて白ベースに */
+      background: #fff;
       border-radius: 12px;
       overflow: hidden;
       display: flex;
@@ -631,14 +631,14 @@
     <p>ミニゲーム・演出画面を準備中...</p>
   </div>
 
-  <!-- 📝 スケジュール画面（Googleカレンダーを埋め込み表示） -->
+  <!-- 📝 スケジュール画面（日本語化されたGoogleカレンダー埋め込み） -->
   <div id="screen-schedule" class="sub-screen">
     <div class="sub-header">
       <span class="sub-title">📝 スケジュール</span>
       <button class="close-btn" onclick="closeScreen('schedule')">閉じる</button>
     </div>
     <div class="calendar-wrapper">
-      <iframe src="https://calendar.google.com/calendar/embed?src=nexus.ostave.1124%40gmail.com&ctz=Asia%2FTokyo" frameborder="0" scrolling="no"></iframe>
+      <iframe src="https://calendar.google.com/calendar/embed?src=nexus.ostave.1124%40gmail.com&ctz=Asia%2FTokyo&hl=ja" frameborder="0" scrolling="no"></iframe>
     </div>
   </div>
 
