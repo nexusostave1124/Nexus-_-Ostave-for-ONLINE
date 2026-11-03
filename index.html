@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Nexus:_:Ostave for ONLINE</title>
-  <!-- パチンコ・スロットの演出数字風フォント（Orbitron） -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -16,7 +14,8 @@
     body {
       background-color: #050505;
       color: #fff;
-      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, serif;
+      /* 🖋️ 街中でよく見かける王道の本格明朝体（MS明朝・游明朝）に徹底統一 */
+      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", "Hiragino Mincho ProN", serif;
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
@@ -79,7 +78,7 @@
       pointer-events: none;
     }
 
-    /* 📊 左上：ステータスバー（数字は演出風フォント） */
+    /* 📊 左上：ステータスバー */
     .user-status {
       position: absolute;
       top: 15px;
@@ -122,19 +121,10 @@
     .status-label {
       color: #aaa;
     }
-    .status-val {
-      font-family: 'Orbitron', sans-serif;
-      color: #fff;
-      font-weight: 900;
-    }
-    .gem-val {
-      font-family: 'Orbitron', sans-serif;
-      color: #00f5d4;
-      font-weight: 900;
-      text-shadow: 0 0 6px rgba(0,245,212,0.6);
-    }
+    .status-val { color: #fff; font-weight: bold; }
+    .gem-val { color: #00f5d4; font-weight: bold; text-shadow: 0 0 6px rgba(0,245,212,0.6); }
 
-    /* ⏰ 右上エリア：時計、バッテリー ＆ その下に縦に並ぶプレゼント・お知らせ */
+    /* ⏰ 右上エリア：明朝体の時計、バッテリー ＆ 縦並びボタン */
     .top-right-area {
       position: absolute;
       top: 15px;
@@ -153,23 +143,20 @@
       color: #aaa;
       letter-spacing: 1px;
     }
-    /* 🎰 写真のようなアツい数字フォント ＋ ネオン光彩 */
     .clock-time {
-      font-family: 'Orbitron', sans-serif;
       font-size: 1.6rem;
-      font-weight: 900;
+      font-weight: bold;
       color: #ff334b;
       text-shadow: 0 0 8px rgba(255, 51, 75, 0.9), 0 0 20px rgba(255, 51, 75, 0.5);
       letter-spacing: 1.5px;
     }
     .battery-status {
-      font-family: 'Orbitron', sans-serif;
       font-size: 0.85rem;
       margin-top: 1px;
       font-weight: bold;
     }
 
-    /* バッテリー状態別のネオンカラー（電池マークなし） */
+    /* バッテリー状態別の明朝ネオンカラー（電池マークなし） */
     .battery-green { color: #00ff66; text-shadow: 0 0 6px rgba(0,255,102,0.8); }
     .battery-yellow { color: #ffee00; text-shadow: 0 0 6px rgba(255,238,0,0.8); }
     .battery-orange { color: #ff9900; text-shadow: 0 0 6px rgba(255,153,0,0.8); }
@@ -309,7 +296,7 @@
       display: none;
     }
 
-    /* ================= 🔲 「その他」モーダルダイアログ ================= -->
+    /* ================= 🔲 「その他」メニューポップアップダイアログ（崩れを完全修正） ================= -->
     .modal-overlay {
       position: absolute;
       top: 0;
@@ -327,13 +314,13 @@
       display: flex;
     }
     .menu-dialog {
-      background: rgba(100, 100, 100, 0.88);
-      border: 3px solid #888;
-      border-radius: 18px;
-      width: 86%;
+      background: rgba(80, 80, 80, 0.92);
+      border: 3px solid #aaa;
+      border-radius: 20px;
+      width: 88%;
       max-width: 340px;
-      padding: 18px 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      padding: 20px 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(10px);
     }
     .other-menu-grid {
@@ -343,23 +330,23 @@
     }
     .other-menu-card {
       position: relative;
-      background: rgba(60, 60, 60, 0.85);
-      border: 2px solid #aaa;
-      border-radius: 30px;
-      padding: 10px 8px;
+      background: rgba(40, 40, 40, 0.85);
+      border: 2px solid #ccc;
+      border-radius: 24px;
+      padding: 12px 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: bold;
       cursor: pointer;
       transition: transform 0.1s, background 0.2s;
     }
     .other-menu-card:active {
       transform: scale(0.95);
-      background: rgba(100, 100, 100, 0.9);
+      background: rgba(70, 70, 70, 0.9);
     }
     .other-icon-circle {
       width: 44px;
@@ -369,20 +356,20 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
-      margin-bottom: 4px;
+      font-size: 1.4rem;
+      margin-bottom: 5px;
       box-shadow: 0 3px 6px rgba(0,0,0,0.3);
     }
     .exclamation-badge {
       position: absolute;
       top: -2px;
-      right: 10px;
+      right: 8px;
       background: #ff334b;
       color: #fff;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: bold;
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       display: none;
       align-items: center;
@@ -462,7 +449,7 @@
       </div>
     </div>
 
-    <!-- ⏰ 右上エリア：時計、バッテリー ＆ その下に縦に並ぶプレゼント・お知らせ -->
+    <!-- ⏰ 右上エリア：明朝体の時計、バッテリー ＆ その下に縦に並ぶプレゼント・お知らせ -->
     <div class="top-right-area">
       <div class="clock-container">
         <div class="clock-title">現在時刻</div>
@@ -526,6 +513,7 @@
   <div id="other-modal" class="modal-overlay" onclick="closeOtherMenu(event)">
     <div class="menu-dialog" onclick="event.stopPropagation()">
       <div class="other-menu-grid">
+        <!-- 交換所（更新なしなので「！」非表示） -->
         <div class="other-menu-card" onclick="openScreen('shop')">
           <div class="other-icon-circle">💖</div>
           <span class="exclamation-badge" id="news-shop">!</span>
@@ -602,8 +590,8 @@
     const appData = {
       presentCount: 0, 
       noticeCount: 0,  
-      hasShopNews: false,      // 交換所は更新なしなので「！」非表示
-      hasScheduleNews: true,   // スケジュールに更新ありならtrue
+      hasShopNews: false,      
+      hasScheduleNews: true,   
       hasAlbumNews: false,
       hasHistoryNews: false
     };
@@ -643,7 +631,7 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // 🔋 バッテリー状態別色分け（電池マークなし、指定ルール適用）
+    // 🔋 バッテリー状態別色分け
     async function initBattery() {
       const bEl = document.getElementById('battery-info');
       
@@ -659,20 +647,20 @@
             
             if (charging) {
               bEl.innerText = `充電中 ${level}%`;
-              bEl.classList.add('battery-charging'); // 充電中は青
+              bEl.classList.add('battery-charging');
             } else {
               bEl.innerText = `${level}%`;
               
               if (level >= 71) {
-                bEl.classList.add('battery-green');    // 100〜71%: 緑
+                bEl.classList.add('battery-green');
               } else if (level >= 41) {
-                bEl.classList.add('battery-yellow');   // 70〜41%: 黄色
+                bEl.classList.add('battery-yellow');
               } else if (level >= 21) {
-                bEl.classList.add('battery-orange');   // 40〜21%: オレンジ
+                bEl.classList.add('battery-orange');
               } else if (level >= 4) {
-                bEl.classList.add('battery-red');      // 20〜4%: 赤
+                bEl.classList.add('battery-red');
               } else {
-                bEl.classList.add('battery-blink');    // 3〜1%: 赤・点滅
+                bEl.classList.add('battery-blink');
               }
             }
           }
