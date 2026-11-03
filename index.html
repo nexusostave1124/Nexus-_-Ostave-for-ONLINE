@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Nexus:_:Ostave for ONLINE</title>
+  <!-- 🖋️ Google Fontsから「しっぽり明朝 (Shippori Mincho)」を読み込み -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&display=swap" rel="stylesheet">
+  
   <style>
     * {
       box-sizing: border-box;
@@ -14,7 +19,8 @@
     body {
       background-color: #050505;
       color: #fff;
-      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", serif;
+      /* 🖋️ アプリ全体の基本フォントをしっぽり明朝に設定 */
+      font-family: "Shippori Mincho", "MS Mincho", "MS 明朝", "游明朝", YuMincho, serif;
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
@@ -143,54 +149,36 @@
       letter-spacing: 1px;
     }
     
-    /* 🎰 明朝体 ＋ 白い袋文字 ＋ 赤ネオン発光 */
+    /* 🎰 しっぽり明朝体 ＋ ネオン発光 */
     .clock-time {
-      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, serif;
-      font-size: 1.7rem;
-      font-weight: 900;
-      color: #ff2238;
-      text-shadow: 
-        -1px -1px 0 #fff,  1px -1px 0 #fff,
-        -1px  1px 0 #fff,  1px  1px 0 #fff,
-        0 0 10px #ff0022, 0 0 20px #ff0022, 0 0 35px rgba(255, 0, 34, 0.8);
+      font-family: "Shippori Mincho", serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ff334b;
+      text-shadow: 0 0 10px rgba(255, 51, 75, 0.9), 0 0 25px rgba(255, 51, 75, 0.5);
       letter-spacing: 1.5px;
     }
-
-    /* バッテリー状態（明朝体 ＋ 白フチ ＋ 各種ネオン光彩） */
     .battery-status {
-      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, serif;
+      font-family: "Shippori Mincho", serif;
       font-size: 0.9rem;
       margin-top: 2px;
-      font-weight: 900;
+      font-weight: 800;
     }
-    .battery-green {
-      color: #00ff55;
-      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 12px #00ff55;
-    }
-    .battery-yellow {
-      color: #eecc00;
-      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 12px #eecc00;
-    }
-    .battery-orange {
-      color: #ff8800;
-      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 12px #ff8800;
-    }
-    .battery-red {
-      color: #ff2222;
-      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 12px #ff2222;
-    }
-    .battery-charging {
-      color: #00bfff;
-      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 12px #00bfff;
-    }
+
+    /* バッテリー状態別のネオンカラー */
+    .battery-green { color: #00ff66; text-shadow: 0 0 8px rgba(0,255,102,0.8); }
+    .battery-yellow { color: #ffee00; text-shadow: 0 0 8px rgba(255,238,0,0.8); }
+    .battery-orange { color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.8); }
+    .battery-red { color: #ff3333; text-shadow: 0 0 8px rgba(255,51,51,0.8); }
+    .battery-charging { color: #00bfff; text-shadow: 0 0 8px rgba(0,191,255,0.8); }
     @keyframes blink {
       0% { opacity: 1; }
       50% { opacity: 0.2; }
       100% { opacity: 1; }
     }
     .battery-blink {
-      color: #ff2222;
-      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 15px #ff0000;
+      color: #ff3333;
+      text-shadow: 0 0 10px rgba(255,51,51,1);
       animation: blink 0.8s infinite;
     }
 
@@ -317,7 +305,7 @@
       display: none;
     }
 
-    /* ================= 🔲 「その他」メニューポップアップダイアログ（完全修正） ================= -->
+    /* ================= 🔲 「その他」メニューポップアップダイアログ（完全正常レイアウト） ================= */
     .modal-overlay {
       position: absolute;
       top: 0;
@@ -470,7 +458,7 @@
       </div>
     </div>
 
-    <!-- ⏰ 右上エリア：明朝体ネオン風時計、バッテリー ＆ 縦並びボタン -->
+    <!-- ⏰ 右上エリア：しっぽり明朝体の時計、バッテリー ＆ 縦並びボタン -->
     <div class="top-right-area">
       <div class="clock-container">
         <div class="clock-title">現在時刻</div>
@@ -760,6 +748,7 @@
     const miniTitle = document.getElementById('mini-song-title');
     const nowPlayingText = document.getElementById('now-playing-text');
 
+    (`playlist`);
     function initPlaylist() {
       playlist.innerHTML = "";
       songs.forEach((song, i) => {
