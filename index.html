@@ -14,8 +14,8 @@
     body {
       background-color: #050505;
       color: #fff;
-      /* 🖋️ 本格的な明朝体フォント設定 */
-      font-family: "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", "Hiragino Mincho ProN", "MS P明朝", "Times New Roman", serif;
+      /* 🖋️ ガチガチの本格的な明朝体指定 */
+      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", "Hiragino Mincho ProN", serif;
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
@@ -62,7 +62,7 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 140px;
+      height: 150px;
       background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
       z-index: 2;
       pointer-events: none;
@@ -78,7 +78,7 @@
       pointer-events: none;
     }
 
-    /* 📊 左上：大きくしたプロフィールステータスバー */
+    /* 📊 左上：プロフィールステータスバー */
     .user-status {
       position: absolute;
       top: 15px;
@@ -130,12 +130,18 @@
       font-weight: bold;
     }
 
-    /* ⏰ 中央上：大きくした現在時刻・バッテリー表示 */
-    .top-center-info {
+    /* ⏰ 右上：大きくした現在時刻 ＆ その下に配置するプレゼント・お知らせボタン */
+    .top-right-area {
       position: absolute;
       top: 15px;
       right: 15px;
       z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .clock-container {
       text-align: right;
     }
     .clock-title {
@@ -144,56 +150,73 @@
       letter-spacing: 1px;
     }
     .clock-time {
-      font-size: 1.35rem;
+      font-size: 1.6rem; /* 時計をさらに大きく */
       font-weight: bold;
       color: #fff;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
     }
     .battery-status {
-      font-size: 0.8rem;
-      color: #00f5d4;
-      margin-top: 2px;
+      font-size: 0.85rem;
+      margin-top: 1px;
       font-weight: bold;
     }
 
-    /* 🎁✉️ 右下（ミニプレイヤーの上）：大きくしたプレゼント＆お知らせボタン（1行で収まる設計） */
-    .bottom-right-menu {
-      position: absolute;
-      bottom: 125px;
-      right: 15px;
-      z-index: 10;
+    /* 🔋 バッテリー状態別の色分けクラス */
+    .battery-green { color: #00ff66; }
+    .battery-yellow { color: #ffee00; }
+    .battery-orange { color: #ff9900; }
+    .battery-red { color: #ff3333; }
+    .battery-charging { color: #00bfff; } /* 充電中は青 */
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0.2; }
+      100% { opacity: 1; }
+    }
+    .battery-blink {
+      color: #ff3333;
+      animation: blink 0.8s infinite; /* 3〜1%は赤・点滅 */
+    }
+
+    /* 🎁✉️ 時計の下（右側）にマークの下に文字が来る元の配置で並べるボタン群 */
+    .top-buttons-row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
+      margin-top: 4px;
     }
     .icon-badge-btn {
       position: relative;
-      height: 44px;
-      padding: 0 12px;
       background: rgba(20, 20, 20, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 12px;
+      border-radius: 10px;
+      width: 52px;
+      height: 48px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 6px;
-      font-size: 0.95rem;
-      color: #fff;
+      justify-content: center;
       cursor: pointer;
       backdrop-filter: blur(5px);
-      white-space: nowrap; /* 1行で確実に収める */
     }
-    .icon-badge-btn span:nth-child(1) {
-      font-size: 1.2rem;
+    .btn-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+    .btn-text {
+      font-size: 0.55rem;
+      color: #ddd;
+      margin-top: 2px;
+      font-weight: bold;
     }
     .badge {
       position: absolute;
-      top: -6px;
-      right: -6px;
+      top: -4px;
+      right: -4px;
       background: #ff334b;
       color: #fff;
-      font-size: 0.7rem;
+      font-size: 0.6rem;
       font-weight: bold;
-      border-radius: 10px;
-      padding: 1px 6px;
+      border-radius: 8px;
+      padding: 1px 4px;
       border: 1px solid #000;
       display: none; /* 0件なら非表示 */
     }
@@ -201,7 +224,7 @@
     /* 🎵 右下：ミニ楽曲プレイヤー */
     .mini-player {
       position: absolute;
-      bottom: 72px;
+      bottom: 75px;
       right: 15px;
       z-index: 10;
       background: rgba(15, 15, 15, 0.85);
@@ -422,7 +445,7 @@
     <div class="overlay-top"></div>
     <div class="overlay-bottom"></div>
 
-    <!-- 📊 左上：大きくしたプロフィールステータス -->
+    <!-- 📊 左上：ステータスバー -->
     <div class="user-status">
       <div class="avatar-box">
         <img src="https://picsum.photos/id/1069/100/100" alt="アイコン">
@@ -434,24 +457,26 @@
       </div>
     </div>
 
-    <!-- ⏰ 中央上：大きくした現在時刻 ＆ バッテリー -->
-    <div class="top-center-info">
-      <div class="clock-title">現在時刻</div>
-      <div id="real-clock" class="clock-time">00:00:00</div>
-      <div id="battery-info" class="battery-status">⚡充電中 100%</div>
-    </div>
-
-    <!-- 🎁✉️ 右下（ミニプレイヤーの上）：1行で収まるプレゼント＆お知らせボタン -->
-    <div class="bottom-right-menu">
-      <div class="icon-badge-btn" onclick="openScreen('present')">
-        <span>🎁</span>
-        <span>プレゼント</span>
-        <span class="badge" id="badge-present">0</span>
+    <!-- ⏰ 右上：大きくした時計 ＆ その下に配置するプレゼント・お知らせボタン -->
+    <div class="top-right-area">
+      <div class="clock-container">
+        <div class="clock-title">現在時刻</div>
+        <div id="real-clock" class="clock-time">00:00:00</div>
+        <div id="battery-info" class="battery-status battery-green">⚡充電中 100%</div>
       </div>
-      <div class="icon-badge-btn" onclick="openScreen('notice')">
-        <span>✉️</span>
-        <span>お知らせ</span>
-        <span class="badge" id="badge-notice">0</span>
+
+      <!-- プレゼント・お知らせボタン（マークの下に文字が並ぶ元の形） -->
+      <div class="top-buttons-row">
+        <div class="icon-badge-btn" onclick="openScreen('present')">
+          <span class="btn-icon">🎁</span>
+          <span class="btn-text">プレゼント</span>
+          <span class="badge" id="badge-present">0</span>
+        </div>
+        <div class="icon-badge-btn" onclick="openScreen('notice')">
+          <span class="btn-icon">✉️</span>
+          <span class="btn-text">お知らせ</span>
+          <span class="badge" id="badge-notice">0</span>
+        </div>
       </div>
     </div>
 
@@ -605,24 +630,55 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // 🔋 バッテリー
+    // 🔋 ご指定のルールに基づくバッテリー残量・充電状態の色分け＆表示制御
     async function initBattery() {
+      const bEl = document.getElementById('battery-info');
+      
       if ('getBattery' in navigator) {
         try {
-          const b = await navigator.getBattery();
-          const update = () => {
-            const l = Math.floor(b.level * 100);
-            const c = b.charging ? '⚡充電中' : '';
-            document.getElementById('battery-info').innerText = `${c} ${l}%`;
-          };
-          update();
-          b.addEventListener('levelchange', update);
-          b.addEventListener('chargingchange', update);
+          const battery = await navigator.getBattery();
+          
+          function updateBattery() {
+            const level = Math.floor(battery.level * 100);
+            const charging = battery.charging;
+            
+            // クラスを一旦すべてリセット
+            bEl.className = "battery-status";
+            
+            if (charging) {
+              bEl.innerText = `⚡充電中 ${level}%`;
+              bEl.classList.add('battery-charging'); // 充電中は青
+            } else {
+              bEl.innerText = `🔋 ${level}%`;
+              
+              // 残量ごとの色・点滅分け
+              if (level >= 71) {
+                bEl.classList.add('battery-green');    // 100〜71%: 緑
+              } else if (level >= 41) {
+                bEl.classList.add('battery-yellow');   // 70〜41%: 黄色
+              } else if (level >= 21) {
+                bEl.classList.add('battery-orange');   // 40〜21%: オレンジ
+              } else if (level >= 4) {
+                bEl.classList.add('battery-red');      // 20〜4%: 赤
+              } else {
+                bEl.classList.add('battery-blink');    // 3〜1%: 赤・点滅
+              }
+            }
+          }
+          
+          updateBattery();
+          battery.addEventListener('levelchange', updateBattery);
+          battery.addEventListener('chargingchange', updateBattery);
+          
         } catch (e) {
-          document.getElementById('battery-info').innerText = "⚡充電中 88%";
+          // 取得できない環境用のフォールバック表示
+          bEl.innerText = "⚡充電中 100%";
+          bEl.className = "battery-status battery-charging";
         }
       } else {
-        document.getElementById('battery-info').innerText = "⚡充電中 88%";
+        // 非対応ブラウザ用のフォールバック表示
+        bEl.innerText = "⚡充電中 100%";
+        bEl.className = "battery-status battery-charging";
       }
     }
     initBattery();
