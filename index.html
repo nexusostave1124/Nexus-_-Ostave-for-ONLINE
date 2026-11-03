@@ -317,7 +317,7 @@
       display: none;
     }
 
-    /* ================= 🔲 「その他」メニューポップアップ（固定・完全保護） ================= */
+    /* ================= 🔲 「その他」メニューポップアップ ================= */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -414,7 +414,7 @@
       flex-direction: column;
       padding: 15px;
       box-sizing: border-box;
-      overflow: hidden;
+      overflow-y: auto;
     }
     .sub-screen.active {
       display: flex;
@@ -425,7 +425,7 @@
       align-items: center;
       padding-bottom: 10px;
       border-bottom: 1px solid #333;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       flex-shrink: 0;
     }
     .sub-title {
@@ -444,7 +444,44 @@
       font-family: inherit;
     }
 
-    /* 📅 スケジュール画面：カレンダーを画面いっぱいに綺麗に表示 */
+    /* 📷 アルバム画面のグリッドスタイル */
+    .album-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .album-card {
+      background: #1f1f1f;
+      border: 2px solid #333;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.1s;
+    }
+    .album-card:active {
+      transform: scale(0.97);
+    }
+    .album-card.in-slideshow {
+      border-color: #00f5d4;
+      box-shadow: 0 0 10px rgba(0,245,212,0.4);
+    }
+    .album-img-box {
+      width: 100%;
+      height: 120px;
+      background: #000;
+    }
+    .album-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .album-card-info {
+      padding: 8px;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    /* 📅 スケジュール画面：カレンダー埋め込み */
     .calendar-wrapper {
       flex: 1;
       width: 100%;
@@ -454,6 +491,7 @@
       display: flex;
       flex-direction: column;
       box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      min-height: 350px;
     }
     .calendar-wrapper iframe {
       width: 100%;
@@ -490,11 +528,8 @@
   <div class="app-container">
     
     <!-- 🖼️ 背景スライドショー -->
-    <div class="bg-slideshow">
-      <img src="https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/images/home_bg.jpg" class="slide-img active" onerror="this.src='https://picsum.photos/id/1069/800/1200'" alt="背景1">
-      <img src="https://picsum.photos/id/1074/800/1200" class="slide-img" alt="背景2">
-      <img src="https://picsum.photos/id/1080/800/1200" class="slide-img" alt="背景3">
-      <img src="https://picsum.photos/id/1084/800/1200" class="slide-img" alt="背景4">
+    <div class="bg-slideshow" id="slideshow-container">
+      <!-- 動的にスライド画像が生成されます -->
     </div>
 
     <!-- 上下グラデーション -->
@@ -606,14 +641,14 @@
   </div>
 
   <!-- ================= 📄 各種サブ画面 ================= -->
-  <div id="screen-player" class="sub-screen" style="overflow-y:auto;">
+  <div id="screen-player" class="sub-screen">
     <div class="sub-header"><span class="sub-title">🎵 楽曲選択</span><button class="close-btn" onclick="closeScreen('player')">閉じる</button></div>
     <div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: SPECIALZ</div>
     <audio id="audio-player" controls style="width: 100%; margin-bottom: 15px;" preload="auto"></audio>
     <div id="playlist"></div>
   </div>
 
-  <div id="screen-event" class="sub-screen" style="overflow-y:auto;">
+  <div id="screen-event" class="sub-screen">
     <div class="sub-header"><span class="sub-title">🎪 イベント情報</span><button class="close-btn" onclick="closeScreen('event')">閉じる</button></div>
     <div style="background: #1f1f1f; padding: 15px; border-radius: 10px; border: 1px solid #00f5d4;">
       <h3 style="color: #00f5d4;">🎉 結成2周年まで</h3>
@@ -621,17 +656,18 @@
     </div>
   </div>
 
-  <div id="screen-gacha" class="sub-screen" style="overflow-y:auto;">
+  <div id="screen-gacha" class="sub-screen">
     <div class="sub-header"><span class="sub-title">🎂 ガチャ</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
-    <p>2周年特別ガチャを準備中...</p>
+    <p style="margin-bottom: 15px;">ガチャを回して獲得したイラストはアルバムに保存されます！</p>
+    <button onclick="simulateGachaPull()" style="padding: 10px 20px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit;">💎 ガチャを引く (テスト用)</button>
   </div>
 
-  <div id="screen-play" class="sub-screen" style="overflow-y:auto;">
+  <div id="screen-play" class="sub-screen">
     <div class="sub-header"><span class="sub-title">🎰 遊戯</span><button class="close-btn" onclick="closeScreen('play')">閉じる</button></div>
     <p>ミニゲーム・演出画面を準備中...</p>
   </div>
 
-  <!-- 📝 スケジュール画面（日本語化されたGoogleカレンダー埋め込み） -->
+  <!-- 📝 スケジュール画面 -->
   <div id="screen-schedule" class="sub-screen">
     <div class="sub-header">
       <span class="sub-title">📝 スケジュール</span>
@@ -642,12 +678,30 @@
     </div>
   </div>
 
+  <!-- 📷 アルバム画面（スライドショー設定対応） -->
+  <div id="screen-album" class="sub-screen">
+    <div class="sub-header">
+      <span class="sub-title">📷 アルバム (スライドショー設定)</span>
+      <button class="close-btn" onclick="closeScreen('album')">閉じる</button>
+    </div>
+    <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 12px;">タップしたイラストをホーム画面のスライドショーに登録/解除できます（枠が光っている画像がスライド中）。</p>
+    
+    <!-- 画像インポートボタン -->
+    <div style="margin-bottom: 15px;">
+      <input type="file" id="local-image-input" accept="image/*" style="display: none;" onchange="handleLocalImageImport(event)">
+      <button onclick="document.getElementById('local-image-input').click()" style="width: 100%; padding: 10px; background: #333; color: #00f5d4; border: 1px dashed #00f5d4; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit;">➕ 外部から画像をインポートする</button>
+    </div>
+
+    <div class="album-grid" id="album-grid-container">
+      <!-- 動的にアルバムカードが生成されます -->
+    </div>
+  </div>
+
   <!-- ⚙️ 設定画面 -->
-  <div id="screen-settings" class="sub-screen" style="overflow-y:auto;">
+  <div id="screen-settings" class="sub-screen">
     <div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div>
     <div style="margin-bottom: 20px;">
       <p style="margin-bottom: 8px; font-weight: bold; color: #00f5d4;">⏰ 時計のフォントカラー変更</p>
-      <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">お好みのカラーを8色から選択できます。</p>
       <div class="color-picker-grid">
         <button class="color-btn c-white" style="background:#222;" onclick="setClockColor('c-white', this)">白</button>
         <button class="color-btn c-blue" style="background:#222;" onclick="setClockColor('c-blue', this)">青</button>
@@ -661,47 +715,159 @@
     </div>
   </div>
 
-  <div id="screen-present" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span><button class="close-btn" onclick="closeScreen('present')">閉じる</button></div><p>現在受取可能なプレゼントはありません。</p></div>
-  <div id="screen-notice" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">✉️ お知らせ</span><button class="close-btn" onclick="closeScreen('notice')">閉じる</button></div><p>現在新しいお知らせはありません。</p></div>
-  <div id="screen-shop" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
-  <div id="screen-album" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">📷 アルバム</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div><p>思い出アルバム</p></div>
-  <div id="screen-history" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン</p></div>
-  <div id="screen-report" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
-  <div id="screen-manage" class="sub-screen" style="overflow-y:auto;"><div class="sub-header"><span class="sub-title">🛡️ 管理</span><button class="close-btn" onclick="closeScreen('manage')">閉じる</button></div><p>管理画面</p></div>
+  <div id="screen-present" class="sub-screen"><div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span><button class="close-btn" onclick="closeScreen('present')">閉じる</button></div><p>現在受取可能なプレゼントはありません。</p></div>
+  <div id="screen-notice" class="sub-screen"><div class="sub-header"><span class="sub-title">✉️ お知らせ</span><button class="close-btn" onclick="closeScreen('notice')">閉じる</button></div><p>現在新しいお知らせはありません。</p></div>
+  <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
+  <div id="screen-history" class="sub-screen"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン</p></div>
+  <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
+  <div id="screen-manage" class="sub-screen"><div class="sub-header"><span class="sub-title">🛡️ 管理</span><button class="close-btn" onclick="closeScreen('manage')">閉じる</button></div><p>管理画面</p></div>
 
   <script>
-    const appData = {
-      presentCount: 0, 
-      noticeCount: 0,  
-      hasShopNews: false,      
-      hasScheduleNews: false,  
-      hasAlbumNews: false,
-      hasHistoryNews: false
-    };
+    // 🎨 アルバム・スライドショー管理の初期データ
+    // デフォルト画像リスト
+    let albumImages = JSON.parse(localStorage.getItem('nexus_album_images')) || [
+      { id: 'def_1', url: 'https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/images/home_bg.jpg', name: 'デフォルト背景1' },
+      { id: 'def_2', url: 'https://picsum.photos/id/1074/800/1200', name: 'サンプルイラストA' },
+      { id: 'def_3', url: 'https://picsum.photos/id/1080/800/1200', name: 'サンプルイラストB' }
+    ];
 
-    function initBadges() {
-      const pBadge = document.getElementById('badge-present');
-      if (appData.presentCount > 0) {
-        pBadge.innerText = appData.presentCount;
-        pBadge.style.display = 'block';
-      } else {
-        pBadge.style.display = 'none';
+    // スライドショーに登録されている画像のIDリスト
+    let slideshowIds = JSON.parse(localStorage.getItem('nexus_slideshow_ids')) || ['def_1', 'def_2', 'def_3'];
+
+    // 🖼️ スライドショーを描画・更新する関数
+    function initSlideshow() {
+      const container = document.getElementById('slideshow-container');
+      container.innerHTML = '';
+
+      // スライド対象の画像を集める
+      const activeImages = albumImages.filter(img => slideshowIds.includes(img.id));
+      
+      if (activeImages.length === 0) {
+        // 万が一空の場合はデフォルトを表示
+        container.innerHTML = `<img src="https://picsum.photos/id/1069/800/1200" class="slide-img active" alt="fallback">`;
+        return;
       }
 
-      const nBadge = document.getElementById('badge-notice');
-      if (appData.noticeCount > 0) {
-        nBadge.innerText = appData.noticeCount;
-        nBadge.style.display = 'block';
-      } else {
-        nBadge.style.display = 'none';
-      }
+      activeImages.forEach((imgObj, index) => {
+        const img = document.createElement('img');
+        img.src = imgObj.url;
+        img.className = 'slide-img' + (index === 0 ? ' active' : '');
+        container.appendChild(img);
+      });
 
-      document.getElementById('news-shop').style.display = appData.hasShopNews ? 'flex' : 'none';
-      document.getElementById('news-schedule').style.display = appData.hasScheduleNews ? 'flex' : 'none';
-      document.getElementById('news-album').style.display = appData.hasAlbumNews ? 'flex' : 'none';
-      document.getElementById('news-history').style.display = appData.hasHistoryNews ? 'flex' : 'none';
+      startSlideshowInterval();
     }
-    initBadges();
+
+    let slideTimer = null;
+    function startSlideshowInterval() {
+      if (slideTimer) clearInterval(slideTimer);
+      const slides = document.querySelectorAll('.slide-img');
+      if (slides.length <= 1) return;
+
+      let current = 0;
+      slideTimer = setInterval(() => {
+        slides[current].classList.remove('active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('active');
+      }, 4000);
+    }
+
+    // 📷 アルバム画面の描画
+    function renderAlbum() {
+      const grid = document.getElementById('album-grid-container');
+      grid.innerHTML = '';
+
+      albumImages.forEach(img => {
+        const isInSlideshow = slideshowIds.includes(img.id);
+        const card = document.createElement('div');
+        card.className = 'album-card' + (isInSlideshow ? ' in-slideshow' : '');
+        card.innerHTML = `
+          <div class="album-img-box">
+            <img src="${img.url}" alt="${img.name}">
+          </div>
+          <div class="album-card-info">
+            <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${img.name}</div>
+            <div style="font-size:0.7rem; color:${isInSlideshow ? '#00f5d4' : '#888'};">${isInSlideshow ? '✓ スライド中' : 'タップして追加'}</div>
+          </div>
+        `;
+        card.onclick = () => toggleSlideshow(img.id);
+        grid.appendChild(card);
+      });
+    }
+
+    // スライドショーへの登録・解除切り替え
+    function toggleSlideshow(id) {
+      if (slideshowIds.includes(id)) {
+        // 最低1枚は残す
+        if (slideshowIds.length <= 1) {
+          alert('スライドショーには最低1枚の画像が必要です。');
+          return;
+        }
+        slideshowIds = slideshowIds.filter(i => i !== id);
+      } else {
+        slideshowIds.push(id);
+      }
+      localStorage.setItem('nexus_slideshow_ids', JSON.stringify(slideshowIds));
+      renderAlbum();
+      initSlideshow();
+    }
+
+    // ➕ 外部からの画像インポート処理
+    function handleLocalImageImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Url = e.target.result;
+        const newObj = {
+          id: 'custom_' + Date.now(),
+          url: base64Url,
+          name: file.name.substring(0, 12)
+        };
+        albumImages.push(newObj);
+        slideshowIds.push(newObj.id); // 自動でスライドにも追加
+
+        localStorage.setItem('nexus_album_images', JSON.stringify(albumImages));
+        localStorage.setItem('nexus_slideshow_ids', JSON.stringify(slideshowIds));
+
+        renderAlbum();
+        initSlideshow();
+        alert('新しい画像をアルバムに追加し、スライドショーに設定しました！');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // 💎 ガチャを引いたときのテスト処理（新しいランダムイラストを獲得）
+    function simulateGachaPull() {
+      const randomId = Math.floor(Math.random() * 1000);
+      const newGachaImg = {
+        id: 'gacha_' + Date.now(),
+        url: `https://picsum.photos/id/${100 + (randomId % 50)}/800/1200`,
+        name: '【限定】ガチャ獲得イラスト #' + Math.floor(Math.random() * 100)
+      };
+
+      albumImages.push(newGachaImg);
+      localStorage.setItem('nexus_album_images', JSON.stringify(albumImages));
+      renderAlbum();
+      alert(`🎉 ガチャで「${newGachaImg.name}」を獲得しました！アルバムに追加されました。`);
+    }
+
+    // 初期化実行
+    window.addEventListener('DOMContentLoaded', () => {
+      initSlideshow();
+      renderAlbum();
+
+      const savedColor = localStorage.getItem('nexus_clock_color');
+      if (savedColor) {
+        const clockEl = document.getElementById('real-clock');
+        clockEl.className = "clock-time " + savedColor;
+        document.querySelectorAll('.color-btn').forEach(btn => {
+          btn.classList.remove('selected');
+          if (btn.classList.contains(savedColor)) btn.classList.add('selected');
+        });
+      }
+    });
 
     // ⏰ 時計
     function updateClock() {
@@ -714,130 +880,56 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // 🎨 時計の色を変更する関数
     function setClockColor(colorClass, btnElement) {
       const clockEl = document.getElementById('real-clock');
       clockEl.className = "clock-time " + colorClass;
-
       document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('selected'));
       btnElement.classList.add('selected');
-
       localStorage.setItem('nexus_clock_color', colorClass);
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedColor = localStorage.getItem('nexus_clock_color');
-      if (savedColor) {
-        const clockEl = document.getElementById('real-clock');
-        clockEl.className = "clock-time " + savedColor;
-        
-        document.querySelectorAll('.color-btn').forEach(btn => {
-          btn.classList.remove('selected');
-          if (btn.classList.contains(savedColor)) {
-            btn.classList.add('selected');
-          }
-        });
-      }
-    });
-
-    // 🔋 バッテリー状態別色分け
+    // 🔋 バッテリー
     async function initBattery() {
       const bEl = document.getElementById('battery-info');
-      
       if ('getBattery' in navigator) {
         try {
           const battery = await navigator.getBattery();
-          
           function updateBattery() {
             const level = Math.floor(battery.level * 100);
-            const charging = battery.charging;
-            
-            bEl.className = "battery-status";
-            
-            if (charging) {
-              bEl.innerText = `充電中 ${level}%`;
-              bEl.classList.add('battery-charging');
-            } else {
-              bEl.innerText = `${level}%`;
-              
-              if (level >= 71) {
-                bEl.classList.add('battery-green');
-              } else if (level >= 41) {
-                bEl.classList.add('battery-yellow');
-              } else if (level >= 21) {
-                bEl.classList.add('battery-orange');
-              } else if (level >= 4) {
-                bEl.classList.add('battery-red');
-              } else {
-                bEl.classList.add('battery-blink');
-              }
-            }
+            bEl.innerText = (battery.charging ? "充電中 " : "") + level + "%";
           }
-          
           updateBattery();
           battery.addEventListener('levelchange', updateBattery);
           battery.addEventListener('chargingchange', updateBattery);
-          
-        } catch (e) {
-          bEl.innerText = "充電中 100%";
-          bEl.className = "battery-status battery-charging";
-        }
-      } else {
-        bEl.innerText = "充電中 100%";
-        bEl.className = "battery-status battery-charging";
-      }
+        } catch (e) { bEl.innerText = "充電中 100%"; }
+      } else { bEl.innerText = "充電中 100%"; }
     }
     initBattery();
 
-    // 🖼️ スライドショー (4秒毎)
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide-img');
-    setInterval(() => {
-      slides[currentSlide].classList.remove('active');
-      currentSlide = (currentSlide + 1) % slides.length;
-      slides[currentSlide].classList.add('active');
-    }, 4000);
+    // 🔲 その他メニュー＆サブ画面
+    function toggleOtherMenu() { document.getElementById('other-modal').classList.add('active'); }
+    function closeOtherMenu() { document.getElementById('other-modal').classList.remove('active'); }
 
-    // 🔲 「その他」モーダルの開閉
-    function toggleOtherMenu() {
-      document.getElementById('other-modal').classList.add('active');
-    }
-    function closeOtherMenu() {
-      document.getElementById('other-modal').classList.remove('active');
-    }
-
-    // 📄 サブ画面制御
     function openScreen(name) {
       closeOtherMenu();
       document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      
       const target = document.getElementById('screen-' + name);
-      if (target) {
-        target.classList.add('active');
-      }
+      if (target) target.classList.add('active');
     }
-    function closeScreen(name) {
-      document.getElementById('screen-' + name).classList.remove('active');
-    }
+    function closeScreen(name) { document.getElementById('screen-' + name).classList.remove('active'); }
     function switchNav(name) {
       closeOtherMenu();
       document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      
-      if (name === 'home') {
-        document.getElementById('nav-home').classList.add('active');
-      }
+      if (name === 'home') document.getElementById('nav-home').classList.add('active');
     }
 
     // ⏳ カウントダウン
     function updateCountdown() {
       const target = new Date('2026-11-30T00:00:00');
       const diff = target - new Date();
-      if (diff <= 0) {
-        document.getElementById('countdown').innerText = "🎉 2周年到達！";
-        return;
-      }
+      if (diff <= 0) { document.getElementById('countdown').innerText = "🎉 2周年到達！"; return; }
       const d = Math.floor(diff / (1000 * 60 * 60 * 24));
       const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const m = Math.floor((diff / 1000 / 60) % 60);
@@ -850,11 +942,8 @@
     // 🎵 楽曲プレイヤー
     const songs = [
       { title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" },
-      { title: "ハウトゥー世界征服", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" },
-      { title: "ロストワンの号哭", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%AD%E3%83%89%E3%83%88%E3%83%AF%E3%83%B3%E3%81%AE%E5%8F%B7%E5%93%AD.mp3" },
-      { title: "一途", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E4%B8%80%E9%80%94.mp3" }
+      { title: "ハウトゥー世界征服", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" }
     ];
-
     const audioPlayer = document.getElementById('audio-player');
     const playlist = document.getElementById('playlist');
     const miniTitle = document.getElementById('mini-song-title');
@@ -866,19 +955,15 @@
         const item = document.createElement('div');
         item.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; cursor:pointer;";
         item.innerHTML = `<span>▶ ${song.title}</span><span style="color:#888;">再生</span>`;
-        item.onclick = () => playSong(i);
+        item.onclick = () => {
+          audioPlayer.src = song.url;
+          audioPlayer.play();
+          miniTitle.innerText = song.title;
+          nowPlayingText.innerText = "再生中の曲: " + song.title;
+        };
         playlist.appendChild(item);
       });
     }
-
-    function playSong(index) {
-      const song = songs[index];
-      audioPlayer.src = song.url;
-      audioPlayer.play();
-      miniTitle.innerText = song.title;
-      nowPlayingText.innerText = "再生中の曲: " + song.title;
-    }
-
     initPlaylist();
   </script>
 
