@@ -2,133 +2,571 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Nexus:_:Ostave for ONLINE</title>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
     body {
-      background-color: #121212;
+      background-color: #050505;
       color: #fff;
-      font-family: sans-serif;
-      text-align: center;
-      padding: 30px 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
-    h1 {
-      font-size: 1.5rem;
-      margin-bottom: 5px;
+
+    /* 📱 メイン画面エリア */
+    .app-container {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* 🖼️ 背景スライドショー (横長・縦長イラストを中央に綺麗にフィット) */
+    .bg-slideshow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    .slide-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+    }
+    .slide-img.active {
+      opacity: 1;
+    }
+
+    /* 🎯 画面の上部・下部のグラデーションシャドウ（文字を見やすくする） */
+    .overlay-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 140px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+    .overlay-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 160px;
+      background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* 📊 左上：ユーザー情報ステータス */
+    .user-status {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 10;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 8px 12px;
+      border-radius: 12px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .avatar-box {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      border: 2px solid #00f5d4;
+      overflow: hidden;
+      background: #222;
+    }
+    .avatar-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .status-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-family: monospace;
+    }
+    .status-row {
+      display: flex;
+      gap: 15px;
+      font-size: 0.85rem;
+    }
+    .status-label {
+      color: #aaa;
+    }
+    .status-val {
+      color: #fff;
+      font-weight: bold;
+    }
+    .gem-val {
       color: #00f5d4;
+      font-weight: bold;
     }
-    .playlist {
-      margin: 20px 0;
+
+    /* ⏰ 中央上：現在時刻・充電 */
+    .top-center-info {
+      position: absolute;
+      top: 15px;
+      right: 120px;
+      z-index: 10;
+      text-align: right;
+      font-size: 0.75rem;
+      color: #ddd;
+    }
+    .clock-time {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #fff;
+      font-family: monospace;
+    }
+
+    /* ✉️ 右上：プレゼント・お知らせアイコン */
+    .top-right-menu {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 10;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
-    button {
-      padding: 16px;
+    .icon-badge-btn {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      background: rgba(20, 20, 20, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+    .icon-label {
+      font-size: 0.55rem;
+      color: #ccc;
+      margin-top: -2px;
+    }
+    .badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ff334b;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: bold;
+      border-radius: 10px;
+      padding: 1px 5px;
+      border: 1px solid #000;
+    }
+
+    /* 🎵 右下：ミニ楽曲プレイヤー */
+    .mini-player {
+      position: absolute;
+      bottom: 90px;
+      right: 15px;
+      z-index: 10;
+      background: rgba(15, 15, 15, 0.75);
+      border: 1px solid rgba(0, 245, 212, 0.4);
+      border-radius: 20px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(6px);
+      cursor: pointer;
+    }
+    .music-icon {
+      color: #00f5d4;
       font-size: 1rem;
+    }
+    .song-title-display {
+      font-size: 0.85rem;
       font-weight: bold;
       color: #fff;
-      background: #1f1f1f;
-      border: 2px solid #00b4d8;
-      border-radius: 12px;
+      max-width: 110px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .song-sub-text {
+      font-size: 0.65rem;
+      color: #aaa;
+    }
+
+    /* 🏠 下部：固定ナビゲーションバー */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 75px;
+      background: rgba(18, 18, 18, 0.92);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 20;
+      padding-bottom: 5px;
+      backdrop-filter: blur(10px);
+    }
+    .nav-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 0.75rem;
+      font-weight: bold;
+      width: 20%;
+      height: 100%;
       cursor: pointer;
-      transition: 0.2s;
+      transition: color 0.2s;
     }
-    button.active {
-      background: #00b4d8;
-      box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
+    .nav-item.active {
+      color: #00f5d4;
     }
-    #now-playing {
-      margin-top: 20px;
-      font-size: 0.95rem;
+    .nav-icon {
+      font-size: 1.5rem;
+      margin-bottom: 2px;
+    }
+    .nav-badge {
+      position: absolute;
+      top: 6px;
+      right: 18px;
+      background: #ff334b;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: bold;
+      border-radius: 10px;
+      padding: 1px 6px;
+    }
+
+    /* 📄 各サブ画面（フルスクリーンオーバーレイ） */
+    .sub-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #121212;
+      z-index: 30;
+      display: none;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+    .sub-screen.active {
+      display: flex;
+    }
+    .sub-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #333;
+      margin-bottom: 20px;
+    }
+    .sub-title {
+      font-size: 1.2rem;
       color: #00f5d4;
       font-weight: bold;
     }
-    audio {
-      margin-top: 20px;
-      width: 100%;
-      max-width: 320px;
+    .close-btn {
+      padding: 6px 16px;
+      background: #333;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* 🎵 楽曲プレイヤーモーダル */
+    .playlist-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 15px;
+    }
+    .song-card {
+      background: #1f1f1f;
+      border: 1px solid #333;
+      padding: 14px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .song-card.playing {
+      border-color: #00f5d4;
+      background: #002b33;
     }
   </style>
 </head>
 <body>
 
-  <h1>Nexus:_:Ostave for ONLINE</h1>
-  <p>楽曲プレイヤー (全4曲)</p>
+  <div class="app-container">
+    
+    <!-- 🖼️ 背景スライドショー (画像4枚がゆっくり切り替わります) -->
+    <div class="bg-slideshow">
+      <!-- 1枚目：ご提示いただいた画像を最優先で表示 -->
+      <img src="https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/images/home_bg.jpg" class="slide-img active" onerror="this.src='https://picsum.photos/id/1069/800/1200'" alt="背景1">
+      <img src="https://picsum.photos/id/1074/800/1200" class="slide-img" alt="背景2">
+      <img src="https://picsum.photos/id/1080/800/1200" class="slide-img" alt="背景3">
+      <img src="https://picsum.photos/id/1084/800/1200" class="slide-img" alt="背景4">
+    </div>
 
-  <div id="now-playing">曲を選んでください</div>
+    <!-- 上下陰影グラデーション -->
+    <div class="overlay-top"></div>
+    <div class="overlay-bottom"></div>
 
-  <!-- 4曲を切り替えるボタンのリスト -->
-  <div class="playlist" id="playlist"></div>
+    <!-- 📊 左上：ステータスバー -->
+    <div class="user-status">
+      <div class="avatar-box">
+        <img src="https://picsum.photos/id/1069/100/100" alt="アイコン">
+      </div>
+      <div class="status-info">
+        <div class="status-row"><span class="status-label">ID</span> <span class="status-val">24-09</span></div>
+        <div class="status-row"><span class="status-label">NAME</span> <span class="status-val">Free</span></div>
+        <div class="status-row"><span class="status-label">💎</span> <span class="gem-val">186,486</span></div>
+      </div>
+    </div>
 
-  <audio id="audio-player" controls preload="auto"></audio>
+    <!-- ⏰ 中央上：リアルタイム時刻・端末表示 -->
+    <div class="top-center-info">
+      <div>現在時刻</div>
+      <div id="real-clock" class="clock-time">00:00:00</div>
+    </div>
+
+    <!-- ✉️ 右上：プレゼント & お知らせ -->
+    <div class="top-right-menu">
+      <div class="icon-badge-btn" onclick="openScreen('present')">
+        🎁
+        <span class="badge">8</span>
+        <span class="icon-label">プレゼント</span>
+      </div>
+      <div class="icon-badge-btn" onclick="openScreen('other')">
+        ✉️
+        <span class="badge">12</span>
+        <span class="icon-label">お知らせ</span>
+      </div>
+    </div>
+
+    <!-- 🎵 右下：ミニ楽曲プレイヤー（タップで選曲画面へ） -->
+    <div class="mini-player" onclick="openScreen('player')">
+      <span class="music-icon">🎵</span>
+      <div>
+        <div id="mini-song-title" class="song-title-display">SPECIALZ</div>
+        <div class="song-sub-text">楽曲選択</div>
+      </div>
+    </div>
+
+    <!-- 🏠 下部：メインナビゲーションバー -->
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="switchNav('home')">
+        <span class="nav-icon">🏠</span>
+        <span>ホーム</span>
+      </div>
+      <div class="nav-item" onclick="openScreen('event')">
+        <span class="nav-icon">🎪</span>
+        <span>イベント</span>
+        <span class="nav-badge">残り3日</span>
+      </div>
+      <div class="nav-item" onclick="openScreen('gacha')">
+        <span class="nav-icon">🎂</span>
+        <span class="nav-badge">!</span>
+        <span>ガチャ</span>
+      </div>
+      <div class="nav-item" onclick="openScreen('play')">
+        <span class="nav-icon">🎰</span>
+        <span>遊戯</span>
+      </div>
+      <div class="nav-item" onclick="openScreen('other')">
+        <span class="nav-icon">•••</span>
+        <span>その他</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= 📄 各種サブ画面（オーバーレイ表示） ================= -->
+
+  <!-- 🎵 楽曲プレイヤー画面 -->
+  <div id="screen-player" class="sub-screen">
+    <div class="sub-header">
+      <span class="sub-title">🎵 楽曲選択</span>
+      <button class="close-btn" onclick="closeScreen('player')">閉じる</button>
+    </div>
+    <div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: SPECIALZ</div>
+    <audio id="audio-player" controls style="width: 100%; margin-bottom: 15px;" preload="auto"></audio>
+    <div class="playlist-box" id="playlist"></div>
+  </div>
+
+  <!-- 🎪 イベント画面 -->
+  <div id="screen-event" class="sub-screen">
+    <div class="sub-header">
+      <span class="sub-title">🎪 イベント情報</span>
+      <button class="close-btn" onclick="closeScreen('event')">閉じる</button>
+    </div>
+    <div style="background: #1f1f1f; padding: 15px; border-radius: 10px; border: 1px solid #00f5d4;">
+      <h3 style="color: #00f5d4;">🎉 結成2周年まで</h3>
+      <h1 id="countdown" style="font-size: 1.5rem; margin: 10px 0;">計算中...</h1>
+    </div>
+  </div>
+
+  <!-- 🎁 ガチャ画面 -->
+  <div id="screen-gacha" class="sub-screen">
+    <div class="sub-header">
+      <span class="sub-title">🎂 ガチャ</span>
+      <button class="close-btn" onclick="closeScreen('gacha')">閉じる</button>
+    </div>
+    <p>2周年特別ガチャを準備中...</p>
+  </div>
+
+  <!-- 🎰 遊戯画面 -->
+  <div id="screen-play" class="sub-screen">
+    <div class="sub-header">
+      <span class="sub-title">🎰 遊戯</span>
+      <button class="close-btn" onclick="closeScreen('play')">閉じる</button>
+    </div>
+    <p>ミニゲーム・演出画面を準備中...</p>
+  </div>
+
+  <!-- 🎁 プレゼント画面 -->
+  <div id="screen-present" class="sub-screen">
+    <div class="sub-header">
+      <span class="sub-title">🎁 プレゼントBOX</span>
+      <button class="close-btn" onclick="closeScreen('present')">閉じる</button>
+    </div>
+    <p>受取可能なプレゼントが8件あります。</p>
+  </div>
+
+  <!-- ⚙️ その他画面 -->
+  <div id="screen-other" class="sub-screen">
+    <div class="sub-header">
+      <span class="sub-title">⚙️ その他メニュー</span>
+      <button class="close-btn" onclick="closeScreen('other')">閉じる</button>
+    </div>
+    <p>設定・お知らせ・各種機能</p>
+  </div>
 
   <script>
-    // 🎵 あなたのアップロードした4曲のプレイリストデータ
-    const songs = [
-      { 
-        title: "SPECIALZ", 
-        url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" 
-      },
-      { 
-        title: "ハウトゥー世界征服", 
-        url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" 
-      },
-      { 
-        title: "ロストワンの号哭", 
-        url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%AD%E3%82%B9%E3%83%88%E3%83%AF%E3%83%B3%E3%81%의%E5%8F%B7%E5%93%AD.mp3" 
-      },
-      { 
-        title: "一途", 
-        url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E4%B8%80%E9%80%94.mp3" 
+    // ⏰ リアルタイム時計
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('real-clock').innerText = `${h}:${m}:${s}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 🖼️ スライドショー切替 (4秒毎)
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide-img');
+    setInterval(() => {
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add('active');
+    }, 4000);
+
+    // 📄 画面切り替えシステム
+    function openScreen(name) {
+      document.getElementById('screen-' + name).classList.add('active');
+    }
+    function closeScreen(name) {
+      document.getElementById('screen-' + name).classList.remove('active');
+    }
+    function switchNav(name) {
+      document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
+    }
+
+    // ⏳ カウントダウン
+    function updateCountdown() {
+      const target = new Date('2026-11-30T00:00:00');
+      const diff = target - new Date();
+      if (diff <= 0) {
+        document.getElementById('countdown').innerText = "🎉 2周年到達！";
+        return;
       }
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / 1000 / 60) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+      document.getElementById('countdown').innerText = `${d}日 ${h}時間 ${m}分 ${s}秒`;
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // 🎵 楽曲データ＆再生機能
+    const songs = [
+      { title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" },
+      { title: "ハウトゥー世界征服", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" },
+      { title: "ロストワンの号哭", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%AD%E3%82%B9%E3%83%88%E3%83%AF%E3%83%B3%E3%81%AE%E5%8F%B7%E5%93%AD.mp3" },
+      { title: "一途", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E4%B8%80%E9%80%94.mp3" }
     ];
 
     const audioPlayer = document.getElementById('audio-player');
-    const playlistContainer = document.getElementById('playlist');
-    const nowPlaying = document.getElementById('now-playing');
-    
-    let currentIndex = 0;
+    const playlist = document.getElementById('playlist');
+    const miniTitle = document.getElementById('mini-song-title');
+    const nowPlayingText = document.getElementById('now-playing-text');
 
-    // プレイリストのボタンを画面に並べる
     function initPlaylist() {
-      playlistContainer.innerHTML = "";
-      songs.forEach((song, index) => {
-        const btn = document.createElement('button');
-        btn.innerText = `▶ ${song.title}`;
-        btn.onclick = () => playSong(index);
-        playlistContainer.appendChild(btn);
+      playlist.innerHTML = "";
+      songs.forEach((song, i) => {
+        const item = document.createElement('div');
+        item.className = 'song-card' + (i === 0 ? ' playing' : '');
+        item.innerHTML = `<span>▶ ${song.title}</span><span style="font-size:0.75rem; color:#888;">再生</span>`;
+        item.onclick = () => playSong(i);
+        playlist.appendChild(item);
       });
     }
 
-    // 指定した曲を再生する
     function playSong(index) {
-      currentIndex = index;
-      const song = songs[currentIndex];
-      
+      const song = songs[index];
       audioPlayer.src = song.url;
-      audioPlayer.play().then(() => {
-        nowPlaying.innerText = `再生中: ${song.title}`;
-        updateActiveButton();
-      }).catch(err => {
-        console.log("再生エラー:", err);
-        nowPlaying.innerText = `❌ 再生失敗: ${song.title} (読み込み中...)`;
-      });
-    }
+      audioPlayer.play();
+      miniTitle.innerText = song.title;
+      nowPlayingText.innerText = "再生中の曲: " + song.title;
 
-    // 選ばれているボタンの色を変える
-    function updateActiveButton() {
-      const buttons = playlistContainer.getElementsByTagName('button');
-      for (let i = 0; i < buttons.length; i++) {
-        if (i === currentIndex) {
-          buttons[i].classList.add('active');
-        } else {
-          buttons[i].classList.remove('active');
-        }
+      const cards = playlist.getElementsByClassName('song-card');
+      for (let i = 0; i < cards.length; i++) {
+        cards[i].classList.toggle('playing', i === index);
       }
     }
 
-    // 初期化実行
     initPlaylist();
   </script>
 
