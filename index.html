@@ -19,7 +19,6 @@
     body {
       background-color: #050505;
       color: #fff;
-      /* 🖋️ アプリ全体の基本フォントをしっぽり明朝に設定 */
       font-family: "Shippori Mincho", "MS Mincho", "MS 明朝", "游明朝", YuMincho, serif;
       height: 100vh;
       height: 100dvh;
@@ -83,7 +82,7 @@
       pointer-events: none;
     }
 
-    /* 📊 左上：ステータスバー */
+    /* 📊 左上：ステータスバー（横幅を少し広げてゆとりを持たせました） */
     .user-status {
       position: absolute;
       top: 15px;
@@ -91,16 +90,17 @@
       z-index: 10;
       display: flex;
       align-items: center;
-      gap: 12px;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 10px 14px;
-      border-radius: 14px;
+      gap: 14px;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 10px 18px 10px 14px;
+      border-radius: 16px;
       backdrop-filter: blur(6px);
       border: 1px solid rgba(255, 255, 255, 0.15);
+      min-width: 190px;
     }
     .avatar-box {
-      width: 60px;
-      height: 60px;
+      width: 58px;
+      height: 58px;
       border-radius: 10px;
       border: 2px solid #00f5d4;
       overflow: hidden;
@@ -116,10 +116,12 @@
       display: flex;
       flex-direction: column;
       gap: 3px;
+      flex: 1;
     }
     .status-row {
       display: flex;
-      gap: 12px;
+      justify-content: space-between;
+      gap: 16px;
       font-size: 0.95rem;
       letter-spacing: 0.5px;
     }
@@ -129,7 +131,7 @@
     .status-val { color: #fff; font-weight: bold; }
     .gem-val { color: #00f5d4; font-weight: bold; text-shadow: 0 0 6px rgba(0,245,212,0.6); }
 
-    /* ⏰ 右上エリア：時計、バッテリー ＆ その下に縦に並ぶプレゼント・お知らせ */
+    /* ⏰ 右上エリア：しっぽり明朝体の時計、バッテリー ＆ 縦並びボタン */
     .top-right-area {
       position: absolute;
       top: 15px;
@@ -149,14 +151,13 @@
       letter-spacing: 1px;
     }
     
-    /* 🎰 しっぽり明朝体 ＋ ネオン発光 */
+    /* 🎰 しっぽり明朝体時計（ユーザー選択の色が反映されるエリア） */
     .clock-time {
       font-family: "Shippori Mincho", serif;
       font-size: 1.8rem;
       font-weight: 800;
-      color: #ff334b;
-      text-shadow: 0 0 10px rgba(255, 51, 75, 0.9), 0 0 25px rgba(255, 51, 75, 0.5);
       letter-spacing: 1.5px;
+      transition: color 0.3s, text-shadow 0.3s;
     }
     .battery-status {
       font-family: "Shippori Mincho", serif;
@@ -164,6 +165,16 @@
       margin-top: 2px;
       font-weight: 800;
     }
+
+    /* 🎨 時計のカラーバリエーション8色定義 */
+    .c-white { color: #ffffff; text-shadow: 0 0 8px rgba(255,255,255,0.8); }
+    .c-blue { color: #3388ff; text-shadow: 0 0 8px rgba(51,136,255,0.8); }
+    .c-red { color: #ff334b; text-shadow: 0 0 10px rgba(255,51,75,0.9); }
+    .c-yellow { color: #ffee00; text-shadow: 0 0 8px rgba(255,238,0,0.8); }
+    .c-green { color: #00ff66; text-shadow: 0 0 8px rgba(0,255,102,0.8); }
+    .c-skyblue { color: #00bfff; text-shadow: 0 0 8px rgba(0,191,255,0.8); }
+    .c-orange { color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.8); }
+    .c-black { color: #111111; text-shadow: 0 0 4px rgba(255,255,255,0.8); }
 
     /* バッテリー状態別のネオンカラー */
     .battery-green { color: #00ff66; text-shadow: 0 0 8px rgba(0,255,102,0.8); }
@@ -305,7 +316,7 @@
       display: none;
     }
 
-    /* ================= 🔲 「その他」メニューポップアップダイアログ（完全正常レイアウト） ================= */
+    /* ================= 🔲 「その他」メニューポップアップダイアログ ================= */
     .modal-overlay {
       position: absolute;
       top: 0;
@@ -428,6 +439,28 @@
       cursor: pointer;
       font-family: inherit;
     }
+
+    /* ⚙️ 設定画面のカラーパレットボタンスタイル */
+    .color-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .color-btn {
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid #555;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+    .color-btn.selected {
+      border-color: #00f5d4;
+      box-shadow: 0 0 8px rgba(0,245,212,0.6);
+    }
   </style>
 </head>
 <body>
@@ -446,7 +479,7 @@
     <div class="overlay-top"></div>
     <div class="overlay-bottom"></div>
 
-    <!-- 📊 左上：ステータスバー -->
+    <!-- 📊 左上：ステータスバー（横幅を少し広げて調整） -->
     <div class="user-status">
       <div class="avatar-box">
         <img src="https://picsum.photos/id/1069/100/100" alt="アイコン">
@@ -462,7 +495,8 @@
     <div class="top-right-area">
       <div class="clock-container">
         <div class="clock-title">現在時刻</div>
-        <div id="real-clock" class="clock-time">00:00:00</div>
+        <!-- 💡 時計のフォントカラークラス（初期値は赤: c-red） -->
+        <div id="real-clock" class="clock-time c-red">00:00:00</div>
         <div id="battery-info" class="battery-status battery-charging">充電中 100%</div>
       </div>
 
@@ -585,12 +619,30 @@
     </div>
   </div>
 
+  <!-- ⚙️ 設定画面（時計のフォントカラー8色変更機能付き） -->
+  <div id="screen-settings" class="sub-screen">
+    <div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div>
+    <div style="margin-bottom: 20px;">
+      <p style="margin-bottom: 8px; font-weight: bold; color: #00f5d4;">⏰ 時計のフォントカラー変更</p>
+      <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">お好みのカラーを8色から選択できます。</p>
+      <div class="color-picker-grid">
+        <button class="color-btn c-white" style="background:#222;" onclick="setClockColor('c-white', this)">白</button>
+        <button class="color-btn c-blue" style="background:#222;" onclick="setClockColor('c-blue', this)">青</button>
+        <button class="color-btn c-red selected" style="background:#222;" onclick="setClockColor('c-red', this)">赤</button>
+        <button class="color-btn c-yellow" style="background:#222;" onclick="setClockColor('c-yellow', this)">黄色</button>
+        <button class="color-btn c-green" style="background:#222;" onclick="setClockColor('c-green', this)">緑</button>
+        <button class="color-btn c-skyblue" style="background:#222;" onclick="setClockColor('c-skyblue', this)">水色</button>
+        <button class="color-btn c-orange" style="background:#222;" onclick="setClockColor('c-orange', this)">オレンジ</button>
+        <button class="color-btn c-black" style="background:#ccc; color:#000;" onclick="setClockColor('c-black', this)">黒</button>
+      </div>
+    </div>
+  </div>
+
   <div id="screen-present" class="sub-screen"><div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span><button class="close-btn" onclick="closeScreen('present')">閉じる</button></div><p>現在受取可能なプレゼントはありません。</p></div>
   <div id="screen-notice" class="sub-screen"><div class="sub-header"><span class="sub-title">✉️ お知らせ</span><button class="close-btn" onclick="closeScreen('notice')">閉じる</button></div><p>現在新しいお知らせはありません。</p></div>
   <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
   <div id="screen-album" class="sub-screen"><div class="sub-header"><span class="sub-title">📷 アルバム</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div><p>思い出アルバム</p></div>
   <div id="screen-history" class="sub-screen"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン</p></div>
-  <div id="screen-settings" class="sub-screen"><div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div><p>アプリ設定画面</p></div>
   <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
   <div id="screen-manage" class="sub-screen"><div class="sub-header"><span class="sub-title">🛡️ 管理</span><button class="close-btn" onclick="closeScreen('manage')">閉じる</button></div><p>管理画面</p></div>
 
@@ -638,6 +690,36 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
+
+    // 🎨 時計の色を変更する関数（ブラウザに記憶も保持）
+    function setClockColor(colorClass, btnElement) {
+      const clockEl = document.getElementById('real-clock');
+      // 既存のカラークラスをすべて削除して新しいものを付与
+      clockEl.className = "clock-time " + colorClass;
+
+      // 選択ボタンの見た目切り替え
+      document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('selected'));
+      btnElement.classList.add('selected');
+
+      // ローカルストレージに保存
+      localStorage.setItem('nexus_clock_color', colorClass);
+    }
+
+    // 起動時に保存された色を復元
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedColor = localStorage.getItem('nexus_clock_color');
+      if (savedColor) {
+        const clockEl = document.getElementById('real-clock');
+        clockEl.className = "clock-time " + savedColor;
+        
+        document.querySelectorAll('.color-btn').forEach(btn => {
+          btn.classList.remove('selected');
+          if (btn.classList.contains(savedColor)) {
+            btn.classList.add('selected');
+          }
+        });
+      }
+    });
 
     // 🔋 バッテリー状態別色分け
     async function initBattery() {
@@ -748,7 +830,6 @@
     const miniTitle = document.getElementById('mini-song-title');
     const nowPlayingText = document.getElementById('now-playing-text');
 
-    (`playlist`);
     function initPlaylist() {
       playlist.innerHTML = "";
       songs.forEach((song, i) => {
