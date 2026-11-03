@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Nexus:_:Ostave for ONLINE</title>
-  <!-- ネオン数字風フォント（Orbitron） -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -16,7 +14,8 @@
     body {
       background-color: #050505;
       color: #fff;
-      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, serif;
+      /* 🖋️ ガチガチの本格的な明朝体（MS明朝 / 游明朝）を指定 */
+      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", serif;
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
@@ -79,7 +78,7 @@
       pointer-events: none;
     }
 
-    /* 📊 左上：プロフィールステータスバー（数字はネオン風） */
+    /* 📊 左上：ステータスバー */
     .user-status {
       position: absolute;
       top: 15px;
@@ -122,14 +121,10 @@
     .status-label {
       color: #aaa;
     }
-    .status-val, .gem-val {
-      font-family: 'Orbitron', sans-serif; /* 数字をネオン風に */
-      font-weight: 700;
-    }
-    .status-val { color: #fff; }
-    .gem-val { color: #00f5d4; text-shadow: 0 0 6px rgba(0,245,212,0.6); }
+    .status-val { color: #fff; font-weight: bold; }
+    .gem-val { color: #00f5d4; font-weight: bold; text-shadow: 0 0 6px rgba(0,245,212,0.6); }
 
-    /* ⏰ 右上：時計、バッテリー、そしてその下に縦に並ぶプレゼント・お知らせ */
+    /* ⏰ 右上エリア：時計、バッテリー ＆ その下に縦に並ぶプレゼント・お知らせ */
     .top-right-area {
       position: absolute;
       top: 15px;
@@ -148,27 +143,28 @@
       color: #aaa;
       letter-spacing: 1px;
     }
+    /* 🎰 写真のような明朝体＋ネオン風の光る数字スタイル */
     .clock-time {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 900;
+      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, serif;
+      font-size: 1.6rem;
+      font-weight: bold;
       color: #ff334b;
-      text-shadow: 0 0 8px rgba(255, 51, 75, 0.8), 0 0 20px rgba(255, 51, 75, 0.4);
-      letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(255, 51, 75, 0.9), 0 0 20px rgba(255, 51, 75, 0.5);
+      letter-spacing: 1.5px;
     }
     .battery-status {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.8rem;
+      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, serif;
+      font-size: 0.85rem;
       margin-top: 1px;
       font-weight: bold;
     }
 
-    /* バッテリー状態別ネオンカラー（電池マークなし） */
-    .battery-green { color: #00ff66; text-shadow: 0 0 6px rgba(0,255,102,0.6); }
-    .battery-yellow { color: #ffee00; text-shadow: 0 0 6px rgba(255,238,0,0.6); }
-    .battery-orange { color: #ff9900; text-shadow: 0 0 6px rgba(255,153,0,0.6); }
-    .battery-red { color: #ff3333; text-shadow: 0 0 6px rgba(255,51,51,0.6); }
-    .battery-charging { color: #00bfff; text-shadow: 0 0 6px rgba(0,191,255,0.6); }
+    /* バッテリー状態別の明朝ネオンカラー（電池マークなし） */
+    .battery-green { color: #00ff66; text-shadow: 0 0 6px rgba(0,255,102,0.8); }
+    .battery-yellow { color: #ffee00; text-shadow: 0 0 6px rgba(255,238,0,0.8); }
+    .battery-orange { color: #ff9900; text-shadow: 0 0 6px rgba(255,153,0,0.8); }
+    .battery-red { color: #ff3333; text-shadow: 0 0 6px rgba(255,51,51,0.8); }
+    .battery-charging { color: #00bfff; text-shadow: 0 0 6px rgba(0,191,255,0.8); }
     @keyframes blink {
       0% { opacity: 1; }
       50% { opacity: 0.2; }
@@ -176,11 +172,11 @@
     }
     .battery-blink {
       color: #ff3333;
-      text-shadow: 0 0 8px rgba(255,51,51,0.9);
+      text-shadow: 0 0 8px rgba(255,51,51,1);
       animation: blink 0.8s infinite;
     }
 
-    /* 🎁✉️ 時計の下に縦に並ぶプレゼント＆お知らせボタン（1番最初と同じ位置・形） */
+    /* 🎁✉️ 時計の下に縦に並ぶプレゼント＆お知らせボタン */
     .top-buttons-column {
       display: flex;
       flex-direction: column;
@@ -444,7 +440,7 @@
     <div class="overlay-top"></div>
     <div class="overlay-bottom"></div>
 
-    <!-- 📊 左上：ステータスバー（数字フォント変更済み） -->
+    <!-- 📊 左上：ステータスバー -->
     <div class="user-status">
       <div class="avatar-box">
         <img src="https://picsum.photos/id/1069/100/100" alt="アイコン">
@@ -456,7 +452,7 @@
       </div>
     </div>
 
-    <!-- ⏰ 右上エリア：時計・バッテリー表示 ＆ その下に縦に並ぶプレゼント・お知らせボタン -->
+    <!-- ⏰ 右上エリア：明朝体ネオン風時計、バッテリー ＆ その下に縦に並ぶプレゼント・お知らせ -->
     <div class="top-right-area">
       <div class="clock-container">
         <div class="clock-title">現在時刻</div>
@@ -464,7 +460,7 @@
         <div id="battery-info" class="battery-status battery-charging">充電中 100%</div>
       </div>
 
-      <!-- プレゼント・お知らせボタン（縦並び・1番最初の形） -->
+      <!-- プレゼント・お知らせボタン（縦並び・最初の位置） -->
       <div class="top-buttons-column">
         <div class="icon-badge-btn" onclick="openScreen('present')">
           🎁
@@ -739,7 +735,7 @@
       { title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" },
       { title: "ハウトゥー世界征服", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" },
       { title: "ロストワンの号哭", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%AD%E3%83%89%E3%83%88%E3%83%AF%E3%83%B3%E3%81%AE%E5%8F%B7%E5%93%AD.mp3" },
-      { title: "一途", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E4%B8%80%E9%80%94.mp3" }
+      { title: "一途", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE%20(4).mp3" }
     ];
 
     const audioPlayer = document.getElementById('audio-player');
