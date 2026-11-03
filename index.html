@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Nexus:_:Ostave for ONLINE</title>
+  <!-- 🖋️ 画像のような「端に装飾（カール・セリフ）があるクラシックで豪華なフォント」を読み込み -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:wght@800;900&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -14,8 +16,7 @@
     body {
       background-color: #050505;
       color: #fff;
-      /* 🖋️ 本格的な明朝体（MS明朝 / 游明朝） */
-      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", serif;
+      font-family: "MS Mincho", "MS 明朝", "游明朝", YuMincho, serif;
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
@@ -78,7 +79,7 @@
       pointer-events: none;
     }
 
-    /* 📊 左上：ステータスバー */
+    /* 📊 左上：ステータスバー（数字にあの装飾フォントを適用） */
     .user-status {
       position: absolute;
       top: 15px;
@@ -121,8 +122,12 @@
     .status-label {
       color: #aaa;
     }
-    .status-val { color: #fff; font-weight: bold; }
-    .gem-val { color: #00f5d4; font-weight: bold; text-shadow: 0 0 6px rgba(0,245,212,0.6); }
+    .status-val, .gem-val {
+      font-family: 'Cinzel Decorative', serif; /* 装飾数字フォント */
+      font-weight: 700;
+    }
+    .status-val { color: #fff; }
+    .gem-val { color: #00f5d4; text-shadow: 0 0 6px rgba(0,245,212,0.6); }
 
     /* ⏰ 右上エリア：時計、バッテリー ＆ その下に縦に並ぶプレゼント・お知らせ */
     .top-right-area {
@@ -143,20 +148,24 @@
       color: #aaa;
       letter-spacing: 1px;
     }
+    
+    /* 🎰 画像のような装飾フォント ＋ ネオン発光の時計 */
     .clock-time {
+      font-family: 'Cinzel Decorative', serif;
       font-size: 1.6rem;
-      font-weight: bold;
+      font-weight: 900;
       color: #ff334b;
       text-shadow: 0 0 8px rgba(255, 51, 75, 0.9), 0 0 20px rgba(255, 51, 75, 0.5);
       letter-spacing: 1.5px;
     }
     .battery-status {
+      font-family: 'Cinzel Decorative', serif;
       font-size: 0.85rem;
       margin-top: 1px;
       font-weight: bold;
     }
 
-    /* バッテリー状態別の明朝ネオンカラー */
+    /* バッテリー状態別のネオンカラー（電池マークなし） */
     .battery-green { color: #00ff66; text-shadow: 0 0 6px rgba(0,255,102,0.8); }
     .battery-yellow { color: #ffee00; text-shadow: 0 0 6px rgba(255,238,0,0.8); }
     .battery-orange { color: #ff9900; text-shadow: 0 0 6px rgba(255,153,0,0.8); }
@@ -218,7 +227,7 @@
       position: absolute;
       bottom: 75px;
       right: 15px;
-      z-index: 100; /* ナビや背景より上に配置 */
+      z-index: 100;
       background: rgba(15, 15, 15, 0.85);
       border: 1px solid rgba(0, 245, 212, 0.4);
       border-radius: 16px;
@@ -296,7 +305,7 @@
       display: none;
     }
 
-    /* ================= 🔲 「その他」メニューポップアップダイアログ（完全修正） ================= */
+    /* ================= 🔲 「その他」メニューポップアップダイアログ ================= */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -304,7 +313,7 @@
       width: 100vw;
       height: 100vh;
       background: rgba(0, 0, 0, 0.75);
-      z-index: 999; /* 画面の一番手前に確実に表示 */
+      z-index: 999;
       display: none;
       justify-content: center;
       align-items: center;
@@ -386,7 +395,7 @@
       width: 100%;
       height: 100%;
       background: #121212;
-      z-index: 1000; /* ポップアップよりさらに手前 */
+      z-index: 1000;
       display: none;
       flex-direction: column;
       padding: 20px;
@@ -449,7 +458,7 @@
       </div>
     </div>
 
-    <!-- ⏰ 右上エリア：明朝体の時計、バッテリー ＆ その下に縦に並ぶプレゼント・お知らせ -->
+    <!-- ⏰ 右上エリア：装飾フォントの時計、バッテリー ＆ 縦並びボタン -->
     <div class="top-right-area">
       <div class="clock-container">
         <div class="clock-title">現在時刻</div>
@@ -457,7 +466,7 @@
         <div id="battery-info" class="battery-status battery-charging">充電中 100%</div>
       </div>
 
-      <!-- プレゼント・お知らせボタン（縦並び・最初の位置） -->
+      <!-- プレゼント・お知らせボタン（縦並び） -->
       <div class="top-buttons-column">
         <div class="icon-badge-btn" onclick="openScreen('present')">
           🎁
@@ -513,7 +522,6 @@
   <div id="other-modal" class="modal-overlay" onclick="closeOtherMenu(event)">
     <div class="menu-dialog" onclick="event.stopPropagation()">
       <div class="other-menu-grid">
-        <!-- 交換所（更新なしなので「！」非表示） -->
         <div class="other-menu-card" onclick="openScreen('shop')">
           <div class="other-icon-circle">💖</div>
           <span class="exclamation-badge" id="news-shop">!</span>
