@@ -14,9 +14,10 @@
     body {
       background-color: #050505;
       color: #fff;
-      font-family: "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", "Hiragino Mincho ProN", "MS P明朝", serif;
+      /* 🖋️ 本格的な明朝体フォント設定 */
+      font-family: "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", "Hiragino Mincho ProN", "MS P明朝", "Times New Roman", serif;
       height: 100vh;
-      height: 100dvh; /* スマホブラウザのアドレスバー高さを考慮した最新の高さ指定 */
+      height: 100dvh;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -61,7 +62,7 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 120px;
+      height: 140px;
       background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
       z-index: 2;
       pointer-events: none;
@@ -71,34 +72,35 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 140px;
+      height: 160px;
       background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
       z-index: 2;
       pointer-events: none;
     }
 
-    /* 📊 左上：ステータスバー */
+    /* 📊 左上：大きくしたプロフィールステータスバー */
     .user-status {
       position: absolute;
-      top: 10px;
-      left: 10px;
+      top: 15px;
+      left: 15px;
       z-index: 10;
       display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      background: rgba(0, 0, 0, 0.45);
-      padding: 6px 10px;
-      border-radius: 10px;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      align-items: center;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px 14px;
+      border-radius: 14px;
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
     .avatar-box {
-      width: 44px;
-      height: 44px;
-      border-radius: 6px;
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
       border: 2px solid #00f5d4;
       overflow: hidden;
       background: #222;
+      flex-shrink: 0;
     }
     .avatar-box img {
       width: 100%;
@@ -108,12 +110,13 @@
     .status-info {
       display: flex;
       flex-direction: column;
-      gap: 1px;
+      gap: 3px;
     }
     .status-row {
       display: flex;
-      gap: 10px;
-      font-size: 0.8rem;
+      gap: 12px;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
     }
     .status-label {
       color: #aaa;
@@ -127,107 +130,109 @@
       font-weight: bold;
     }
 
-    /* ⏰ 中央上：時計 ＆ 🔋 バッテリー */
+    /* ⏰ 中央上：大きくした現在時刻・バッテリー表示 */
     .top-center-info {
       position: absolute;
-      top: 10px;
-      right: 110px;
+      top: 15px;
+      right: 15px;
       z-index: 10;
       text-align: right;
+    }
+    .clock-title {
       font-size: 0.7rem;
-      color: #ddd;
+      color: #aaa;
+      letter-spacing: 1px;
     }
     .clock-time {
-      font-size: 1rem;
+      font-size: 1.35rem;
       font-weight: bold;
       color: #fff;
+      letter-spacing: 1px;
     }
     .battery-status {
-      font-size: 0.65rem;
+      font-size: 0.8rem;
       color: #00f5d4;
-      margin-top: 1px;
+      margin-top: 2px;
       font-weight: bold;
     }
 
-    /* ✉️ 右上：プレゼント & お知らせ */
-    .top-right-menu {
+    /* 🎁✉️ 右下（ミニプレイヤーの上）：大きくしたプレゼント＆お知らせボタン（1行で収まる設計） */
+    .bottom-right-menu {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      bottom: 125px;
+      right: 15px;
       z-index: 10;
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
     .icon-badge-btn {
       position: relative;
-      width: 38px;
-      height: 38px;
-      background: rgba(20, 20, 20, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      cursor: pointer;
-      backdrop-filter: blur(4px);
-    }
-    .icon-label {
-      font-size: 0.5rem;
-      color: #ccc;
-      margin-top: -2px;
-    }
-    .badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: #ff334b;
-      color: #fff;
-      font-size: 0.6rem;
-      font-weight: bold;
-      border-radius: 8px;
-      padding: 1px 4px;
-      border: 1px solid #000;
-      display: none; /* デフォルトは非表示、件数がある場合のみJSで表示 */
-    }
-
-    /* 🎵 右下：ミニ楽曲プレイヤー（位置調整してメニューと重ならないように配置） */
-    .mini-player {
-      position: absolute;
-      bottom: 75px;
-      right: 10px;
-      z-index: 10;
-      background: rgba(15, 15, 15, 0.8);
-      border: 1px solid rgba(0, 245, 212, 0.4);
-      border-radius: 16px;
-      padding: 5px 12px;
+      height: 44px;
+      padding: 0 12px;
+      background: rgba(20, 20, 20, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       gap: 6px;
+      font-size: 0.95rem;
+      color: #fff;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      white-space: nowrap; /* 1行で確実に収める */
+    }
+    .icon-badge-btn span:nth-child(1) {
+      font-size: 1.2rem;
+    }
+    .badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ff334b;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: bold;
+      border-radius: 10px;
+      padding: 1px 6px;
+      border: 1px solid #000;
+      display: none; /* 0件なら非表示 */
+    }
+
+    /* 🎵 右下：ミニ楽曲プレイヤー */
+    .mini-player {
+      position: absolute;
+      bottom: 72px;
+      right: 15px;
+      z-index: 10;
+      background: rgba(15, 15, 15, 0.85);
+      border: 1px solid rgba(0, 245, 212, 0.4);
+      border-radius: 16px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       backdrop-filter: blur(6px);
       cursor: pointer;
     }
     .music-icon {
       color: #00f5d4;
-      font-size: 0.9rem;
+      font-size: 1rem;
     }
     .song-title-display {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: bold;
       color: #fff;
-      max-width: 100px;
+      max-width: 120px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .song-sub-text {
-      font-size: 0.6rem;
+      font-size: 0.65rem;
       color: #aaa;
     }
 
-    /* 🏠 下部：ナビゲーションバー（スマホで必ず収まる高さ・サイズに最適化） */
+    /* 🏠 下部：ナビゲーションバー */
     .bottom-nav {
       position: absolute;
       bottom: 0;
@@ -249,7 +254,7 @@
       align-items: center;
       justify-content: center;
       color: #888;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       font-weight: bold;
       width: 20%;
       height: 100%;
@@ -260,7 +265,7 @@
       color: #00f5d4;
     }
     .nav-icon {
-      font-size: 1.3rem;
+      font-size: 1.35rem;
       margin-bottom: 1px;
     }
     .nav-badge {
@@ -273,7 +278,7 @@
       font-weight: bold;
       border-radius: 8px;
       padding: 1px 4px;
-      display: none; /* 変化がない場合は非表示 */
+      display: none;
     }
 
     /* ================= 🔲 「その他」モーダルダイアログ ================= */
@@ -340,8 +345,6 @@
       margin-bottom: 4px;
       box-shadow: 0 3px 6px rgba(0,0,0,0.3);
     }
-    
-    /* 🔴 条件付きビックリマーク「！」バッジ */
     .exclamation-badge {
       position: absolute;
       top: -2px;
@@ -353,7 +356,7 @@
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      display: none; /* デフォルトは非表示。JSで制御 */
+      display: none;
       align-items: center;
       justify-content: center;
       border: 2px solid #fff;
@@ -419,7 +422,7 @@
     <div class="overlay-top"></div>
     <div class="overlay-bottom"></div>
 
-    <!-- 📊 左上：ステータスバー -->
+    <!-- 📊 左上：大きくしたプロフィールステータス -->
     <div class="user-status">
       <div class="avatar-box">
         <img src="https://picsum.photos/id/1069/100/100" alt="アイコン">
@@ -431,24 +434,24 @@
       </div>
     </div>
 
-    <!-- ⏰ 中央上：リアルタイム時刻 ＆ 🔋 バッテリー -->
+    <!-- ⏰ 中央上：大きくした現在時刻 ＆ バッテリー -->
     <div class="top-center-info">
-      <div style="font-size:0.6rem; color:#aaa;">現在時刻</div>
+      <div class="clock-title">現在時刻</div>
       <div id="real-clock" class="clock-time">00:00:00</div>
-      <div id="battery-info" class="battery-status">充電中 100%</div>
+      <div id="battery-info" class="battery-status">⚡充電中 100%</div>
     </div>
 
-    <!-- ✉️ 右上：プレゼント & お知らせ (件数が0件なら丸表示なし・タップすれば0件でも開ける) -->
-    <div class="top-right-menu">
+    <!-- 🎁✉️ 右下（ミニプレイヤーの上）：1行で収まるプレゼント＆お知らせボタン -->
+    <div class="bottom-right-menu">
       <div class="icon-badge-btn" onclick="openScreen('present')">
-        🎁
+        <span>🎁</span>
+        <span>プレゼント</span>
         <span class="badge" id="badge-present">0</span>
-        <span class="icon-label">プレゼント</span>
       </div>
       <div class="icon-badge-btn" onclick="openScreen('notice')">
-        ✉️
+        <span>✉️</span>
+        <span>お知らせ</span>
         <span class="badge" id="badge-notice">0</span>
-        <span class="icon-label">お知らせ</span>
       </div>
     </div>
 
@@ -481,7 +484,6 @@
         <span class="nav-icon">🎰</span>
         <span>遊戯</span>
       </div>
-      <!-- 右下の「その他」でダイアログを開く -->
       <div class="nav-item" onclick="toggleOtherMenu()">
         <span class="nav-icon">•••</span>
         <span>その他</span>
@@ -494,55 +496,30 @@
   <div id="other-modal" class="modal-overlay" onclick="closeOtherMenu(event)">
     <div class="menu-dialog" onclick="event.stopPropagation()">
       <div class="other-menu-grid">
-        
-        <!-- 交換所 (例として変化あり＝'!'表示) -->
         <div class="other-menu-card" onclick="openScreen('shop')">
           <div class="other-icon-circle">💖</div>
           <span class="exclamation-badge" id="news-shop">!</span>
           <span>交換所</span>
         </div>
-
-        <!-- スケジュール (例として変化あり＝'!'表示) -->
         <div class="other-menu-card" onclick="openScreen('schedule')">
           <div class="other-icon-circle">📝</div>
           <span class="exclamation-badge" id="news-schedule">!</span>
           <span>スケジュール</span>
         </div>
-
-        <!-- アルバム (例：変化なし＝バッジ非表示。0件でもタップして開ける) -->
         <div class="other-menu-card" onclick="openScreen('album')">
           <div class="other-icon-circle">📷</div>
           <span class="exclamation-badge" id="news-album">!</span>
           <span>アルバム</span>
         </div>
-
-        <!-- ヒストリー (例：変化なし＝バッジ非表示) -->
         <div class="other-menu-card" onclick="openScreen('history')">
           <div class="other-icon-circle">📖</div>
           <span class="exclamation-badge" id="news-history">!</span>
           <span>ヒストリー</span>
         </div>
-
-        <!-- 設定 -->
-        <div class="other-menu-card" onclick="openScreen('settings')">
-          <span>設定</span>
-        </div>
-
-        <!-- 報告 -->
-        <div class="other-menu-card" onclick="openScreen('report')">
-          <span>報告</span>
-        </div>
-
-        <!-- 管理 -->
-        <div class="other-menu-card" onclick="openScreen('manage')">
-          <span>管理</span>
-        </div>
-
-        <!-- ログアウト -->
-        <div class="other-menu-card" onclick="closeOtherMenu()">
-          <span>ログアウト</span>
-        </div>
-
+        <div class="other-menu-card" onclick="openScreen('settings')"><span>設定</span></div>
+        <div class="other-menu-card" onclick="openScreen('report')"><span>報告</span></div>
+        <div class="other-menu-card" onclick="openScreen('manage')"><span>管理</span></div>
+        <div class="other-menu-card" onclick="closeOtherMenu()"><span>ログアウト</span></div>
       </div>
     </div>
   </div>
@@ -573,41 +550,35 @@
     <p>ミニゲーム・演出画面を準備中...</p>
   </div>
 
-  <!-- 0件でもいつでも開ける各サブ画面 -->
-  <div id="screen-present" class="sub-screen"><div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span><button class="close-btn" onclick="closeScreen('present')">閉じる</button></div><p id="present-msg">現在受取可能なプレゼントはありません（0件）。</p></div>
+  <div id="screen-present" class="sub-screen"><div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span><button class="close-btn" onclick="closeScreen('present')">閉じる</button></div><p>現在受取可能なプレゼントはありません（0件でも閲覧可能）。</p></div>
   <div id="screen-notice" class="sub-screen"><div class="sub-header"><span class="sub-title">✉️ お知らせ</span><button class="close-btn" onclick="closeScreen('notice')">閉じる</button></div><p>現在新しいお知らせはありません。</p></div>
   <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
   <div id="screen-schedule" class="sub-screen"><div class="sub-header"><span class="sub-title">📝 スケジュール</span><button class="close-btn" onclick="closeScreen('schedule')">閉じる</button></div><p>スケジュールカレンダーです。</p></div>
-  <div id="screen-album" class="sub-screen"><div class="sub-header"><span class="sub-title">📷 アルバム</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div><p>思い出アルバム（0件でも閲覧可能）</p></div>
+  <div id="screen-album" class="sub-screen"><div class="sub-header"><span class="sub-title">📷 アルバム</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div><p>思い出アルバム</p></div>
   <div id="screen-history" class="sub-screen"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン</p></div>
   <div id="screen-settings" class="sub-screen"><div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div><p>アプリ設定画面</p></div>
   <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
   <div id="screen-manage" class="sub-screen"><div class="sub-header"><span class="sub-title">🛡️ 管理</span><button class="close-btn" onclick="closeScreen('manage')">閉じる</button></div><p>管理画面</p></div>
 
   <script>
-    // 🔔 【データ設定用】 ここで「件数」や「変化の有無（true/false）」を自由に切り替えられます！
-    // 0件（または変化なし）にすれば、自動で丸表示や「！」が消えますが、ボタンをタップすれば中身を開くことができます。
     const appData = {
-      presentCount: 0, // 例: 0件に設定 (0ならバッジ非表示)
-      noticeCount: 0,  // 例: 0件に設定 (0ならバッジ非表示)
-      hasShopNews: true,      // 交換所に新着あり(trueなら'!'表示)
-      hasScheduleNews: false, // スケジュールに新着なし(falseなら非表示)
-      hasAlbumNews: false,    // アルバムに新着なし
-      hasHistoryNews: false   // ヒストリーに新着なし
+      presentCount: 0, // 0件ならバッジ非表示
+      noticeCount: 0,  // 0件ならバッジ非表示
+      hasShopNews: true,
+      hasScheduleNews: false,
+      hasAlbumNews: false,
+      hasHistoryNews: false
     };
 
-    // 起動時にバッジの表示・非表示を自動反映する関数
     function initBadges() {
-      // プレゼントBOX
       const pBadge = document.getElementById('badge-present');
       if (appData.presentCount > 0) {
         pBadge.innerText = appData.presentCount;
         pBadge.style.display = 'block';
       } else {
-        pBadge.style.display = 'none'; // 0件なら丸ごと非表示
+        pBadge.style.display = 'none';
       }
 
-      // お知らせ
       const nBadge = document.getElementById('badge-notice');
       if (appData.noticeCount > 0) {
         nBadge.innerText = appData.noticeCount;
@@ -616,7 +587,6 @@
         nBadge.style.display = 'none';
       }
 
-      // その他メニュー内の各「！」
       document.getElementById('news-shop').style.display = appData.hasShopNews ? 'flex' : 'none';
       document.getElementById('news-schedule').style.display = appData.hasScheduleNews ? 'flex' : 'none';
       document.getElementById('news-album').style.display = appData.hasAlbumNews ? 'flex' : 'none';
@@ -674,7 +644,7 @@
       document.getElementById('other-modal').classList.remove('active');
     }
 
-    // 📄 サブ画面制御 (0件でも自由に開ける)
+    // 📄 サブ画面制御
     function openScreen(name) {
       closeOtherMenu();
       document.getElementById('screen-' + name).classList.add('active');
