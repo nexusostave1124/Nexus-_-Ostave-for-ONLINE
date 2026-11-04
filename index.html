@@ -553,7 +553,12 @@
                 localStorage.setItem('nexus_slideshow_ids', JSON.stringify(slideshowIds));
                 renderAlbum();
                 initSlideshow();
-                alert('新しい画像をアルバムに追加し、スライドショーに設定しました！');
+                alert('新しい画像をアルバムに追加しました！ 5秒後にスライドショーが更新されます。');
+
+                // ⏳ 5秒後（5000ミリ秒）にスライドショーを自動更新
+                setTimeout(() => {
+                    initSlideshow();
+                }, 5000);
             };
             reader.readAsDataURL(file);
         }
