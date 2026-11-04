@@ -326,30 +326,24 @@
         <div id="playlist"></div>
     </div>
 
+    <!-- 🎪 イベント画面 -->
     <div id="screen-event" class="sub-screen">
         <div class="sub-header"><span class="sub-title">🎪 イベント情報</span><button class="close-btn" onclick="closeScreen('event')">閉じる</button></div>
-        <div style="background: #1f1f1f; padding: 15px; border-radius: 10px; border: 1px solid #00f5d4; margin-bottom: 15px;">
-            <div style="display:flex; gap:6px; margin-bottom:6px;">
-                <span id="event-type-badge" style="background:#3388ff; color:#fff; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">シーズンイベント</span>
-                <span id="event-status-badge" style="background:#00f5d4; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">開催中</span>
-            </div>
-            <h3 id="current-event-title" style="color: #00f5d4; margin-bottom: 4px;">🎉 結成2周年イベント</h3>
-            <div id="event-period-display" style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">期間: 未設定</div>
-            <h1 id="countdown" style="font-size: 1.3rem; margin: 10px 0;">計算中...</h1>
+        <div id="event-content-container">
+            <!-- 動的に表示内容が切り替わります -->
         </div>
     </div>
 
     <div id="screen-gacha" class="sub-screen">
-        <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ (ピックアップ)</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
+        <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ (ピックアップ)</span><button class="close-btn" onclick="openScreen('gacha')">閉じる</button></div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-            <span id="gacha-type-badge" style="background:#ff9900; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px;">通常ピックアップガチャ</span>
-            <span id="gacha-period-display" style="font-size: 0.75rem; color: #aaa;">開催期間: 常設 / 未設定</span>
+            <span id="gacha-type-badge" style="background:#ff9900; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px;">ネオフェス限定</span>
+            <span id="gacha-period-display" style="font-size: 0.75rem; color: #aaa;">期間: 常設 / 未設定</span>
         </div>
         <p style="margin-bottom: 10px; font-size: 0.85rem; color: #aaa;">★2以下のアイテムを引いた場合は、全ユーザーに自動配布されます！</p>
         
         <button onclick="pullGachaFromDrive()" style="padding: 12px 20px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit; width:100%; margin-bottom: 15px;">💎 ガチャを引く</button>
 
-        <!-- 📊 スプレッドシート準拠の確率表表示 -->
         <div style="background:#1a1a1a; padding:10px; border-radius:8px; border:1px solid #333;">
             <div style="font-size:0.8rem; font-weight:bold; color:#00f5d4; margin-bottom:4px;">📊 現在のガチャ排出確率（スプレッドシート準拠）</div>
             <table class="rate-table">
@@ -397,6 +391,14 @@
         <div class="album-grid" id="album-grid-container"></div>
     </div>
 
+    <!-- 📖 ヒストリー画面（削除されたイベントが自動蓄積されます） -->
+    <div id="screen-history" class="sub-screen">
+        <div class="sub-header"><span class="sub-title">📖 ヒストリー・過去イベント記録</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div>
+        <div id="history-list-container">
+            <p style="color: #888; text-align: center; margin-top: 20px;">過去のイベント記録はありません。</p>
+        </div>
+    </div>
+
     <div id="screen-settings" class="sub-screen">
         <div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div>
         <p style="margin-bottom: 8px; font-weight: bold; color: #00f5d4;">⏰ 時計のフォントカラー変更</p>
@@ -413,7 +415,6 @@
     </div>
 
     <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
-    <div id="screen-history" class="sub-screen"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン</p></div>
     <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
     
     <!-- 🛡️ 管理画面 -->
@@ -425,11 +426,11 @@
                 <button class="close-btn" onclick="closeScreen('manage')">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント・ガチャの開催日時設定とスプレッドシート準拠の確率管理が行えます。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベントにイラスト設定可能。削除時は自動でヒストリーに記録されます。</p>
         
-        <!-- 🎪 イベント開催準備（日時対応） -->
+        <!-- 🎪 イベント開催準備・設定（イラスト選択付き） -->
         <div class="admin-section">
-            <h4>🎪 イベント開催日時・設定</h4>
+            <h4>🎪 イベント管理・ステータス設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">イベントタイトル：</label>
             <input type="text" id="admin-event-title-input" class="admin-input" value="結成2周年イベント">
             <label style="font-size: 0.8rem; color: #aaa;">イベント種類：</label>
@@ -444,13 +445,18 @@
             <label style="font-size: 0.8rem; color: #aaa;">ステータス：</label>
             <select id="admin-event-status-select" class="admin-input">
                 <option value="開催中">開催中</option>
-                <option value="開催準備中">開催準備中</option>
-                <option value="終了">終了</option>
+                <option value="開催準備中">開催準備中 (一般非表示)</option>
+                <option value="終了">終了 (確認可能)</option>
             </select>
-            <button class="admin-btn" onclick="adminCreateEvent()">🚀 イベント日時・設定を適用する</button>
+            <label style="font-size: 0.8rem; color: #aaa;">イベントバナー・イラスト（Googleドライブ選択）：</label>
+            <select id="admin-event-img-select" class="admin-input">
+                <option value="">(イラストなし)</option>
+            </select>
+            <button class="admin-btn" onclick="adminCreateEvent()">🚀 イベント設定を保存する</button>
+            <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを削除してヒストリーにまとめる</button>
         </div>
 
-        <!-- 🎂 ガチャ管理（スプレッドシート準拠の種類・日時・確率対応） -->
+        <!-- 🎂 ガチャ管理 -->
         <div class="admin-section">
             <h4>🎂 ガチャ開催日時・種類・確率設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">ガチャ名称：</label>
@@ -530,7 +536,6 @@
     <script>
         const GIST_RAW_URL = "https://gist.githubusercontent.com/nexusostave1124/ac1c05eaf442b0dcb34514cb7ed804a7/raw/images.json";
 
-        // スプレッドシート準拠のガチャ排出確率テーブル
         const GACHA_RATES = {
             "ネオフェス限定": { "★6": 0.4, "★5": 6.6, "★4": 23, "★3": 30, "★2": 40 },
             "タイアップ限定": { "★6": 0.3, "★5": 1.7, "★4": 30, "★3": 30, "★2": 38 },
@@ -562,23 +567,26 @@
         function getUserSlideshowKey() { return 'nexus_slideshow_' + (currentUser ? currentUser.id : 'guest'); }
         function getUserGiftsKey() { return 'nexus_gifts_' + (currentUser ? currentUser.id : 'guest'); }
         function getGlobalNoticesKey() { return 'nexus_global_notices'; }
+        function getEventHistoryKey() { return 'nexus_event_history'; }
 
         let userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
         let userSlideshowIds = JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [];
         let userGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
         let globalNotices = JSON.parse(localStorage.getItem(getGlobalNoticesKey())) || [];
+        let eventHistory = JSON.parse(localStorage.getItem(getEventHistoryKey())) || [];
 
         let currentEvent = JSON.parse(localStorage.getItem('nexus_current_event')) || {
             title: "結成2周年イベント",
             type: "シーズンイベント",
             startDate: "2026-11-01T00:00",
             endDate: "2026-11-30T00:00",
-            status: "開催中"
+            status: "開催中",
+            imgUrl: ""
         };
 
         let currentGachaConfig = JSON.parse(localStorage.getItem('nexus_gacha_config')) || {
             title: "記念ピックアップガチャ",
-            type: "ネオフェс限定",
+            type: "ネオフェス限定",
             startDate: "2026-11-01T00:00",
             endDate: "2026-11-30T00:00"
         };
@@ -606,25 +614,17 @@
                 if (menuLoginBtn) menuLoginBtn.innerHTML = "<span>IDログイン</span>";
             }
 
-            // イベント情報反映
-            document.getElementById('current-event-title').innerText = "🎉 " + currentEvent.title;
-            const typeBadge = document.getElementById('event-type-badge');
-            if (typeBadge) typeBadge.innerText = currentEvent.type;
-            document.getElementById('event-period-display').innerText = `開催期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`;
-
             const badgeStatus = document.getElementById('badge-event-status');
-            const screenBadge = document.getElementById('event-status-badge');
             if (badgeStatus) badgeStatus.innerText = currentEvent.status;
-            if (screenBadge) screenBadge.innerText = currentEvent.status;
 
-            // ガチャ情報反映
+            renderEventScreen();
+
             const gachaTitleEl = document.getElementById('gacha-screen-title');
             const gachaTypeBadge = document.getElementById('gacha-type-badge');
             if (gachaTitleEl) gachaTitleEl.innerText = "🎂 " + currentGachaConfig.title;
             if (gachaTypeBadge) gachaTypeBadge.innerText = currentGachaConfig.type;
             document.getElementById('gacha-period-display').innerText = `期間: ${formatDateStr(currentGachaConfig.startDate)} 〜 ${formatDateStr(currentGachaConfig.endDate)}`;
 
-            // 確率テーブルの反映
             const rates = GACHA_RATES[currentGachaConfig.type] || { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 100 };
             document.getElementById('rate-type-name').innerText = currentGachaConfig.type;
             document.getElementById('rate-6').innerText = rates["★6"] + "%";
@@ -648,6 +648,37 @@
             } else {
                 noticeBadge.style.display = 'none';
             }
+        }
+
+        // 🎪 イベント画面のレンダリング（開催準備中の非表示制御・終了の閲覧・イラスト表示）
+        function renderEventScreen() {
+            const container = document.getElementById('event-content-container');
+            if (!container) return;
+
+            // 管理者以外で「開催準備中」の場合は表示しない
+            if (currentEvent.status === "開催準備中" && !isAdmin) {
+                container.innerHTML = `
+                    <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #555; text-align: center;">
+                        <h3 style="color: #aaa; margin-bottom: 10px;">🔒 現在準備中のイベントはありません</h3>
+                        <p style="font-size: 0.85rem; color: #888;">新しいイベントの開催までしばらくお待ちください。</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let statusColor = currentEvent.status === "開催中" ? "#00f5d4" : "#ff9900";
+            container.innerHTML = `
+                <div style="background: #1f1f1f; padding: 15px; border-radius: 10px; border: 1px solid ${statusColor}; margin-bottom: 15px;">
+                    <div style="display:flex; gap:6px; margin-bottom:6px;">
+                        <span style="background:#3388ff; color:#fff; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentEvent.type}</span>
+                        <span style="background:${statusColor}; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentEvent.status}</span>
+                    </div>
+                    <h3 style="color: #00f5d4; margin-bottom: 4px;">🎉 ${currentEvent.title}</h3>
+                    <div style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}</div>
+                    ${currentEvent.imgUrl ? `<img src="${currentEvent.imgUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:8px; margin-bottom:10px;">` : ''}
+                    <h1 id="countdown" style="font-size: 1.3rem; margin: 10px 0;">計算中...</h1>
+                </div>
+            `;
         }
 
         function handleStatusClick() {
@@ -713,6 +744,7 @@
             renderAlbum();
             renderGifts();
             renderNotices();
+            renderHistory();
         }
 
         function checkManagePassword() {
@@ -734,19 +766,71 @@
             }
         }
 
-        // 🎪 イベント開催設定（開始・終了日時対応）
+        // 🎪 イベント設定（イラスト付き）
         function adminCreateEvent() {
             const title = document.getElementById('admin-event-title-input').value;
             const type = document.getElementById('admin-event-type-select').value;
             const start = document.getElementById('admin-event-start-input').value;
             const end = document.getElementById('admin-event-end-input').value;
             const status = document.getElementById('admin-event-status-select').value;
+            const imgUrl = document.getElementById('admin-event-img-select').value;
             if (!title || !start || !end) return;
 
-            currentEvent = { title: title, type: type, startDate: start, endDate: end, status: status };
+            currentEvent = { title: title, type: type, startDate: start, endDate: end, status: status, imgUrl: imgUrl };
             localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
             updateUIUserStatus();
-            alert(`🎪 [${type}] 「${title}」の開催期間（${formatDateStr(start)} 〜 ${formatDateStr(end)}）を設定しました！`);
+            alert(`🎪 [${type}] 「${title}」のイベント設定を保存しました！`);
+        }
+
+        // 🗑️ イベント削除時にヒストリーに自動蓄積
+        function adminDeleteEventToHistory() {
+            if (confirm(`イベント「${currentEvent.title}」を終了・削除し、ヒストリーに記録しますか？`)) {
+                eventHistory.unshift({
+                    title: currentEvent.title,
+                    type: currentEvent.type,
+                    period: `${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`,
+                    imgUrl: currentEvent.imgUrl,
+                    archivedDate: new Date().toLocaleDateString()
+                });
+                localStorage.setItem(getEventHistoryKey(), JSON.stringify(eventHistory));
+
+                currentEvent = {
+                    title: "次回のイベント準備中",
+                    type: "シーズンイベント",
+                    startDate: "",
+                    endDate: "",
+                    status: "開催準備中",
+                    imgUrl: ""
+                };
+                localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
+                updateUIUserStatus();
+                renderHistory();
+                alert("📖 イベントを終了し、ヒストリーにきれいにまとめました！");
+            }
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('history-list-container');
+            if (!container) return;
+            eventHistory = JSON.parse(localStorage.getItem(getEventHistoryKey())) || [];
+
+            if (eventHistory.length === 0) {
+                container.innerHTML = `<p style="color: #888; text-align: center; margin-top: 20px;">過去のイベント記録はありません。</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            eventHistory.forEach(item => {
+                const box = document.createElement('div');
+                box.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:12px; border-left:3px solid #3388ff;";
+                box.innerHTML = `
+                    <div style="font-size:0.7rem; color:#888; margin-bottom:4px;">記録日: ${item.archivedDate} | ${item.type}</div>
+                    <div style="font-weight:bold; color:#00f5d4; font-size:1rem; margin-bottom:4px;">${item.title}</div>
+                    <div style="font-size:0.8rem; color:#aaa; margin-bottom:8px;">期間: ${item.period}</div>
+                    ${item.imgUrl ? `<img src="${item.imgUrl}" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px;">` : ''}
+                `;
+                container.appendChild(box);
+            });
         }
 
         function adminResetEventPoints() {
@@ -763,7 +847,7 @@
             alert("🏆 【順位発表演出】\n1位: ネオ (9,999 P)\n2位: ヨウスケ (--- P)");
         }
 
-        // 🎂 ガチャ設定（種類・日時・確率連動）
+        // 🎂 ガチャ設定
         function adminAddGachaIllustration() {
             const gachaTitle = document.getElementById('admin-gacha-title-input').value;
             const gachaType = document.getElementById('admin-gacha-type-select').value;
@@ -875,6 +959,7 @@
 
                 initSlideshow();
                 renderAlbum();
+                renderHistory();
             } catch (e) {
                 console.log("ドライブマスターデータの取得スキップ");
             }
@@ -884,8 +969,9 @@
             const gachaSelect = document.getElementById('admin-gacha-img-select');
             const giftSelect = document.getElementById('admin-gift-img-select');
             const noticeSelect = document.getElementById('admin-notice-img-select');
+            const eventImgSelect = document.getElementById('admin-event-img-select');
             const targetSelect = document.getElementById('admin-gift-target');
-            if (!gachaSelect || !giftSelect || !noticeSelect || !targetSelect) return;
+            if (!gachaSelect || !giftSelect || !noticeSelect || !targetSelect || !eventImgSelect) return;
 
             let optionsHtml = `<option value="">(選択してください)</option>`;
             masterDriveImages.forEach(img => {
@@ -895,6 +981,7 @@
             gachaSelect.innerHTML = optionsHtml;
             giftSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
             noticeSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
+            eventImgSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
 
             let targetHtml = `<option value="ALL">🌐 全メンバー一斉送信</option>`;
             memberDatabase.forEach(m => {
@@ -903,7 +990,7 @@
             targetSelect.innerHTML = targetHtml;
         }
 
-        // 🎂 ガチャ機能（★2以下の場合は全ユーザーに自動配布！）
+        // 🎂 ガチャ機能
         function pullGachaFromDrive() {
             if (!currentUser) {
                 alert("ガチャを引くには、まず左上のステータスからUSER IDでログインしてください！");
@@ -1148,8 +1235,8 @@
                     updateBattery();
                     battery.addEventListener('levelchange', updateBattery);
                     battery.addEventListener('chargingchange', updateBattery);
-                } catch (e) { bEl.innerText = "充電中 100%"; }
-            } else { bEl.innerText = "充電中 100%"; }
+                } catch (e) { bEl.innerText = "充電中 100% (省電力)"; }
+            } else { bEl.innerText = "充電中 100% (省電力)"; }
         }
         initBattery();
 
@@ -1159,6 +1246,7 @@
             closeOtherMenu();
             if (name === 'present') renderGifts();
             if (name === 'notice') renderNotices();
+            if (name === 'history') renderHistory();
             document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             const target = document.getElementById('screen-' + name);
@@ -1173,17 +1261,20 @@
         }
 
         function updateCountdown() {
+            if (!currentEvent.endDate || currentEvent.status === "開催準備中") return;
             const target = new Date(currentEvent.endDate);
             const diff = target - new Date();
+            const cdEl = document.getElementById('countdown');
+            if (!cdEl) return;
             if (diff <= 0) {
-                document.getElementById('countdown').innerText = "🎉 イベント終了・集計中";
+                cdEl.innerText = "🎉 イベント終了・集計中";
                 return;
             }
             const d = Math.floor(diff / (1000 * 60 * 60 * 24));
             const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
             const m = Math.floor((diff / 1000 / 60) % 60);
             const s = Math.floor((diff / 1000) % 60);
-            document.getElementById('countdown').innerText = `${d}日 ${h}時間 ${m}分 ${s}秒`;
+            cdEl.innerText = `${d}日 ${h}時間 ${m}分 ${s}秒`;
         }
         setInterval(updateCountdown, 1000);
         updateCountdown();
