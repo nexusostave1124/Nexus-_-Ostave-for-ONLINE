@@ -530,8 +530,8 @@
     </div>
 
     <div id="screen-album" class="sub-screen">
-        <div class="sub-header"><span class="sub-title">📷 マイアルバム & アイコン・スライドショー設定</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div>
-        <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 12px;">ガチャやプレゼントで獲得したイラストをタップしてスライドショーに登録できます。また、下のボタンからアイコンに設定可能です。</p>
+        <div class="sub-header"><span class="sub-title">📷 マイアルバム & スライドショー設定</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div>
+        <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 12px;">ガチャやプレゼントで獲得したイラストをタップしてスライドショーに登録できます。</p>
         <div class="album-grid" id="album-grid-container"></div>
     </div>
 
@@ -1538,9 +1538,9 @@
                 if (!response.ok) return;
                 const fetchedData = await response.json();
                 
-                // メモリー（保存済みデータ）にない新規画像のみ追加し、脹相などの不要項目を完全除外
+                // 左側の脹相（【★2配布】脹相(★1)）のみを完全除外し、右側の脹相は保持する
                 fetchedData.forEach(item => {
-                    if (item.name.includes("脹相")) return; // 脹相を完全除外
+                    if (item.name.includes("【★2配布】脹相") || (item.name.includes("脹相") && item.name.includes("★1"))) return;
                     if (!masterDriveImages.some(existing => existing.url === item.url)) {
                         const rarity = item.name.includes("★6") ? "★6" : item.name.includes("★5") ? "★5" : item.name.includes("★4") ? "★4" : item.name.includes("★3") ? "★3" : "★2";
                         masterDriveImages.push({ ...item, rarity: rarity });
@@ -1550,7 +1550,7 @@
                 localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
                 
                 if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
-                    userAlbum = masterDriveImages.filter(i => !i.name.includes("脹相"));
+                    userAlbum = masterDriveImages.filter(i => !(i.name.includes("【★2配布】脹相") || (i.name.includes("脹相") && i.name.includes("★1"))));
                     userSlideshowIds = userAlbum.map(img => img.id);
                     saveUserAlbumData();
                 }
@@ -1808,35 +1808,18 @@
             }
             userAlbum.forEach(img => {
                 const isInSlideshow = userSlideshowIds.includes(img.id);
-                const isCurrentAvatar = userAvatarUrl === img.url;
                 const card = document.createElement('div');
                 card.className = 'album-card' + (isInSlideshow ? ' in-slideshow' : '');
                 card.innerHTML = `
                     <div class="album-img-box"><img src="${img.url}" alt="${img.name}"></div>
                     <div class="album-card-info">
                         <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${img.name}</div>
-                        <div style="font-size:0.7rem; color:${isInSlideshow ? '#00f5d4' : '#888'}; margin-bottom:4px;">${isInSlideshow ? '✓ スライド中' : 'タップでスライド登録'}</div>
-                        <button onclick="setAlbumAsAvatar(event, '${img.url}')" style="padding:3px 8px; background:${isCurrentAvatar ? '#ff334b' : '#00f5d4'}; color:${isCurrentAvatar ? '#fff' : '#000'}; border:none; border-radius:4px; font-weight:bold; font-size:0.7rem; cursor:pointer;">${isCurrentAvatar ? 'アイコン中' : 'アイコンにする'}</button>
+                        <div style="font-size:0.7rem; color:${isInSlideshow ? '#00f5d4' : '#888'};">${isInSlideshow ? '✓ スライド中' : 'タップしてスライド登録'}</div>
                     </div>
                 `;
-                card.onclick = (e) => {
-                    if (e.target.tagName !== 'BUTTON') toggleSlideshow(img.id);
-                };
+                card.onclick = () => toggleSlideshow(img.id);
                 grid.appendChild(card);
             });
-        }
-
-        function setAlbumAsAvatar(e, url) {
-            e.stopPropagation();
-            if (currentUser) {
-                localStorage.setItem(getUserAvatarKey(), url);
-                userAvatarUrl = url;
-                updateUIUserStatus();
-                renderAlbum();
-                alert("🖼️ アルバムからアイコンを変更しました！");
-            } else {
-                alert("ログインするとアイコンを変更できます。");
-            }
         }
 
         function toggleSlideshow(id) {
@@ -1982,6 +1965,7 @@
             if (name === 'home') document.getElementById('nav-home').classList.add('active');
         }
 
+        // 音量連動（audioタグに直結）
         function adjustVolume(val) {
             const vol = val / 100;
             if (audioPlayer) audioPlayer.volume = vol;
@@ -2031,7 +2015,6 @@
             }
         }
 
-        // リセット（チェックボックス確認 ＋ ダイアログ二重確認方式）
         function executeForkReset() {
             const checkBox = document.getElementById('reset-check-box');
             if (!checkBox.checked) {
