@@ -44,51 +44,30 @@
             opacity: 0;
             transition: opacity 0.8s ease-in-out;
         }
-        .slide-img.active {
-            opacity: 1;
-        }
+        .slide-img.active { opacity: 1; }
         /* 上下グラデーション */
         .overlay-top {
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 160px;
+            position: absolute; top: 0; left: 0; right: 0; height: 160px;
             background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
-            z-index: 2;
-            pointer-events: none;
+            z-index: 2; pointer-events: none;
         }
         .overlay-bottom {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 160px;
+            position: absolute; bottom: 0; left: 0; right: 0; height: 160px;
             background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
-            z-index: 2;
-            pointer-events: none;
+            z-index: 2; pointer-events: none;
         }
         /* 📊 左上：ステータスバー */
         .user-status {
-            position: absolute;
-            top: 15px; left: 15px;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(0, 0, 0, 0.65);
-            padding: 10px 14px;
-            border-radius: 16px;
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(0, 245, 212, 0.4);
-            min-width: 190px;
-            cursor: pointer;
-            transition: background 0.2s;
+            position: absolute; top: 15px; left: 15px; z-index: 10;
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(0, 0, 0, 0.65); padding: 10px 14px; border-radius: 16px;
+            backdrop-filter: blur(6px); border: 1px solid rgba(0, 245, 212, 0.4);
+            min-width: 190px; cursor: pointer; transition: background 0.2s;
         }
         .user-status:active { background: rgba(0, 0, 0, 0.85); }
         .avatar-box {
-            width: 54px; height: 54px;
-            border-radius: 10px;
-            border: 2px solid #00f5d4;
-            overflow: hidden;
-            background: #222;
-            flex-shrink: 0;
+            width: 54px; height: 54px; border-radius: 10px; border: 2px solid #00f5d4;
+            overflow: hidden; background: #222; flex-shrink: 0;
         }
         .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
         .status-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
@@ -99,22 +78,14 @@
 
         /* ⏰ 右上エリア */
         .top-right-area {
-            position: absolute;
-            top: 15px; right: 15px;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 10px;
+            position: absolute; top: 15px; right: 15px; z-index: 10;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
         }
         .clock-container { text-align: right; }
         .clock-title { font-size: 0.65rem; color: #aaa; letter-spacing: 1px; }
         .clock-time {
-            font-family: "Shippori Mincho", serif;
-            font-size: 1.8rem;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            transition: color 0.3s, text-shadow 0.3s;
+            font-family: "Shippori Mincho", serif; font-size: 1.8rem; font-weight: 800;
+            letter-spacing: 1.5px; transition: color 0.3s, text-shadow 0.3s;
         }
         .battery-status { font-family: "Shippori Mincho", serif; font-size: 0.9rem; margin-top: 2px; font-weight: 800; }
 
@@ -140,26 +111,21 @@
         /* プレゼント＆お知らせボタン */
         .top-buttons-column { display: flex; flex-direction: column; gap: 8px; }
         .icon-badge-btn {
-            position: relative;
-            width: 42px; height: 42px;
-            background: rgba(20, 20, 20, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 10px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; width: 42px; height: 42px;
+            background: rgba(20, 20, 20, 0.75); border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;
             font-size: 1.2rem; cursor: pointer; backdrop-filter: blur(4px);
         }
         .icon-label { font-size: 0.5rem; color: #ccc; margin-top: -2px; }
         .badge {
-            position: absolute; top: -5px; right: -5px;
-            background: #ff334b; color: #fff; font-size: 0.65rem; font-weight: bold;
-            border-radius: 10px; padding: 1px 5px; border: 1px solid #000; display: none;
+            position: absolute; top: -5px; right: -5px; background: #ff334b; color: #fff;
+            font-size: 0.65rem; font-weight: bold; border-radius: 10px; padding: 1px 5px; border: 1px solid #000; display: none;
         }
 
         /* ミニ楽曲プレイヤー */
         .mini-player {
             position: absolute; bottom: 75px; right: 15px; z-index: 10;
-            background: rgba(15, 15, 15, 0.85);
-            border: 1px solid rgba(0, 245, 212, 0.4);
+            background: rgba(15, 15, 15, 0.85); border: 1px solid rgba(0, 245, 212, 0.4);
             border-radius: 16px; padding: 6px 14px;
             display: flex; align-items: center; gap: 8px; backdrop-filter: blur(6px); cursor: pointer;
         }
@@ -170,8 +136,7 @@
         /* 下部ナビゲーションバー */
         .bottom-nav {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 62px;
-            background: rgba(18, 18, 18, 0.95);
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(18, 18, 18, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.15);
             display: flex; justify-content: space-around; align-items: center;
             z-index: 500; backdrop-filter: blur(10px);
         }
@@ -215,7 +180,7 @@
         .sub-title { font-size: 1.1rem; color: #00f5d4; font-weight: bold; }
         .close-btn { padding: 5px 14px; background: #333; color: #fff; border: 1px solid #555; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit; }
 
-        /* アルバム画面のグリッドスタイル */
+        /* アルバム画面グリッド */
         .album-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .album-card {
             background: #1f1f1f; border: 2px solid #333; border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color 0.2s, transform 0.1s;
@@ -243,6 +208,11 @@
         .admin-input { width: 100%; padding: 8px 10px; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; font-family: inherit; margin-top: 6px; margin-bottom: 10px; }
 
         .item-box { background: #1f1f1f; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* 確率テーブル表示スタイル */
+        .rate-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.75rem; background: #222; }
+        .rate-table th, .rate-table td { border: 1px solid #444; padding: 4px; text-align: center; }
+        .rate-table th { background: #333; color: #00f5d4; }
     </style>
 </head>
 <body>
@@ -254,7 +224,7 @@
         <div class="overlay-top"></div>
         <div class="overlay-bottom"></div>
 
-        <!-- 📊 左上：ステータスバー（ログイン中はクリックでログアウト等可能） -->
+        <!-- 📊 左上：ステータスバー -->
         <div class="user-status" onclick="handleStatusClick()" title="ステータス / ログイン・ログアウト">
             <div class="avatar-box">
                 <img src="https://picsum.photos/id/1069/100/100" alt="アイコン">
@@ -363,16 +333,34 @@
                 <span id="event-type-badge" style="background:#3388ff; color:#fff; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">シーズンイベント</span>
                 <span id="event-status-badge" style="background:#00f5d4; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">開催中</span>
             </div>
-            <h3 id="current-event-title" style="color: #00f5d4;">🎉 結成2周年イベント</h3>
+            <h3 id="current-event-title" style="color: #00f5d4; margin-bottom: 4px;">🎉 結成2周年イベント</h3>
+            <div id="event-period-display" style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">期間: 未設定</div>
             <h1 id="countdown" style="font-size: 1.3rem; margin: 10px 0;">計算中...</h1>
         </div>
     </div>
 
     <div id="screen-gacha" class="sub-screen">
         <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ (ピックアップ)</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
-        <div style="margin-bottom: 10px;"><span id="gacha-type-badge" style="background:#ff9900; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px;">通常ピックアップガチャ</span></div>
-        <p style="margin-bottom: 15px; font-size: 0.85rem; color: #aaa;">排出確率はスプレッドシート準拠。★2以下は全ユーザーに自動配布されます！</p>
-        <button onclick="pullGachaFromDrive()" style="padding: 12px 20px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit; width:100%;">💎 ガチャを引く</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+            <span id="gacha-type-badge" style="background:#ff9900; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px;">通常ピックアップガチャ</span>
+            <span id="gacha-period-display" style="font-size: 0.75rem; color: #aaa;">開催期間: 常設 / 未設定</span>
+        </div>
+        <p style="margin-bottom: 10px; font-size: 0.85rem; color: #aaa;">★2以下のアイテムを引いた場合は、全ユーザーに自動配布されます！</p>
+        
+        <button onclick="pullGachaFromDrive()" style="padding: 12px 20px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit; width:100%; margin-bottom: 15px;">💎 ガチャを引く</button>
+
+        <!-- 📊 スプレッドシート準拠の確率表表示 -->
+        <div style="background:#1a1a1a; padding:10px; border-radius:8px; border:1px solid #333;">
+            <div style="font-size:0.8rem; font-weight:bold; color:#00f5d4; margin-bottom:4px;">📊 現在のガチャ排出確率（スプレッドシート準拠）</div>
+            <table class="rate-table">
+                <thead>
+                    <tr><th>レア</th><th>★6</th><th>★5</th><th>★4</th><th>★3</th><th>★2</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td id="rate-type-name">確率(%)</td><td id="rate-6">--</td><td id="rate-5">--</td><td id="rate-4">--</td><td id="rate-3">--</td><td id="rate-2">--</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div id="screen-play" class="sub-screen">
@@ -437,11 +425,11 @@
                 <button class="close-btn" onclick="closeScreen('manage')">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント種類、ガチャ種類、個別プレゼント配布等に対応中。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント・ガチャの開催日時設定とスプレッドシート準拠の確率管理が行えます。</p>
         
-        <!-- 🎪 イベント管理（種類対応） -->
+        <!-- 🎪 イベント開催準備（日時対応） -->
         <div class="admin-section">
-            <h4>🎪 イベント開催準備・設定</h4>
+            <h4>🎪 イベント開催日時・設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">イベントタイトル：</label>
             <input type="text" id="admin-event-title-input" class="admin-input" value="結成2周年イベント">
             <label style="font-size: 0.8rem; color: #aaa;">イベント種類：</label>
@@ -449,6 +437,8 @@
                 <option value="シーズンイベント">シーズンイベント</option>
                 <option value="ストーリーイベント">ストーリーイベント</option>
             </select>
+            <label style="font-size: 0.8rem; color: #aaa;">開始日時：</label>
+            <input type="datetime-local" id="admin-event-start-input" class="admin-input" value="2026-11-01T00:00">
             <label style="font-size: 0.8rem; color: #aaa;">終了日時：</label>
             <input type="datetime-local" id="admin-event-end-input" class="admin-input" value="2026-11-30T00:00">
             <label style="font-size: 0.8rem; color: #aaa;">ステータス：</label>
@@ -457,37 +447,45 @@
                 <option value="開催準備中">開催準備中</option>
                 <option value="終了">終了</option>
             </select>
-            <button class="admin-btn" onclick="adminCreateEvent()">🚀 イベント設定を適用する</button>
+            <button class="admin-btn" onclick="adminCreateEvent()">🚀 イベント日時・設定を適用する</button>
         </div>
 
-        <!-- 🎂 ガチャ管理（スプレッドシート準拠の種類） -->
+        <!-- 🎂 ガチャ管理（スプレッドシート準拠の種類・日時・確率対応） -->
         <div class="admin-section">
-            <h4>🎂 ガチャ追加・種類設定</h4>
+            <h4>🎂 ガチャ開催日時・種類・確率設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">ガチャ名称：</label>
             <input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
-            <label style="font-size: 0.8rem; color: #aaa;">ガチャの種類（スプレッドシート記載通り）：</label>
+            <label style="font-size: 0.8rem; color: #aaa;">ガチャの種類（スプレッドシート準拠）：</label>
             <select id="admin-gacha-type-select" class="admin-input">
-                <option value="通常ピックアップガチャ">通常ピックアップガチャ</option>
-                <option value="期間限定ガチャ">期間限定ガチャ</option>
-                <option value="バースデーガチャ">バースデーガチャ</option>
-                <option value="無料ガチャ">無料ガチャ</option>
+                <option value="ネオフェス限定">ネオフェス限定</option>
+                <option value="タイアップ限定">タイアップ限定</option>
+                <option value="限定">限定</option>
+                <option value="復刻・バースデー">復刻・バースデー</option>
+                <option value="イベント">イベント</option>
+                <option value="限定復刻">限定復刻</option>
+                <option value="限定/恒常">限定/恒常</option>
             </select>
-            <label style="font-size: 0.8rem; color: #aaa;">レアリティ：</label>
+            <label style="font-size: 0.8rem; color: #aaa;">開始日時：</label>
+            <input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
+            <label style="font-size: 0.8rem; color: #aaa;">終了日時：</label>
+            <input type="datetime-local" id="admin-gacha-end-input" class="admin-input" value="2026-11-30T00:00">
+            
+            <label style="font-size: 0.8rem; color: #aaa; margin-top:8px; display:block;">追加するイラスト（Googleドライブ選択）：</label>
+            <select id="admin-gacha-img-select" class="admin-input">
+                <option value="">(選択してください)</option>
+            </select>
+            <label style="font-size: 0.8rem; color: #aaa;">付与するレアリティ：</label>
             <select id="admin-gacha-rarity" class="admin-input">
-                <option value="★6">★6 (最高レア)</option>
+                <option value="★6">★6</option>
                 <option value="★5">★5</option>
                 <option value="★4">★4</option>
                 <option value="★3">★3</option>
                 <option value="★2">★2 (全ユーザー自動配布対象)</option>
             </select>
-            <label style="font-size: 0.8rem; color: #aaa;">追加するイラスト（Googleドライブから選択）：</label>
-            <select id="admin-gacha-img-select" class="admin-input">
-                <option value="">(選択してください)</option>
-            </select>
-            <button class="admin-btn" onclick="adminAddGachaIllustration()">➕ ガチャプールに追加する</button>
+            <button class="admin-btn" onclick="adminAddGachaIllustration()">➕ ガチャ設定＆イラストを追加</button>
         </div>
 
-        <!-- 🎁 プレゼント配信（コイン・イラスト・個別宛対応） -->
+        <!-- 🎁 プレゼント配信 -->
         <div class="admin-section">
             <h4>🎁 プレゼントを贈る（個別 / 全員）</h4>
             <label style="font-size: 0.8rem; color: #aaa;">宛先：</label>
@@ -532,6 +530,17 @@
     <script>
         const GIST_RAW_URL = "https://gist.githubusercontent.com/nexusostave1124/ac1c05eaf442b0dcb34514cb7ed804a7/raw/images.json";
 
+        // スプレッドシート準拠のガチャ排出確率テーブル
+        const GACHA_RATES = {
+            "ネオフェス限定": { "★6": 0.4, "★5": 6.6, "★4": 23, "★3": 30, "★2": 40 },
+            "タイアップ限定": { "★6": 0.3, "★5": 1.7, "★4": 30, "★3": 30, "★2": 38 },
+            "限定": { "★6": 0, "★5": 2.0, "★4": 18, "★3": 35, "★2": 45 },
+            "復刻・バースデー": { "★6": 0, "★5": 4.0, "★4": 26, "★3": 30, "★2": 40 },
+            "イベント": { "★6": 0, "★5": 0, "★4": 5, "★3": 45, "★2": 50 },
+            "限定復刻": { "★6": 100, "★5": 0, "★4": 0, "★3": 0, "★2": 0 },
+            "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
+        };
+
         let memberDatabase = JSON.parse(localStorage.getItem('nexus_members_db')) || [
             { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 0 },
             { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 0 },
@@ -562,14 +571,22 @@
         let currentEvent = JSON.parse(localStorage.getItem('nexus_current_event')) || {
             title: "結成2周年イベント",
             type: "シーズンイベント",
-            endDate: "2026-11-30T00:00:00",
+            startDate: "2026-11-01T00:00",
+            endDate: "2026-11-30T00:00",
             status: "開催中"
         };
 
         let currentGachaConfig = JSON.parse(localStorage.getItem('nexus_gacha_config')) || {
             title: "記念ピックアップガチャ",
-            type: "通常ピックアップガチャ"
+            type: "ネオフェс限定",
+            startDate: "2026-11-01T00:00",
+            endDate: "2026-11-30T00:00"
         };
+
+        function formatDateStr(isoStr) {
+            if (!isoStr) return "未設定";
+            return isoStr.replace("T", " ");
+        }
 
         function updateUIUserStatus() {
             const idEl = document.getElementById('display-id');
@@ -589,19 +606,32 @@
                 if (menuLoginBtn) menuLoginBtn.innerHTML = "<span>IDログイン</span>";
             }
 
+            // イベント情報反映
             document.getElementById('current-event-title').innerText = "🎉 " + currentEvent.title;
             const typeBadge = document.getElementById('event-type-badge');
             if (typeBadge) typeBadge.innerText = currentEvent.type;
+            document.getElementById('event-period-display').innerText = `開催期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`;
 
             const badgeStatus = document.getElementById('badge-event-status');
             const screenBadge = document.getElementById('event-status-badge');
             if (badgeStatus) badgeStatus.innerText = currentEvent.status;
             if (screenBadge) screenBadge.innerText = currentEvent.status;
 
+            // ガチャ情報反映
             const gachaTitleEl = document.getElementById('gacha-screen-title');
             const gachaTypeBadge = document.getElementById('gacha-type-badge');
             if (gachaTitleEl) gachaTitleEl.innerText = "🎂 " + currentGachaConfig.title;
             if (gachaTypeBadge) gachaTypeBadge.innerText = currentGachaConfig.type;
+            document.getElementById('gacha-period-display').innerText = `期間: ${formatDateStr(currentGachaConfig.startDate)} 〜 ${formatDateStr(currentGachaConfig.endDate)}`;
+
+            // 確率テーブルの反映
+            const rates = GACHA_RATES[currentGachaConfig.type] || { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 100 };
+            document.getElementById('rate-type-name').innerText = currentGachaConfig.type;
+            document.getElementById('rate-6').innerText = rates["★6"] + "%";
+            document.getElementById('rate-5').innerText = rates["★5"] + "%";
+            document.getElementById('rate-4').innerText = rates["★4"] + "%";
+            document.getElementById('rate-3').innerText = rates["★3"] + "%";
+            document.getElementById('rate-2').innerText = rates["★2"] + "%";
 
             const giftBadge = document.getElementById('badge-present');
             if (userGifts.length > 0) {
@@ -620,7 +650,6 @@
             }
         }
 
-        // 🆔 ステータスバークリックまたはログイン/ログアウト切替
         function handleStatusClick() {
             if (currentUser) {
                 if (confirm("ログアウトしますか？")) {
@@ -705,17 +734,19 @@
             }
         }
 
-        // 🎪 イベント設定（種類対応）
+        // 🎪 イベント開催設定（開始・終了日時対応）
         function adminCreateEvent() {
             const title = document.getElementById('admin-event-title-input').value;
             const type = document.getElementById('admin-event-type-select').value;
+            const start = document.getElementById('admin-event-start-input').value;
             const end = document.getElementById('admin-event-end-input').value;
             const status = document.getElementById('admin-event-status-select').value;
-            if (!title || !end) return;
-            currentEvent = { title: title, type: type, endDate: end, status: status };
+            if (!title || !start || !end) return;
+
+            currentEvent = { title: title, type: type, startDate: start, endDate: end, status: status };
             localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
             updateUIUserStatus();
-            alert(`🎪 [${type}] 「${title}」の開催準備を適用しました！`);
+            alert(`🎪 [${type}] 「${title}」の開催期間（${formatDateStr(start)} 〜 ${formatDateStr(end)}）を設定しました！`);
         }
 
         function adminResetEventPoints() {
@@ -732,10 +763,12 @@
             alert("🏆 【順位発表演出】\n1位: ネオ (9,999 P)\n2位: ヨウスケ (--- P)");
         }
 
-        // 🎂 ガチャ追加（種類対応）
+        // 🎂 ガチャ設定（種類・日時・確率連動）
         function adminAddGachaIllustration() {
             const gachaTitle = document.getElementById('admin-gacha-title-input').value;
             const gachaType = document.getElementById('admin-gacha-type-select').value;
+            const start = document.getElementById('admin-gacha-start-input').value;
+            const end = document.getElementById('admin-gacha-end-input').value;
             const rarity = document.getElementById('admin-gacha-rarity').value;
             const selectEl = document.getElementById('admin-gacha-img-select');
             const selectedUrl = selectEl.value;
@@ -746,7 +779,7 @@
                 return;
             }
 
-            currentGachaConfig = { title: gachaTitle || "記念ピックアップガチャ", type: gachaType };
+            currentGachaConfig = { title: gachaTitle || "記念ピックアップガチャ", type: gachaType, startDate: start, endDate: end };
             localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
 
             const newMasterItem = {
@@ -757,10 +790,10 @@
 
             masterDriveImages.push(newMasterItem);
             updateUIUserStatus();
-            alert(`🎂 [${gachaType}] 「${currentGachaConfig.title}」に「[${rarity}] ${selectedName}」を追加しました！`);
+            alert(`🎂 [${gachaType}] 「${currentGachaConfig.title}」にイラストを追加しました！`);
         }
 
-        // 🎁 プレゼント送信（個別宛 or 全員対応・コイン対応）
+        // 🎁 プレゼント送信
         function adminSendGift() {
             const targetId = document.getElementById('admin-gift-target').value;
             const title = document.getElementById('admin-gift-title').value;
