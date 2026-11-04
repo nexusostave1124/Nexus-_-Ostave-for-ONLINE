@@ -293,7 +293,7 @@
             position: absolute; top: -14px; background: #ff334b; color: #fff;
             font-size: 0.65rem; font-weight: bold; border-radius: 12px; padding: 2px 7px;
             box-shadow: 0 2px 6px rgba(255,51,75,0.8); border: 1px solid #fff;
-            display: none; white-space: nowrap; animation: popBubble 0.3s ease-out;
+            display: none; white-space: nowrap;
         }
 
         .modal-overlay {
@@ -403,22 +403,11 @@
             cursor: pointer; backdrop-filter: blur(4px);
         }
 
-        /* 右上：時計のみ（バッテリーなし） */
+        /* 右上：時計のみ */
         .event-top-right {
             position: absolute; top: 15px; right: 15px; z-index: 10;
             text-align: right;
         }
-
-        /* 複数イベント選択タブ */
-        .event-selector-bar {
-            position: absolute; top: 70px; right: 15px; z-index: 10;
-            display: flex; gap: 6px;
-        }
-        .event-select-chip {
-            background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3);
-            color: #aaa; font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; cursor: pointer;
-        }
-        .event-select-chip.active { color: #00f5d4; border-color: #00f5d4; font-weight: bold; background: rgba(0,245,212,0.2); }
 
         /* 左下：期間＆イベントタイトル画像 */
         .event-bottom-left {
@@ -452,14 +441,13 @@
         .event-action-btn:active { transform: scale(0.94); }
         .event-action-icon { font-size: 1.8rem; margin-bottom: 2px; }
 
-        /* 右下ロゴ（カスタマイズ用） */
+        /* 右下カスタムロゴ */
         .event-custom-logo {
             position: absolute; bottom: 210px; right: 15px; z-index: 10;
             max-width: 100px; max-height: 70px; object-fit: contain; pointer-events: none;
             filter: drop-shadow(0 2px 6px rgba(0,0,0,0.8));
         }
 
-        /* 非開催表示 */
         .event-no-event-box {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: rgba(0,0,0,0.85); border: 2px solid #ff334b; border-radius: 16px;
@@ -619,14 +607,11 @@
         <!-- 左上：？ヘルプボタン -->
         <div class="event-help-btn" onclick="openEventHelpModal()">?</div>
 
-        <!-- 右上：時計のみ（バッテリーなし） -->
+        <!-- 右上：時計のみ -->
         <div class="event-top-right">
             <div class="clock-title" style="font-size:0.6rem; color:#aaa;">現在時刻</div>
             <div id="event-clock" class="clock-time c-white" style="font-size:1.4rem;">00:00:00</div>
         </div>
-
-        <!-- 複数イベント選択（必要時） -->
-        <div class="event-selector-bar" id="event-selector-chips" style="display:none;"></div>
 
         <!-- 右下カスタムロゴ -->
         <img id="event-custom-logo-img" class="event-custom-logo" src="" style="display:none;">
@@ -639,9 +624,9 @@
             </div>
         </div>
 
-        <!-- 右下：イベント（稼ぐ）＆ランキングボタン -->
+        <!-- 右下：イベント＆ランキングボタン -->
         <div class="event-action-column" id="event-action-btns">
-            <div class="event-action-btn" onclick="goToEarnPoints()">
+            <div class="event-action-btn" onclick="handleEventActionButton()">
                 <span class="event-action-icon">💍</span>
                 <span>イベント</span>
             </div>
@@ -800,13 +785,13 @@
                 <button class="close-btn" onclick="closeManageScreen()">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント設定・ポイント調整・ロゴ変更・アカウント管理に対応。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント設定・Googleドライブ画像適用・ポイント調整に対応。</p>
 
         <!-- 🎪 イベント管理＆ロゴ＆ポイント増減 -->
         <div class="admin-section">
             <h4>🎪 イベント管理・ロゴ・ステータス設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">イベントタイトル：</label>
-            <input type="text" id="admin-event-title-input" class="admin-input" value="結成2周年イベント">
+            <input type="text" id="admin-event-title-input" class="admin-input" value="結成2周年記念イベント">
             <label style="font-size: 0.8rem; color: #aaa;">イベント種類：</label>
             <select id="admin-event-type-select" class="admin-input">
                 <option value="シーズンイベント">シーズンイベント</option>
@@ -824,10 +809,10 @@
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
                 <option value="終了">終了 (確認可能)</option>
             </select>
-            <label style="font-size: 0.8rem; color: #aaa;">イベントバナー・画像（選択）：</label>
+            <label style="font-size: 0.8rem; color: #aaa;">イベントバナー・背景（Googleドライブ選択）：</label>
             <select id="admin-event-img-select" class="admin-input"><option value="">(画像なし)</option></select>
             
-            <label style="font-size: 0.8rem; color: #ffee00; margin-top:8px; display:block;">右下の自由配置イベントロゴ（画像選択）：</label>
+            <label style="font-size: 0.8rem; color: #ffee00; margin-top:8px; display:block;">右下の自由配置イベントロゴ（Googleドライブ選択）：</label>
             <select id="admin-event-logo-select" class="admin-input"><option value="">(ロゴなし)</option></select>
 
             <button class="admin-btn" onclick="adminCreateEvent()">🚀 イベント設定を保存する</button>
@@ -888,10 +873,26 @@
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
                 <option value="終了">終了 (引くのをロック)</option>
             </select>
+            <label style="font-size:0.8rem; color:#aaa;">ガチャバナー（Googleドライブ選択）：</label>
             <select id="admin-gacha-banner-select" class="admin-input"><option value="">(バナーなし)</option></select>
             <input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
             <input type="datetime-local" id="admin-gacha-end-input" class="admin-input" value="2026-11-30T00:00">
             <button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ基本設定・バナーを保存する</button>
+
+            <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+            <h5 style="color:#ffee00; margin-bottom:8px;">🎯 レアリティ別アイテム追加</h5>
+            <label style="font-size:0.8rem; color:#aaa;">イラスト（Googleドライブ選択）：</label>
+            <select id="admin-gacha-img-select" class="admin-input"><option value="">(選択してください)</option></select>
+            <label style="font-size:0.8rem; color:#aaa;">付与レアリティ：</label>
+            <select id="admin-gacha-rarity" class="admin-input">
+                <option value="★6">★6</option>
+                <option value="★5">★5</option>
+                <option value="★4">★4</option>
+                <option value="★3">★3</option>
+                <option value="★2">★2 (プレゼント自動配布対象)</option>
+            </select>
+            <button class="admin-btn" onclick="adminAddGachaIllustration()">➕ ガチャラインナップに追加する</button>
+
             <div id="admin-gacha-lineup-by-rarity" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
 
@@ -901,6 +902,7 @@
             <input type="text" id="admin-gift-title" class="admin-input" placeholder="記念報酬">
             <input type="number" id="admin-gift-gem" class="admin-input" value="1000">
             <input type="number" id="admin-gift-coin" class="admin-input" value="500">
+            <label style="font-size:0.8rem; color:#aaa;">添付イラスト（Googleドライブ選択）：</label>
             <select id="admin-gift-img-select" class="admin-input"><option value="">(イラストなし)</option></select>
             <button class="admin-btn" onclick="adminSendGift()">📤 プレゼントを送信する</button>
             <div id="admin-gift-manage-list" style="margin-top: 15px; font-size: 0.8rem;"></div>
@@ -910,6 +912,7 @@
             <h4>✉️ お知らせを作成・管理する</h4>
             <input type="text" id="admin-notice-title" class="admin-input" placeholder="新機能追加のお知らせ">
             <textarea id="admin-notice-text" class="admin-input" rows="3" placeholder="お知らせの詳細内容..."></textarea>
+            <label style="font-size:0.8rem; color:#aaa;">添付イラスト（Googleドライブ選択）：</label>
             <select id="admin-notice-img-select" class="admin-input"><option value="">(イラストなし)</option></select>
             <button class="admin-btn" onclick="adminPublishNotice()">📢 お知らせを全体公開する</button>
             <div id="admin-notice-manage-list" style="margin-top: 15px; font-size: 0.8rem;"></div>
@@ -929,15 +932,16 @@
             "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
         };
 
+        // 初期状態でのダミーポイント（12500, 184899など）をすべて削除し、全メンバー「0 P」からスタートに統一
         let memberDatabase = JSON.parse(localStorage.getItem('nexus_member_db')) || [
-            { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 12500 },
-            { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 8900 },
-            { id: "N-24-11-3", name: "奨", gem: 0, coin: 0, pt: 42000 },
-            { id: "S-24-11-4", name: "MIHO", gem: 0, coin: 0, pt: 15400 },
-            { id: "S-24-11-5-o", name: "海惺", gem: 0, coin: 0, pt: 3100 },
-            { id: "U-24-11-6-a", name: "タイ", gem: 0, coin: 0, pt: 184899 },
-            { id: "N-24-11-7-o", name: "Ayu", gem: 0, coin: 0, pt: 92000 },
-            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 250000 }
+            { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 0 },
+            { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 0 },
+            { id: "N-24-11-3", name: "奨", gem: 0, coin: 0, pt: 0 },
+            { id: "S-24-11-4", name: "MIHO", gem: 0, coin: 0, pt: 0 },
+            { id: "S-24-11-5-o", name: "海惺", gem: 0, coin: 0, pt: 0 },
+            { id: "U-24-11-6-a", name: "タイ", gem: 0, coin: 0, pt: 0 },
+            { id: "N-24-11-7-o", name: "Ayu", gem: 0, coin: 0, pt: 0 },
+            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0 }
         ];
 
         function saveMemberDb() {
@@ -1107,6 +1111,7 @@
             const periodEl = document.getElementById('event-period-text');
             const bannerBox = document.getElementById('event-title-banner-box');
             const logoImg = document.getElementById('event-custom-logo-img');
+            const bgImg = document.getElementById('event-bg-img');
 
             const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
 
@@ -1121,17 +1126,20 @@
                 if (actionBtns) actionBtns.style.display = "flex";
             }
 
+            // イベント背景画像の適用
+            if (bgImg && currentEvent.imgUrl) {
+                bgImg.src = currentEvent.imgUrl;
+            }
+
             // ユーザーアイコン・ポイント・順位の計算
             if (currentUser) {
                 userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
                 eventAvatar.src = userAvatarUrl || "https://picsum.photos/id/1069/100/100";
 
-                // ポイント計算（memberDatabaseから取得）
                 const userDb = memberDatabase.find(m => m.id === currentUser.id);
                 const currentPt = userDb ? (userDb.pt || 0) : 0;
                 ptEl.innerText = currentPt.toLocaleString();
 
-                // 順位算出
                 const sorted = [...memberDatabase].sort((a,b) => (b.pt || 0) - (a.pt || 0));
                 const rankIndex = sorted.findIndex(m => m.id === currentUser.id);
                 rankEl.innerText = (rankIndex !== -1) ? `${rankIndex + 1}位` : "-位";
@@ -1167,7 +1175,6 @@
                 }
             }
 
-            // 下部ナビ吹き出し（残り何日）
             updateEventBubbleDate();
         }
 
@@ -1198,12 +1205,12 @@
         }
 
         function openEventHelpModal() {
-            alert(`❓ 【${currentEvent.title}】ヘルプ\n\n・イベント期間中に遊戯やミッションでP（ポイント）を獲得してランキング上位を目指そう！\n・期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`);
+            alert(`❓ 【${currentEvent.title}】ヘルプ\n\n・イベント期間中にポイントを獲得して上位を目指しましょう！\n・期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`);
         }
 
-        function goToEarnPoints() {
-            alert("🎰 遊戯画面に移動してPを獲得しましょう！");
-            openScreen('play');
+        // 「イベント」ボタンを押した時（遊戯画面には行かない仕様）
+        function handleEventActionButton() {
+            alert(`💍 【${currentEvent.title}】\nイベントの詳細・指定の達成方法については運営からの案内をご確認ください。`);
         }
 
         function openRankingModal() {
@@ -1499,6 +1506,7 @@
             renderAdminUserRestrictionList();
             renderAdminReportsList();
             populateAdminAlbumMemberSelect();
+            populateAdminSelects();
             document.getElementById('admin-login-lock-toggle').checked = isLoginLocked;
         }
 
@@ -1965,6 +1973,7 @@
             }
         }
 
+        /* 👑 全ての画像選択部分にGoogleドライブから取得した画像を再反映させる関数 */
         function populateAdminSelects() {
             const gachaSelect = document.getElementById('admin-gacha-img-select');
             const gachaBannerSelect = document.getElementById('admin-gacha-banner-select');
