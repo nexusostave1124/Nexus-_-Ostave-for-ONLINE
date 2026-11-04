@@ -36,14 +36,21 @@
         }
         #title-screen.hidden { display: none; }
 
-        .title-bg-img {
+        .title-bg-slideshow {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+        }
+        .title-slide-img {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover;
             object-position: center;
-            z-index: 1;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
             filter: brightness(0.9);
         }
+        .title-slide-img.active { opacity: 1; }
 
         .title-overlay-top {
             position: absolute; top: 0; left: 0; right: 0; height: 200px;
@@ -51,7 +58,7 @@
             z-index: 2; pointer-events: none;
         }
 
-        /* 🌈 虹色に変化するタイトルロゴ */
+        /* 🌈 虹色に変化するタイトルロゴ（少し下へ配置） */
         @keyframes rainbowGlow {
             0% { filter: hue-rotate(0deg); text-shadow: 0 0 12px rgba(255, 0, 0, 0.8); }
             33% { filter: hue-rotate(120deg); text-shadow: 0 0 12px rgba(0, 255, 0, 0.8); }
@@ -63,7 +70,7 @@
             position: relative;
             z-index: 10;
             text-align: center;
-            margin-top: 10px;
+            margin-top: 70px; /* 少し下に調整 */
         }
 
         .title-main-text {
@@ -86,13 +93,11 @@
             margin-top: -2px;
         }
 
-        /* タイトル画面の右上エリア（時計・充電） */
         .title-top-right {
             position: absolute; top: 15px; right: 15px; z-index: 10;
             text-align: right;
         }
 
-        /* 中央のログインボタン */
         .title-login-btn-wrapper {
             position: relative;
             z-index: 10;
@@ -117,7 +122,6 @@
         }
         .title-login-btn:active { transform: scale(0.96); background: #e02e42; }
 
-        /* 右下の「⋮」メニューボタン */
         .title-menu-trigger {
             position: absolute;
             bottom: 20px;
@@ -138,7 +142,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
-        /* タイトル画面用ポップアップメニュー */
         .title-menu-dropdown {
             position: absolute;
             bottom: 75px;
@@ -176,7 +179,6 @@
             height: 100%;
             overflow: hidden;
         }
-        /* 🖼️ 背景スライドショー */
         .bg-slideshow {
             position: absolute;
             top: 0; left: 0;
@@ -193,7 +195,6 @@
             transition: opacity 0.8s ease-in-out;
         }
         .slide-img.active { opacity: 1; }
-        /* 上下グラデーション */
         .overlay-top {
             position: absolute; top: 0; left: 0; right: 0; height: 160px;
             background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
@@ -204,7 +205,6 @@
             background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
             z-index: 2; pointer-events: none;
         }
-        /* 📊 左上：ステータスバー */
         .user-status {
             position: absolute; top: 15px; left: 15px; z-index: 10;
             display: flex; align-items: center; gap: 12px;
@@ -224,7 +224,6 @@
         .status-val { color: #fff; font-weight: bold; }
         .gem-val { color: #00f5d4; font-weight: bold; text-shadow: 0 0 6px rgba(0,245,212,0.6); }
 
-        /* ⏰ 右上エリア */
         .top-right-area {
             position: absolute; top: 15px; right: 15px; z-index: 10;
             display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
@@ -237,7 +236,6 @@
         }
         .battery-status { font-family: "Shippori Mincho", serif; font-size: 0.9rem; margin-top: 2px; font-weight: 800; }
 
-        /* 時計カラー */
         .c-white { color: #ffffff; text-shadow: 0 0 8px rgba(255,255,255,0.8); }
         .c-blue { color: #3388ff; text-shadow: 0 0 8px rgba(51,136,255,0.8); }
         .c-red { color: #ff334b; text-shadow: 0 0 10px rgba(255,51,75,0.9); }
@@ -256,7 +254,6 @@
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
         .battery-blink { color: #ff3333; text-shadow: 0 0 10px rgba(255,51,51,1); animation: blink 0.8s infinite; }
 
-        /* プレゼント＆お知らせボタン */
         .top-buttons-column { display: flex; flex-direction: column; gap: 8px; }
         .icon-badge-btn {
             position: relative; width: 42px; height: 42px;
@@ -270,7 +267,6 @@
             font-size: 0.65rem; font-weight: bold; border-radius: 10px; padding: 1px 5px; border: 1px solid #000; display: none;
         }
 
-        /* ミニ楽曲プレイヤー */
         .mini-player {
             position: absolute; bottom: 75px; right: 15px; z-index: 10;
             background: rgba(15, 15, 15, 0.85); border: 1px solid rgba(0, 245, 212, 0.4);
@@ -281,7 +277,6 @@
         .song-title-display { font-size: 0.85rem; font-weight: bold; color: #fff; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .song-sub-text { font-size: 0.65rem; color: #aaa; }
 
-        /* 下部ナビゲーションバー */
         .bottom-nav {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 62px;
             background: rgba(18, 18, 18, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.15);
@@ -295,7 +290,6 @@
         .nav-item.active { color: #00f5d4; }
         .nav-icon { font-size: 1.35rem; margin-bottom: 1px; }
 
-        /* 「その他」メニューポップアップ */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.75); z-index: 9999; display: none; backdrop-filter: blur(4px);
@@ -318,9 +312,8 @@
             display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 5px; box-shadow: 0 3px 6px rgba(0,0,0,0.3);
         }
 
-        /* 各種サブ画面 */
         .sub-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 62px);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: #121212; z-index: 100; display: none; flex-direction: column; padding: 15px; box-sizing: border-box; overflow-y: auto;
         }
         .sub-screen.active { display: flex; }
@@ -328,7 +321,6 @@
         .sub-title { font-size: 1.1rem; color: #00f5d4; font-weight: bold; }
         .close-btn { padding: 5px 14px; background: #333; color: #fff; border: 1px solid #555; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit; }
 
-        /* アルバム画面グリッド */
         .album-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .album-card {
             background: #1f1f1f; border: 2px solid #333; border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color 0.2s, transform 0.1s;
@@ -339,16 +331,13 @@
         .album-img-box img { width: 100%; height: 100%; object-fit: cover; }
         .album-card-info { padding: 8px; font-size: 0.8rem; text-align: center; }
 
-        /* カレンダー埋め込み */
         .calendar-wrapper { flex: 1; width: 100%; background: #fff; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0,0,0,0.5); min-height: 350px; }
         .calendar-wrapper iframe { width: 100%; height: 100%; border: 0; flex: 1; }
 
-        /* 設定画面カラーパレット */
         .color-picker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
         .color-btn { padding: 10px; border-radius: 8px; border: 2px solid #555; font-weight: bold; cursor: pointer; text-align: center; font-family: inherit; font-size: 0.85rem; }
         .color-btn.selected { border-color: #00f5d4; box-shadow: 0 0 8px rgba(0,245,212,0.6); }
 
-        /* 管理画面用スタイル */
         .admin-section { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 14px; margin-bottom: 15px; }
         .admin-section h4 { color: #00f5d4; margin-bottom: 10px; font-size: 1rem; border-left: 3px solid #00f5d4; padding-left: 8px; }
         .admin-btn { width: 100%; padding: 10px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family: inherit; margin-top: 8px; }
@@ -356,8 +345,6 @@
         .admin-input { width: 100%; padding: 8px 10px; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; font-family: inherit; margin-top: 6px; margin-bottom: 10px; }
 
         .item-box { background: #1f1f1f; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* 確率テーブル表示スタイル */
         .rate-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.75rem; background: #222; }
         .rate-table th, .rate-table td { border: 1px solid #444; padding: 4px; text-align: center; }
         .rate-table th { background: #333; color: #00f5d4; }
@@ -367,10 +354,10 @@
 
     <!-- ================= 🌟 タイトル画面 ================= -->
     <div id="title-screen">
-        <img src="https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/2984.png" class="title-bg-img" alt="タイトル背景" crossorigin="anonymous">
+        <div class="title-bg-slideshow" id="title-bg-slideshow-container"></div>
         <div class="title-overlay-top"></div>
 
-        <!-- タイトル画面の右上（時計・充電） ※時計は白のみ -->
+        <!-- タイトル画面の右上（時計・充電 ※時計は常に白） -->
         <div class="title-top-right">
             <div class="clock-title">現在時刻</div>
             <div id="title-clock" class="clock-time c-white">00:00:00</div>
@@ -498,7 +485,6 @@
                 <div class="other-menu-card" onclick="openScreen('settings')"><span>設定</span></div>
                 <div class="other-menu-card" onclick="openScreen('report')"><span>報告</span></div>
                 <div class="other-menu-card" onclick="checkManagePassword()"><span>管理</span></div>
-                <!-- ログアウトボタンに変更 -->
                 <div class="other-menu-card" onclick="adminLogout()" style="background: rgba(255,51,75,0.3); border-color: #ff334b;"><span>ログアウト</span></div>
             </div>
         </div>
@@ -568,7 +554,7 @@
 
     <div id="screen-settings" class="sub-screen">
         <div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div>
-        <p style="margin-bottom: 8px; font-weight: bold; color: #00f5d4;">⏰ 時計のフォントカラー変更</p>
+        <p style="margin-bottom: 8px; font-weight: bold; color: #00f5d4;">⏰ ホーム画面の時計フォントカラー変更</p>
         <div class="color-picker-grid">
             <button class="color-btn c-white" style="background:#222;" onclick="setClockColor('c-white', this)">白</button>
             <button class="color-btn c-blue" style="background:#222;" onclick="setClockColor('c-blue', this)">青</button>
@@ -584,7 +570,7 @@
     <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
     <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
     
-    <!-- 🛡️ 管理画面（ログアウトボタン削除・他ユーザーは閉じたらロック） -->
+    <!-- 🛡️ 管理画面 -->
     <div id="screen-manage" class="sub-screen">
         <div class="sub-header">
             <span class="sub-title">🛡️ 管理画面 (管理者モード)</span>
@@ -592,8 +578,19 @@
                 <button class="close-btn" onclick="closeManageScreen()">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント種類やガチャステータス管理に対応。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※タイトル画面のスライドショーや各種イベント・ガチャ管理に対応。</p>
         
+        <!-- 🖼️ タイトル画面 背景画像管理（最大8枚スライドショー） -->
+        <div class="admin-section">
+            <h4>🖼️ タイトル画面 背景画像管理 (最大8枚)</h4>
+            <label style="font-size: 0.8rem; color: #aaa;">追加する背景画像（Googleドライブ選択）：</label>
+            <select id="admin-title-bg-select" class="admin-input">
+                <option value="">(選択してください)</option>
+            </select>
+            <button class="admin-btn" onclick="adminAddTitleBg()">➕ タイトル背景に追加する</button>
+            <div id="admin-title-bg-list" style="margin-top: 10px; font-size: 0.8rem;"></div>
+        </div>
+
         <!-- 🎪 イベント管理 -->
         <div class="admin-section">
             <h4>🎪 イベント管理・ステータス設定</h4>
@@ -742,12 +739,16 @@
         function getUserGiftsKey() { return 'nexus_gifts_' + (currentUser ? currentUser.id : 'guest'); }
         function getGlobalNoticesKey() { return 'nexus_global_notices'; }
         function getEventHistoryKey() { return 'nexus_event_history'; }
+        function getTitleBgKey() { return 'nexus_title_bg_images'; }
 
         let userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
         let userSlideshowIds = JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [];
         let userGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
         let globalNotices = JSON.parse(localStorage.getItem(getGlobalNoticesKey())) || [];
         let eventHistory = JSON.parse(localStorage.getItem(getEventHistoryKey())) || [];
+        let titleBgImages = JSON.parse(localStorage.getItem(getTitleBgKey())) || [
+            { id: 'default_title_bg', url: 'https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/2984.png', name: 'デフォルト画像' }
+        ];
 
         let currentEvent = JSON.parse(localStorage.getItem('nexus_current_event')) || {
             title: "結成2周年イベント",
@@ -807,6 +808,7 @@
                 nameEl.innerText = "ゲスト";
                 gemEl.innerText = "0";
                 document.getElementById('title-screen').classList.remove('hidden');
+                initTitleSlideshow();
             }
 
             const badgeStatus = document.getElementById('badge-event-status');
@@ -830,6 +832,83 @@
             } else {
                 noticeBadge.style.display = 'none';
             }
+        }
+
+        // タイトル画面用背景スライドショー（最大8枚）
+        function initTitleSlideshow() {
+            const container = document.getElementById('title-bg-slideshow-container');
+            if (!container) return;
+            container.innerHTML = '';
+            titleBgImages = JSON.parse(localStorage.getItem(getTitleBgKey())) || titleBgImages;
+
+            titleBgImages.forEach((imgObj, index) => {
+                const img = document.createElement('img');
+                img.src = imgObj.url;
+                img.className = 'title-slide-img' + (index === 0 ? ' active' : '');
+                container.appendChild(img);
+            });
+            startTitleSlideshowInterval();
+        }
+
+        let titleSlideTimer = null;
+        function startTitleSlideshowInterval() {
+            if (titleSlideTimer) clearInterval(titleSlideTimer);
+            const slides = document.querySelectorAll('.title-slide-img');
+            if (slides.length <= 1) return;
+            let current = 0;
+            titleSlideTimer = setInterval(() => {
+                slides[current].classList.remove('active');
+                current = (current + 1) % slides.length;
+                slides[current].classList.add('active');
+            }, 4000);
+        }
+
+        function adminAddTitleBg() {
+            const selectEl = document.getElementById('admin-title-bg-select');
+            const url = selectEl.value;
+            const name = selectEl.options[selectEl.selectedIndex].text;
+            if (!url) {
+                alert("画像を選択してください。");
+                return;
+            }
+            if (titleBgImages.length >= 8) {
+                alert("タイトル背景スライドショーには最大8枚までしか登録できません。");
+                return;
+            }
+            if (titleBgImages.some(img => img.url === url)) {
+                alert("すでに登録されている画像です。");
+                return;
+            }
+
+            titleBgImages.push({ id: 'title_bg_' + Date.now(), url: url, name: name });
+            localStorage.setItem(getTitleBgKey(), JSON.stringify(titleBgImages));
+            renderAdminTitleBgList();
+            initTitleSlideshow();
+            alert("🖼️ タイトル背景に追加しました！");
+        }
+
+        function adminRemoveTitleBg(id) {
+            if (titleBgImages.length <= 1) {
+                alert("最低1枚の背景画像が必要です。");
+                return;
+            }
+            titleBgImages = titleBgImages.filter(img => img.id !== id);
+            localStorage.setItem(getTitleBgKey(), JSON.stringify(titleBgImages));
+            renderAdminTitleBgList();
+            initTitleSlideshow();
+        }
+
+        function renderAdminTitleBgList() {
+            const listEl = document.getElementById('admin-title-bg-list');
+            if (!listEl) return;
+            titleBgImages = JSON.parse(localStorage.getItem(getTitleBgKey())) || titleBgImages;
+            listEl.innerHTML = `<div style="color:#00f5d4; margin-bottom:4px;">登録中 (${titleBgImages.length}/8枚):</div>`;
+            titleBgImages.forEach(img => {
+                const row = document.createElement('div');
+                row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#222; padding:6px; border-radius:6px; margin-bottom:4px;";
+                row.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;">${img.name}</span><button onclick="adminRemoveTitleBg('${img.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">削除</button>`;
+                listEl.appendChild(row);
+            });
         }
 
         function renderEventScreen() {
@@ -915,7 +994,6 @@
             }
         }
 
-        // 🔒 スプレッドシート登録IDによるログイン
         function promptUserLogin() {
             closeOtherMenu();
             const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
@@ -982,10 +1060,8 @@
             }
         }
 
-        // 管理画面を閉じるときの処理（他ユーザーの場合はロックしてタイトル画面に戻す）
         function closeManageScreen() {
             closeScreen('manage');
-            // 管理者(ADMIN)以外の場合は、閉じたら強制ログアウト（ロック）する
             if (!currentUser || currentUser.id !== "ADMIN") {
                 adminLogout();
                 alert("🔒 セッションをロックしました。");
@@ -1189,7 +1265,8 @@
             const noticeSelect = document.getElementById('admin-notice-img-select');
             const eventImgSelect = document.getElementById('admin-event-img-select');
             const targetSelect = document.getElementById('admin-gift-target');
-            if (!gachaSelect || !giftSelect || !noticeSelect || !targetSelect || !eventImgSelect) return;
+            const titleBgSelect = document.getElementById('admin-title-bg-select');
+            if (!gachaSelect || !giftSelect || !noticeSelect || !targetSelect || !eventImgSelect || !titleBgSelect) return;
 
             let optionsHtml = `<option value="">(選択してください)</option>`;
             masterDriveImages.forEach(img => {
@@ -1200,12 +1277,14 @@
             giftSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
             noticeSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
             eventImgSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
+            titleBgSelect.innerHTML = optionsHtml;
 
             let targetHtml = `<option value="ALL">🌐 全メンバー一斉送信</option>`;
             memberDatabase.forEach(m => {
                 targetHtml += `<option value="${m.id}">${m.name} (ID: ${m.id})</option>`;
             });
             targetSelect.innerHTML = targetHtml;
+            renderAdminTitleBgList();
         }
 
         function pullGachaFromDrive() {
@@ -1410,6 +1489,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             reloadUserData();
             fetchDriveMasterData();
+            initTitleSlideshow();
 
             const savedColor = localStorage.getItem('nexus_clock_color');
             if (savedColor) {
@@ -1422,7 +1502,6 @@
             }
         });
 
-        // ⏰ 端末の時計をリアルタイムに反映（ホーム＆タイトル画面）
         function updateClock() {
             const now = new Date();
             const h = String(now.getHours()).padStart(2, '0');
@@ -1445,7 +1524,6 @@
             localStorage.setItem('nexus_clock_color', colorClass);
         }
 
-        // 🔋 端末のバッテリー状況をリアルタイム反映（ホーム＆タイトル画面）
         async function initBattery() {
             const bEl = document.getElementById('battery-info');
             const titleBEl = document.getElementById('title-battery-info');
