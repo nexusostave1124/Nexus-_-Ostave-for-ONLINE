@@ -36,7 +36,6 @@
         }
         #title-screen.hidden { display: none; }
 
-        /* 背景画像（添付画像） */
         .title-bg-img {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -85,6 +84,12 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-top: -2px;
+        }
+
+        /* タイトル画面の右上エリア（時計・充電） */
+        .title-top-right {
+            position: absolute; top: 15px; right: 15px; z-index: 10;
+            text-align: right;
         }
 
         /* 中央のログインボタン */
@@ -365,6 +370,13 @@
         <img src="https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/2984.png" class="title-bg-img" alt="タイトル背景" crossorigin="anonymous">
         <div class="title-overlay-top"></div>
 
+        <!-- タイトル画面の右上（時計・充電） ※時計は白のみ -->
+        <div class="title-top-right">
+            <div class="clock-title">現在時刻</div>
+            <div id="title-clock" class="clock-time c-white">00:00:00</div>
+            <div id="title-battery-info" class="battery-status battery-charging">充電中 100%</div>
+        </div>
+
         <!-- 上部の虹色タイトル -->
         <div class="title-logo-container">
             <div class="title-main-text">Nexus:_:Ostave</div>
@@ -398,7 +410,7 @@
         <div class="overlay-bottom"></div>
 
         <!-- 📊 左上：ステータスバー -->
-        <div class="user-status" onclick="handleStatusClick()" title="ステータス / ログイン・ログアウト">
+        <div class="user-status" onclick="handleStatusClick()" title="ステータス / ログアウト">
             <div class="avatar-box">
                 <img src="https://picsum.photos/id/1069/100/100" alt="アイコン">
             </div>
@@ -486,7 +498,8 @@
                 <div class="other-menu-card" onclick="openScreen('settings')"><span>設定</span></div>
                 <div class="other-menu-card" onclick="openScreen('report')"><span>報告</span></div>
                 <div class="other-menu-card" onclick="checkManagePassword()"><span>管理</span></div>
-                <div class="other-menu-card" id="menu-login-btn" onclick="promptUserLogin()"><span>IDログイン</span></div>
+                <!-- ログアウトボタンに変更 -->
+                <div class="other-menu-card" onclick="adminLogout()" style="background: rgba(255,51,75,0.3); border-color: #ff334b;"><span>ログアウト</span></div>
             </div>
         </div>
     </div>
@@ -571,16 +584,15 @@
     <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
     <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
     
-    <!-- 🛡️ 管理画面 -->
+    <!-- 🛡️ 管理画面（ログアウトボタン削除・他ユーザーは閉じたらロック） -->
     <div id="screen-manage" class="sub-screen">
         <div class="sub-header">
             <span class="sub-title">🛡️ 管理画面 (管理者モード)</span>
             <div>
-                <button class="close-btn" onclick="adminLogout()" style="background:#ff334b; margin-right:6px;">ログアウト</button>
-                <button class="close-btn" onclick="closeScreen('manage')">閉じる</button>
+                <button class="close-btn" onclick="closeManageScreen()">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント種類（タイアップ・期間限定等）やガチャステータス管理に対応。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント種類やガチャステータス管理に対応。</p>
         
         <!-- 🎪 イベント管理 -->
         <div class="admin-section">
@@ -754,7 +766,6 @@
             endDate: "2026-11-30T00:00"
         };
 
-        // タイトル画面のメニュー制御
         function toggleTitleMenu(e) {
             e.stopPropagation();
             document.getElementById('title-menu-dropdown').classList.toggle('active');
@@ -764,13 +775,11 @@
             if (dropdown) dropdown.classList.remove('active');
         });
 
-        // タイトル画面からお知らせ・設定・報告を開く
         function openTitleSubScreen(name) {
             document.getElementById('title-screen').classList.add('hidden');
             openScreen(name);
         }
 
-        // ブラウザ終了
         function exitApp() {
             if (confirm("アプリを終了しますか？")) {
                 window.close();
@@ -787,21 +796,17 @@
             const idEl = document.getElementById('display-id');
             const nameEl = document.getElementById('display-name');
             const gemEl = document.getElementById('display-gem');
-            const menuLoginBtn = document.getElementById('menu-login-btn');
 
             if (currentUser) {
                 idEl.innerText = currentUser.id;
                 nameEl.innerText = currentUser.name + (isAdmin ? " (👑管理者)" : "");
                 gemEl.innerText = Number(currentUser.gem || 0).toLocaleString();
-                if (menuLoginBtn) menuLoginBtn.innerHTML = "<span>ログアウト</span>";
-                
-                // ログイン済みならタイトル画面を非表示にする
                 document.getElementById('title-screen').classList.add('hidden');
             } else {
                 idEl.innerText = "未ログイン";
                 nameEl.innerText = "ゲスト";
                 gemEl.innerText = "0";
-                if (menuLoginBtn) menuLoginBtn.innerHTML = "<span>IDログイン</span>";
+                document.getElementById('title-screen').classList.remove('hidden');
             }
 
             const badgeStatus = document.getElementById('badge-event-status');
@@ -902,7 +907,7 @@
 
         function handleStatusClick() {
             if (currentUser) {
-                if (confirm("ログアウトしてタイトル画面に戻りますか？")) {
+                if (confirm("ログアウトしますか？")) {
                     adminLogout();
                 }
             } else {
@@ -929,8 +934,6 @@
                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 reloadUserData();
                 
-                // ログイン成功したらタイトル画面を非表示にしてホームへ
-                document.getElementById('title-screen').classList.add('hidden');
                 alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
                 if (isAdmin) openScreen('manage');
             } else {
@@ -944,9 +947,7 @@
             currentUser = null;
             localStorage.removeItem('nexus_current_user');
             reloadUserData();
-            
-            // ログアウト時はタイトル画面を表示
-            document.getElementById('title-screen').classList.remove('hidden');
+            closeOtherMenu();
             alert("🔒 ログアウトしました。");
         }
 
@@ -975,10 +976,19 @@
                 currentUser = memberDatabase.find(m => m.id === "ADMIN");
                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 reloadUserData();
-                document.getElementById('title-screen').classList.add('hidden');
                 openScreen('manage');
             } else if (inputPass !== null) {
                 alert("パスワードが違います。");
+            }
+        }
+
+        // 管理画面を閉じるときの処理（他ユーザーの場合はロックしてタイトル画面に戻す）
+        function closeManageScreen() {
+            closeScreen('manage');
+            // 管理者(ADMIN)以外の場合は、閉じたら強制ログアウト（ロック）する
+            if (!currentUser || currentUser.id !== "ADMIN") {
+                adminLogout();
+                alert("🔒 セッションをロックしました。");
             }
         }
 
@@ -1412,13 +1422,17 @@
             }
         });
 
-        // ⏰ 端末の時計をリアルタイムに反映
+        // ⏰ 端末の時計をリアルタイムに反映（ホーム＆タイトル画面）
         function updateClock() {
             const now = new Date();
             const h = String(now.getHours()).padStart(2, '0');
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('real-clock').innerText = `${h}:${m}:${s}`;
+            const timeStr = `${h}:${m}:${s}`;
+            
+            document.getElementById('real-clock').innerText = timeStr;
+            const titleClock = document.getElementById('title-clock');
+            if (titleClock) titleClock.innerText = timeStr;
         }
         setInterval(updateClock, 1000);
         updateClock();
@@ -1431,38 +1445,58 @@
             localStorage.setItem('nexus_clock_color', colorClass);
         }
 
-        // 🔋 端末のバッテリー状況をリアルタイム反映
+        // 🔋 端末のバッテリー状況をリアルタイム反映（ホーム＆タイトル画面）
         async function initBattery() {
             const bEl = document.getElementById('battery-info');
+            const titleBEl = document.getElementById('title-battery-info');
+            
             if ('getBattery' in navigator) {
                 try {
                     const battery = await navigator.getBattery();
                     function updateBattery() {
                         const level = Math.floor(battery.level * 100);
-                        bEl.innerText = (battery.charging ? "充電中 " : "") + level + "%";
+                        const text = (battery.charging ? "充電中 " : "") + level + "%";
+                        
+                        bEl.innerText = text;
+                        if (titleBEl) titleBEl.innerText = text;
+
                         bEl.className = "battery-status";
+                        if (titleBEl) titleBEl.className = "battery-status";
+
+                        let statusClass = "battery-green";
                         if (battery.charging) {
-                            bEl.classList.add('battery-charging');
+                            statusClass = "battery-charging";
                         } else if (level <= 15) {
-                            bEl.classList.add('battery-blink');
+                            statusClass = "battery-blink";
                         } else if (level <= 30) {
-                            bEl.classList.add('battery-red');
+                            statusClass = "battery-red";
                         } else if (level <= 50) {
-                            bEl.classList.add('battery-orange');
-                        } else {
-                            bEl.classList.add('battery-green');
+                            statusClass = "battery-orange";
                         }
+
+                        bEl.classList.add(statusClass);
+                        if (titleBEl) titleBEl.classList.add(statusClass);
                     }
                     updateBattery();
                     battery.addEventListener('levelchange', updateBattery);
                     battery.addEventListener('chargingchange', updateBattery);
                 } catch (e) { 
-                    bEl.innerText = "充電中 100%"; 
+                    const defaultText = "充電中 100%";
+                    bEl.innerText = defaultText;
                     bEl.className = "battery-status battery-charging";
+                    if (titleBEl) {
+                        titleBEl.innerText = defaultText;
+                        titleBEl.className = "battery-status battery-charging";
+                    }
                 }
             } else { 
-                bEl.innerText = "充電中 100%"; 
+                const defaultText = "充電中 100%";
+                bEl.innerText = defaultText;
                 bEl.className = "battery-status battery-charging";
+                if (titleBEl) {
+                    titleBEl.innerText = defaultText;
+                    titleBEl.className = "battery-status battery-charging";
+                }
             }
         }
         initBattery();
@@ -1481,7 +1515,6 @@
         }
         function closeScreen(name) { 
             document.getElementById('screen-' + name).classList.remove('active'); 
-            // もし未ログインの状態でサブ画面を閉じた場合、タイトル画面に戻す
             if (!currentUser) {
                 document.getElementById('title-screen').classList.remove('hidden');
             }
