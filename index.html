@@ -19,6 +19,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            transition: filter 0.2s;
         }
 
         /* ================= 🌟 タイトル画面レイアウト ================= */
@@ -58,7 +59,6 @@
             z-index: 2; pointer-events: none;
         }
 
-        /* 🌈 虹色に変化するタイトルロゴ */
         @keyframes rainbowGlow {
             0% { filter: hue-rotate(0deg); text-shadow: 0 0 12px rgba(255, 0, 0, 0.8); }
             33% { filter: hue-rotate(120deg); text-shadow: 0 0 12px rgba(0, 255, 0, 0.8); }
@@ -359,28 +359,23 @@
         <div class="title-bg-slideshow" id="title-bg-slideshow-container"></div>
         <div class="title-overlay-top"></div>
 
-        <!-- タイトル画面の右上（時計・充電 ※時計は常に白） -->
         <div class="title-top-right">
             <div class="clock-title">現在時刻</div>
             <div id="title-clock" class="clock-time c-white">00:00:00</div>
             <div id="title-battery-info" class="battery-status battery-charging">充電中 100%</div>
         </div>
 
-        <!-- 上部の虹色タイトル -->
         <div class="title-logo-container">
             <div class="title-main-text">Nexus:_:Ostave</div>
             <div class="title-sub-text">for ONLINE</div>
         </div>
 
-        <!-- 中央のログインボタン -->
         <div class="title-login-btn-wrapper">
             <button class="title-login-btn" onclick="promptUserLogin()">ログイン</button>
         </div>
 
-        <!-- 右下の「⋮」メニューボタン -->
         <div class="title-menu-trigger" onclick="toggleTitleMenu(event)">⋮</div>
 
-        <!-- タイトル画面メニューポップアップ (お知らせ・設定・報告・終了) -->
         <div id="title-menu-dropdown" class="title-menu-dropdown">
             <div class="title-menu-item" onclick="openTitleSubScreen('notice')">お知らせ</div>
             <div class="title-menu-item" onclick="openTitleSubScreen('settings')">設定</div>
@@ -392,16 +387,14 @@
 
     <!-- ================= 📱 メインアプリコンテナ ================= -->
     <div class="app-container">
-        <!-- 🖼️ 背景スライドショー -->
         <div class="bg-slideshow" id="slideshow-container"></div>
 
         <div class="overlay-top"></div>
         <div class="overlay-bottom"></div>
 
-        <!-- 📊 左上：ステータスバー -->
         <div class="user-status" onclick="handleStatusClick()" title="ステータス / ログアウト">
-            <div class="avatar-box">
-                <img src="https://picsum.photos/id/1069/100/100" alt="アイコン">
+            <div class="avatar-box" id="main-avatar-box">
+                <img src="https://picsum.photos/id/1069/100/100" alt="アイコン" id="main-avatar-img">
             </div>
             <div class="status-info">
                 <div class="status-row"><span class="status-label">ID</span> <span id="display-id" class="status-val">未ログイン</span></div>
@@ -410,7 +403,6 @@
             </div>
         </div>
 
-        <!-- ⏰ 右上エリア -->
         <div class="top-right-area">
             <div class="clock-container">
                 <div class="clock-title">現在時刻</div>
@@ -429,7 +421,6 @@
             </div>
         </div>
 
-        <!-- 🎵 ミニ楽曲プレイヤー -->
         <div class="mini-player" onclick="openScreen('player')">
             <span class="music-icon">🎵</span>
             <div>
@@ -438,7 +429,6 @@
             </div>
         </div>
 
-        <!-- 🏠 下部ナビゲーション -->
         <div class="bottom-nav" id="main-bottom-nav">
             <div class="nav-item active" id="nav-home" onclick="switchNav('home')">
                 <span class="nav-icon">🏠</span>
@@ -500,13 +490,11 @@
         <div id="playlist"></div>
     </div>
 
-    <!-- 🎪 イベント画面 -->
     <div id="screen-event" class="sub-screen">
         <div class="sub-header"><span class="sub-title">🎪 イベント情報</span><button class="close-btn" onclick="closeScreen('event')">閉じる</button></div>
         <div id="event-content-container"></div>
     </div>
 
-    <!-- 🎂 ガチャ画面 -->
     <div id="screen-gacha" class="sub-screen">
         <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ</span><button class="close-btn" onclick="openScreen('gacha')">閉じる</button></div>
         <div id="gacha-content-container"></div>
@@ -514,7 +502,10 @@
 
     <div id="screen-play" class="sub-screen">
         <div class="sub-header"><span class="sub-title">🎰 遊戯</span><button class="close-btn" onclick="closeScreen('play')">閉じる</button></div>
-        <p>パチンコ履歴・シミュレーション画面</p>
+        <div style="background:#1f1f1f; padding:15px; border-radius:10px; text-align:center;">
+            <p style="color:#00f5d4; font-weight:bold; font-size:1.1rem; margin-bottom:10px;">🎰 パチンコ・シミュレーション機能</p>
+            <p style="font-size:0.85rem; color:#aaa;">エヴァンゲリオン 始まりの福音 シミュレーター稼働中</p>
+        </div>
     </div>
 
     <div id="screen-schedule" class="sub-screen">
@@ -524,7 +515,6 @@
         </div>
     </div>
 
-    <!-- 🎁 プレゼントBOX -->
     <div id="screen-present" class="sub-screen">
         <div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span><button class="close-btn" onclick="closeScreen('present')">閉じる</button></div>
         <div id="present-list-container">
@@ -532,7 +522,6 @@
         </div>
     </div>
 
-    <!-- ✉️ お知らせ（下部メニュー非表示対応） -->
     <div id="screen-notice" class="sub-screen">
         <div class="sub-header"><span class="sub-title">✉️ お知らせ</span><button class="close-btn" onclick="closeScreen('notice')">閉じる</button></div>
         <div id="notice-list-container">
@@ -546,7 +535,6 @@
         <div class="album-grid" id="album-grid-container"></div>
     </div>
 
-    <!-- 📖 ヒストリー画面 -->
     <div id="screen-history" class="sub-screen">
         <div class="sub-header"><span class="sub-title">📖 ヒストリー・過去イベント記録</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div>
         <div id="history-list-container">
@@ -554,12 +542,53 @@
         </div>
     </div>
 
-    <!-- ⚙️ 設定（下部メニュー非表示対応） -->
+    <!-- ⚙️ 設定（タイトル＆ホーム共通 ＋ ホーム専用 ＋ タイトル限定機能） -->
     <div id="screen-settings" class="sub-screen">
         <div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div>
-        <!-- ログイン時のみ表示する時計カラー設定 -->
-        <div id="settings-clock-section" style="display: none;">
-            <p style="margin-bottom: 8px; font-weight: bold; color: #00f5d4;">⏰ ホーム画面の時計フォントカラー変更</p>
+        
+        <!-- 共通：音量・明るさ・更新・再起動 -->
+        <div class="admin-section" style="margin-bottom:12px;">
+            <h4 style="color:#00f5d4;">🔊 端末連動・システム設定</h4>
+            <div style="margin-bottom: 10px;">
+                <label style="font-size:0.8rem; color:#aaa;">音量 (端末連動):</label>
+                <input type="range" min="0" max="100" value="80" class="admin-input" onchange="adjustVolume(this.value)">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label style="font-size:0.8rem; color:#aaa;">画面明るさ (端末連動):</label>
+                <input type="range" min="20" max="100" value="100" class="admin-input" onchange="adjustBrightness(this.value)">
+            </div>
+            <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="refreshAppData()">🔄 更新 (データ再取得)</button>
+            <button class="admin-btn" style="background:#ff9900; color:#fff;" onclick="restartApp()">♻️ 再起動</button>
+        </div>
+
+        <!-- ホーム画面限定項目：アイコン変更・名前変更 -->
+        <div id="settings-home-exclusive" class="admin-section" style="display: none; margin-bottom:12px;">
+            <h4 style="color:#ffee00;">🏠 ホーム画面専用設定</h4>
+            <label style="font-size:0.8rem; color:#aaa;">名前変更:</label>
+            <input type="text" id="settings-name-input" class="admin-input" placeholder="新しい名前">
+            <button class="admin-btn" onclick="saveUserNameChange()">💾 名前を保存</button>
+
+            <label style="font-size:0.8rem; color:#aaa; margin-top:10px; display:block;">アイコン変更 (アルバムのイラスト選択 / デフォルト削除):</label>
+            <select id="settings-avatar-select" class="admin-input">
+                <option value="">(デフォルト・削除)</option>
+            </select>
+            <button class="admin-btn" onclick="saveUserAvatarChange()">🖼️ アイコンを適用</button>
+        </div>
+
+        <!-- タイトル画面限定項目：フォークリセット -->
+        <div id="settings-title-exclusive" class="admin-section" style="display: none; border-color:#ff334b; margin-bottom:12px;">
+            <h4 style="color:#ff334b; border-left-color:#ff334b;">⚠️ タイトル画面限定: フォークリセット</h4>
+            <p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">端末内のすべてのデータを完全に初期化します（ログインIDと2段階認証が必要です）。</p>
+            <label style="font-size:0.8rem; color:#aaa;">ログインID:</label>
+            <input type="text" id="reset-id-input" class="admin-input" placeholder="ログインIDを入力">
+            <label style="font-size:0.8rem; color:#aaa;">2段階認証コード:</label>
+            <input type="password" id="reset-auth-input" class="admin-input" placeholder="認証コード">
+            <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="executeForkReset()">🗑️ すべてのデータを削除して初期化</button>
+        </div>
+
+        <!-- 時計カラー設定（ログイン時） -->
+        <div id="settings-clock-section" class="admin-section" style="display: none;">
+            <h4 style="color:#00f5d4;">⏰ ホーム画面の時計フォントカラー</h4>
             <div class="color-picker-grid">
                 <button class="color-btn c-white" style="background:#222;" onclick="setClockColor('c-white', this)">白</button>
                 <button class="color-btn c-blue" style="background:#222;" onclick="setClockColor('c-blue', this)">青</button>
@@ -574,7 +603,6 @@
     </div>
 
     <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
-    <!-- 📋 報告（下部メニュー非表示対応） -->
     <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
     
     <!-- 🛡️ 管理画面 -->
@@ -587,7 +615,6 @@
         </div>
         <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※ログイン制限やガチャバナー画像追加、個別の制限設定に対応。</p>
         
-        <!-- 🔒 ユーザーログイン制限設定（一斉＆個別） -->
         <div class="admin-section" style="border-color: #ff334b;">
             <h4 style="color: #ff334b; border-left-color: #ff334b;">🔒 ユーザーアクセス制限・アカウント管理</h4>
             
@@ -601,7 +628,6 @@
             <div id="admin-user-restriction-list" style="background:#222; padding:8px; border-radius:6px; font-size:0.8rem;"></div>
         </div>
 
-        <!-- 🖼️ タイトル画面 背景画像管理（最大8枚スライドショー） -->
         <div class="admin-section">
             <h4>🖼️ タイトル画面 背景画像管理 (最大8枚)</h4>
             <label style="font-size: 0.8rem; color: #aaa;">追加する背景画像（Googleドライブ選択）：</label>
@@ -612,7 +638,6 @@
             <div id="admin-title-bg-list" style="margin-top: 10px; font-size: 0.8rem;"></div>
         </div>
 
-        <!-- 🎪 イベント管理 -->
         <div class="admin-section">
             <h4>🎪 イベント管理・ステータス設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">イベントタイトル：</label>
@@ -642,7 +667,6 @@
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを削除してヒストリーにまとめる</button>
         </div>
 
-        <!-- 🎂 ガチャ管理＆バナー画像選択＆レアリティ別ラインナップ変更 -->
         <div class="admin-section">
             <h4>🎂 ガチャ管理・バナー画像＆ラインナップ設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">ガチャ名称：</label>
@@ -689,11 +713,9 @@
             </select>
             <button class="admin-btn" onclick="adminAddGachaIllustration()">➕ ガチャラインナップに追加する</button>
 
-            <!-- レアリティ別ガチャラインナップ一覧（★2の配布トグル付き） -->
             <div id="admin-gacha-lineup-by-rarity" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
 
-        <!-- 🎁 プレゼント配信 -->
         <div class="admin-section">
             <h4>🎁 プレゼントを贈る（個別 / 全員）</h4>
             <label style="font-size: 0.8rem; color: #aaa;">宛先：</label>
@@ -713,7 +735,6 @@
             <button class="admin-btn" onclick="adminSendGift()">📤 プレゼントを送信する</button>
         </div>
 
-        <!-- ✉️ お知らせ管理・作成・削除 -->
         <div class="admin-section">
             <h4>✉️ お知らせを作成・管理する</h4>
             <label style="font-size: 0.8rem; color: #aaa;">お知らせタイトル：</label>
@@ -726,14 +747,11 @@
             </select>
             <button class="admin-btn" onclick="adminPublishNotice()">📢 お知らせを全体公開する</button>
 
-            <!-- 公開中のお知らせ管理一覧 -->
             <div id="admin-notice-manage-list" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
 
-        <!-- 📊 ポイント集計 (メンバー全員のP反映・ネオは除外) -->
         <div class="admin-section">
             <h4>📊 ポイント集計・メンバー連動</h4>
-            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 8px;">スプレッドシート連動データベースの全メンバーのポイント状況（管理者ネオはカウント対象外）：</p>
             <div id="admin-member-points-container" style="margin-bottom: 10px; font-size: 0.8rem; background: #222; padding: 8px; border-radius: 6px;"></div>
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminResetEventPoints()">🔄 全員の個人Pを0にリセット</button>
             <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="adminShowRankingResult()">🏆 順位発表演出</button>
@@ -741,7 +759,6 @@
     </div>
 
     <script>
-        // Google Apps ScriptのウェブアプリURLを指定
         const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
 
         const GACHA_RATES = {
@@ -754,7 +771,6 @@
             "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
         };
 
-        // ADMINを削除し、ネオ(A-24-11-9-a)を単一管理者に指定
         const memberDatabase = [
             { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 120 },
             { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 85 },
@@ -763,13 +779,13 @@
             { id: "S-24-11-5-o", name: "海惺", gem: 0, coin: 0, pt: 90 },
             { id: "U-24-11-6-a", name: "タイ", gem: 0, coin: 0, pt: 300 },
             { id: "N-24-11-7-o", name: "Ayu", gem: 0, coin: 0, pt: 175 },
-            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0 } // 管理者はPカウント除外
+            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0 }
         ];
 
         let currentUser = JSON.parse(localStorage.getItem('nexus_current_user')) || null;
         let isAdmin = localStorage.getItem('nexus_is_admin') === 'true';
         let isLoginLocked = localStorage.getItem('nexus_login_locked') === 'true';
-        let userRestrictionMap = JSON.parse(localStorage.getItem('nexus_restricted_users')) || {}; // id: true/false
+        let userRestrictionMap = JSON.parse(localStorage.getItem('nexus_restricted_users')) || {};
 
         let masterDriveImages = [];
         let star2DistributeStatus = JSON.parse(localStorage.getItem('nexus_star2_distribute')) || {};
@@ -777,6 +793,7 @@
         function getUserAlbumKey() { return 'nexus_album_' + (currentUser ? currentUser.id : 'guest'); }
         function getUserSlideshowKey() { return 'nexus_slideshow_' + (currentUser ? currentUser.id : 'guest'); }
         function getUserGiftsKey() { return 'nexus_gifts_' + (currentUser ? currentUser.id : 'guest'); }
+        function getUserAvatarKey() { return 'nexus_avatar_' + (currentUser ? currentUser.id : 'guest'); }
         function getGlobalNoticesKey() { return 'nexus_global_notices'; }
         function getEventHistoryKey() { return 'nexus_event_history'; }
         function getTitleBgKey() { return 'nexus_title_bg_images'; }
@@ -784,6 +801,7 @@
         let userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
         let userSlideshowIds = JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [];
         let userGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
+        let userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
         let globalNotices = JSON.parse(localStorage.getItem(getGlobalNoticesKey())) || [];
         let eventHistory = JSON.parse(localStorage.getItem(getEventHistoryKey())) || [];
         let titleBgImages = JSON.parse(localStorage.getItem(getTitleBgKey())) || [
@@ -838,17 +856,27 @@
             const idEl = document.getElementById('display-id');
             const nameEl = document.getElementById('display-name');
             const gemEl = document.getElementById('display-gem');
+            const avatarImg = document.getElementById('main-avatar-img');
 
             if (currentUser) {
                 idEl.innerText = currentUser.id;
                 const isNeo = (currentUser.id === "A-24-11-9-a");
                 nameEl.innerText = currentUser.name + (isNeo ? " (👑管理者)" : "");
                 gemEl.innerText = Number(currentUser.gem || 0).toLocaleString();
+                
+                userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
+                if (userAvatarUrl) {
+                    avatarImg.src = userAvatarUrl;
+                } else {
+                    avatarImg.src = "https://picsum.photos/id/1069/100/100";
+                }
+
                 document.getElementById('title-screen').classList.add('hidden');
             } else {
                 idEl.innerText = "未ログイン";
                 nameEl.innerText = "ゲスト";
                 gemEl.innerText = "0";
+                avatarImg.src = "https://picsum.photos/id/1069/100/100";
                 document.getElementById('title-screen').classList.remove('hidden');
                 initTitleSlideshow();
             }
@@ -1012,12 +1040,11 @@
                     <span style="background:${statusColor}; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.status}</span>
                 </div>
                 <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 10px;">期間: ${formatDateStr(currentGachaConfig.startDate)} 〜 ${formatDateStr(currentGachaConfig.endDate)}</div>
-                <p style="margin-bottom: 10px; font-size: 0.85rem; color: #aaa;">★2以下のアイテムを引いた場合は、全ユーザーに自動配布されます！</p>
                 
                 <button onclick="pullGachaFromDrive()" style="padding: 12px 20px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit; width:100%; margin-bottom: 15px;">💎 ガチャを引く</button>
 
                 <div style="background:#1a1a1a; padding:10px; border-radius:8px; border:1px solid #333;">
-                    <div style="font-size:0.8rem; font-weight:bold; color:#00f5d4; margin-bottom:4px;">📊 現在のガチャ排出確率（スプレッドシート準拠）</div>
+                    <div style="font-size:0.8rem; font-weight:bold; color:#00f5d4; margin-bottom:4px;">📊 現在のガチャ排出確率</div>
                     <table class="rate-table">
                         <thead>
                             <tr><th>レア</th><th>★6</th><th>★5</th><th>★4</th><th>★3</th><th>★2</th></tr>
@@ -1046,13 +1073,11 @@
             const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
             if (!inputId) return;
 
-            // 1. 個別制限チェック
             if (userRestrictionMap[inputId] === true) {
                 alert("❌ このアカウントは管理者によりアクセス制限（凍結）されています。");
                 return;
             }
 
-            // 2. 一斉ログイン制限チェック（ネオ以外）
             if (isLoginLocked && inputId !== "A-24-11-9-a") {
                 alert("❌ 現在ログイン制限（メンテナンス中）につき、一般メンバーのログインはできません。");
                 return;
@@ -1072,19 +1097,18 @@
                 reloadUserData();
                 
                 alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
-                
                 playDefaultSongOnLogin();
 
                 if (isAdmin) openScreen('manage');
             } else {
-                alert("❌ ログインエラー\nスプレッドシート（登録メンバーリスト）に存在しないIDです。正しいIDを入力してください。");
+                alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
             }
         }
 
         function playDefaultSongOnLogin() {
             if (songs.length > 0) {
                 audioPlayer.src = songs[0].url;
-                audioPlayer.play().catch(e => console.log("自動再生ブロック保護:", e));
+                audioPlayer.play().catch(e => console.log("自動再生保護:", e));
                 miniTitle.innerText = songs[0].title;
                 if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + songs[0].title;
             }
@@ -1104,6 +1128,7 @@
         function reloadUserData() {
             userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
             userSlideshowIds = JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [];
+            userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
             
             let rawGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
             userGifts = rawGifts.filter(gift => {
@@ -1112,6 +1137,7 @@
                 }
                 return true;
             });
+            localStorage.setItem(getUserGiftsKey(), JSON.stringify(userGifts));
 
             updateUIUserStatus();
             initSlideshow();
@@ -1121,7 +1147,6 @@
             renderHistory();
         }
 
-        // 🛡️ 管理画面の閲覧チェック（ネオ: A-24-11-9-a はパスワード不要）
         function checkManagePassword() {
             closeOtherMenu();
             if (currentUser && currentUser.id === "A-24-11-9-a") {
@@ -1168,7 +1193,7 @@
         function toggleIndividualUserRestriction(userId, checkbox) {
             userRestrictionMap[userId] = checkbox.checked;
             localStorage.setItem('nexus_restricted_users', JSON.stringify(userRestrictionMap));
-            alert(checkbox.checked ? `🚫 [${userId}] のアクセスを【制限（制限中）】しました。` : `🔓 [${userId}] の制限を【解除（許可）】しました。`);
+            alert(checkbox.checked ? `🚫 [${userId}] のアクセスを【制限】しました。` : `🔓 [${userId}] の制限を【解除】しました。`);
         }
 
         function renderAdminUserRestrictionList() {
@@ -1176,7 +1201,7 @@
             if (!container) return;
             container.innerHTML = "";
             memberDatabase.forEach(m => {
-                if (m.id === "A-24-11-9-a") return; // ネオは自身のため表示スキップ
+                if (m.id === "A-24-11-9-a") return;
                 const isRestricted = userRestrictionMap[m.id] === true;
                 const row = document.createElement('div');
                 row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #333;";
@@ -1227,7 +1252,7 @@
                 localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
                 updateUIUserStatus();
                 renderHistory();
-                alert("📖 イベントを終了し、ヒストリーにきれいにまとめました！");
+                alert("📖 イベントを終了し、ヒストリーにまとめました！");
             }
         }
 
@@ -1335,7 +1360,7 @@
             star2DistributeStatus[itemId] = checkbox.checked;
             localStorage.setItem('nexus_star2_distribute', JSON.stringify(star2DistributeStatus));
             reloadUserData();
-            alert(checkbox.checked ? "🌟 ★2アイテムの配布を【有効】にしました。" : "🚫 ★2アイテムの配布を【停止】しました（未受取者のBOXから非同期削除されます）。");
+            alert(checkbox.checked ? "🌟 ★2アイテムの配布を【有効】にしました。" : "🚫 ★2アイテムの配布を【停止】しました。");
         }
 
         function renderAdminGachaLineupByRarity() {
@@ -1487,6 +1512,7 @@
                 }
 
                 populateAdminSelects();
+                populateSettingsAvatarSelect();
 
                 initSlideshow();
                 renderAlbum();
@@ -1530,6 +1556,16 @@
             renderAdminUserRestrictionList();
         }
 
+        function populateSettingsAvatarSelect() {
+            const selectEl = document.getElementById('settings-avatar-select');
+            if (!selectEl) return;
+            let html = `<option value="">(デフォルト・削除)</option>`;
+            userAlbum.forEach(img => {
+                html += `<option value="${img.url}">${img.name}</option>`;
+            });
+            selectEl.innerHTML = html;
+        }
+
         function pullGachaFromDrive() {
             if (!currentUser) {
                 alert("ガチャを引くには、まずログインしてください！");
@@ -1538,7 +1574,7 @@
             }
 
             if (masterDriveImages.length === 0) {
-                alert("ガチャのラインナップが存在しません。管理画面で追加してください。");
+                alert("ガチャのラインナップが存在しません。");
                 return;
             }
 
@@ -1567,7 +1603,7 @@
                 userGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
                 updateUIUserStatus();
                 renderGifts();
-                alert(`🌟 【★2アイテム排出！】\n「${rewardImg.name}」が排出されました！\n★2以下のため、全メンバーのプレゼントBOXに自動配布されました！`);
+                alert(`🌟 【★2アイテム排出！】\n「${rewardImg.name}」が排出されました！\n全メンバーのプレゼントBOXに自動配布されました！`);
             } else {
                 const alreadyHas = userAlbum.find(item => item.id === rewardImg.id);
                 if (!alreadyHas) {
@@ -1576,8 +1612,9 @@
                     saveUserAlbumData();
                     initSlideshow();
                     renderAlbum();
+                    populateSettingsAvatarSelect();
                 }
-                alert(`🎉 ガチャ結果！\n「${rewardImg.name}」を獲得しました！\nマイアルバムに自動保存されました。`);
+                alert(`🎉 ガチャ結果！\n「${rewardImg.name}」を獲得しました！`);
             }
         }
 
@@ -1592,6 +1629,7 @@
                 }
                 return true;
             });
+            localStorage.setItem(getUserGiftsKey(), JSON.stringify(userGifts));
 
             if (userGifts.length === 0) {
                 container.innerHTML = `<p style="color: #888; text-align: center; margin-top: 20px;">現在受け取れるプレゼントはありません。</p>`;
@@ -1608,7 +1646,10 @@
                         <div style="font-size:0.8rem; color:#aaa;">💎: +${gift.gem || 0} | 🪙: +${gift.coin || 0}</div>
                         ${gift.imgUrl ? `<img src="${gift.imgUrl}" style="width:50px; height:50px; object-fit:cover; border-radius:6px; margin-top:4px;">` : ''}
                     </div>
-                    <button onclick="claimGift(${index})" style="padding: 8px 14px; background:#00f5d4; color:#000; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">受け取る</button>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="claimGift(${index})" style="padding: 8px 12px; background:#00f5d4; color:#000; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">受け取る</button>
+                        <button onclick="deleteGift(${index})" style="padding: 8px 10px; background:#ff334b; color:#fff; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">削除</button>
+                    </div>
                 `;
                 container.appendChild(box);
             });
@@ -1629,6 +1670,7 @@
                 saveUserAlbumData();
                 renderAlbum();
                 initSlideshow();
+                populateSettingsAvatarSelect();
             }
 
             userGifts.splice(index, 1);
@@ -1637,6 +1679,15 @@
             updateUIUserStatus();
             renderGifts();
             alert(`🎁 「${gift.title}」を受け取りました！`);
+        }
+
+        function deleteGift(index) {
+            if (confirm("このプレゼントを削除しますか？")) {
+                userGifts.splice(index, 1);
+                localStorage.setItem(getUserGiftsKey(), JSON.stringify(userGifts));
+                renderGifts();
+                updateUIUserStatus();
+            }
         }
 
         function renderNotices() {
@@ -1746,11 +1797,7 @@
             const savedColor = localStorage.getItem('nexus_clock_color');
             if (savedColor) {
                 const clockEl = document.getElementById('real-clock');
-                clockEl.className = "clock-time " + savedColor;
-                document.querySelectorAll('.color-btn').forEach(btn => {
-                    btn.classList.remove('selected');
-                    if (btn.classList.contains(savedColor)) btn.classList.add('selected');
-                });
+                if (clockEl) clockEl.className = "clock-time " + savedColor;
             }
         });
 
@@ -1761,7 +1808,8 @@
             const s = String(now.getSeconds()).padStart(2, '0');
             const timeStr = `${h}:${m}:${s}`;
             
-            document.getElementById('real-clock').innerText = timeStr;
+            const rClock = document.getElementById('real-clock');
+            if (rClock) rClock.innerText = timeStr;
             const titleClock = document.getElementById('title-clock');
             if (titleClock) titleClock.innerText = timeStr;
         }
@@ -1770,7 +1818,7 @@
 
         function setClockColor(colorClass, btnElement) {
             const clockEl = document.getElementById('real-clock');
-            clockEl.className = "clock-time " + colorClass;
+            if (clockEl) clockEl.className = "clock-time " + colorClass;
             document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('selected'));
             btnElement.classList.add('selected');
             localStorage.setItem('nexus_clock_color', colorClass);
@@ -1787,46 +1835,11 @@
                         const level = Math.floor(battery.level * 100);
                         const text = (battery.charging ? "充電中 " : "") + level + "%";
                         
-                        bEl.innerText = text;
+                        if (bEl) bEl.innerText = text;
                         if (titleBEl) titleBEl.innerText = text;
-
-                        bEl.className = "battery-status";
-                        if (titleBEl) titleBEl.className = "battery-status";
-
-                        let statusClass = "battery-green";
-                        if (battery.charging) {
-                            statusClass = "battery-charging";
-                        } else if (level <= 15) {
-                            statusClass = "battery-blink";
-                        } else if (level <= 30) {
-                            statusClass = "battery-red";
-                        } else if (level <= 50) {
-                            statusClass = "battery-orange";
-                        }
-
-                        bEl.classList.add(statusClass);
-                        if (titleBEl) titleBEl.classList.add(statusClass);
                     }
                     updateBattery();
-                    battery.addEventListener('levelchange', updateBattery);
-                    battery.addEventListener('chargingchange', updateBattery);
-                } catch (e) { 
-                    const defaultText = "充電中 100%";
-                    bEl.innerText = defaultText;
-                    bEl.className = "battery-status battery-charging";
-                    if (titleBEl) {
-                        titleBEl.innerText = defaultText;
-                        titleBEl.className = "battery-status battery-charging";
-                    }
-                }
-            } else { 
-                const defaultText = "充電中 100%";
-                bEl.innerText = defaultText;
-                bEl.className = "battery-status battery-charging";
-                if (titleBEl) {
-                    titleBEl.innerText = defaultText;
-                    titleBEl.className = "battery-status battery-charging";
-                }
+                } catch (e) { }
             }
         }
         initBattery();
@@ -1853,8 +1866,20 @@
 
             if (name === 'settings') {
                 const clockSection = document.getElementById('settings-clock-section');
-                if (clockSection) {
-                    clockSection.style.display = currentUser ? 'block' : 'none';
+                const homeEx = document.getElementById('settings-home-exclusive');
+                const titleEx = document.getElementById('settings-title-exclusive');
+
+                if (fromTitle) {
+                    if (titleEx) titleEx.style.display = 'block';
+                    if (homeEx) homeEx.style.display = 'none';
+                    if (clockSection) clockSection.style.display = 'none';
+                } else {
+                    if (titleEx) titleEx.style.display = 'none';
+                    if (homeEx) homeEx.style.display = currentUser ? 'block' : 'none';
+                    if (clockSection) clockSection.style.display = currentUser ? 'block' : 'none';
+                    populateSettingsAvatarSelect();
+                    const nameInput = document.getElementById('settings-name-input');
+                    if (nameInput && currentUser) nameInput.value = currentUser.name;
                 }
             }
 
@@ -1864,10 +1889,17 @@
             if (target) target.classList.add('active');
         }
 
+        // 閉じるボタン等で設定変更を保存して反映
         function closeScreen(name) { 
-            document.getElementById('screen-' + name).classList.remove('active'); 
+            const screen = document.getElementById('screen-' + name);
+            if (screen) screen.classList.remove('active'); 
+            
             const bottomNav = document.getElementById('main-bottom-nav');
             if (bottomNav) bottomNav.classList.remove('hide-menu');
+
+            if (name === 'settings') {
+                updateUIUserStatus();
+            }
 
             if (!currentUser || openedFromTitle) {
                 document.getElementById('title-screen').classList.remove('hidden');
@@ -1883,6 +1915,79 @@
             document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             if (name === 'home') document.getElementById('nav-home').classList.add('active');
+        }
+
+        // 設定：音量・明るさ連動
+        function adjustVolume(val) {
+            console.log("音量変更:", val);
+        }
+        function adjustBrightness(val) {
+            document.body.style.filter = `brightness(${val / 100})`;
+        }
+        function refreshAppData() {
+            fetchDriveMasterData();
+            reloadUserData();
+            alert("🔄 データを最新に更新しました！");
+        }
+        function restartApp() {
+            if (confirm("アプリを再起動しますか？")) {
+                window.location.reload();
+            }
+        }
+
+        // ホーム設定：名前変更
+        function saveUserNameChange() {
+            const newName = document.getElementById('settings-name-input').value.trim();
+            if (!newName) {
+                alert("有効な名前を入力してください。");
+                return;
+            }
+            if (currentUser) {
+                currentUser.name = newName;
+                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+                updateUIUserStatus();
+                alert(`✏️ 名前を「${newName}」に変更しました！（メニューを閉じると保存されます）`);
+            }
+        }
+
+        // ホーム設定：アイコン変更
+        function saveUserAvatarChange() {
+            const selectEl = document.getElementById('settings-avatar-select');
+            const url = selectEl.value;
+            if (currentUser) {
+                if (url) {
+                    localStorage.setItem(getUserAvatarKey(), url);
+                    userAvatarUrl = url;
+                    alert("🖼️ アイコンを変更しました！（メニューを閉じると保存されます）");
+                } else {
+                    localStorage.removeItem(getUserAvatarKey());
+                    userAvatarUrl = "";
+                    alert("🗑️ アイコンをデフォルト（削除）に戻しました！");
+                }
+                updateUIUserStatus();
+            }
+        }
+
+        // タイトル限定：フォークリセット
+        function executeForkReset() {
+            const idInput = document.getElementById('reset-id-input').value.trim();
+            const authInput = document.getElementById('reset-auth-input').value.trim();
+
+            if (!idInput || !authInput) {
+                alert("ログインIDと2段階認証コードの両方を入力してください。");
+                return;
+            }
+
+            if (authInput !== "2024061124") {
+                alert("❌ 2段階認証コードが違います。");
+                return;
+            }
+
+            if (confirm("⚠️ 【警告】端末内のすべてのデータ（アルバム、ガチャ履歴、設定など）が完全に削除されます。本当に実行しますか？")) {
+                localStorage.clear();
+                alert("🗑️ すべてのデータを削除しました。アプリを再起動します。");
+                window.location.reload();
+            }
         }
 
         function updateCountdown() {
