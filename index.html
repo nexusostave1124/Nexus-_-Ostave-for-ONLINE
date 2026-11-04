@@ -684,7 +684,7 @@
       <span class="sub-title">📷 アルバム (スライドショー設定)</span>
       <button class="close-btn" onclick="closeScreen('album')">閉じる</button>
     </div>
-    <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 12px;">タップしたイラストをホーム画面のスライドショーに登録/解除できます（枠が光っている画像がスライド中）。</p>
+    <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 12px;">Googleドライブから自動追加された画像や、タップしてスライドショーに登録/解除できるアルバムです（枠が光っている画像がスライド中）。</p>
     
     <!-- 画像インポートボタン -->
     <div style="margin-bottom: 15px;">
@@ -723,27 +723,56 @@
   <div id="screen-manage" class="sub-screen"><div class="sub-header"><span class="sub-title">🛡️ 管理</span><button class="close-btn" onclick="closeScreen('manage')">閉じる</button></div><p>管理画面</p></div>
 
   <script>
+    // 🌐 GistのRaw URL（Googleドライブ連動の画像リスト）
+    const GIST_RAW_URL = "https://gist.githubusercontent.com/nexusostave1124/ac1c05eaf442b0dcb34514cb7ed804a7/raw/images.json";
+
     // 🎨 アルバム・スライドショー管理の初期データ
-    // デフォルト画像リスト
     let albumImages = JSON.parse(localStorage.getItem('nexus_album_images')) || [
       { id: 'def_1', url: 'https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/images/home_bg.jpg', name: 'デフォルト背景1' },
       { id: 'def_2', url: 'https://picsum.photos/id/1074/800/1200', name: 'サンプルイラストA' },
       { id: 'def_3', url: 'https://picsum.photos/id/1080/800/1200', name: 'サンプルイラストB' }
     ];
 
-    // スライドショーに登録されている画像のIDリスト
     let slideshowIds = JSON.parse(localStorage.getItem('nexus_slideshow_ids')) || ['def_1', 'def_2', 'def_3'];
+
+    // ☁️ GistからGoogleドライブの画像リストを自動取得してマージする関数
+    async function fetchDriveImagesFromGist() {
+      try {
+        const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime());
+        if (!response.ok) return;
+        const driveImages = await response.json();
+        
+        // 取得したドライブ画像を既存のアルバムに統合（重複防ぎつつ追加）
+        driveImages.forEach(dImg => {
+          const exists = albumImages.some(img => img.id === dImg.id || img.url === dImg.url);
+          if (!exists) {
+            albumImages.push(dImg);
+            // 新規追加された画像は自動でスライドショー対象にも含める
+            if (!slideshowIds.includes(dImg.id)) {
+              slideshowIds.push(dImg.id);
+            }
+          }
+        });
+
+        localStorage.setItem('nexus_album_images', JSON.stringify(albumImages));
+        localStorage.setItem('nexus_slideshow_ids', JSON.stringify(slideshowIds));
+
+        // 画面を再描画
+        initSlideshow();
+        renderAlbum();
+      } catch (e) {
+        console.log("Gistからの画像取得スキップ（オフラインまたはエラー）");
+      }
+    }
 
     // 🖼️ スライドショーを描画・更新する関数
     function initSlideshow() {
       const container = document.getElementById('slideshow-container');
       container.innerHTML = '';
 
-      // スライド対象の画像を集める
       const activeImages = albumImages.filter(img => slideshowIds.includes(img.id));
       
       if (activeImages.length === 0) {
-        // 万が一空の場合はデフォルトを表示
         container.innerHTML = `<img src="https://picsum.photos/id/1069/800/1200" class="slide-img active" alt="fallback">`;
         return;
       }
@@ -775,6 +804,7 @@
     // 📷 アルバム画面の描画
     function renderAlbum() {
       const grid = document.getElementById('album-grid-container');
+      if (!grid) return;
       grid.innerHTML = '';
 
       albumImages.forEach(img => {
@@ -798,7 +828,6 @@
     // スライドショーへの登録・解除切り替え
     function toggleSlideshow(id) {
       if (slideshowIds.includes(id)) {
-        // 最低1枚は残す
         if (slideshowIds.length <= 1) {
           alert('スライドショーには最低1枚の画像が必要です。');
           return;
@@ -826,7 +855,7 @@
           name: file.name.substring(0, 12)
         };
         albumImages.push(newObj);
-        slideshowIds.push(newObj.id); // 自動でスライドにも追加
+        slideshowIds.push(newObj.id);
 
         localStorage.setItem('nexus_album_images', JSON.stringify(albumImages));
         localStorage.setItem('nexus_slideshow_ids', JSON.stringify(slideshowIds));
@@ -838,7 +867,7 @@
       reader.readAsDataURL(file);
     }
 
-    // 💎 ガチャを引いたときのテスト処理（新しいランダムイラストを獲得）
+    // 💎 ガチャテスト処理
     function simulateGachaPull() {
       const randomId = Math.floor(Math.random() * 1000);
       const newGachaImg = {
@@ -857,6 +886,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       initSlideshow();
       renderAlbum();
+      fetchDriveImagesFromGist(); // 起動時にGistから最新のドライブ画像を同期
 
       const savedColor = localStorage.getItem('nexus_clock_color');
       if (savedColor) {
