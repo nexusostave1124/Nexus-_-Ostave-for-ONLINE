@@ -624,7 +624,7 @@
             </div>
         </div>
 
-        <!-- 右下：イベント＆ランキングボタン -->
+        <!-- 右下：イベント（P稼ぎ／LINE風参加方法）＆ランキングボタン -->
         <div class="event-action-column" id="event-action-btns">
             <div class="event-action-btn" onclick="handleEventActionButton()">
                 <span class="event-action-icon">💍</span>
@@ -785,20 +785,22 @@
                 <button class="close-btn" onclick="closeManageScreen()">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント設定・Googleドライブ画像適用・ポイント調整に対応。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント設定・ボーナス値設定・P算出計算機・Googleドライブ画像適用に対応。</p>
 
-        <!-- 🎪 イベント管理＆ロゴ＆ポイント増減 -->
+        <!-- 🎪 イベント管理＆ボーナス値設定＆P算出計算機 -->
         <div class="admin-section">
-            <h4>🎪 イベント管理・ロゴ・ステータス設定</h4>
+            <h4>🎪 イベント管理・ボーナス値 & P算出設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">イベントタイトル：</label>
             <input type="text" id="admin-event-title-input" class="admin-input" value="結成2周年記念イベント">
-            <label style="font-size: 0.8rem; color: #aaa;">イベント種類：</label>
+            
+            <label style="font-size: 0.8rem; color: #aaa;">イベント種類（シーズン：競い合う / ストーリー：協力）：</label>
             <select id="admin-event-type-select" class="admin-input">
-                <option value="シーズンイベント">シーズンイベント</option>
-                <option value="ストーリーイベント">ストーリーイベント</option>
+                <option value="シーズンイベント">シーズンイベント (競い合う・High&Low/連打等)</option>
+                <option value="ストーリーイベント">ストーリーイベント (協力・LINE風発言/通話等)</option>
                 <option value="タイアップイベント">タイアップイベント</option>
                 <option value="期間限定イベント">期間限定イベント</option>
             </select>
+
             <label style="font-size: 0.8rem; color: #aaa;">開始日時：</label>
             <input type="datetime-local" id="admin-event-start-input" class="admin-input" value="2026-11-30T18:00">
             <label style="font-size: 0.8rem; color: #aaa;">終了日時：</label>
@@ -819,8 +821,44 @@
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを終了してヒストリーにまとめる</button>
         </div>
 
+        <!-- 🧮 イベントP算出計算機（ご指定の数式＆切上げ処理） -->
+        <div class="admin-section" style="border-color: #00f5d4;">
+            <h4 style="color: #00f5d4; border-left-color: #00f5d4;">🧮 イベントP算出・ボーナス手入力エディタ</h4>
+            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 8px;">公式: [ 獲得P + ガチャボーナス(%) + イラストボーナス(%) + ボーナス(%) ] (小数以下繰上げ)</p>
+            
+            <label style="font-size:0.8rem; color:#aaa;">対象メンバー選択：</label>
+            <select id="calc-target-member" class="admin-input" onchange="loadMemberBonusToCalc()">
+                <option value="">(メンバーを選択)</option>
+            </select>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">獲得P (稼いだP)：</label>
+                    <input type="number" id="calc-base-pt" class="admin-input" value="0" oninput="runPtCalculator()">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">ガチャボーナス (%):</label>
+                    <input type="number" id="calc-gacha-bonus" class="admin-input" value="0" oninput="runPtCalculator()">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">イラストボーナス (%):</label>
+                    <input type="number" id="calc-illust-bonus" class="admin-input" value="0" oninput="runPtCalculator()">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">ボーナス (%):</label>
+                    <input type="number" id="calc-extra-bonus" class="admin-input" value="0" oninput="runPtCalculator()">
+                </div>
+            </div>
+
+            <div style="background:#222; padding:10px; border-radius:6px; margin-top:8px; text-align:center;">
+                <span style="font-size:0.8rem; color:#aaa;">計算結果 (合計P): </span>
+                <span id="calc-result-display" style="font-size:1.3rem; font-weight:bold; color:#00f5d4;">0 P</span>
+            </div>
+            <button class="admin-btn" onclick="saveCalculatedPtToMember()">💾 計算結果をメンバーのイベントPに適用する</button>
+        </div>
+
         <div class="admin-section">
-            <h4>📊 ポイント（P）集計・スプレッドシート連携増減調整</h4>
+            <h4>📊 ポイント（P）一覧 & スプレッドシート連携手入力調整</h4>
             <div id="admin-member-points-container" style="margin-bottom: 10px; font-size: 0.8rem; background: #222; padding: 8px; border-radius: 6px;"></div>
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminResetEventPoints()">🔄 全員の個人Pを0にリセット</button>
             <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="adminShowRankingResult()">🏆 順位発表演出</button>
@@ -919,6 +957,45 @@
         </div>
     </div>
 
+    <!-- 🃏 ミニゲームモーダル (シーズンイベント用: High & Low または ボタン連打) -->
+    <div id="minigame-modal" class="modal-overlay" onclick="closeMinigameModal(event)">
+        <div class="menu-dialog" style="max-width:360px; text-align:center;" onclick="event.stopPropagation()">
+            <h3 style="color:#00f5d4; margin-bottom:10px;">🃏 シーズンイベント P稼ぎ</h3>
+            <p id="minigame-desc" style="font-size:0.85rem; color:#ccc; margin-bottom:15px;">ミニゲームを遊んでイベントPを稼ごう！</p>
+            
+            <div id="highlow-container" style="background:#222; padding:15px; border-radius:10px; margin-bottom:15px;">
+                <div style="font-size:0.9rem; color:#ffee00; margin-bottom:8px;">トランプ High & Low</div>
+                <div style="font-size:2rem; font-weight:bold; margin-bottom:10px;" id="hl-card-display">♠ 7</div>
+                <p style="font-size:0.75rem; color:#aaa; margin-bottom:10px;">次のカードは今より「高い」か「低い」か？</p>
+                <div style="display:flex; gap:10px; justify-content:center;">
+                    <button onclick="playHighLow('HIGH')" style="background:#00f5d4; color:#000; border:none; padding:8px 20px; font-weight:bold; border-radius:6px; cursor:pointer;">📈 HIGH</button>
+                    <button onclick="playHighLow('LOW')" style="background:#ff334b; color:#fff; border:none; padding:8px 20px; font-weight:bold; border-radius:6px; cursor:pointer;">📉 LOW</button>
+                </div>
+            </div>
+
+            <div id="mash-container" style="background:#222; padding:15px; border-radius:10px; margin-bottom:15px;">
+                <div style="font-size:0.9rem; color:#ffee00; margin-bottom:8px;">🔥 5秒間ボタン連打チャレンジ</div>
+                <div style="font-size:1.5rem; font-weight:bold; margin-bottom:8px;" id="mash-count">0 回</div>
+                <button onclick="mashButton()" style="background:#ff9900; color:#000; border:none; padding:12px 30px; font-size:1rem; font-weight:bold; border-radius:8px; cursor:pointer; width:100%;">連打！</button>
+            </div>
+
+            <button class="close-btn" onclick="closeMinigameModal()" style="width:100%;">閉じる (獲得Pを保存)</button>
+        </div>
+    </div>
+
+    <!-- 💬 ストーリーイベント協力モーダル (LINE風発言・通話参加など) -->
+    <div id="story-event-modal" class="modal-overlay" onclick="closeStoryEventModal(event)">
+        <div class="menu-dialog" style="max-width:360px;" onclick="event.stopPropagation()">
+            <h3 style="color:#00f5d4; margin-bottom:8px; text-align:center;">💬 ストーリーイベント (協力)</h3>
+            <p style="font-size:0.8rem; color:#ccc; margin-bottom:12px; text-align:center;">LINEのチャット発言や通話参加でみんなで協力してストーリーを進めよう！</p>
+            <div style="background:#222; padding:12px; border-radius:8px; font-size:0.8rem; color:#ddd; line-height:1.5; margin-bottom:15px;">
+                ・<b>参加方法</b>: DiscordやLINEでの通話参加、グループチャットでの発言数に応じて管理者がポイントを加算します。<br>
+                ・<b>現在の協力状況</b>: 全メンバーの合計Pでエピソードが解放されます！
+            </div>
+            <button class="close-btn" onclick="closeStoryEventModal()" style="width:100%;">閉じる</button>
+        </div>
+    </div>
+
     <script>
         const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
 
@@ -932,16 +1009,15 @@
             "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
         };
 
-        // 初期状態でのダミーポイント（12500, 184899など）をすべて削除し、全メンバー「0 P」からスタートに統一
         let memberDatabase = JSON.parse(localStorage.getItem('nexus_member_db')) || [
-            { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 0 },
-            { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 0 },
-            { id: "N-24-11-3", name: "奨", gem: 0, coin: 0, pt: 0 },
-            { id: "S-24-11-4", name: "MIHO", gem: 0, coin: 0, pt: 0 },
-            { id: "S-24-11-5-o", name: "海惺", gem: 0, coin: 0, pt: 0 },
-            { id: "U-24-11-6-a", name: "タイ", gem: 0, coin: 0, pt: 0 },
-            { id: "N-24-11-7-o", name: "Ayu", gem: 0, coin: 0, pt: 0 },
-            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0 }
+            { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "N-24-11-3", name: "奨", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "S-24-11-4", name: "MIHO", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "S-24-11-5-o", name: "海惺", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "U-24-11-6-a", name: "タイ", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "N-24-11-7-o", name: "Ayu", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 }
         ];
 
         function saveMemberDb() {
@@ -1126,12 +1202,10 @@
                 if (actionBtns) actionBtns.style.display = "flex";
             }
 
-            // イベント背景画像の適用
             if (bgImg && currentEvent.imgUrl) {
                 bgImg.src = currentEvent.imgUrl;
             }
 
-            // ユーザーアイコン・ポイント・順位の計算
             if (currentUser) {
                 userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
                 eventAvatar.src = userAvatarUrl || "https://picsum.photos/id/1069/100/100";
@@ -1149,14 +1223,12 @@
                 rankEl.innerText = "-位";
             }
 
-            // 日時フォーマット
             if (periodEl) {
                 const sStr = formatDateStr(currentEvent.startDate).replace(/-/g, '.');
                 const eStr = formatDateStr(currentEvent.endDate).replace(/-/g, '.');
                 periodEl.innerText = `${sStr}〜${eStr}`;
             }
 
-            // タイトルバナー画像またはテキスト
             if (bannerBox) {
                 if (currentEvent.imgUrl) {
                     bannerBox.innerHTML = `<img src="${currentEvent.imgUrl}">`;
@@ -1165,7 +1237,6 @@
                 }
             }
 
-            // カスタムロゴ画像
             if (logoImg) {
                 if (currentEvent.logoUrl) {
                     logoImg.src = currentEvent.logoUrl;
@@ -1205,12 +1276,67 @@
         }
 
         function openEventHelpModal() {
-            alert(`❓ 【${currentEvent.title}】ヘルプ\n\n・イベント期間中にポイントを獲得して上位を目指しましょう！\n・期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`);
+            alert(`❓ 【${currentEvent.title} (${currentEvent.type})】ヘルプ\n\n・算出方法: [獲得P + ガチャボーナス(%) + イラストボーナス(%) + ボーナス(%)] (小数以下繰上げ)\n・シーズンイベントはミニゲームでP稼ぎ、ストーリーイベントはLINE発言や通話参加等で協力してPを獲得！\n・期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`);
         }
 
-        // 「イベント」ボタンを押した時（遊戯画面には行かない仕様）
+        // 「イベント」ボタンを押したときの動作（シーズン＝ミニゲーム、ストーリー＝協力案内）
         function handleEventActionButton() {
-            alert(`💍 【${currentEvent.title}】\nイベントの詳細・指定の達成方法については運営からの案内をご確認ください。`);
+            if (currentEvent.type === "ストーリーイベント") {
+                document.getElementById('story-event-modal').classList.add('active');
+            } else {
+                // シーズンイベント等の場合はHigh&Lowや連打ミニゲームを開く
+                openMinigameModal();
+            }
+        }
+
+        let currentCardVal = 7;
+        function openMinigameModal() {
+            document.getElementById('minigame-modal').classList.add('active');
+            currentCardVal = Math.floor(Math.random() * 12) + 1;
+            document.getElementById('hl-card-display.innerText') = "♠ " + currentCardVal;
+        }
+        function closeMinigameModal() {
+            document.getElementById('minigame-modal').classList.remove('active');
+            renderEventScreen();
+        }
+
+        function playHighLow(guess) {
+            const nextVal = Math.floor(Math.random() * 12) + 1;
+            let win = false;
+            if (guess === 'HIGH' && nextVal >= currentCardVal) win = true;
+            if (guess === 'LOW' && nextVal <= currentCardVal) win = true;
+
+            const earned = win ? 500 : 100;
+            alert(win ? `🎉 正解！ ${earned} P 獲得！ (次のカード: ${nextVal})` : `😢 ハズレ... ${earned} P 獲得 (次のカード: ${nextVal})`);
+            
+            if (currentUser) {
+                let userDb = memberDatabase.find(m => m.id === currentUser.id);
+                if (userDb) {
+                    userDb.pt = (userDb.pt || 0) + earned;
+                    saveMemberDb();
+                }
+            }
+            currentCardVal = nextVal;
+            document.getElementById('hl-card-display').innerText = "♠ " + currentCardVal;
+            renderEventScreen();
+        }
+
+        let mashClicks = 0;
+        function mashButton() {
+            mashClicks++;
+            document.getElementById('mash-count').innerText = mashClicks + " 回";
+            if (mashClicks % 10 === 0 && currentUser) {
+                let userDb = memberDatabase.find(m => m.id === currentUser.id);
+                if (userDb) {
+                    userDb.pt = (userDb.pt || 0) + 200;
+                    saveMemberDb();
+                }
+                renderEventScreen();
+            }
+        }
+
+        function closeStoryEventModal() {
+            document.getElementById('story-event-modal').classList.remove('active');
         }
 
         function openRankingModal() {
@@ -1223,11 +1349,59 @@
             alert(rankText);
         }
 
-        /* 管理画面：メンバーP手動増減 */
+        /* 🧮 算出方法計算機ロジック (小数以下繰上げ) */
+        function loadMemberBonusToCalc() {
+            const targetId = document.getElementById('calc-target-member').value;
+            const user = memberDatabase.find(m => m.id === targetId);
+            if (!user) return;
+
+            document.getElementById('calc-base-pt').value = user.basePt || user.pt || 0;
+            document.getElementById('calc-gacha-bonus').value = user.gachaBonus || 0;
+            document.getElementById('calc-illust-bonus').value = user.illustBonus || 0;
+            document.getElementById('calc-extra-bonus').value = user.extraBonus || 0;
+            runPtCalculator();
+        }
+
+        function runPtCalculator() {
+            const base = Number(document.getElementById('calc-base-pt').value) || 0;
+            const gacha = Number(document.getElementById('calc-gacha-bonus').value) || 0;
+            const illust = Number(document.getElementById('calc-illust-bonus').value) || 0;
+            const extra = Number(document.getElementById('calc-extra-bonus').value) || 0;
+
+            // 計算式: 獲得P + ガチャボーナス(%) + イラストボーナス(%) + ボーナス(%)
+            // ※ここではボーナス％が獲得Pに対して乗算されるか加算されるか、または単純な合計％ボーナスとして計算
+            const totalPercent = 1 + ((gacha + illust + extra) / 100);
+            const rawTotal = base * totalPercent;
+            const finalPt = Math.ceil(rawTotal); // 小数以下全て繰上げ
+
+            document.getElementById('calc-result-display').innerText = finalPt.toLocaleString() + " P";
+            return finalPt;
+        }
+
+        function saveCalculatedPtToMember() {
+            const targetId = document.getElementById('calc-target-member').value;
+            const user = memberDatabase.find(m => m.id === targetId);
+            if (!user) {
+                alert("対象メンバーを選択してください。");
+                return;
+            }
+
+            user.basePt = Number(document.getElementById('calc-base-pt').value) || 0;
+            user.gachaBonus = Number(document.getElementById('calc-gacha-bonus').value) || 0;
+            user.illustBonus = Number(document.getElementById('calc-illust-bonus').value) || 0;
+            user.extraBonus = Number(document.getElementById('calc-extra-bonus').value) || 0;
+            user.pt = runPtCalculator();
+
+            saveMemberDb();
+            renderAdminMemberPointsList();
+            renderEventScreen();
+            alert(`✅ [${user.name}] のイベントPを計算・更新しました（合計: ${user.pt.toLocaleString()} P）！`);
+        }
+
         function adminChangeUserPt(userId) {
             const user = memberDatabase.find(m => m.id === userId);
             if (!user) return;
-            const input = prompt(`[${user.name}] の現在のP: ${user.pt || 0}\n新しい獲得P（半角数字）を入力してください：`, user.pt || 0);
+            const input = prompt(`[${user.name}] の現在のP: ${user.pt || 0}\n直接変更するP（半角数字）を入力してください：`, user.pt || 0);
             if (input !== null && !isNaN(input)) {
                 user.pt = Number(input);
                 saveMemberDb();
@@ -1239,21 +1413,26 @@
 
         function renderAdminMemberPointsList() {
             const container = document.getElementById('admin-member-points-container');
+            const calcSelect = document.getElementById('calc-target-member');
             if (!container) return;
             container.innerHTML = "";
+            let selectHtml = `<option value="">(メンバーを選択)</option>`;
+
             memberDatabase.forEach(m => {
                 const isNeo = m.id === "A-24-11-9-a";
+                selectHtml += `<option value="${m.id}">${m.name} (${m.id})</option>`;
                 const row = document.createElement('div');
                 row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #333;";
                 row.innerHTML = `
                     <span>👤 ${m.name} (ID: ${m.id})</span>
                     <div style="display:flex; align-items:center; gap:8px;">
                         <span style="color:${isNeo ? '#888' : '#ffee00'}; font-weight:bold;">${m.pt || 0} P</span>
-                        <button onclick="adminChangeUserPt('${m.id}')" style="background:#00f5d4; color:#000; border:none; padding:2px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem;">P変更</button>
+                        <button onclick="adminChangeUserPt('${m.id}')" style="background:#00f5d4; color:#000; border:none; padding:2px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem;">直接P変更</button>
                     </div>
                 `;
                 container.appendChild(row);
             });
+            if (calcSelect) calcSelect.innerHTML = selectHtml;
         }
 
         function adminCreateEvent() {
@@ -1973,7 +2152,6 @@
             }
         }
 
-        /* 👑 全ての画像選択部分にGoogleドライブから取得した画像を再反映させる関数 */
         function populateAdminSelects() {
             const gachaSelect = document.getElementById('admin-gacha-img-select');
             const gachaBannerSelect = document.getElementById('admin-gacha-banner-select');
