@@ -170,7 +170,6 @@
         .title-menu-item:last-child { border-bottom: none; color: #ff334b; }
         .title-menu-item:active { background: rgba(255,255,255,0.15); }
 
-
         /* ================= 📱 メイン画面エリア ================= */
         .app-container {
             position: relative;
@@ -251,9 +250,6 @@
         .battery-red { color: #ff3333; text-shadow: 0 0 8px rgba(255,51,51,0.8); }
         .battery-charging { color: #00bfff; text-shadow: 0 0 8px rgba(0,191,255,0.8); }
 
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
-        .battery-blink { color: #ff3333; text-shadow: 0 0 10px rgba(255,51,51,1); animation: blink 0.8s infinite; }
-
         .top-buttons-column { display: flex; flex-direction: column; gap: 8px; }
         .icon-badge-btn {
             position: relative; width: 42px; height: 42px;
@@ -291,6 +287,14 @@
         }
         .nav-item.active { color: #00f5d4; }
         .nav-icon { font-size: 1.35rem; margin-bottom: 1px; }
+
+        /* 🎈 下部イベント用吹き出し（残り何日） */
+        .event-day-bubble {
+            position: absolute; top: -14px; background: #ff334b; color: #fff;
+            font-size: 0.65rem; font-weight: bold; border-radius: 12px; padding: 2px 7px;
+            box-shadow: 0 2px 6px rgba(255,51,75,0.8); border: 1px solid #fff;
+            display: none; white-space: nowrap; animation: popBubble 0.3s ease-out;
+        }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -350,6 +354,117 @@
         .rate-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.75rem; background: #222; }
         .rate-table th, .rate-table td { border: 1px solid #444; padding: 4px; text-align: center; }
         .rate-table th { background: #333; color: #00f5d4; }
+
+        /* ================= 🎪 全画面イベント専用スタイル ================= */
+        #screen-event {
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 100;
+        }
+
+        .event-full-bg-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; touch-action: pan-y;
+        }
+        .event-bg-slide {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; object-position: center;
+            opacity: 0; transition: opacity 0.5s ease;
+        }
+        .event-bg-slide.active { opacity: 1; }
+
+        /* 左上：獲得P & 現在順位 */
+        .event-user-status {
+            position: absolute; top: 15px; left: 15px; z-index: 10;
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(0, 0, 0, 0.65); padding: 8px 14px; border-radius: 14px;
+            backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.2);
+        }
+        .event-avatar-box {
+            width: 46px; height: 46px; border-radius: 8px; border: 2px solid #ffee00;
+            overflow: hidden; background: #222; flex-shrink: 0;
+        }
+        .event-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        .event-status-info { display: flex; flex-direction: column; font-size: 0.85rem; }
+        .event-status-row { display: flex; gap: 8px; align-items: baseline; }
+        .event-pt-val { font-size: 1.25rem; font-weight: 800; color: #fff; text-shadow: 0 0 6px rgba(255,255,255,0.6); }
+        .event-rank-val { font-size: 1.1rem; font-weight: 800; color: #ffee00; text-shadow: 0 0 6px rgba(255,238,0,0.6); }
+
+        /* 左上？ヘルプボタン */
+        .event-help-btn {
+            position: absolute; top: 75px; left: 15px; z-index: 10;
+            width: 38px; height: 38px; border-radius: 50%;
+            background: rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.7);
+            color: #fff; font-size: 1.3rem; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; backdrop-filter: blur(4px);
+        }
+
+        /* 右上：時計のみ（バッテリーなし） */
+        .event-top-right {
+            position: absolute; top: 15px; right: 15px; z-index: 10;
+            text-align: right;
+        }
+
+        /* 複数イベント選択タブ */
+        .event-selector-bar {
+            position: absolute; top: 70px; right: 15px; z-index: 10;
+            display: flex; gap: 6px;
+        }
+        .event-select-chip {
+            background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3);
+            color: #aaa; font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; cursor: pointer;
+        }
+        .event-select-chip.active { color: #00f5d4; border-color: #00f5d4; font-weight: bold; background: rgba(0,245,212,0.2); }
+
+        /* 左下：期間＆イベントタイトル画像 */
+        .event-bottom-left {
+            position: absolute; bottom: 85px; left: 15px; z-index: 10;
+            max-width: 65%; display: flex; flex-direction: column; gap: 6px;
+        }
+        .event-period-badge {
+            background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3);
+            color: #fff; font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 6px;
+            display: inline-block; backdrop-filter: blur(4px);
+        }
+        .event-title-banner {
+            background: rgba(40,40,40,0.85); border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 14px; padding: 12px; text-align: center; color: #fff;
+            font-size: 1.1rem; font-weight: bold; backdrop-filter: blur(6px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        }
+        .event-title-banner img { width: 100%; max-height: 80px; object-fit: contain; border-radius: 8px; }
+
+        /* 右下：アクションボタン (イベント・ランキング) */
+        .event-action-column {
+            position: absolute; bottom: 85px; right: 15px; z-index: 10;
+            display: flex; flex-direction: column; gap: 12px; align-items: center;
+        }
+        .event-action-btn {
+            background: rgba(30, 30, 30, 0.85); border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 16px; padding: 8px 14px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #fff; font-size: 0.8rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(6px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: transform 0.1s; min-width: 80px;
+        }
+        .event-action-btn:active { transform: scale(0.94); }
+        .event-action-icon { font-size: 1.8rem; margin-bottom: 2px; }
+
+        /* 右下ロゴ（カスタマイズ用） */
+        .event-custom-logo {
+            position: absolute; bottom: 210px; right: 15px; z-index: 10;
+            max-width: 100px; max-height: 70px; object-fit: contain; pointer-events: none;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.8));
+        }
+
+        /* 非開催表示 */
+        .event-no-event-box {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.85); border: 2px solid #ff334b; border-radius: 16px;
+            padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320px;
+        }
     </style>
 </head>
 <body>
@@ -383,7 +498,6 @@
             <div class="title-menu-item" onclick="exitApp()">終了</div>
         </div>
     </div>
-
 
     <!-- ================= 📱 メインアプリコンテナ ================= -->
     <div class="app-container">
@@ -436,7 +550,7 @@
             </div>
             <div class="nav-item" id="nav-event" onclick="openScreen('event')">
                 <span class="nav-icon">🎪</span>
-                <span class="nav-badge" id="badge-event-status">開催中</span>
+                <span class="event-day-bubble" id="badge-event-day-bubble">残り 3 日</span>
                 <span>イベント</span>
             </div>
             <div class="nav-item" id="nav-gacha" onclick="openScreen('gacha')">
@@ -482,17 +596,74 @@
         </div>
     </div>
 
-    <!-- ================= 📄 各種サブ画面 ================= -->
+    <!-- ================= 🎪 全画面イベント専用UI画面 ================= -->
+    <div id="screen-event" class="sub-screen">
+        <div class="event-full-bg-container" id="event-swipe-bg-container">
+            <img src="https://picsum.photos/id/1025/600/1000" class="event-bg-slide active" id="event-bg-img">
+        </div>
+
+        <div class="overlay-top"></div>
+        <div class="overlay-bottom"></div>
+
+        <!-- 左上：獲得P & 現在順位 -->
+        <div class="event-user-status">
+            <div class="event-avatar-box">
+                <img src="https://picsum.photos/id/1069/100/100" id="event-avatar-img">
+            </div>
+            <div class="event-status-info">
+                <div class="event-status-row"><span style="color:#aaa; font-size:0.75rem;">獲得P</span> <span id="event-user-pt" class="event-pt-val">0</span></div>
+                <div class="event-status-row"><span style="color:#aaa; font-size:0.75rem;">現在順位</span> <span id="event-user-rank" class="event-rank-val">-位</span></div>
+            </div>
+        </div>
+
+        <!-- 左上：？ヘルプボタン -->
+        <div class="event-help-btn" onclick="openEventHelpModal()">?</div>
+
+        <!-- 右上：時計のみ（バッテリーなし） -->
+        <div class="event-top-right">
+            <div class="clock-title" style="font-size:0.6rem; color:#aaa;">現在時刻</div>
+            <div id="event-clock" class="clock-time c-white" style="font-size:1.4rem;">00:00:00</div>
+        </div>
+
+        <!-- 複数イベント選択（必要時） -->
+        <div class="event-selector-bar" id="event-selector-chips" style="display:none;"></div>
+
+        <!-- 右下カスタムロゴ -->
+        <img id="event-custom-logo-img" class="event-custom-logo" src="" style="display:none;">
+
+        <!-- 左下：期間 & イベントタイトル/画像 -->
+        <div class="event-bottom-left" id="event-info-bottom-left">
+            <div id="event-period-text" class="event-period-badge">2026.11.30 18:00〜2026.12.12 20:59</div>
+            <div id="event-title-banner-box" class="event-title-banner">
+                イベントタイトル
+            </div>
+        </div>
+
+        <!-- 右下：イベント（稼ぐ）＆ランキングボタン -->
+        <div class="event-action-column" id="event-action-btns">
+            <div class="event-action-btn" onclick="goToEarnPoints()">
+                <span class="event-action-icon">💍</span>
+                <span>イベント</span>
+            </div>
+            <div class="event-action-btn" onclick="openRankingModal()">
+                <span class="event-action-icon">⚔️</span>
+                <span>ランキング</span>
+            </div>
+        </div>
+
+        <!-- 非開催表示 -->
+        <div id="event-no-event-modal" class="event-no-event-box" style="display:none;">
+            <h3 style="color:#ff334b; font-size:1.1rem; margin-bottom:8px;">🔒 お知らせ</h3>
+            <p style="font-size:0.9rem; color:#ccc;">現在開催中のイベントはありません</p>
+        </div>
+    </div>
+
+    <!-- 📄 その他の各種サブ画面 -->
     <div id="screen-player" class="sub-screen">
         <div class="sub-header"><span class="sub-title">🎵 楽曲選択</span><button class="close-btn" onclick="closeScreen('player')">閉じる</button></div>
         <div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: SPECIALZ</div>
         <audio id="audio-player" controls style="width: 100%; margin-bottom: 15px;" preload="auto"></audio>
         <div id="playlist"></div>
-    </div>
-
-    <div id="screen-event" class="sub-screen">
-        <div class="sub-header"><span class="sub-title">🎪 イベント情報</span><button class="close-btn" onclick="closeScreen('event')">閉じる</button></div>
-        <div id="event-content-container"></div>
     </div>
 
     <div id="screen-gacha" class="sub-screen">
@@ -542,7 +713,6 @@
         </div>
     </div>
 
-    <!-- 📋 報告機能画面（タイトル＆ホーム共通） -->
     <div id="screen-report" class="sub-screen">
         <div class="sub-header"><span class="sub-title">📋 運営・管理者への報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div>
         <div class="admin-section" style="border-color:#3388ff;">
@@ -565,7 +735,6 @@
         </div>
     </div>
 
-    <!-- ⚙️ 設定 -->
     <div id="screen-settings" class="sub-screen">
         <div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div>
         
@@ -631,51 +800,11 @@
                 <button class="close-btn" onclick="closeManageScreen()">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※ログイン制限、報告確認、アルバム管理に対応。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント設定・ポイント調整・ロゴ変更・アカウント管理に対応。</p>
 
-        <!-- 👑 管理者専用：ユーザーからの報告受信箱 -->
-        <div class="admin-section" style="border-color: #3388ff;">
-            <h4 style="color: #3388ff; border-left-color: #3388ff;">📋 ユーザーからの報告一覧</h4>
-            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 8px;">ユーザーから送信された報告内容・お問い合わせを確認できます。</p>
-            <div id="admin-reports-container" style="margin-top: 10px;"></div>
-        </div>
-        
-        <!-- 👑 管理者専用：みんなのアルバム管理 -->
-        <div class="admin-section" style="border-color: #00f5d4;">
-            <h4 style="color: #00f5d4; border-left-color: #00f5d4;">📷 メンバーのアルバム閲覧・削除 (管理者限定)</h4>
-            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 8px;">メンバーを選択してアルバム内容を確認し、不要な画像を削除できます。</p>
-            <label style="font-size: 0.8rem; color: #aaa;">確認するメンバー：</label>
-            <select id="admin-target-album-select" class="admin-input" onchange="renderAdminMemberAlbumView()">
-                <option value="">(メンバーを選択してください)</option>
-            </select>
-            <div id="admin-member-album-container" style="margin-top: 10px;"></div>
-        </div>
-
-        <div class="admin-section" style="border-color: #ff334b;">
-            <h4 style="color: #ff334b; border-left-color: #ff334b;">🔒 ユーザーアクセス制限・アカウント管理</h4>
-            
-            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 6px;">【一斉制限】有効にすると「ネオ」以外の全員をブロックします：</p>
-            <label style="font-size: 0.8rem; color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 12px;">
-                <input type="checkbox" id="admin-login-lock-toggle" onchange="toggleLoginLock(this)" style="width: 18px; height: 18px;">
-                全一般ユーザーのログインを一斉ブロックする
-            </label>
-
-            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 6px;">【個別のアクセス制限設定】：</p>
-            <div id="admin-user-restriction-list" style="background:#222; padding:8px; border-radius:6px; font-size:0.8rem;"></div>
-        </div>
-
+        <!-- 🎪 イベント管理＆ロゴ＆ポイント増減 -->
         <div class="admin-section">
-            <h4>🖼️ タイトル画面 背景画像管理 (最大8枚)</h4>
-            <label style="font-size: 0.8rem; color: #aaa;">追加する背景画像（Googleドライブ選択）：</label>
-            <select id="admin-title-bg-select" class="admin-input">
-                <option value="">(選択してください)</option>
-            </select>
-            <button class="admin-btn" onclick="adminAddTitleBg()">➕ タイトル背景に追加する</button>
-            <div id="admin-title-bg-list" style="margin-top: 10px; font-size: 0.8rem;"></div>
-        </div>
-
-        <div class="admin-section">
-            <h4>🎪 イベント管理・ステータス設定</h4>
+            <h4>🎪 イベント管理・ロゴ・ステータス設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">イベントタイトル：</label>
             <input type="text" id="admin-event-title-input" class="admin-input" value="結成2周年イベント">
             <label style="font-size: 0.8rem; color: #aaa;">イベント種類：</label>
@@ -686,28 +815,65 @@
                 <option value="期間限定イベント">期間限定イベント</option>
             </select>
             <label style="font-size: 0.8rem; color: #aaa;">開始日時：</label>
-            <input type="datetime-local" id="admin-event-start-input" class="admin-input" value="2026-11-01T00:00">
+            <input type="datetime-local" id="admin-event-start-input" class="admin-input" value="2026-11-30T18:00">
             <label style="font-size: 0.8rem; color: #aaa;">終了日時：</label>
-            <input type="datetime-local" id="admin-event-end-input" class="admin-input" value="2026-11-30T00:00">
+            <input type="datetime-local" id="admin-event-end-input" class="admin-input" value="2026-12-12T20:59">
             <label style="font-size: 0.8rem; color: #aaa;">ステータス：</label>
             <select id="admin-event-status-select" class="admin-input">
                 <option value="開催中">開催中</option>
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
                 <option value="終了">終了 (確認可能)</option>
             </select>
-            <label style="font-size: 0.8rem; color: #aaa;">イベントバナー・イラスト（Googleドライブ選択）：</label>
-            <select id="admin-event-img-select" class="admin-input">
-                <option value="">(イラストなし)</option>
-            </select>
+            <label style="font-size: 0.8rem; color: #aaa;">イベントバナー・画像（選択）：</label>
+            <select id="admin-event-img-select" class="admin-input"><option value="">(画像なし)</option></select>
+            
+            <label style="font-size: 0.8rem; color: #ffee00; margin-top:8px; display:block;">右下の自由配置イベントロゴ（画像選択）：</label>
+            <select id="admin-event-logo-select" class="admin-input"><option value="">(ロゴなし)</option></select>
+
             <button class="admin-btn" onclick="adminCreateEvent()">🚀 イベント設定を保存する</button>
-            <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを削除してヒストリーにまとめる</button>
+            <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを終了してヒストリーにまとめる</button>
+        </div>
+
+        <div class="admin-section">
+            <h4>📊 ポイント（P）集計・スプレッドシート連携増減調整</h4>
+            <div id="admin-member-points-container" style="margin-bottom: 10px; font-size: 0.8rem; background: #222; padding: 8px; border-radius: 6px;"></div>
+            <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminResetEventPoints()">🔄 全員の個人Pを0にリセット</button>
+            <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="adminShowRankingResult()">🏆 順位発表演出</button>
+        </div>
+
+        <div class="admin-section" style="border-color: #3388ff;">
+            <h4 style="color: #3388ff; border-left-color: #3388ff;">📋 ユーザーからの報告一覧</h4>
+            <div id="admin-reports-container" style="margin-top: 10px;"></div>
+        </div>
+        
+        <div class="admin-section" style="border-color: #00f5d4;">
+            <h4 style="color: #00f5d4; border-left-color: #00f5d4;">📷 メンバーのアルバム閲覧・削除 (管理者限定)</h4>
+            <label style="font-size: 0.8rem; color: #aaa;">確認するメンバー：</label>
+            <select id="admin-target-album-select" class="admin-input" onchange="renderAdminMemberAlbumView()">
+                <option value="">(メンバーを選択してください)</option>
+            </select>
+            <div id="admin-member-album-container" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="admin-section" style="border-color: #ff334b;">
+            <h4 style="color: #ff334b; border-left-color: #ff334b;">🔒 ユーザーアクセス制限・アカウント管理</h4>
+            <label style="font-size: 0.8rem; color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 12px;">
+                <input type="checkbox" id="admin-login-lock-toggle" onchange="toggleLoginLock(this)" style="width: 18px; height: 18px;">
+                全一般ユーザーのログインを一斉ブロックする
+            </label>
+            <div id="admin-user-restriction-list" style="background:#222; padding:8px; border-radius:6px; font-size:0.8rem;"></div>
+        </div>
+
+        <div class="admin-section">
+            <h4>🖼️ タイトル画面 背景画像管理 (最大8枚)</h4>
+            <select id="admin-title-bg-select" class="admin-input"><option value="">(選択してください)</option></select>
+            <button class="admin-btn" onclick="adminAddTitleBg()">➕ タイトル背景に追加する</button>
+            <div id="admin-title-bg-list" style="margin-top: 10px; font-size: 0.8rem;"></div>
         </div>
 
         <div class="admin-section">
             <h4>🎂 ガチャ管理・バナー画像＆ラインナップ設定 (メモリー保存)</h4>
-            <label style="font-size: 0.8rem; color: #aaa;">ガチャ名称：</label>
             <input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
-            <label style="font-size: 0.8rem; color: #aaa;">ガチャの種類：</label>
             <select id="admin-gacha-type-select" class="admin-input">
                 <option value="ネオフェス限定">ネオフェス限定</option>
                 <option value="タイアップ限定">タイアップ限定</option>
@@ -717,82 +883,36 @@
                 <option value="限定復刻">限定復刻</option>
                 <option value="限定/恒常">限定/恒常</option>
             </select>
-            <label style="font-size: 0.8rem; color: #aaa;">ガチャステータス：</label>
             <select id="admin-gacha-status-select" class="admin-input">
                 <option value="開催中">開催中</option>
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
                 <option value="終了">終了 (引くのをロック)</option>
             </select>
-            <label style="font-size: 0.8rem; color: #aaa;">ガチャ画面のトップバナー画像（選択式）：</label>
-            <select id="admin-gacha-banner-select" class="admin-input">
-                <option value="">(バナーなし)</option>
-            </select>
-            <label style="font-size: 0.8rem; color: #aaa;">開始日時：</label>
+            <select id="admin-gacha-banner-select" class="admin-input"><option value="">(バナーなし)</option></select>
             <input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
-            <label style="font-size: 0.8rem; color: #aaa;">終了日時：</label>
             <input type="datetime-local" id="admin-gacha-end-input" class="admin-input" value="2026-11-30T00:00">
             <button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ基本設定・バナーを保存する</button>
-            
-            <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-            <h5 style="color:#ffee00; margin-bottom:8px;">🎯 レアリティ別アイテム追加</h5>
-            <label style="font-size: 0.8rem; color: #aaa;">追加するイラスト（Googleドライブ選択）：</label>
-            <select id="admin-gacha-img-select" class="admin-input">
-                <option value="">(選択してください)</option>
-            </select>
-            <label style="font-size: 0.8rem; color: #aaa;">付与するレアリティ：</label>
-            <select id="admin-gacha-rarity" class="admin-input">
-                <option value="★6">★6</option>
-                <option value="★5">★5</option>
-                <option value="★4">★4</option>
-                <option value="★3">★3</option>
-                <option value="★2">★2 (プレゼント自動配布対象)</option>
-            </select>
-            <button class="admin-btn" onclick="adminAddGachaIllustration()">➕ ガチャラインナップに追加する</button>
-
             <div id="admin-gacha-lineup-by-rarity" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
 
         <div class="admin-section">
             <h4>🎁 プレゼント・一斉配布管理</h4>
-            <label style="font-size: 0.8rem; color: #aaa;">宛先：</label>
-            <select id="admin-gift-target" class="admin-input">
-                <option value="ALL">🌐 全メンバー一斉送信</option>
-            </select>
-            <label style="font-size: 0.8rem; color: #aaa;">プレゼント名：</label>
+            <select id="admin-gift-target" class="admin-input"><option value="ALL">🌐 全メンバー一斉送信</option></select>
             <input type="text" id="admin-gift-title" class="admin-input" placeholder="記念報酬">
-            <label style="font-size: 0.8rem; color: #aaa;">ダイヤ（💎）：</label>
             <input type="number" id="admin-gift-gem" class="admin-input" value="1000">
-            <label style="font-size: 0.8rem; color: #aaa;">コイン（🪙）：</label>
             <input type="number" id="admin-gift-coin" class="admin-input" value="500">
-            <label style="font-size: 0.8rem; color: #aaa;">添付するイラスト（選択式）：</label>
-            <select id="admin-gift-img-select" class="admin-input">
-                <option value="">(イラストなし)</option>
-            </select>
+            <select id="admin-gift-img-select" class="admin-input"><option value="">(イラストなし)</option></select>
             <button class="admin-btn" onclick="adminSendGift()">📤 プレゼントを送信する</button>
-
             <div id="admin-gift-manage-list" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
 
         <div class="admin-section">
             <h4>✉️ お知らせを作成・管理する</h4>
-            <label style="font-size: 0.8rem; color: #aaa;">お知らせタイトル：</label>
             <input type="text" id="admin-notice-title" class="admin-input" placeholder="新機能追加のお知らせ">
-            <label style="font-size: 0.8rem; color: #aaa;">本文：</label>
             <textarea id="admin-notice-text" class="admin-input" rows="3" placeholder="お知らせの詳細内容..."></textarea>
-            <label style="font-size: 0.8rem; color: #aaa;">添付するイラスト（選択式）：</label>
-            <select id="admin-notice-img-select" class="admin-input">
-                <option value="">(イラストなし)</option>
-            </select>
+            <select id="admin-notice-img-select" class="admin-input"><option value="">(イラストなし)</option></select>
             <button class="admin-btn" onclick="adminPublishNotice()">📢 お知らせを全体公開する</button>
-
             <div id="admin-notice-manage-list" style="margin-top: 15px; font-size: 0.8rem;"></div>
-        </div>
-
-        <div class="admin-section">
-            <h4>📊 ポイント集計・メンバー連動 (デフォルト0)</h4>
-            <div id="admin-member-points-container" style="margin-bottom: 10px; font-size: 0.8rem; background: #222; padding: 8px; border-radius: 6px;"></div>
-            <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminResetEventPoints()">🔄 全員の個人Pを0にリセット</button>
-            <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="adminShowRankingResult()">🏆 順位発表演出</button>
         </div>
     </div>
 
@@ -809,16 +929,20 @@
             "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
         };
 
-        const memberDatabase = [
-            { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 0 },
-            { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 0 },
-            { id: "N-24-11-3", name: "奨", gem: 0, coin: 0, pt: 0 },
-            { id: "S-24-11-4", name: "MIHO", gem: 0, coin: 0, pt: 0 },
-            { id: "S-24-11-5-o", name: "海惺", gem: 0, coin: 0, pt: 0 },
-            { id: "U-24-11-6-a", name: "タイ", gem: 0, coin: 0, pt: 0 },
-            { id: "N-24-11-7-o", name: "Ayu", gem: 0, coin: 0, pt: 0 },
-            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0 }
+        let memberDatabase = JSON.parse(localStorage.getItem('nexus_member_db')) || [
+            { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 12500 },
+            { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 8900 },
+            { id: "N-24-11-3", name: "奨", gem: 0, coin: 0, pt: 42000 },
+            { id: "S-24-11-4", name: "MIHO", gem: 0, coin: 0, pt: 15400 },
+            { id: "S-24-11-5-o", name: "海惺", gem: 0, coin: 0, pt: 3100 },
+            { id: "U-24-11-6-a", name: "タイ", gem: 0, coin: 0, pt: 184899 },
+            { id: "N-24-11-7-o", name: "Ayu", gem: 0, coin: 0, pt: 92000 },
+            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 250000 }
         ];
+
+        function saveMemberDb() {
+            localStorage.setItem('nexus_member_db', JSON.stringify(memberDatabase));
+        }
 
         let currentUser = JSON.parse(localStorage.getItem('nexus_current_user')) || null;
         let isAdmin = localStorage.getItem('nexus_is_admin') === 'true';
@@ -850,12 +974,13 @@
         ];
 
         let currentEvent = JSON.parse(localStorage.getItem('nexus_current_event')) || {
-            title: "結成2周年イベント",
+            title: "結成2周年記念イベント",
             type: "シーズンイベント",
-            startDate: "2026-11-01T00:00",
-            endDate: "2026-11-30T00:00",
+            startDate: "2026-11-30T18:00",
+            endDate: "2026-12-12T20:59",
             status: "開催中",
-            imgUrl: ""
+            imgUrl: "",
+            logoUrl: ""
         };
 
         let currentGachaConfig = JSON.parse(localStorage.getItem('nexus_gacha_config')) || {
@@ -922,9 +1047,6 @@
                 initTitleSlideshow();
             }
 
-            const badgeStatus = document.getElementById('badge-event-status');
-            if (badgeStatus) badgeStatus.innerText = currentEvent.status;
-
             renderEventScreen();
             renderGachaScreen();
 
@@ -974,6 +1096,203 @@
             }, 4000);
         }
 
+        /* ================= 🎪 イベント画面のレンダリング・ロジック ================= */
+        function renderEventScreen() {
+            const noEventModal = document.getElementById('event-no-event-modal');
+            const infoLeft = document.getElementById('event-info-bottom-left');
+            const actionBtns = document.getElementById('event-action-btns');
+            const ptEl = document.getElementById('event-user-pt');
+            const rankEl = document.getElementById('event-user-rank');
+            const eventAvatar = document.getElementById('event-avatar-img');
+            const periodEl = document.getElementById('event-period-text');
+            const bannerBox = document.getElementById('event-title-banner-box');
+            const logoImg = document.getElementById('event-custom-logo-img');
+
+            const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
+
+            if (currentEvent.status === "開催準備中" && !isNeo) {
+                if (noEventModal) noEventModal.style.display = "block";
+                if (infoLeft) infoLeft.style.display = "none";
+                if (actionBtns) actionBtns.style.display = "none";
+                return;
+            } else {
+                if (noEventModal) noEventModal.style.display = "none";
+                if (infoLeft) infoLeft.style.display = "flex";
+                if (actionBtns) actionBtns.style.display = "flex";
+            }
+
+            // ユーザーアイコン・ポイント・順位の計算
+            if (currentUser) {
+                userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
+                eventAvatar.src = userAvatarUrl || "https://picsum.photos/id/1069/100/100";
+
+                // ポイント計算（memberDatabaseから取得）
+                const userDb = memberDatabase.find(m => m.id === currentUser.id);
+                const currentPt = userDb ? (userDb.pt || 0) : 0;
+                ptEl.innerText = currentPt.toLocaleString();
+
+                // 順位算出
+                const sorted = [...memberDatabase].sort((a,b) => (b.pt || 0) - (a.pt || 0));
+                const rankIndex = sorted.findIndex(m => m.id === currentUser.id);
+                rankEl.innerText = (rankIndex !== -1) ? `${rankIndex + 1}位` : "-位";
+            } else {
+                eventAvatar.src = "https://picsum.photos/id/1069/100/100";
+                ptEl.innerText = "0";
+                rankEl.innerText = "-位";
+            }
+
+            // 日時フォーマット
+            if (periodEl) {
+                const sStr = formatDateStr(currentEvent.startDate).replace(/-/g, '.');
+                const eStr = formatDateStr(currentEvent.endDate).replace(/-/g, '.');
+                periodEl.innerText = `${sStr}〜${eStr}`;
+            }
+
+            // タイトルバナー画像またはテキスト
+            if (bannerBox) {
+                if (currentEvent.imgUrl) {
+                    bannerBox.innerHTML = `<img src="${currentEvent.imgUrl}">`;
+                } else {
+                    bannerBox.innerText = currentEvent.title || "イベントタイトル";
+                }
+            }
+
+            // カスタムロゴ画像
+            if (logoImg) {
+                if (currentEvent.logoUrl) {
+                    logoImg.src = currentEvent.logoUrl;
+                    logoImg.style.display = "block";
+                } else {
+                    logoImg.style.display = "none";
+                }
+            }
+
+            // 下部ナビ吹き出し（残り何日）
+            updateEventBubbleDate();
+        }
+
+        function updateEventBubbleDate() {
+            const bubble = document.getElementById('badge-event-day-bubble');
+            if (!bubble) return;
+
+            if (!currentEvent.endDate || currentEvent.status === "開催準備中") {
+                bubble.style.display = "none";
+                return;
+            }
+
+            const target = new Date(currentEvent.endDate);
+            const diffMs = target - new Date();
+            if (diffMs <= 0) {
+                bubble.innerText = "終了";
+                bubble.style.display = "block";
+                return;
+            }
+
+            const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+            if (daysLeft <= 7) {
+                bubble.innerText = `残り ${daysLeft} 日`;
+                bubble.style.display = "block";
+            } else {
+                bubble.style.display = "none";
+            }
+        }
+
+        function openEventHelpModal() {
+            alert(`❓ 【${currentEvent.title}】ヘルプ\n\n・イベント期間中に遊戯やミッションでP（ポイント）を獲得してランキング上位を目指そう！\n・期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`);
+        }
+
+        function goToEarnPoints() {
+            alert("🎰 遊戯画面に移動してPを獲得しましょう！");
+            openScreen('play');
+        }
+
+        function openRankingModal() {
+            const sorted = [...memberDatabase].sort((a,b) => (b.pt || 0) - (a.pt || 0));
+            let rankText = `⚔️ 【${currentEvent.title}】ランキング詳細\n------------------------------------\n`;
+            sorted.forEach((m, idx) => {
+                const isMe = currentUser && (currentUser.id === m.id);
+                rankText += `${idx + 1}位 : ${m.name} (${Number(m.pt || 0).toLocaleString()} P) ${isMe ? '👈(あなた)' : ''}\n`;
+            });
+            alert(rankText);
+        }
+
+        /* 管理画面：メンバーP手動増減 */
+        function adminChangeUserPt(userId) {
+            const user = memberDatabase.find(m => m.id === userId);
+            if (!user) return;
+            const input = prompt(`[${user.name}] の現在のP: ${user.pt || 0}\n新しい獲得P（半角数字）を入力してください：`, user.pt || 0);
+            if (input !== null && !isNaN(input)) {
+                user.pt = Number(input);
+                saveMemberDb();
+                renderAdminMemberPointsList();
+                renderEventScreen();
+                alert(`📊 [${user.name}] のポイントを ${user.pt} P に更新しました！`);
+            }
+        }
+
+        function renderAdminMemberPointsList() {
+            const container = document.getElementById('admin-member-points-container');
+            if (!container) return;
+            container.innerHTML = "";
+            memberDatabase.forEach(m => {
+                const isNeo = m.id === "A-24-11-9-a";
+                const row = document.createElement('div');
+                row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #333;";
+                row.innerHTML = `
+                    <span>👤 ${m.name} (ID: ${m.id})</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="color:${isNeo ? '#888' : '#ffee00'}; font-weight:bold;">${m.pt || 0} P</span>
+                        <button onclick="adminChangeUserPt('${m.id}')" style="background:#00f5d4; color:#000; border:none; padding:2px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem;">P変更</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function adminCreateEvent() {
+            const title = document.getElementById('admin-event-title-input').value;
+            const type = document.getElementById('admin-event-type-select').value;
+            const start = document.getElementById('admin-event-start-input').value;
+            const end = document.getElementById('admin-event-end-input').value;
+            const status = document.getElementById('admin-event-status-select').value;
+            const imgUrl = document.getElementById('admin-event-img-select').value;
+            const logoUrl = document.getElementById('admin-event-logo-select').value;
+
+            if (!title || !start || !end) return;
+
+            currentEvent = { title: title, type: type, startDate: start, endDate: end, status: status, imgUrl: imgUrl, logoUrl: logoUrl };
+            localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
+            updateUIUserStatus();
+            alert(`🎪 [${type}] 「${title}」のイベント設定を保存しました！`);
+        }
+
+        function adminDeleteEventToHistory() {
+            if (confirm(`イベント「${currentEvent.title}」を終了・削除し、ヒストリーに記録しますか？`)) {
+                eventHistory.unshift({
+                    title: currentEvent.title,
+                    type: currentEvent.type,
+                    period: `${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`,
+                    imgUrl: currentEvent.imgUrl,
+                    archivedDate: new Date().toLocaleDateString()
+                });
+                localStorage.setItem(getEventHistoryKey(), JSON.stringify(eventHistory));
+
+                currentEvent = {
+                    title: "次回のイベント準備中",
+                    type: "シーズンイベント",
+                    startDate: "",
+                    endDate: "",
+                    status: "開催準備中",
+                    imgUrl: "",
+                    logoUrl: ""
+                };
+                localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
+                updateUIUserStatus();
+                renderHistory();
+                alert("📖 イベントを終了し、ヒストリーにまとめました！");
+            }
+        }
+
         function adminAddTitleBg() {
             const selectEl = document.getElementById('admin-title-bg-select');
             const url = selectEl.value;
@@ -1020,37 +1339,6 @@
                 row.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;">${img.name}</span><button onclick="adminRemoveTitleBg('${img.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">削除</button>`;
                 listEl.appendChild(row);
             });
-        }
-
-        function renderEventScreen() {
-            const container = document.getElementById('event-content-container');
-            if (!container) return;
-
-            const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
-
-            if (currentEvent.status === "開催準備中" && !isNeo) {
-                container.innerHTML = `
-                    <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #555; text-align: center;">
-                        <h3 style="color: #aaa; margin-bottom: 10px;">🔒 現在準備中のイベントはありません</h3>
-                        <p style="font-size: 0.85rem; color: #888;">新しいイベントの開催までしばらくお待ちください。</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let statusColor = currentEvent.status === "開催中" ? "#00f5d4" : "#ff9900";
-            container.innerHTML = `
-                <div style="background: #1f1f1f; padding: 15px; border-radius: 10px; border: 1px solid ${statusColor}; margin-bottom: 15px;">
-                    <div style="display:flex; gap:6px; margin-bottom:6px;">
-                        <span style="background:#3388ff; color:#fff; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentEvent.type}</span>
-                        <span style="background:${statusColor}; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentEvent.status}</span>
-                    </div>
-                    <h3 style="color: #00f5d4; margin-bottom: 4px;">🎉 ${currentEvent.title}</h3>
-                    <div style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}</div>
-                    ${currentEvent.imgUrl ? `<img src="${currentEvent.imgUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:8px; margin-bottom:10px;">` : ''}
-                    <h1 id="countdown" style="font-size: 1.3rem; margin: 10px 0;">計算中...</h1>
-                </div>
-            `;
         }
 
         function renderGachaScreen() {
@@ -1222,7 +1510,6 @@
             }
         }
 
-        /* ================= 📋 報告機能（ユーザー送信・管理者受取） ================= */
         function submitUserReport() {
             const category = document.getElementById('user-report-category').value;
             const content = document.getElementById('user-report-content').value.trim();
@@ -1379,47 +1666,6 @@
             });
         }
 
-        function adminCreateEvent() {
-            const title = document.getElementById('admin-event-title-input').value;
-            const type = document.getElementById('admin-event-type-select').value;
-            const start = document.getElementById('admin-event-start-input').value;
-            const end = document.getElementById('admin-event-end-input').value;
-            const status = document.getElementById('admin-event-status-select').value;
-            const imgUrl = document.getElementById('admin-event-img-select').value;
-            if (!title || !start || !end) return;
-
-            currentEvent = { title: title, type: type, startDate: start, endDate: end, status: status, imgUrl: imgUrl };
-            localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
-            updateUIUserStatus();
-            alert(`🎪 [${type}] 「${title}」のイベント設定を保存しました！`);
-        }
-
-        function adminDeleteEventToHistory() {
-            if (confirm(`イベント「${currentEvent.title}」を終了・削除し、ヒストリーに記録しますか？`)) {
-                eventHistory.unshift({
-                    title: currentEvent.title,
-                    type: currentEvent.type,
-                    period: `${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`,
-                    imgUrl: currentEvent.imgUrl,
-                    archivedDate: new Date().toLocaleDateString()
-                });
-                localStorage.setItem(getEventHistoryKey(), JSON.stringify(eventHistory));
-
-                currentEvent = {
-                    title: "次回のイベント準備中",
-                    type: "シーズンイベント",
-                    startDate: "",
-                    endDate: "",
-                    status: "開催準備中",
-                    imgUrl: ""
-                };
-                localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
-                updateUIUserStatus();
-                renderHistory();
-                alert("📖 イベントを終了し、ヒストリーにまとめました！");
-            }
-        }
-
         function renderHistory() {
             const container = document.getElementById('history-list-container');
             if (!container) return;
@@ -1444,31 +1690,20 @@
             });
         }
 
-        function renderAdminMemberPointsList() {
-            const container = document.getElementById('admin-member-points-container');
-            if (!container) return;
-            container.innerHTML = "";
-            memberDatabase.forEach(m => {
-                const isNeo = m.id === "A-24-11-9-a";
-                const row = document.createElement('div');
-                row.style.cssText = "display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #333;";
-                row.innerHTML = `<span>👤 ${m.name} (ID: ${m.id})</span><span style="color:${isNeo ? '#888' : '#00f5d4'}; font-weight:bold;">${isNeo ? '-(管理者対象外)' : m.pt + ' P'}</span>`;
-                container.appendChild(row);
-            });
-        }
-
         function adminResetEventPoints() {
             if (confirm("全員の個人Pを 0 にリセットしますか？")) {
                 memberDatabase.forEach(m => {
                     if (m.id !== "A-24-11-9-a") m.pt = 0;
                 });
+                saveMemberDb();
                 renderAdminMemberPointsList();
+                renderEventScreen();
                 alert("🔄 全員の個人Pを 0 にリセットしました！");
             }
         }
 
         function adminShowRankingResult() {
-            alert("🏆 【順位発表演出】\n1位: タイ (300 P)\n2位: 奨 (210 P)\n3位: Ayu (175 P)");
+            openRankingModal();
         }
 
         function adminSaveGachaConfig() {
@@ -1703,7 +1938,6 @@
                 if (!response.ok) return;
                 const fetchedData = await response.json();
                 
-                // 左側の脹相（【★2配布】脹相(★1)）のみを完全除外し、右側の脹相は保持する
                 fetchedData.forEach(item => {
                     if (item.name.includes("【★2配布】脹相") || (item.name.includes("脹相") && item.name.includes("★1"))) return;
                     if (!masterDriveImages.some(existing => existing.url === item.url)) {
@@ -1737,9 +1971,10 @@
             const giftSelect = document.getElementById('admin-gift-img-select');
             const noticeSelect = document.getElementById('admin-notice-img-select');
             const eventImgSelect = document.getElementById('admin-event-img-select');
+            const eventLogoSelect = document.getElementById('admin-event-logo-select');
             const targetSelect = document.getElementById('admin-gift-target');
             const titleBgSelect = document.getElementById('admin-title-bg-select');
-            if (!gachaSelect || !giftSelect || !noticeSelect || !targetSelect || !eventImgSelect || !titleBgSelect || !gachaBannerSelect) return;
+            if (!gachaSelect || !giftSelect || !noticeSelect || !targetSelect || !eventImgSelect || !titleBgSelect || !gachaBannerSelect || !eventLogoSelect) return;
 
             let optionsHtml = `<option value="">(選択してください)</option>`;
             masterDriveImages.forEach(img => {
@@ -1750,7 +1985,8 @@
             gachaBannerSelect.innerHTML = `<option value="">(バナーなし)</option>` + optionsHtml;
             giftSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
             noticeSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
-            eventImgSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
+            eventImgSelect.innerHTML = `<option value="">(画像なし)</option>` + optionsHtml;
+            eventLogoSelect.innerHTML = `<option value="">(ロゴなし)</option>` + optionsHtml;
             titleBgSelect.innerHTML = optionsHtml;
 
             let targetHtml = `<option value="ALL">🌐 全メンバー一斉送信</option>`;
@@ -2027,6 +2263,8 @@
             if (rClock) rClock.innerText = timeStr;
             const titleClock = document.getElementById('title-clock');
             if (titleClock) titleClock.innerText = timeStr;
+            const eventClock = document.getElementById('event-clock');
+            if (eventClock) eventClock.innerText = timeStr;
         }
         setInterval(updateClock, 1000);
         updateClock();
@@ -2075,6 +2313,7 @@
                 if (bottomNav) bottomNav.classList.remove('hide-menu');
             }
 
+            if (name === 'event') renderEventScreen();
             if (name === 'present') renderGifts();
             if (name === 'notice') renderNotices();
             if (name === 'history') renderHistory();
@@ -2101,6 +2340,11 @@
 
             document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            if (name !== 'home' && document.getElementById('nav-' + name)) {
+                document.getElementById('nav-' + name).classList.add('active');
+            }
+
             const target = document.getElementById('screen-' + name);
             if (target) target.classList.add('active');
         }
@@ -2132,7 +2376,6 @@
             if (name === 'home') document.getElementById('nav-home').classList.add('active');
         }
 
-        // 音量連動（audioタグに直結）
         function adjustVolume(val) {
             const vol = val / 100;
             if (audioPlayer) audioPlayer.volume = vol;
@@ -2197,25 +2440,6 @@
                 }
             }
         }
-
-        function updateCountdown() {
-            if (!currentEvent.endDate || currentEvent.status === "開催準備中") return;
-            const target = new Date(currentEvent.endDate);
-            const diff = target - new Date();
-            const cdEl = document.getElementById('countdown');
-            if (!cdEl) return;
-            if (diff <= 0) {
-                cdEl.innerText = "🎉 イベント終了・集計中";
-                return;
-            }
-            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-            const m = Math.floor((diff / 1000 / 60) % 60);
-            const s = Math.floor((diff / 1000) % 60);
-            cdEl.innerText = `${d}日 ${h}時間 ${m}分 ${s}秒`;
-        }
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
 
         const songs = [
             { title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" },
