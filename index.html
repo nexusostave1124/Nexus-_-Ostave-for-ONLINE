@@ -339,7 +339,7 @@
                 </div>
                 <div class="other-menu-card" onclick="openScreen('settings')"><span>設定</span></div>
                 <div class="other-menu-card" onclick="openScreen('report')"><span>報告</span></div>
-                <div class="other-menu-card" onclick="openScreen('manage')"><span>管理</span></div>
+                <div class="other-menu-card" onclick="checkManagePassword()"><span>管理</span></div>
                 <div class="other-menu-card" onclick="closeOtherMenu()"><span>ログアウト</span></div>
             </div>
         </div>
@@ -425,7 +425,15 @@
     <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
     <div id="screen-history" class="sub-screen"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン</p></div>
     <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
-    <div id="screen-manage" class="sub-screen"><div class="sub-header"><span class="sub-title">🛡️ 管理</span><button class="close-btn" onclick="closeScreen('manage')">閉じる</button></div><p>管理画面</p></div>
+    
+    <!-- 🛡️ 管理画面 -->
+    <div id="screen-manage" class="sub-screen">
+        <div class="sub-header"><span class="sub-title">🛡️ 管理画面</span><button class="close-btn" onclick="closeScreen('manage')">閉じる</button></div>
+        <p style="margin-bottom: 15px; color: #00f5d4;">認証成功：管理者権限でアクセス中</p>
+        <div style="background: #1f1f1f; padding: 15px; border-radius: 10px; border: 1px solid #333;">
+            <p>ここに今後の管理用ツールや設定を配置できます。</p>
+        </div>
+    </div>
 
     <script>
         // 🌐 GistのRaw URL（Googleドライブ連動の画像リスト）
@@ -442,10 +450,8 @@
                 if (!response.ok) return;
                 const driveImages = await response.json();
                 
-                // Gistのデータを正としてアルバムを最新に保つ（名前や画像変更を確実に反映）
                 albumImages = driveImages;
 
-                // スライドショーの選択IDリストに存在しない新規画像があれば追加する
                 driveImages.forEach(dImg => {
                     if (!slideshowIds.includes(dImg.id)) {
                         slideshowIds.push(dImg.id);
@@ -555,7 +561,7 @@
                 initSlideshow();
                 alert('新しい画像をアルバムに追加しました！ 5秒後にスライドショーが更新されます。');
 
-                // ⏳ 5秒後（5000ミリ秒）にスライドショーを自動更新
+                // ⏳ 5秒後に自動更新
                 setTimeout(() => {
                     initSlideshow();
                 }, 5000);
@@ -574,6 +580,17 @@
             localStorage.setItem('nexus_album_images', JSON.stringify(albumImages));
             renderAlbum();
             alert(`🎉 ガチャで「${newGachaImg.name}」を獲得しました！アルバムに追加されました。`);
+        }
+
+        // 🔐 管理画面パスワード認証関数
+        function checkManagePassword() {
+            closeOtherMenu();
+            const inputPass = prompt("管理画面のパスワードを入力してください：");
+            if (inputPass === "2024061124") {
+                openScreen('manage');
+            } else if (inputPass !== null) {
+                alert("パスワードが違います。");
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
