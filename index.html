@@ -283,6 +283,8 @@
             display: flex; justify-content: space-around; align-items: center;
             z-index: 500; backdrop-filter: blur(10px);
         }
+        .bottom-nav.hide-menu { display: none !important; }
+
         .nav-item {
             position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: #888; font-size: 0.75rem; font-weight: bold; width: 20%; height: 100%; cursor: pointer; transition: color 0.2s;
@@ -437,7 +439,7 @@
         </div>
 
         <!-- 🏠 下部ナビゲーション -->
-        <div class="bottom-nav">
+        <div class="bottom-nav" id="main-bottom-nav">
             <div class="nav-item active" id="nav-home" onclick="switchNav('home')">
                 <span class="nav-icon">🏠</span>
                 <span>ホーム</span>
@@ -581,16 +583,20 @@
                 <button class="close-btn" onclick="closeManageScreen()">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※ログイン制限やレアリティ別ガチャ管理に対応。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※ログイン制限やガチャバナー画像追加、個別の制限設定に対応。</p>
         
-        <!-- 🔒 ユーザーログイン制限設定 -->
+        <!-- 🔒 ユーザーログイン制限設定（一斉＆個別） -->
         <div class="admin-section" style="border-color: #ff334b;">
-            <h4 style="color: #ff334b; border-left-color: #ff334b;">🔒 ユーザーログイン制限 (メンテナンス)</h4>
-            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 8px;">有効にすると、管理者(ネオ/ADMIN)以外の一般ユーザーのログインをブロックします。</p>
-            <label style="font-size: 0.8rem; color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <h4 style="color: #ff334b; border-left-color: #ff334b;">🔒 ユーザーアクセス制限・アカウント管理</h4>
+            
+            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 6px;">【一斉制限】有効にすると「ネオ」以外の全員をブロックします：</p>
+            <label style="font-size: 0.8rem; color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 12px;">
                 <input type="checkbox" id="admin-login-lock-toggle" onchange="toggleLoginLock(this)" style="width: 18px; height: 18px;">
-                一般ユーザーのログインをブロックする
+                全一般ユーザーのログインを一斉ブロックする
             </label>
+
+            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 6px;">【個別のアクセス制限設定】：</p>
+            <div id="admin-user-restriction-list" style="background:#222; padding:8px; border-radius:6px; font-size:0.8rem;"></div>
         </div>
 
         <!-- 🖼️ タイトル画面 背景画像管理（最大8枚スライドショー） -->
@@ -634,9 +640,9 @@
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを削除してヒストリーにまとめる</button>
         </div>
 
-        <!-- 🎂 ガチャ管理＆レアリティ別ラインナップ変更 -->
+        <!-- 🎂 ガチャ管理＆バナー画像選択＆レアリティ別ラインナップ変更 -->
         <div class="admin-section">
-            <h4>🎂 ガチャ管理・レアリティ別ラインナップ設定</h4>
+            <h4>🎂 ガチャ管理・バナー画像＆ラインナップ設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">ガチャ名称：</label>
             <input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
             <label style="font-size: 0.8rem; color: #aaa;">ガチャの種類：</label>
@@ -655,11 +661,15 @@
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
                 <option value="終了">終了 (確認可能)</option>
             </select>
+            <label style="font-size: 0.8rem; color: #aaa;">ガチャ画面のトップバナー画像（選択式）：</label>
+            <select id="admin-gacha-banner-select" class="admin-input">
+                <option value="">(バナーなし)</option>
+            </select>
             <label style="font-size: 0.8rem; color: #aaa;">開始日時：</label>
             <input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
             <label style="font-size: 0.8rem; color: #aaa;">終了日時：</label>
             <input type="datetime-local" id="admin-gacha-end-input" class="admin-input" value="2026-11-30T00:00">
-            <button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ基本設定を保存する</button>
+            <button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ基本設定・バナーを保存する</button>
             
             <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
             <h5 style="color:#ffee00; margin-bottom:8px;">🎯 レアリティ別アイテム追加</h5>
@@ -718,10 +728,10 @@
             <div id="admin-notice-manage-list" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
 
-        <!-- 📊 ポイント集計 (メンバー全員のP反映) -->
+        <!-- 📊 ポイント集計 (メンバー全員のP反映・ネオは除外) -->
         <div class="admin-section">
             <h4>📊 ポイント集計・メンバー連動</h4>
-            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 8px;">スプレッドシート連動データベースの全メンバーのポイント状況：</p>
+            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 8px;">スプレッドシート連動データベースの全メンバーのポイント状況（管理者ネオはカウント対象外）：</p>
             <div id="admin-member-points-container" style="margin-bottom: 10px; font-size: 0.8rem; background: #222; padding: 8px; border-radius: 6px;"></div>
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminResetEventPoints()">🔄 全員の個人Pを0にリセット</button>
             <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="adminShowRankingResult()">🏆 順位発表演出</button>
@@ -741,6 +751,7 @@
             "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
         };
 
+        // ADMINを削除し、ネオ(A-24-11-9-a)を単一管理者に指定
         const memberDatabase = [
             { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 120 },
             { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 85 },
@@ -749,13 +760,13 @@
             { id: "S-24-11-5-o", name: "海惺", gem: 0, coin: 0, pt: 90 },
             { id: "U-24-11-6-a", name: "タイ", gem: 0, coin: 0, pt: 300 },
             { id: "N-24-11-7-o", name: "Ayu", gem: 0, coin: 0, pt: 175 },
-            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 9999 },
-            { id: "ADMIN", name: "管理者", gem: 999999, coin: 999999, pt: 9999 }
+            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0 } // 管理者はPカウント除外
         ];
 
         let currentUser = JSON.parse(localStorage.getItem('nexus_current_user')) || null;
         let isAdmin = localStorage.getItem('nexus_is_admin') === 'true';
         let isLoginLocked = localStorage.getItem('nexus_login_locked') === 'true';
+        let userRestrictionMap = JSON.parse(localStorage.getItem('nexus_restricted_users')) || {}; // id: true/false
 
         let masterDriveImages = [];
         let star2DistributeStatus = JSON.parse(localStorage.getItem('nexus_star2_distribute')) || {};
@@ -787,10 +798,11 @@
 
         let currentGachaConfig = JSON.parse(localStorage.getItem('nexus_gacha_config')) || {
             title: "記念ピックアップガチャ",
-            type: "ネオフェс限定",
+            type: "ネオフェス限定",
             status: "開催中",
             startDate: "2026-11-01T00:00",
-            endDate: "2026-11-30T00:00"
+            endDate: "2026-11-30T00:00",
+            bannerUrl: ""
         };
 
         function toggleTitleMenu(e) {
@@ -826,8 +838,8 @@
 
             if (currentUser) {
                 idEl.innerText = currentUser.id;
-                const isNeoOrAdmin = (currentUser.id === "A-24-11-9-a" || currentUser.id === "ADMIN");
-                nameEl.innerText = currentUser.name + (isNeoOrAdmin ? " (👑管理者)" : "");
+                const isNeo = (currentUser.id === "A-24-11-9-a");
+                nameEl.innerText = currentUser.name + (isNeo ? " (👑管理者)" : "");
                 gemEl.innerText = Number(currentUser.gem || 0).toLocaleString();
                 document.getElementById('title-screen').classList.add('hidden');
             } else {
@@ -941,9 +953,9 @@
             const container = document.getElementById('event-content-container');
             if (!container) return;
 
-            const isNeoOrAdmin = currentUser && (currentUser.id === "A-24-11-9-a" || currentUser.id === "ADMIN");
+            const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
 
-            if (currentEvent.status === "開催準備中" && !isNeoOrAdmin) {
+            if (currentEvent.status === "開催準備中" && !isNeo) {
                 container.innerHTML = `
                     <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #555; text-align: center;">
                         <h3 style="color: #aaa; margin-bottom: 10px;">🔒 現在準備中のイベントはありません</h3>
@@ -973,9 +985,9 @@
             if (!container) return;
             const titleEl = document.getElementById('gacha-screen-title');
 
-            const isNeoOrAdmin = currentUser && (currentUser.id === "A-24-11-9-a" || currentUser.id === "ADMIN");
+            const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
 
-            if (currentGachaConfig.status === "開催準備中" && !isNeoOrAdmin) {
+            if (currentGachaConfig.status === "開催準備中" && !isNeo) {
                 if (titleEl) titleEl.innerText = "🎂 ガチャ (準備中)";
                 container.innerHTML = `
                     <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #555; text-align: center; margin-top:20px;">
@@ -991,6 +1003,7 @@
             let statusColor = currentGachaConfig.status === "開催中" ? "#00f5d4" : "#ff9900";
 
             container.innerHTML = `
+                ${currentGachaConfig.bannerUrl ? `<img src="${currentGachaConfig.bannerUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:10px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.2);">` : ''}
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
                     <span style="background:#ff9900; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.type}</span>
                     <span style="background:${statusColor}; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.status}</span>
@@ -1027,26 +1040,24 @@
         function promptUserLogin() {
             closeOtherMenu();
             
-            const isNeoOrAdminTemp = currentUser && (currentUser.id === "A-24-11-9-a" || currentUser.id === "ADMIN");
-            if (isLoginLocked && !isNeoOrAdminTemp) {
-                const checkAdminId = prompt("現在【ログイン制限(メンテナンス中)】です。管理者IDを入力してください：");
-                if (checkAdminId !== "A-24-11-9-a" && checkAdminId !== "ADMIN") {
-                    alert("❌ 現在一般ユーザーのログインは制限されています。");
-                    return;
-                }
-            }
-
             const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
             if (!inputId) return;
 
-            if (isLoginLocked && inputId !== "A-24-11-9-a" && inputId !== "ADMIN") {
-                alert("❌ 現在ログイン制限中につき、一般メンバーのログインはできません。");
+            // 1. 個別制限チェック
+            if (userRestrictionMap[inputId] === true) {
+                alert("❌ このアカウントは管理者によりアクセス制限（凍結）されています。");
+                return;
+            }
+
+            // 2. 一斉ログイン制限チェック（ネオ以外）
+            if (isLoginLocked && inputId !== "A-24-11-9-a") {
+                alert("❌ 現在ログイン制限（メンテナンス中）につき、一般メンバーのログインはできません。");
                 return;
             }
 
             const found = memberDatabase.find(m => m.id === inputId);
             if (found) {
-                if (found.id === "A-24-11-9-a" || found.id === "ADMIN") {
+                if (found.id === "A-24-11-9-a") {
                     isAdmin = true;
                     localStorage.setItem('nexus_is_admin', 'true');
                 } else {
@@ -1107,14 +1118,16 @@
             renderHistory();
         }
 
+        // 🛡️ 管理画面の閲覧チェック（ネオ: A-24-11-9-a はパスワード不要）
         function checkManagePassword() {
             closeOtherMenu();
-            if (currentUser && (currentUser.id === "A-24-11-9-a" || currentUser.id === "ADMIN")) {
+            if (currentUser && currentUser.id === "A-24-11-9-a") {
                 isAdmin = true;
                 localStorage.setItem('nexus_is_admin', 'true');
                 renderAdminNoticeManageList();
                 renderAdminGachaLineupByRarity();
                 renderAdminMemberPointsList();
+                renderAdminUserRestrictionList();
                 document.getElementById('admin-login-lock-toggle').checked = isLoginLocked;
                 openScreen('manage');
                 return;
@@ -1127,6 +1140,7 @@
                 renderAdminNoticeManageList();
                 renderAdminGachaLineupByRarity();
                 renderAdminMemberPointsList();
+                renderAdminUserRestrictionList();
                 document.getElementById('admin-login-lock-toggle').checked = isLoginLocked;
                 openScreen('manage');
             } else if (inputPass !== null) {
@@ -1136,7 +1150,7 @@
 
         function closeManageScreen() {
             closeScreen('manage');
-            if (!currentUser || (currentUser.id !== "A-24-11-9-a" && currentUser.id !== "ADMIN")) {
+            if (!currentUser || currentUser.id !== "A-24-11-9-a") {
                 isAdmin = false;
                 localStorage.setItem('nexus_is_admin', 'false');
             }
@@ -1146,6 +1160,31 @@
             isLoginLocked = checkbox.checked;
             localStorage.setItem('nexus_login_locked', isLoginLocked);
             alert(isLoginLocked ? "🔒 ログイン制限を【有効】にしました。" : "🔓 ログイン制限を【解除】しました。");
+        }
+
+        function toggleIndividualUserRestriction(userId, checkbox) {
+            userRestrictionMap[userId] = checkbox.checked;
+            localStorage.setItem('nexus_restricted_users', JSON.stringify(userRestrictionMap));
+            alert(checkbox.checked ? `🚫 [${userId}] のアクセスを【制限（制限中）】しました。` : `🔓 [${userId}] の制限を【解除（許可）】しました。`);
+        }
+
+        function renderAdminUserRestrictionList() {
+            const container = document.getElementById('admin-user-restriction-list');
+            if (!container) return;
+            container.innerHTML = "";
+            memberDatabase.forEach(m => {
+                if (m.id === "A-24-11-9-a") return; // ネオは自身のため表示スキップ
+                const isRestricted = userRestrictionMap[m.id] === true;
+                const row = document.createElement('div');
+                row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #333;";
+                row.innerHTML = `
+                    <span>👤 ${m.name} (${m.id})</span>
+                    <label style="font-size:0.75rem; color:${isRestricted ? '#ff334b' : '#00f5d4'}; cursor:pointer;">
+                        <input type="checkbox" ${isRestricted ? 'checked' : ''} onchange="toggleIndividualUserRestriction('${m.id}', this)"> アクセス制限
+                    </label>
+                `;
+                container.appendChild(row);
+            });
         }
 
         function adminCreateEvent() {
@@ -1218,36 +1257,40 @@
             if (!container) return;
             container.innerHTML = "";
             memberDatabase.forEach(m => {
+                const isNeo = m.id === "A-24-11-9-a";
                 const row = document.createElement('div');
                 row.style.cssText = "display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #333;";
-                row.innerHTML = `<span>👤 ${m.name} (ID: ${m.id})</span><span style="color:#00f5d4; font-weight:bold;">${m.pt} P</span>`;
+                row.innerHTML = `<span>👤 ${m.name} (ID: ${m.id})</span><span style="color:${isNeo ? '#888' : '#00f5d4'}; font-weight:bold;">${isNeo ? '-(管理者対象外)' : m.pt + ' P'}</span>`;
                 container.appendChild(row);
             });
         }
 
         function adminResetEventPoints() {
             if (confirm("全員の個人Pを 0 にリセットしますか？")) {
-                memberDatabase.forEach(m => m.pt = 0);
+                memberDatabase.forEach(m => {
+                    if (m.id !== "A-24-11-9-a") m.pt = 0;
+                });
                 renderAdminMemberPointsList();
                 alert("🔄 全員の個人Pを 0 にリセットしました！");
             }
         }
 
         function adminShowRankingResult() {
-            alert("🏆 【順位発表演出】\n1位: ネオ (9,999 P)\n2位: タイ (300 P)");
+            alert("🏆 【順位発表演出】\n1位: タイ (300 P)\n2位: 奨 (210 P)\n3位: Ayu (175 P)");
         }
 
         function adminSaveGachaConfig() {
             const gachaTitle = document.getElementById('admin-gacha-title-input').value;
             const gachaType = document.getElementById('admin-gacha-type-select').value;
             const status = document.getElementById('admin-gacha-status-select').value;
+            const bannerUrl = document.getElementById('admin-gacha-banner-select').value;
             const start = document.getElementById('admin-gacha-start-input').value;
             const end = document.getElementById('admin-gacha-end-input').value;
 
-            currentGachaConfig = { title: gachaTitle || "記念ピックアップガチャ", type: gachaType, status: status, startDate: start, endDate: end };
+            currentGachaConfig = { title: gachaTitle || "記念ピックアップガチャ", type: gachaType, status: status, startDate: start, endDate: end, bannerUrl: bannerUrl };
             localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
             updateUIUserStatus();
-            alert(`🎂 ガチャの基本設定を保存しました！`);
+            alert(`🎂 ガチャ基本設定・バナーを保存しました！`);
         }
 
         function adminAddGachaIllustration() {
@@ -1452,12 +1495,13 @@
 
         function populateAdminSelects() {
             const gachaSelect = document.getElementById('admin-gacha-img-select');
+            const gachaBannerSelect = document.getElementById('admin-gacha-banner-select');
             const giftSelect = document.getElementById('admin-gift-img-select');
             const noticeSelect = document.getElementById('admin-notice-img-select');
             const eventImgSelect = document.getElementById('admin-event-img-select');
             const targetSelect = document.getElementById('admin-gift-target');
             const titleBgSelect = document.getElementById('admin-title-bg-select');
-            if (!gachaSelect || !giftSelect || !noticeSelect || !targetSelect || !eventImgSelect || !titleBgSelect) return;
+            if (!gachaSelect || !giftSelect || !noticeSelect || !targetSelect || !eventImgSelect || !titleBgSelect || !gachaBannerSelect) return;
 
             let optionsHtml = `<option value="">(選択してください)</option>`;
             masterDriveImages.forEach(img => {
@@ -1465,6 +1509,7 @@
             });
 
             gachaSelect.innerHTML = optionsHtml;
+            gachaBannerSelect.innerHTML = `<option value="">(バナーなし)</option>` + optionsHtml;
             giftSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
             noticeSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
             eventImgSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
@@ -1479,6 +1524,7 @@
             renderAdminNoticeManageList();
             renderAdminGachaLineupByRarity();
             renderAdminMemberPointsList();
+            renderAdminUserRestrictionList();
         }
 
         function pullGachaFromDrive() {
@@ -1790,6 +1836,14 @@
         function openScreen(name, fromTitle = false) {
             closeOtherMenu();
             openedFromTitle = fromTitle;
+            
+            const bottomNav = document.getElementById('main-bottom-nav');
+            if (fromTitle) {
+                if (bottomNav) bottomNav.classList.add('hide-menu');
+            } else {
+                if (bottomNav) bottomNav.classList.remove('hide-menu');
+            }
+
             if (name === 'present') renderGifts();
             if (name === 'notice') renderNotices();
             if (name === 'history') renderHistory();
@@ -1809,6 +1863,9 @@
 
         function closeScreen(name) { 
             document.getElementById('screen-' + name).classList.remove('active'); 
+            const bottomNav = document.getElementById('main-bottom-nav');
+            if (bottomNav) bottomNav.classList.remove('hide-menu');
+
             if (!currentUser || openedFromTitle) {
                 document.getElementById('title-screen').classList.remove('hidden');
                 openedFromTitle = false;
@@ -1817,6 +1874,9 @@
 
         function switchNav(name) {
             closeOtherMenu();
+            const bottomNav = document.getElementById('main-bottom-nav');
+            if (bottomNav) bottomNav.classList.remove('hide-menu');
+
             document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             if (name === 'home') document.getElementById('nav-home').classList.add('active');
