@@ -329,32 +329,13 @@
     <!-- 🎪 イベント画面 -->
     <div id="screen-event" class="sub-screen">
         <div class="sub-header"><span class="sub-title">🎪 イベント情報</span><button class="close-btn" onclick="closeScreen('event')">閉じる</button></div>
-        <div id="event-content-container">
-            <!-- 動的に表示内容が切り替わります -->
-        </div>
+        <div id="event-content-container"></div>
     </div>
 
+    <!-- 🎂 ガチャ画面（ステータス制御対応） -->
     <div id="screen-gacha" class="sub-screen">
-        <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ (ピックアップ)</span><button class="close-btn" onclick="openScreen('gacha')">閉じる</button></div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-            <span id="gacha-type-badge" style="background:#ff9900; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px;">ネオフェス限定</span>
-            <span id="gacha-period-display" style="font-size: 0.75rem; color: #aaa;">期間: 常設 / 未設定</span>
-        </div>
-        <p style="margin-bottom: 10px; font-size: 0.85rem; color: #aaa;">★2以下のアイテムを引いた場合は、全ユーザーに自動配布されます！</p>
-        
-        <button onclick="pullGachaFromDrive()" style="padding: 12px 20px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit; width:100%; margin-bottom: 15px;">💎 ガチャを引く</button>
-
-        <div style="background:#1a1a1a; padding:10px; border-radius:8px; border:1px solid #333;">
-            <div style="font-size:0.8rem; font-weight:bold; color:#00f5d4; margin-bottom:4px;">📊 現在のガチャ排出確率（スプレッドシート準拠）</div>
-            <table class="rate-table">
-                <thead>
-                    <tr><th>レア</th><th>★6</th><th>★5</th><th>★4</th><th>★3</th><th>★2</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td id="rate-type-name">確率(%)</td><td id="rate-6">--</td><td id="rate-5">--</td><td id="rate-4">--</td><td id="rate-3">--</td><td id="rate-2">--</td></tr>
-                </tbody>
-            </table>
-        </div>
+        <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ</span><button class="close-btn" onclick="openScreen('gacha')">閉じる</button></div>
+        <div id="gacha-content-container"></div>
     </div>
 
     <div id="screen-play" class="sub-screen">
@@ -391,7 +372,7 @@
         <div class="album-grid" id="album-grid-container"></div>
     </div>
 
-    <!-- 📖 ヒストリー画面（削除されたイベントが自動蓄積されます） -->
+    <!-- 📖 ヒストリー画面 -->
     <div id="screen-history" class="sub-screen">
         <div class="sub-header"><span class="sub-title">📖 ヒストリー・過去イベント記録</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div>
         <div id="history-list-container">
@@ -426,9 +407,9 @@
                 <button class="close-btn" onclick="closeScreen('manage')">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベントにイラスト設定可能。削除時は自動でヒストリーに記録されます。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント種類（タイアップ・期間限定等）やガチャステータス管理に対応。</p>
         
-        <!-- 🎪 イベント開催準備・設定（イラスト選択付き） -->
+        <!-- 🎪 イベント管理 -->
         <div class="admin-section">
             <h4>🎪 イベント管理・ステータス設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">イベントタイトル：</label>
@@ -437,6 +418,8 @@
             <select id="admin-event-type-select" class="admin-input">
                 <option value="シーズンイベント">シーズンイベント</option>
                 <option value="ストーリーイベント">ストーリーイベント</option>
+                <option value="タイアップイベント">タイアップイベント</option>
+                <option value="期間限定イベント">期間限定イベント</option>
             </select>
             <label style="font-size: 0.8rem; color: #aaa;">開始日時：</label>
             <input type="datetime-local" id="admin-event-start-input" class="admin-input" value="2026-11-01T00:00">
@@ -456,12 +439,12 @@
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを削除してヒストリーにまとめる</button>
         </div>
 
-        <!-- 🎂 ガチャ管理 -->
+        <!-- 🎂 ガチャ管理（ステータス導入） -->
         <div class="admin-section">
-            <h4>🎂 ガチャ開催日時・種類・確率設定</h4>
+            <h4>🎂 ガチャ管理・ステータス設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">ガチャ名称：</label>
             <input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
-            <label style="font-size: 0.8rem; color: #aaa;">ガチャの種類（スプレッドシート準拠）：</label>
+            <label style="font-size: 0.8rem; color: #aaa;">ガチャの種類：</label>
             <select id="admin-gacha-type-select" class="admin-input">
                 <option value="ネオフェス限定">ネオフェス限定</option>
                 <option value="タイアップ限定">タイアップ限定</option>
@@ -470,6 +453,12 @@
                 <option value="イベント">イベント</option>
                 <option value="限定復刻">限定復刻</option>
                 <option value="限定/恒常">限定/恒常</option>
+            </select>
+            <label style="font-size: 0.8rem; color: #aaa;">ガチャステータス：</label>
+            <select id="admin-gacha-status-select" class="admin-input">
+                <option value="開催中">開催中</option>
+                <option value="開催準備中">開催準備中 (一般非表示)</option>
+                <option value="終了">終了 (確認可能)</option>
             </select>
             <label style="font-size: 0.8rem; color: #aaa;">開始日時：</label>
             <input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
@@ -546,7 +535,8 @@
             "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
         };
 
-        let memberDatabase = JSON.parse(localStorage.getItem('nexus_members_db')) || [
+        // スプレッドシート準拠の正式メンバーデータベース（ここに載っているID以外はログイン不可）
+        const memberDatabase = [
             { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 0 },
             { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 0 },
             { id: "N-24-11-3", name: "奨", gem: 0, coin: 0, pt: 0 },
@@ -587,6 +577,7 @@
         let currentGachaConfig = JSON.parse(localStorage.getItem('nexus_gacha_config')) || {
             title: "記念ピックアップガチャ",
             type: "ネオフェス限定",
+            status: "開催中",
             startDate: "2026-11-01T00:00",
             endDate: "2026-11-30T00:00"
         };
@@ -618,20 +609,7 @@
             if (badgeStatus) badgeStatus.innerText = currentEvent.status;
 
             renderEventScreen();
-
-            const gachaTitleEl = document.getElementById('gacha-screen-title');
-            const gachaTypeBadge = document.getElementById('gacha-type-badge');
-            if (gachaTitleEl) gachaTitleEl.innerText = "🎂 " + currentGachaConfig.title;
-            if (gachaTypeBadge) gachaTypeBadge.innerText = currentGachaConfig.type;
-            document.getElementById('gacha-period-display').innerText = `期間: ${formatDateStr(currentGachaConfig.startDate)} 〜 ${formatDateStr(currentGachaConfig.endDate)}`;
-
-            const rates = GACHA_RATES[currentGachaConfig.type] || { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 100 };
-            document.getElementById('rate-type-name').innerText = currentGachaConfig.type;
-            document.getElementById('rate-6').innerText = rates["★6"] + "%";
-            document.getElementById('rate-5').innerText = rates["★5"] + "%";
-            document.getElementById('rate-4').innerText = rates["★4"] + "%";
-            document.getElementById('rate-3').innerText = rates["★3"] + "%";
-            document.getElementById('rate-2').innerText = rates["★2"] + "%";
+            renderGachaScreen();
 
             const giftBadge = document.getElementById('badge-present');
             if (userGifts.length > 0) {
@@ -650,12 +628,11 @@
             }
         }
 
-        // 🎪 イベント画面のレンダリング（開催準備中の非表示制御・終了の閲覧・イラスト表示）
+        // 🎪 イベント画面のレンダリング
         function renderEventScreen() {
             const container = document.getElementById('event-content-container');
             if (!container) return;
 
-            // 管理者以外で「開催準備中」の場合は表示しない
             if (currentEvent.status === "開催準備中" && !isAdmin) {
                 container.innerHTML = `
                     <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #555; text-align: center;">
@@ -681,6 +658,51 @@
             `;
         }
 
+        // 🎂 ガチャ画面のレンダリング（ステータス制御対応）
+        function renderGachaScreen() {
+            const container = document.getElementById('gacha-content-container');
+            if (!container) return;
+            const titleEl = document.getElementById('gacha-screen-title');
+
+            if (currentGachaConfig.status === "開催準備中" && !isAdmin) {
+                if (titleEl) titleEl.innerText = "🎂 ガチャ (準備中)";
+                container.innerHTML = `
+                    <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #555; text-align: center; margin-top:20px;">
+                        <h3 style="color: #aaa; margin-bottom: 10px;">🔒 現在準備中のガチャはありません</h3>
+                        <p style="font-size: 0.85rem; color: #888;">次のガチャ開催までしばらくお待ちください。</p>
+                    </div>
+                `;
+                return;
+            }
+
+            if (titleEl) titleEl.innerText = "🎂 " + currentGachaConfig.title;
+            const rates = GACHA_RATES[currentGachaConfig.type] || { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 100 };
+            let statusColor = currentGachaConfig.status === "開催中" ? "#00f5d4" : "#ff9900";
+
+            container.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                    <span style="background:#ff9900; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.type}</span>
+                    <span style="background:${statusColor}; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.status}</span>
+                </div>
+                <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 10px;">期間: ${formatDateStr(currentGachaConfig.startDate)} 〜 ${formatDateStr(currentGachaConfig.endDate)}</div>
+                <p style="margin-bottom: 10px; font-size: 0.85rem; color: #aaa;">★2以下のアイテムを引いた場合は、全ユーザーに自動配布されます！</p>
+                
+                <button onclick="pullGachaFromDrive()" style="padding: 12px 20px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit; width:100%; margin-bottom: 15px;">💎 ガチャを引く</button>
+
+                <div style="background:#1a1a1a; padding:10px; border-radius:8px; border:1px solid #333;">
+                    <div style="font-size:0.8rem; font-weight:bold; color:#00f5d4; margin-bottom:4px;">📊 現在のガチャ排出確率（スプレッドシート準拠）</div>
+                    <table class="rate-table">
+                        <thead>
+                            <tr><th>レア</th><th>★6</th><th>★5</th><th>★4</th><th>★3</th><th>★2</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>${currentGachaConfig.type}</td><td>${rates["★6"]}%</td><td>${rates["★5"]}%</td><td>${rates["★4"]}%</td><td>${rates["★3"]}%</td><td>${rates["★2"]}%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
         function handleStatusClick() {
             if (currentUser) {
                 if (confirm("ログアウトしますか？")) {
@@ -691,37 +713,28 @@
             }
         }
 
+        // 🔒 スプレッドシートに登録されているID以外はログイン不可
         function promptUserLogin() {
             closeOtherMenu();
-            const inputId = prompt("USER ID（または管理者ID）を入力してください：");
+            const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
             if (!inputId) return;
-
-            if (inputId === "ADMIN" || inputId === "2024061124-admin" || inputId === "A-24-11-9-a") {
-                isAdmin = true;
-                localStorage.setItem('nexus_is_admin', 'true');
-                currentUser = memberDatabase.find(m => m.id === "ADMIN") || { id: "ADMIN", name: "管理者", gem: 999999, coin: 999999 };
-                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-                reloadUserData();
-                alert("👑 管理者モードでログインしました！");
-                openScreen('manage');
-                return;
-            }
 
             const found = memberDatabase.find(m => m.id === inputId);
             if (found) {
-                isAdmin = false;
-                localStorage.setItem('nexus_is_admin', 'false');
+                if (found.id === "ADMIN") {
+                    isAdmin = true;
+                    localStorage.setItem('nexus_is_admin', 'true');
+                } else {
+                    isAdmin = false;
+                    localStorage.setItem('nexus_is_admin', 'false');
+                }
                 currentUser = found;
                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 reloadUserData();
                 alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
+                if (isAdmin) openScreen('manage');
             } else {
-                isAdmin = false;
-                localStorage.setItem('nexus_is_admin', 'false');
-                currentUser = { id: inputId, name: "メンバー", gem: 0, coin: 0 };
-                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-                reloadUserData();
-                alert(`ID 「${inputId}」でログインしました。`);
+                alert("❌ ログインエラー\nスプレッドシート（登録メンバーリスト）に存在しないIDです。正しいIDを入力してください。");
             }
         }
 
@@ -757,7 +770,7 @@
             if (inputPass === "2024061124") {
                 isAdmin = true;
                 localStorage.setItem('nexus_is_admin', 'true');
-                currentUser = memberDatabase.find(m => m.id === "ADMIN") || { id: "ADMIN", name: "管理者", gem: 999999, coin: 999999 };
+                currentUser = memberDatabase.find(m => m.id === "ADMIN");
                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 reloadUserData();
                 openScreen('manage');
@@ -766,7 +779,7 @@
             }
         }
 
-        // 🎪 イベント設定（イラスト付き）
+        // 🎪 イベント設定
         function adminCreateEvent() {
             const title = document.getElementById('admin-event-title-input').value;
             const type = document.getElementById('admin-event-type-select').value;
@@ -782,7 +795,6 @@
             alert(`🎪 [${type}] 「${title}」のイベント設定を保存しました！`);
         }
 
-        // 🗑️ イベント削除時にヒストリーに自動蓄積
         function adminDeleteEventToHistory() {
             if (confirm(`イベント「${currentEvent.title}」を終了・削除し、ヒストリーに記録しますか？`)) {
                 eventHistory.unshift({
@@ -837,8 +849,6 @@
             if (confirm("全員の個人Pを 0 にリセットしますか？")) {
                 memberDatabase.forEach(m => m.pt = 0);
                 if (currentUser) currentUser.pt = 0;
-                localStorage.setItem('nexus_members_db', JSON.stringify(memberDatabase));
-                if (currentUser) localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 alert("🔄 全員の個人Pを 0 にリセットしました！");
             }
         }
@@ -847,10 +857,11 @@
             alert("🏆 【順位発表演出】\n1位: ネオ (9,999 P)\n2位: ヨウスケ (--- P)");
         }
 
-        // 🎂 ガチャ設定
+        // 🎂 ガチャ設定（ステータス対応）
         function adminAddGachaIllustration() {
             const gachaTitle = document.getElementById('admin-gacha-title-input').value;
             const gachaType = document.getElementById('admin-gacha-type-select').value;
+            const status = document.getElementById('admin-gacha-status-select').value;
             const start = document.getElementById('admin-gacha-start-input').value;
             const end = document.getElementById('admin-gacha-end-input').value;
             const rarity = document.getElementById('admin-gacha-rarity').value;
@@ -863,7 +874,7 @@
                 return;
             }
 
-            currentGachaConfig = { title: gachaTitle || "記念ピックアップガチャ", type: gachaType, startDate: start, endDate: end };
+            currentGachaConfig = { title: gachaTitle || "記念ピックアップガチャ", type: gachaType, status: status, startDate: start, endDate: end };
             localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
 
             const newMasterItem = {
@@ -874,7 +885,7 @@
 
             masterDriveImages.push(newMasterItem);
             updateUIUserStatus();
-            alert(`🎂 [${gachaType}] 「${currentGachaConfig.title}」にイラストを追加しました！`);
+            alert(`🎂 [${gachaType} / ${status}] 「${currentGachaConfig.title}」の設定を保存しました！`);
         }
 
         // 🎁 プレゼント送信
@@ -942,7 +953,7 @@
             alert("📢 お知らせを全体公開しました！");
         }
 
-        // 🌐 ドライブからマスターデータをロードしセレクトボックスを生成
+        // 🌐 ドライブからマスターデータをロード
         async function fetchDriveMasterData() {
             try {
                 const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime());
@@ -993,7 +1004,7 @@
         // 🎂 ガチャ機能
         function pullGachaFromDrive() {
             if (!currentUser) {
-                alert("ガチャを引くには、まず左上のステータスからUSER IDでログインしてください！");
+                alert("ガチャを引くには、まず左上のステータスからスプレッドシート登録IDでログインしてください！");
                 promptUserLogin();
                 return;
             }
