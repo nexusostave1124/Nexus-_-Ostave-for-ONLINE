@@ -624,9 +624,9 @@
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを削除してヒストリーにまとめる</button>
         </div>
 
-        <!-- 🎂 ガチャ管理 -->
+        <!-- 🎂 ガチャ管理＆排出ラインナップ変更 -->
         <div class="admin-section">
-            <h4>🎂 ガチャ管理・ステータス設定</h4>
+            <h4>🎂 ガチャ管理・排出ラインナップ設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">ガチャ名称：</label>
             <input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
             <label style="font-size: 0.8rem; color: #aaa;">ガチャの種類：</label>
@@ -649,8 +649,11 @@
             <input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
             <label style="font-size: 0.8rem; color: #aaa;">終了日時：</label>
             <input type="datetime-local" id="admin-gacha-end-input" class="admin-input" value="2026-11-30T00:00">
+            <button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ基本設定を保存する</button>
             
-            <label style="font-size: 0.8rem; color: #aaa; margin-top:8px; display:block;">追加するイラスト（Googleドライブ選択）：</label>
+            <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+            <h5 style="color:#ffee00; margin-bottom:8px;">🖼️ 排出ラインナップへの追加</h5>
+            <label style="font-size: 0.8rem; color: #aaa;">追加するイラスト（Googleドライブ選択）：</label>
             <select id="admin-gacha-img-select" class="admin-input">
                 <option value="">(選択してください)</option>
             </select>
@@ -662,7 +665,10 @@
                 <option value="★3">★3</option>
                 <option value="★2">★2 (全ユーザー自動配布対象)</option>
             </select>
-            <button class="admin-btn" onclick="adminAddGachaIllustration()">➕ ガチャ設定＆イラストを追加</button>
+            <button class="admin-btn" onclick="adminAddGachaIllustration()">➕ ガチャラインナップに追加する</button>
+
+            <!-- ガチャの現在ラインナップ一覧 -->
+            <div id="admin-gacha-lineup-container" style="margin-top: 12px; font-size: 0.8rem;"></div>
         </div>
 
         <!-- 🎁 プレゼント配信 -->
@@ -685,9 +691,9 @@
             <button class="admin-btn" onclick="adminSendGift()">📤 プレゼントを送信する</button>
         </div>
 
-        <!-- ✉️ お知らせ作成 -->
+        <!-- ✉️ お知らせ管理・作成・削除 -->
         <div class="admin-section">
-            <h4>✉️ お知らせを作成する（イラスト付き）</h4>
+            <h4>✉️ お知らせを作成・管理する</h4>
             <label style="font-size: 0.8rem; color: #aaa;">お知らせタイトル：</label>
             <input type="text" id="admin-notice-title" class="admin-input" placeholder="新機能追加のお知らせ">
             <label style="font-size: 0.8rem; color: #aaa;">本文：</label>
@@ -697,6 +703,9 @@
                 <option value="">(イラストなし)</option>
             </select>
             <button class="admin-btn" onclick="adminPublishNotice()">📢 お知らせを全体公開する</button>
+
+            <!-- 公開中のお知らせ管理一覧 -->
+            <div id="admin-notice-manage-list" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
 
         <!-- 📊 ポイント集計 -->
@@ -781,7 +790,7 @@
 
         function openTitleSubScreen(name) {
             document.getElementById('title-screen').classList.add('hidden');
-            openScreen(name, true); // タイトル画面から開いたフラグを渡す
+            openScreen(name, true);
         }
 
         function exitApp() {
@@ -803,7 +812,8 @@
 
             if (currentUser) {
                 idEl.innerText = currentUser.id;
-                nameEl.innerText = currentUser.name + (isAdmin ? " (👑管理者)" : "");
+                const isNeoOrAdmin = (currentUser.id === "A-24-11-9-a" || currentUser.id === "ADMIN");
+                nameEl.innerText = currentUser.name + (isNeoOrAdmin ? " (👑管理者)" : "");
                 gemEl.innerText = Number(currentUser.gem || 0).toLocaleString();
                 document.getElementById('title-screen').classList.add('hidden');
             } else {
@@ -917,7 +927,9 @@
             const container = document.getElementById('event-content-container');
             if (!container) return;
 
-            if (currentEvent.status === "開催準備中" && !isAdmin) {
+            const isNeoOrAdmin = currentUser && (currentUser.id === "A-24-11-9-a" || currentUser.id === "ADMIN");
+
+            if (currentEvent.status === "開催準備中" && !isNeoOrAdmin) {
                 container.innerHTML = `
                     <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #555; text-align: center;">
                         <h3 style="color: #aaa; margin-bottom: 10px;">🔒 現在準備中のイベントはありません</h3>
@@ -947,7 +959,9 @@
             if (!container) return;
             const titleEl = document.getElementById('gacha-screen-title');
 
-            if (currentGachaConfig.status === "開催準備中" && !isAdmin) {
+            const isNeoOrAdmin = currentUser && (currentUser.id === "A-24-11-9-a" || currentUser.id === "ADMIN");
+
+            if (currentGachaConfig.status === "開催準備中" && !isNeoOrAdmin) {
                 if (titleEl) titleEl.innerText = "🎂 ガチャ (準備中)";
                 container.innerHTML = `
                     <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #555; text-align: center; margin-top:20px;">
@@ -1003,7 +1017,7 @@
 
             const found = memberDatabase.find(m => m.id === inputId);
             if (found) {
-                if (found.id === "ADMIN") {
+                if (found.id === "A-24-11-9-a" || found.id === "ADMIN") {
                     isAdmin = true;
                     localStorage.setItem('nexus_is_admin', 'true');
                 } else {
@@ -1043,30 +1057,36 @@
             renderHistory();
         }
 
+        // 🛡️ 管理画面の閲覧チェック（ネオ: A-24-11-9-a と ADMIN はパスワード不要）
         function checkManagePassword() {
             closeOtherMenu();
-            if (isAdmin && currentUser) {
+            if (currentUser && (currentUser.id === "A-24-11-9-a" || currentUser.id === "ADMIN")) {
+                isAdmin = true;
+                localStorage.setItem('nexus_is_admin', 'true');
+                renderAdminNoticeManageList();
+                renderAdminGachaLineupList();
                 openScreen('manage');
                 return;
             }
+
             const inputPass = prompt("管理画面のパスワードを入力してください：");
             if (inputPass === "2024061124") {
                 isAdmin = true;
                 localStorage.setItem('nexus_is_admin', 'true');
-                currentUser = memberDatabase.find(m => m.id === "ADMIN");
-                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-                reloadUserData();
+                renderAdminNoticeManageList();
+                renderAdminGachaLineupList();
                 openScreen('manage');
             } else if (inputPass !== null) {
                 alert("パスワードが違います。");
             }
         }
 
+        // 管理画面を閉じる時の制御（他ユーザーはロックがかかる）
         function closeManageScreen() {
             closeScreen('manage');
-            if (!currentUser || currentUser.id !== "ADMIN") {
-                adminLogout();
-                alert("🔒 セッションをロックしました。");
+            if (!currentUser || (currentUser.id !== "A-24-11-9-a" && currentUser.id !== "ADMIN")) {
+                isAdmin = false;
+                localStorage.setItem('nexus_is_admin', 'false');
             }
         }
 
@@ -1146,12 +1166,20 @@
             alert("🏆 【順位発表演出】\n1位: ネオ (9,999 P)\n2位: ヨウスケ (--- P)");
         }
 
-        function adminAddGachaIllustration() {
+        function adminSaveGachaConfig() {
             const gachaTitle = document.getElementById('admin-gacha-title-input').value;
             const gachaType = document.getElementById('admin-gacha-type-select').value;
             const status = document.getElementById('admin-gacha-status-select').value;
             const start = document.getElementById('admin-gacha-start-input').value;
             const end = document.getElementById('admin-gacha-end-input').value;
+
+            currentGachaConfig = { title: gachaTitle || "記念ピックアップガチャ", type: gachaType, status: status, startDate: start, endDate: end };
+            localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
+            updateUIUserStatus();
+            alert(`🎂 ガチャの基本設定を保存しました！`);
+        }
+
+        function adminAddGachaIllustration() {
             const rarity = document.getElementById('admin-gacha-rarity').value;
             const selectEl = document.getElementById('admin-gacha-img-select');
             const selectedUrl = selectEl.value;
@@ -1162,18 +1190,37 @@
                 return;
             }
 
-            currentGachaConfig = { title: gachaTitle || "記念ピックアップガチャ", type: gachaType, status: status, startDate: start, endDate: end };
-            localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
-
             const newMasterItem = {
-                id: 'custom_master_' + Date.now(),
+                id: 'gacha_item_' + Date.now(),
                 url: selectedUrl,
                 name: `[${rarity}] ${selectedName}`
             };
 
             masterDriveImages.push(newMasterItem);
-            updateUIUserStatus();
-            alert(`🎂 [${gachaType} / ${status}] 「${currentGachaConfig.title}」の設定を保存しました！`);
+            renderAdminGachaLineupList();
+            alert(`🎂 ガチャラインナップに「${newMasterItem.name}」を追加しました！`);
+        }
+
+        function adminRemoveGachaIllustration(id) {
+            masterDriveImages = masterDriveImages.filter(item => item.id !== id);
+            renderAdminGachaLineupList();
+            alert("🗑️ ラインナップから削除しました。");
+        }
+
+        function renderAdminGachaLineupList() {
+            const container = document.getElementById('admin-gacha-lineup-container');
+            if (!container) return;
+            container.innerHTML = `<div style="color:#00f5d4; font-weight:bold; margin-bottom:6px;">📊 現在のガチャラインナップ一覧 (${masterDriveImages.length}件):</div>`;
+            if (masterDriveImages.length === 0) {
+                container.innerHTML += `<div style="color:#888;">ラインナップは空です。</div>`;
+                return;
+            }
+            masterDriveImages.forEach(item => {
+                const row = document.createElement('div');
+                row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#222; padding:6px 10px; border-radius:6px; margin-bottom:4px;";
+                row.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:210px;">${item.name}</span><button onclick="adminRemoveGachaIllustration('${item.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">削除</button>`;
+                container.appendChild(row);
+            });
         }
 
         function adminSendGift() {
@@ -1234,16 +1281,52 @@
             globalNotices.unshift(noticeObj);
             localStorage.setItem(getGlobalNoticesKey(), JSON.stringify(globalNotices));
 
+            document.getElementById('admin-notice-title').value = '';
+            document.getElementById('admin-notice-text').value = '';
+
             updateUIUserStatus();
             renderNotices();
+            renderAdminNoticeManageList();
             alert("📢 お知らせを全体公開しました！");
+        }
+
+        function adminDeleteNotice(id) {
+            if (confirm("このお知らせを削除してもよろしいですか？")) {
+                globalNotices = globalNotices.filter(n => n.id !== id);
+                localStorage.setItem(getGlobalNoticesKey(), JSON.stringify(globalNotices));
+                updateUIUserStatus();
+                renderNotices();
+                renderAdminNoticeManageList();
+                alert("🗑️ お知らせを削除しました！");
+            }
+        }
+
+        function renderAdminNoticeManageList() {
+            const listEl = document.getElementById('admin-notice-manage-list');
+            if (!listEl) return;
+            globalNotices = JSON.parse(localStorage.getItem(getGlobalNoticesKey())) || [];
+            listEl.innerHTML = `<div style="color:#00f5d4; font-weight:bold; margin-bottom:6px;">📋 公開中のお知らせ管理 (${globalNotices.length}件):</div>`;
+            if (globalNotices.length === 0) {
+                listEl.innerHTML += `<div style="color:#888;">公開中のお知らせはありません。</div>`;
+                return;
+            }
+            globalNotices.forEach(notice => {
+                const row = document.createElement('div');
+                row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#222; padding:6px 10px; border-radius:6px; margin-bottom:4px;";
+                row.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:210px;">${notice.title} (${notice.date})</span><button onclick="adminDeleteNotice('${notice.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">削除</button>`;
+                listEl.appendChild(row);
+            });
         }
 
         async function fetchDriveMasterData() {
             try {
                 const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime());
                 if (!response.ok) return;
-                masterDriveImages = await response.json();
+                const fetchedData = await response.json();
+                
+                if (masterDriveImages.length === 0) {
+                    masterDriveImages = fetchedData;
+                }
                 
                 if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
                     userAlbum = [...masterDriveImages];
@@ -1287,6 +1370,8 @@
             });
             targetSelect.innerHTML = targetHtml;
             renderAdminTitleBgList();
+            renderAdminNoticeManageList();
+            renderAdminGachaLineupList();
         }
 
         function pullGachaFromDrive() {
@@ -1297,7 +1382,7 @@
             }
 
             if (masterDriveImages.length === 0) {
-                alert("ドライブからガチャデータを読み込み中またはデータがありません。");
+                alert("ガチャのラインナップが存在しません。管理画面で追加してください。");
                 return;
             }
 
@@ -1593,7 +1678,6 @@
             if (name === 'notice') renderNotices();
             if (name === 'history') renderHistory();
 
-            // もし設定画面を開いた場合、ログイン状態によって時計設定の表示を切り替える
             if (name === 'settings') {
                 const clockSection = document.getElementById('settings-clock-section');
                 if (clockSection) {
