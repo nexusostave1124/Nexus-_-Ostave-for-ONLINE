@@ -542,6 +542,29 @@
         </div>
     </div>
 
+    <!-- 📋 報告機能画面（タイトル＆ホーム共通） -->
+    <div id="screen-report" class="sub-screen">
+        <div class="sub-header"><span class="sub-title">📋 運営・管理者への報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div>
+        <div class="admin-section" style="border-color:#3388ff;">
+            <h4 style="color:#3388ff; border-left-color:#3388ff;">報告フォーム</h4>
+            <p style="font-size:0.8rem; color:#aaa; margin-bottom:12px;">不具合やご意見、トラブルなどを管理者に報告できます。</p>
+
+            <label style="font-size:0.8rem; color:#aaa;">報告カテゴリ (5つから選択):</label>
+            <select id="user-report-category" class="admin-input">
+                <option value="エラーやバグによる報告">エラーやバグによる報告</option>
+                <option value="トラブルに関する報告">トラブルに関する報告</option>
+                <option value="イベントやガチャに関する報告">イベントやガチャに関する報告</option>
+                <option value="ガイドラインに関する報告">ガイドラインに関する報告</option>
+                <option value="その他">その他</option>
+            </select>
+
+            <label style="font-size:0.8rem; color:#aaa; margin-top:8px; display:block;">報告内容の記述:</label>
+            <textarea id="user-report-content" class="admin-input" rows="5" placeholder="詳細な内容をご記入ください..."></textarea>
+
+            <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="submitUserReport()">📤 管理者に送信する</button>
+        </div>
+    </div>
+
     <!-- ⚙️ 設定 -->
     <div id="screen-settings" class="sub-screen">
         <div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div>
@@ -599,7 +622,6 @@
     </div>
 
     <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
-    <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
     
     <!-- 🛡️ 管理画面 -->
     <div id="screen-manage" class="sub-screen">
@@ -609,7 +631,14 @@
                 <button class="close-btn" onclick="closeManageScreen()">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※ログイン制限やガチャバナー画像追加、メンバーのアルバム管理に対応。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※ログイン制限、報告確認、アルバム管理に対応。</p>
+
+        <!-- 👑 管理者専用：ユーザーからの報告受信箱 -->
+        <div class="admin-section" style="border-color: #3388ff;">
+            <h4 style="color: #3388ff; border-left-color: #3388ff;">📋 ユーザーからの報告一覧</h4>
+            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 8px;">ユーザーから送信された報告内容・お問い合わせを確認できます。</p>
+            <div id="admin-reports-container" style="margin-top: 10px;"></div>
+        </div>
         
         <!-- 👑 管理者専用：みんなのアルバム管理 -->
         <div class="admin-section" style="border-color: #00f5d4;">
@@ -760,7 +789,7 @@
         </div>
 
         <div class="admin-section">
-            <h4>📊 ポイント集計・メンバー連동 (デフォルト0)</h4>
+            <h4>📊 ポイント集計・メンバー連動 (デフォルト0)</h4>
             <div id="admin-member-points-container" style="margin-bottom: 10px; font-size: 0.8rem; background: #222; padding: 8px; border-radius: 6px;"></div>
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminResetEventPoints()">🔄 全員の個人Pを0にリセット</button>
             <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="adminShowRankingResult()">🏆 順位発表演出</button>
@@ -798,6 +827,7 @@
 
         let masterDriveImages = JSON.parse(localStorage.getItem('nexus_master_gacha_images')) || [];
         let globalGifts = JSON.parse(localStorage.getItem('nexus_global_gifts')) || [];
+        let globalReports = JSON.parse(localStorage.getItem('nexus_global_reports')) || [];
 
         function getUserAlbumKey(userId) { return 'nexus_album_' + (userId || (currentUser ? currentUser.id : 'guest')); }
         function getUserSlideshowKey(userId) { return 'nexus_slideshow_' + (userId || (currentUser ? currentUser.id : 'guest')); }
@@ -805,6 +835,7 @@
         function getUserAvatarKey() { return 'nexus_avatar_' + (currentUser ? currentUser.id : 'guest'); }
         function getGlobalNoticesKey() { return 'nexus_global_notices'; }
         function getGlobalGiftsKey() { return 'nexus_global_gifts'; }
+        function getGlobalReportsKey() { return 'nexus_global_reports'; }
         function getEventHistoryKey() { return 'nexus_event_history'; }
         function getTitleBgKey() { return 'nexus_title_bg_images'; }
 
@@ -1178,6 +1209,7 @@
             renderAdminGachaLineupByRarity();
             renderAdminMemberPointsList();
             renderAdminUserRestrictionList();
+            renderAdminReportsList();
             populateAdminAlbumMemberSelect();
             document.getElementById('admin-login-lock-toggle').checked = isLoginLocked;
         }
@@ -1190,7 +1222,72 @@
             }
         }
 
-        // 管理者用：メンバーごとのアルバム閲覧・削除用セレクトボックス設定
+        /* ================= 📋 報告機能（ユーザー送信・管理者受取） ================= */
+        function submitUserReport() {
+            const category = document.getElementById('user-report-category').value;
+            const content = document.getElementById('user-report-content').value.trim();
+
+            if (!content) {
+                alert("報告内容の記述を入力してください。");
+                return;
+            }
+
+            const reportObj = {
+                id: 'report_' + Date.now(),
+                userId: currentUser ? currentUser.id : "GUEST (未ログイン)",
+                userName: currentUser ? currentUser.name : "ゲストユーザー",
+                category: category,
+                content: content,
+                date: new Date().toLocaleString()
+            };
+
+            globalReports = JSON.parse(localStorage.getItem(getGlobalReportsKey())) || [];
+            globalReports.unshift(reportObj);
+            localStorage.setItem(getGlobalReportsKey(), JSON.stringify(globalReports));
+
+            document.getElementById('user-report-content').value = "";
+            alert("📤 管理者へ報告を送信しました。ご協力ありがとうございます！");
+            closeScreen('report');
+        }
+
+        function renderAdminReportsList() {
+            const container = document.getElementById('admin-reports-container');
+            if (!container) return;
+            globalReports = JSON.parse(localStorage.getItem(getGlobalReportsKey())) || [];
+
+            if (globalReports.length === 0) {
+                container.innerHTML = `<div style="color:#888; font-size:0.8rem;">届いている報告はありません。</div>`;
+                return;
+            }
+
+            let html = "";
+            globalReports.forEach(report => {
+                html += `
+                    <div style="background:#222; border-left:3px solid #3388ff; padding:10px; border-radius:6px; margin-bottom:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#aaa; margin-bottom:4px;">
+                            <span style="background:#3388ff; color:#fff; padding:1px 6px; border-radius:4px; font-weight:bold;">${report.category}</span>
+                            <span>${report.date}</span>
+                        </div>
+                        <div style="font-size:0.85rem; font-weight:bold; color:#ffee00; margin-bottom:4px;">
+                            👤 ${report.userName} (ID: ${report.userId})
+                        </div>
+                        <div style="font-size:0.8rem; color:#fff; white-space:pre-wrap; background:#181818; padding:8px; border-radius:4px; margin-bottom:6px;">${report.content}</div>
+                        <button onclick="adminDeleteReport('${report.id}')" style="background:#ff334b; color:#fff; border:none; padding:3px 8px; border-radius:4px; cursor:pointer; font-size:0.7rem;">確認完了（削除）</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function adminDeleteReport(reportId) {
+            if (confirm("この報告を確認済みとして削除しますか？")) {
+                globalReports = globalReports.filter(r => r.id !== reportId);
+                localStorage.setItem(getGlobalReportsKey(), JSON.stringify(globalReports));
+                renderAdminReportsList();
+                alert("🗑️ 報告を削除しました。");
+            }
+        }
+
         function populateAdminAlbumMemberSelect() {
             const selectEl = document.getElementById('admin-target-album-select');
             if (!selectEl) return;
@@ -1667,6 +1764,7 @@
             renderAdminGachaLineupByRarity();
             renderAdminMemberPointsList();
             renderAdminUserRestrictionList();
+            renderAdminReportsList();
             populateAdminAlbumMemberSelect();
         }
 
