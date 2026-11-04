@@ -530,8 +530,8 @@
     </div>
 
     <div id="screen-album" class="sub-screen">
-        <div class="sub-header"><span class="sub-title">📷 マイアルバム & スライドショー設定</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div>
-        <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 12px;">ガチャやプレゼントで獲得したイラストをタップしてスライドショーに登録できます。</p>
+        <div class="sub-header"><span class="sub-title" id="album-screen-title">📷 マイアルバム & スライドショー設定</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div>
+        <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 12px;" id="album-desc">ガチャやプレゼントで獲得したイラストをタップしてスライドショーに登録できます。</p>
         <div class="album-grid" id="album-grid-container"></div>
     </div>
 
@@ -1538,7 +1538,7 @@
                 if (!response.ok) return;
                 const fetchedData = await response.json();
                 
-                // 左側の脹相（【★2配布】脹相(★1)）のみを完全除外し、右側の脹相は保持する
+                // 左側の脹相のみ除外、右側の脹相は保持
                 fetchedData.forEach(item => {
                     if (item.name.includes("【★2配布】脹相") || (item.name.includes("脹相") && item.name.includes("★1"))) return;
                     if (!masterDriveImages.some(existing => existing.url === item.url)) {
@@ -1798,28 +1798,96 @@
             }, 4000);
         }
 
+        // アルバム表示（管理者ネオの場合は「みんなのアルバム」として全メンバー分を表示・削除可能）
         function renderAlbum() {
             const grid = document.getElementById('album-grid-container');
+            const titleEl = document.getElementById('album-screen-title');
+            const descEl = document.getElementById('album-desc');
             if (!grid) return;
-            grid.innerHTML = '';
-            if (userAlbum.length === 0) {
-                grid.innerHTML = `<p style="grid-column: span 2; text-align:center; color:#888;">獲得したイラストはありません。</p>`;
-                return;
+
+            const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
+
+            if (isNeo) {
+                if (titleEl) titleEl.innerText = "👑 みんなのアルバム (管理者モード)";
+                if (descEl) descEl.innerText = "全メンバーの保有しているアルバム一覧です。不要な画像を削除できます。";
+                
+                grid.innerHTML = '';
+                let allItemsCount = 0;
+
+                memberDatabase.forEach(m => {
+                    let mAlbum = JSON.parse(localStorage.getItem('nexus_album_' + m.id)) || [];
+                    if (mAlbum.length > 0) {
+                        const header = document.createElement('div');
+                        header.style.cssText = "grid-column: span 2; color: #00f5d4; font-weight: bold; font-size: 0.95rem; margin-top: 10px; border-bottom: 1px solid #333; padding-bottom: 4px;";
+                        header.innerText = `👤 ${m.name} (ID: ${m.id}) のアルバム (${mAlbum.length}枚)`;
+                        grid.appendChild(header);
+
+                        mAlbum.forEach(img => {
+                            allItemsCount++;
+                            const card = document.createElement('div');
+                            card.className = 'album-card';
+                            card.innerHTML = `
+                                <div class="album-img-box"><img src="${img.url}" alt="${img.name}"></div>
+                                <div class="album-card-info">
+                                    <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px;">${img.name}</div>
+                                    <button onclick="adminDeleteUserAlbumItem('${m.id}', '${img.id}')" style="padding:4px 10px; background:#ff334b; color:#fff; border:none; border-radius:4px; font-weight:bold; font-size:0.75rem; cursor:pointer; width:100%;">🗑️ 削除する</button>
+                                </div>
+                            `;
+                            grid.appendChild(card);
+                        });
+                    }
+                });
+
+                if (allItemsCount === 0) {
+                    grid.innerHTML = `<p style="grid-column: span 2; text-align:center; color:#888;">全メンバーのアルバムにイラストはありません。</p>`;
+                }
+            } else {
+                if (titleEl) titleEl.innerText = "📷 マイアルバム & スライドショー設定";
+                if (descEl) descEl.innerText = "ガチャやプレゼントで獲得したイラストをタップしてスライドショーに登録できます。";
+
+                grid.innerHTML = '';
+                if (userAlbum.length === 0) {
+                    grid.innerHTML = `<p style="grid-column: span 2; text-align:center; color:#888;">獲得したイラストはありません。</p>";
+                    return;
+                }
+                userAlbum.forEach(img => {
+                    const isInSlideshow = userSlideshowIds.includes(img.id);
+                    const card = document.createElement('div');
+                    card.className = 'album-card' + (isInSlideshow ? ' in-slideshow' : '');
+                    card.innerHTML = `
+                        <div class="album-img-box"><img src="${img.url}" alt="${img.name}"></div>
+                        <div class="album-card-info">
+                            <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${img.name}</div>
+                            <div style="font-size:0.7rem; color:${isInSlideshow ? '#00f5d4' : '#888'};">${isInSlideshow ? '✓ スライド中' : 'タップしてスライド登録'}</div>
+                        </div>
+                    `;
+                    card.onclick = () => toggleSlideshow(img.id);
+                    grid.appendChild(card);
+                });
             }
-            userAlbum.forEach(img => {
-                const isInSlideshow = userSlideshowIds.includes(img.id);
-                const card = document.createElement('div');
-                card.className = 'album-card' + (isInSlideshow ? ' in-slideshow' : '');
-                card.innerHTML = `
-                    <div class="album-img-box"><img src="${img.url}" alt="${img.name}"></div>
-                    <div class="album-card-info">
-                        <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${img.name}</div>
-                        <div style="font-size:0.7rem; color:${isInSlideshow ? '#00f5d4' : '#888'};">${isInSlideshow ? '✓ スライド中' : 'タップしてスライド登録'}</div>
-                    </div>
-                `;
-                card.onclick = () => toggleSlideshow(img.id);
-                grid.appendChild(card);
-            });
+        }
+
+        // 管理者が特定メンバーのアルバムから画像を削除
+        function adminDeleteUserAlbumItem(userId, imgId) {
+            if (confirm(`[${userId}] のアルバムからこのイラストを削除しますか？`)) {
+                let targetAlbum = JSON.parse(localStorage.getItem('nexus_album_' + userId)) || [];
+                targetAlbum = targetAlbum.filter(i => i.id !== imgId);
+                localStorage.setItem('nexus_album_' + userId, JSON.stringify(targetAlbum));
+
+                let targetSlideshow = JSON.parse(localStorage.getItem('nexus_slideshow_' + userId)) || [];
+                targetSlideshow = targetSlideshow.filter(id => id !== imgId);
+                localStorage.setItem('nexus_slideshow_' + userId, JSON.stringify(targetSlideshow));
+
+                // ログイン中のユーザー自身のものであれば即座に画面反映
+                if (currentUser && currentUser.id === userId) {
+                    userAlbum = targetAlbum;
+                    userSlideshowIds = targetSlideshow;
+                    initSlideshow();
+                }
+
+                renderAlbum();
+                alert("🗑️ メンバーのアルバムからイラストを削除しました。");
+            }
         }
 
         function toggleSlideshow(id) {
@@ -1965,7 +2033,6 @@
             if (name === 'home') document.getElementById('nav-home').classList.add('active');
         }
 
-        // 音量連動（audioタグに直結）
         function adjustVolume(val) {
             const vol = val / 100;
             if (audioPlayer) audioPlayer.volume = vol;
