@@ -242,7 +242,6 @@
         .admin-btn:active { opacity: 0.8; }
         .admin-input { width: 100%; padding: 8px 10px; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; font-family: inherit; margin-top: 6px; margin-bottom: 10px; }
 
-        /* リスト表示用 */
         .item-box { background: #1f1f1f; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
@@ -267,7 +266,7 @@
             </div>
         </div>
 
-        <!-- ⏰ 右上エリア：時計、バッテリー ＆ 縦並びボタン -->
+        <!-- ⏰ 右上エリア -->
         <div class="top-right-area">
             <div class="clock-container">
                 <div class="clock-title">現在時刻</div>
@@ -286,7 +285,7 @@
             </div>
         </div>
 
-        <!-- 🎵 右下：ミニ楽曲プレイヤー -->
+        <!-- 🎵 ミニ楽曲プレイヤー -->
         <div class="mini-player" onclick="openScreen('player')">
             <span class="music-icon">🎵</span>
             <div>
@@ -295,7 +294,7 @@
             </div>
         </div>
 
-        <!-- 🏠 下部：メインナビゲーションバー -->
+        <!-- 🏠 下部ナビゲーション -->
         <div class="bottom-nav">
             <div class="nav-item active" id="nav-home" onclick="switchNav('home')">
                 <span class="nav-icon">🏠</span>
@@ -303,6 +302,7 @@
             </div>
             <div class="nav-item" id="nav-event" onclick="openScreen('event')">
                 <span class="nav-icon">🎪</span>
+                <span class="nav-badge" id="badge-event-status">開催中</span>
                 <span>イベント</span>
             </div>
             <div class="nav-item" id="nav-gacha" onclick="openScreen('gacha')">
@@ -320,7 +320,7 @@
         </div>
     </div>
 
-    <!-- ================= 🔲 「その他」メニューポップアップ ================= -->
+    <!-- ================= 🔲 その他メニュー ================= -->
     <div id="other-modal" class="modal-overlay" onclick="closeOtherMenu(event)">
         <div class="menu-dialog" onclick="event.stopPropagation()">
             <div class="other-menu-grid">
@@ -359,13 +359,14 @@
     <div id="screen-event" class="sub-screen">
         <div class="sub-header"><span class="sub-title">🎪 イベント情報</span><button class="close-btn" onclick="closeScreen('event')">閉じる</button></div>
         <div style="background: #1f1f1f; padding: 15px; border-radius: 10px; border: 1px solid #00f5d4; margin-bottom: 15px;">
+            <div id="event-status-badge" style="display:inline-block; background:#00f5d4; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px; margin-bottom:6px;">開催中</div>
             <h3 id="current-event-title" style="color: #00f5d4;">🎉 結成2周年イベント</h3>
             <h1 id="countdown" style="font-size: 1.3rem; margin: 10px 0;">計算中...</h1>
         </div>
     </div>
 
     <div id="screen-gacha" class="sub-screen">
-        <div class="sub-header"><span class="sub-title">🎂 ガチャ (ドライブ連動)</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
+        <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ (ピックアップ開催中)</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
         <p style="margin-bottom: 15px; font-size: 0.85rem; color: #aaa;">★2以下のアイテムを引いた場合は、全ユーザーに自動配布されます！</p>
         <button onclick="pullGachaFromDrive()" style="padding: 12px 20px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit; width:100%;">💎 ドライブガチャを引く</button>
     </div>
@@ -382,7 +383,7 @@
         </div>
     </div>
 
-    <!-- 🎁 プレゼントBOX画面 -->
+    <!-- 🎁 プレゼントBOX -->
     <div id="screen-present" class="sub-screen">
         <div class="sub-header"><span class="sub-title">🎁 プレゼントBOX</span><button class="close-btn" onclick="closeScreen('present')">閉じる</button></div>
         <div id="present-list-container">
@@ -390,7 +391,7 @@
         </div>
     </div>
 
-    <!-- ✉️ お知らせ画面 -->
+    <!-- ✉️ お知らせ -->
     <div id="screen-notice" class="sub-screen">
         <div class="sub-header"><span class="sub-title">✉️ お知らせ</span><button class="close-btn" onclick="closeScreen('notice')">閉じる</button></div>
         <div id="notice-list-container">
@@ -421,11 +422,9 @@
 
     <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
     <div id="screen-history" class="sub-screen"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン</p></div>
-    <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p>
-
-    </div>
+    <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
     
-    <!-- 🛡️ 管理画面（ログアウトボタン・ドライブイラスト選択式搭載） -->
+    <!-- 🛡️ 管理画面（イベント開催準備・ガチャ追加・プレゼント・お知らせ完備） -->
     <div id="screen-manage" class="sub-screen">
         <div class="sub-header">
             <span class="sub-title">🛡️ 管理画面 (管理者モード)</span>
@@ -434,49 +433,73 @@
                 <button class="close-btn" onclick="closeScreen('manage')">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※Googleドライブのマスターイラストから選択して配信・作成できます。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベントの開催準備やガチャのイラスト追加がここで行えます。</p>
         
+        <!-- 🎪 イベント開催準備 -->
         <div class="admin-section">
-            <h4>🎪 イベント管理</h4>
+            <h4>🎪 イベント開催準備・設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">イベントタイトル：</label>
             <input type="text" id="admin-event-title-input" class="admin-input" value="結成2周年イベント">
             <label style="font-size: 0.8rem; color: #aaa;">終了日時：</label>
             <input type="datetime-local" id="admin-event-end-input" class="admin-input" value="2026-11-30T00:00">
-            <button class="admin-btn" onclick="adminCreateEvent()">🚀 イベントを更新する</button>
+            <label style="font-size: 0.8rem; color: #aaa;">開催ステータス：</label>
+            <select id="admin-event-status-select" class="admin-input">
+                <option value="開催中">開催中</option>
+                <option value="開催準備中">開催準備中</option>
+                <option value="終了">終了</option>
+            </select>
+            <button class="admin-btn" onclick="adminCreateEvent()">🚀 イベント開催準備を適用する</button>
         </div>
 
-        <!-- 🎁 プレセント配信機能（ドライブ画像選択式） -->
+        <!-- 🎂 ガチャ：イラスト追加（ドライブ選択式） -->
+        <div class="admin-section">
+            <h4>🎂 ガチャ・アルバムへのイラスト追加</h4>
+            <label style="font-size: 0.8rem; color: #aaa;">ガチャタイトル・バナー名（例: 2周年記念ピックアップガチャ）：</label>
+            <input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
+            <label style="font-size: 0.8rem; color: #aaa;">レアリティ：</label>
+            <select id="admin-gacha-rarity" class="admin-input">
+                <option value="★6">★6 (最高レア)</option>
+                <option value="★5">★5</option>
+                <option value="★4">★4</option>
+                <option value="★3">★3</option>
+                <option value="★2">★2 (全ユーザー自動配布対象)</option>
+            </select>
+            <label style="font-size: 0.8rem; color: #aaa;">追加するイラスト（Googleドライブから選択）：</label>
+            <select id="admin-gacha-img-select" class="admin-input">
+                <option value="">(選択してください)</option>
+            </select>
+            <button class="admin-btn" onclick="adminAddGachaIllustration()">➕ ガチャプールに追加する</button>
+        </div>
+
+        <!-- 🎁 プレゼント配信（選択式） -->
         <div class="admin-section">
             <h4>🎁 全メンバーへプレゼントを贈る</h4>
-            <label style="font-size: 0.8rem; color: #aaa;">プレゼント名（例: 2周年記念ダイヤ）：</label>
+            <label style="font-size: 0.8rem; color: #aaa;">プレゼント名：</label>
             <input type="text" id="admin-gift-title" class="admin-input" placeholder="記念アイテム">
             <label style="font-size: 0.8rem; color: #aaa;">付与するダイヤ（💎）：</label>
             <input type="number" id="admin-gift-gem" class="admin-input" value="1000">
-            
-            <label style="font-size: 0.8rem; color: #aaa;">添付するイラスト（Googleドライブから選択）：</label>
+            <label style="font-size: 0.8rem; color: #aaa;">添付するイラスト（選択式）：</label>
             <select id="admin-gift-img-select" class="admin-input">
                 <option value="">(イラストなし)</option>
             </select>
-            
             <button class="admin-btn" onclick="adminSendGiftToAll()">📤 全員にプレゼントを配信する</button>
         </div>
 
-        <!-- ✉️ お知らせ作成機能（ドライブ画像選択式） -->
+        <!-- ✉️ お知らせ作成（選択式） -->
         <div class="admin-section">
             <h4>✉️ お知らせを作成する（イラスト付き）</h4>
             <label style="font-size: 0.8rem; color: #aaa;">お知らせタイトル：</label>
             <input type="text" id="admin-notice-title" class="admin-input" placeholder="新機能追加のお知らせ">
             <label style="font-size: 0.8rem; color: #aaa;">本文：</label>
             <textarea id="admin-notice-text" class="admin-input" rows="3" placeholder="お知らせの詳細内容..."></textarea>
-            
-            <label style="font-size: 0.8rem; color: #aaa;">添付するイラスト（Googleドライブから選択）：</label>
+            <label style="font-size: 0.8rem; color: #aaa;">添付するイラスト（選択式）：</label>
             <select id="admin-notice-img-select" class="admin-input">
                 <option value="">(イラストなし)</option>
             </select>
-            
             <button class="admin-btn" onclick="adminPublishNotice()">📢 お知らせを全体公開する</button>
         </div>
 
+        <!-- 📊 ポイント集計 -->
         <div class="admin-section">
             <h4>📊 ポイント集計・リセット</h4>
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminResetEventPoints()">🔄 全員の個人Pを0にリセット</button>
@@ -516,7 +539,12 @@
 
         let currentEvent = JSON.parse(localStorage.getItem('nexus_current_event')) || {
             title: "結成2周年イベント",
-            endDate: "2026-11-30T00:00:00"
+            endDate: "2026-11-30T00:00:00",
+            status: "開催中"
+        };
+
+        let currentGachaConfig = JSON.parse(localStorage.getItem('nexus_gacha_config')) || {
+            title: "記念ピックアップガチャ"
         };
 
         function updateUIUserStatus() {
@@ -525,6 +553,14 @@
             document.getElementById('display-gem').innerText = Number(currentUser.gem).toLocaleString();
             document.getElementById('current-event-title').innerText = "🎉 " + currentEvent.title;
             
+            const badgeStatus = document.getElementById('badge-event-status');
+            const screenBadge = document.getElementById('event-status-badge');
+            if (badgeStatus) badgeStatus.innerText = currentEvent.status;
+            if (screenBadge) screenBadge.innerText = currentEvent.status;
+
+            const gachaTitleEl = document.getElementById('gacha-screen-title');
+            if (gachaTitleEl) gachaTitleEl.innerText = "🎂 " + currentGachaConfig.title;
+
             const giftBadge = document.getElementById('badge-present');
             if (userGifts.length > 0) {
                 giftBadge.innerText = userGifts.length;
@@ -576,7 +612,6 @@
             }
         }
 
-        // 🔓 管理者ログアウト機能
         function adminLogout() {
             if (confirm("管理者モードをログアウトしますか？")) {
                 isAdmin = false;
@@ -617,14 +652,16 @@
             }
         }
 
+        // 🎪 イベント開催準備の適用
         function adminCreateEvent() {
             const title = document.getElementById('admin-event-title-input').value;
             const end = document.getElementById('admin-event-end-input').value;
+            const status = document.getElementById('admin-event-status-select').value;
             if (!title || !end) return;
-            currentEvent = { title: title, endDate: end };
+            currentEvent = { title: title, endDate: end, status: status };
             localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
             updateUIUserStatus();
-            alert(`🎪 イベント「${title}」に更新しました！`);
+            alert(`🎪 イベントの開催準備を適用しました！（ステータス: ${status}）`);
         }
 
         function adminResetEventPoints() {
@@ -641,7 +678,34 @@
             alert("🏆 【順位発表演出】\n1位: ネオ (9,999 P)\n2位: ヨウスケ (--- P)");
         }
 
-        // 🎁 プレゼント配信（ドライブ選択式）
+        // 🎂 ガチャ追加機能
+        function adminAddGachaIllustration() {
+            const gachaTitle = document.getElementById('admin-gacha-title-input').value;
+            const rarity = document.getElementById('admin-gacha-rarity').value;
+            const selectEl = document.getElementById('admin-gacha-img-select');
+            const selectedUrl = selectEl.value;
+            const selectedName = selectEl.options[selectEl.selectedIndex].text;
+
+            if (!selectedUrl) {
+                alert("追加するイラストを選択してください。");
+                return;
+            }
+
+            currentGachaConfig.title = gachaTitle || "記念ピックアップガチャ";
+            localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
+
+            const newMasterItem = {
+                id: 'custom_master_' + Date.now(),
+                url: selectedUrl,
+                name: `[${rarity}] ${selectedName}`
+            };
+
+            masterDriveImages.push(newMasterItem);
+            updateUIUserStatus();
+            alert(`🎂 ガチャ「${currentGachaConfig.title}」に「[${rarity}] ${selectedName}」を追加しました！`);
+        }
+
+        // 🎁 プレゼント配信（選択式）
         function adminSendGiftToAll() {
             const title = document.getElementById('admin-gift-title').value;
             const gem = Number(document.getElementById('admin-gift-gem').value) || 0;
@@ -672,7 +736,7 @@
             alert(`📤 全メンバーのプレゼントBOXに「${title}（💎${gem}）」を配信しました！`);
         }
 
-        // ✉️ お知らせ公開（ドライブ選択式）
+        // ✉️ お知らせ公開（選択式）
         function adminPublishNotice() {
             const title = document.getElementById('admin-notice-title').value;
             const text = document.getElementById('admin-notice-text').value;
@@ -699,7 +763,7 @@
             alert("📢 お知らせを全体公開しました！");
         }
 
-        // 🌐 ドライブからマスターデータをロードし、管理画面のセレクトボックスも自動生成
+        // 🌐 ドライブからマスターデータをロードしセレクトボックスを生成
         async function fetchDriveMasterData() {
             try {
                 const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime());
@@ -712,7 +776,6 @@
                     saveUserAlbumData();
                 }
 
-                // 🎛️ 管理画面のセレクトボックスに選択肢を反映
                 populateDriveImageSelects();
 
                 initSlideshow();
@@ -723,19 +786,22 @@
         }
 
         function populateDriveImageSelects() {
+            const gachaSelect = document.getElementById('admin-gacha-img-select');
             const giftSelect = document.getElementById('admin-gift-img-select');
             const noticeSelect = document.getElementById('admin-notice-img-select');
-            if (!giftSelect || !noticeSelect) return;
+            if (!gachaSelect || !giftSelect || !noticeSelect) return;
 
-            let optionsHtml = `<option value="">(イラストなし)</option>`;
+            let optionsHtml = `<option value="">(選択してください)</option>`;
             masterDriveImages.forEach(img => {
                 optionsHtml += `<option value="${img.url}">${img.name}</option>`;
             });
 
-            giftSelect.innerHTML = optionsHtml;
-            noticeSelect.innerHTML = optionsHtml;
+            gachaSelect.innerHTML = optionsHtml;
+            giftSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
+            noticeSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
         }
 
+        // 🎂 ガチャ機能（★2以下の場合は全ユーザーに自動配布！）
         function pullGachaFromDrive() {
             if (masterDriveImages.length === 0) {
                 alert("ドライブからガチャデータを読み込み中またはデータがありません。");
@@ -744,7 +810,8 @@
 
             const randomIndex = Math.floor(Math.random() * masterDriveImages.length);
             const rewardImg = masterDriveImages[randomIndex];
-            const isStar2OrLower = Math.random() < 0.4;
+            
+            const isStar2OrLower = rewardImg.name.includes("★2") || Math.random() < 0.3;
 
             if (isStar2OrLower) {
                 const autoGift = {
@@ -1018,7 +1085,6 @@
         const miniTitle = document.getElementById('mini-song-title');
         const nowPlayingText = document.getElementById('now-playing-text');
 
-        function iconBadgeUpdate() {}
         function initPlaylist() {
             playlist.innerHTML = "";
             songs.forEach((song) => {
