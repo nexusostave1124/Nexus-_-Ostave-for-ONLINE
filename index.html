@@ -20,7 +20,150 @@
             display: flex;
             flex-direction: column;
         }
-        /* 📱 メイン画面エリア */
+
+        /* ================= 🌟 タイトル画面レイアウト ================= */
+        #title-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px 20px 50px 20px;
+            background: #000;
+            overflow: hidden;
+        }
+        #title-screen.hidden { display: none; }
+
+        /* 背景画像（添付画像） */
+        .title-bg-img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center;
+            z-index: 1;
+            filter: brightness(0.9);
+        }
+
+        .title-overlay-top {
+            position: absolute; top: 0; left: 0; right: 0; height: 200px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            z-index: 2; pointer-events: none;
+        }
+
+        /* 🌈 虹色に変化するタイトルロゴ */
+        @keyframes rainbowGlow {
+            0% { filter: hue-rotate(0deg); text-shadow: 0 0 12px rgba(255, 0, 0, 0.8); }
+            33% { filter: hue-rotate(120deg); text-shadow: 0 0 12px rgba(0, 255, 0, 0.8); }
+            66% { filter: hue-rotate(240deg); text-shadow: 0 0 12px rgba(0, 0, 255, 0.8); }
+            100% { filter: hue-rotate(360deg); text-shadow: 0 0 12px rgba(255, 0, 0, 0.8); }
+        }
+
+        .title-logo-container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .title-main-text {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            animation: rainbowGlow 6s infinite linear;
+            background: linear-gradient(90deg, #ff334b, #ff9900, #ffee00, #00ff66, #00f5d4, #3388ff, #cc33ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .title-sub-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+            animation: rainbowGlow 6s infinite linear;
+            background: linear-gradient(90deg, #cc33ff, #3388ff, #00f5d4, #00ff66, #ffee00, #ff9900, #ff334b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: -2px;
+        }
+
+        /* 中央のログインボタン */
+        .title-login-btn-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .title-login-btn {
+            background: #ff334b;
+            color: #fff;
+            font-family: "Shippori Mincho", serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            padding: 14px 60px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.4);
+            box-shadow: 0 8px 25px rgba(255, 51, 75, 0.6);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+        }
+        .title-login-btn:active { transform: scale(0.96); background: #e02e42; }
+
+        /* 右下の「⋮」メニューボタン */
+        .title-menu-trigger {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+            background: rgba(40, 40, 40, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #fff;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        /* タイトル画面用ポップアップメニュー */
+        .title-menu-dropdown {
+            position: absolute;
+            bottom: 75px;
+            right: 20px;
+            background: rgba(30, 30, 30, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            width: 160px;
+            display: none;
+            flex-direction: column;
+            z-index: 20;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        }
+        .title-menu-dropdown.active { display: flex; }
+        .title-menu-item {
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #fff;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            text-align: left;
+        }
+        .title-menu-item:last-child { border-bottom: none; color: #ff334b; }
+        .title-menu-item:active { background: rgba(255,255,255,0.15); }
+
+
+        /* ================= 📱 メイン画面エリア ================= */
         .app-container {
             position: relative;
             flex: 1;
@@ -217,6 +360,36 @@
 </head>
 <body>
 
+    <!-- ================= 🌟 タイトル画面 ================= -->
+    <div id="title-screen">
+        <img src="https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/2984.png" class="title-bg-img" alt="タイトル背景" crossorigin="anonymous">
+        <div class="title-overlay-top"></div>
+
+        <!-- 上部の虹色タイトル -->
+        <div class="title-logo-container">
+            <div class="title-main-text">Nexus:_:Ostave</div>
+            <div class="title-sub-text">for ONLINE</div>
+        </div>
+
+        <!-- 中央のログインボタン -->
+        <div class="title-login-btn-wrapper">
+            <button class="title-login-btn" onclick="promptUserLogin()">ログイン</button>
+        </div>
+
+        <!-- 右下の「⋮」メニューボタン -->
+        <div class="title-menu-trigger" onclick="toggleTitleMenu(event)">⋮</div>
+
+        <!-- タイトル画面メニューポップアップ (お知らせ・設定・報告・終了) -->
+        <div id="title-menu-dropdown" class="title-menu-dropdown">
+            <div class="title-menu-item" onclick="openTitleSubScreen('notice')">お知らせ</div>
+            <div class="title-menu-item" onclick="openTitleSubScreen('settings')">設定</div>
+            <div class="title-menu-item" onclick="openTitleSubScreen('report')">報告</div>
+            <div class="title-menu-item" onclick="exitApp()">終了</div>
+        </div>
+    </div>
+
+
+    <!-- ================= 📱 メインアプリコンテナ ================= -->
     <div class="app-container">
         <!-- 🖼️ 背景スライドショー -->
         <div class="bg-slideshow" id="slideshow-container"></div>
@@ -332,7 +505,7 @@
         <div id="event-content-container"></div>
     </div>
 
-    <!-- 🎂 ガチャ画面（ステータス制御対応） -->
+    <!-- 🎂 ガチャ画面 -->
     <div id="screen-gacha" class="sub-screen">
         <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ</span><button class="close-btn" onclick="openScreen('gacha')">閉じる</button></div>
         <div id="gacha-content-container"></div>
@@ -439,7 +612,7 @@
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを削除してヒストリーにまとめる</button>
         </div>
 
-        <!-- 🎂 ガチャ管理（ステータス導入） -->
+        <!-- 🎂 ガチャ管理 -->
         <div class="admin-section">
             <h4>🎂 ガチャ管理・ステータス設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">ガチャ名称：</label>
@@ -535,7 +708,6 @@
             "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
         };
 
-        // スプレッドシート準拠の正式メンバーデータベース
         const memberDatabase = [
             { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 0 },
             { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 0 },
@@ -582,6 +754,30 @@
             endDate: "2026-11-30T00:00"
         };
 
+        // タイトル画面のメニュー制御
+        function toggleTitleMenu(e) {
+            e.stopPropagation();
+            document.getElementById('title-menu-dropdown').classList.toggle('active');
+        }
+        window.addEventListener('click', () => {
+            const dropdown = document.getElementById('title-menu-dropdown');
+            if (dropdown) dropdown.classList.remove('active');
+        });
+
+        // タイトル画面からお知らせ・設定・報告を開く
+        function openTitleSubScreen(name) {
+            document.getElementById('title-screen').classList.add('hidden');
+            openScreen(name);
+        }
+
+        // ブラウザ終了
+        function exitApp() {
+            if (confirm("アプリを終了しますか？")) {
+                window.close();
+                window.location.href = "about:blank";
+            }
+        }
+
         function formatDateStr(isoStr) {
             if (!isoStr) return "未設定";
             return isoStr.replace("T", " ");
@@ -598,6 +794,9 @@
                 nameEl.innerText = currentUser.name + (isAdmin ? " (👑管理者)" : "");
                 gemEl.innerText = Number(currentUser.gem || 0).toLocaleString();
                 if (menuLoginBtn) menuLoginBtn.innerHTML = "<span>ログアウト</span>";
+                
+                // ログイン済みならタイトル画面を非表示にする
+                document.getElementById('title-screen').classList.add('hidden');
             } else {
                 idEl.innerText = "未ログイン";
                 nameEl.innerText = "ゲスト";
@@ -628,7 +827,6 @@
             }
         }
 
-        // 🎪 イベント画面のレンダリング
         function renderEventScreen() {
             const container = document.getElementById('event-content-container');
             if (!container) return;
@@ -658,7 +856,6 @@
             `;
         }
 
-        // 🎂 ガチャ画面のレンダリング（ステータス制御対応）
         function renderGachaScreen() {
             const container = document.getElementById('gacha-content-container');
             if (!container) return;
@@ -705,7 +902,7 @@
 
         function handleStatusClick() {
             if (currentUser) {
-                if (confirm("ログアウトしますか？")) {
+                if (confirm("ログアウトしてタイトル画面に戻りますか？")) {
                     adminLogout();
                 }
             } else {
@@ -713,7 +910,7 @@
             }
         }
 
-        // 🔒 スプレッドシート登録IDによる厳格ログイン
+        // 🔒 スプレッドシート登録IDによるログイン
         function promptUserLogin() {
             closeOtherMenu();
             const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
@@ -731,6 +928,9 @@
                 currentUser = found;
                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 reloadUserData();
+                
+                // ログイン成功したらタイトル画面を非表示にしてホームへ
+                document.getElementById('title-screen').classList.add('hidden');
                 alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
                 if (isAdmin) openScreen('manage');
             } else {
@@ -744,7 +944,9 @@
             currentUser = null;
             localStorage.removeItem('nexus_current_user');
             reloadUserData();
-            closeScreen('manage');
+            
+            // ログアウト時はタイトル画面を表示
+            document.getElementById('title-screen').classList.remove('hidden');
             alert("🔒 ログアウトしました。");
         }
 
@@ -773,13 +975,13 @@
                 currentUser = memberDatabase.find(m => m.id === "ADMIN");
                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 reloadUserData();
+                document.getElementById('title-screen').classList.add('hidden');
                 openScreen('manage');
             } else if (inputPass !== null) {
                 alert("パスワードが違います。");
             }
         }
 
-        // 🎪 イベント設定
         function adminCreateEvent() {
             const title = document.getElementById('admin-event-title-input').value;
             const type = document.getElementById('admin-event-type-select').value;
@@ -856,7 +1058,6 @@
             alert("🏆 【順位発表演出】\n1位: ネオ (9,999 P)\n2位: ヨウスケ (--- P)");
         }
 
-        // 🎂 ガチャ設定
         function adminAddGachaIllustration() {
             const gachaTitle = document.getElementById('admin-gacha-title-input').value;
             const gachaType = document.getElementById('admin-gacha-type-select').value;
@@ -887,7 +1088,6 @@
             alert(`🎂 [${gachaType} / ${status}] 「${currentGachaConfig.title}」の設定を保存しました！`);
         }
 
-        // 🎁 プレゼント送信
         function adminSendGift() {
             const targetId = document.getElementById('admin-gift-target').value;
             const title = document.getElementById('admin-gift-title').value;
@@ -925,7 +1125,6 @@
             reloadUserData();
         }
 
-        // ✉️ お知らせ公開
         function adminPublishNotice() {
             const title = document.getElementById('admin-notice-title').value;
             const text = document.getElementById('admin-notice-text').value;
@@ -952,7 +1151,6 @@
             alert("📢 お知らせを全体公開しました！");
         }
 
-        // 🌐 ドライブからマスターデータをロード
         async function fetchDriveMasterData() {
             try {
                 const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime());
@@ -1000,10 +1198,9 @@
             targetSelect.innerHTML = targetHtml;
         }
 
-        // 🎂 ガチャ機能
         function pullGachaFromDrive() {
             if (!currentUser) {
-                alert("ガチャを引くには、まず左上のステータスからスプレッドシート登録IDでログインしてください！");
+                alert("ガチャを引くには、まずログインしてください！");
                 promptUserLogin();
                 return;
             }
@@ -1243,8 +1440,6 @@
                     function updateBattery() {
                         const level = Math.floor(battery.level * 100);
                         bEl.innerText = (battery.charging ? "充電中 " : "") + level + "%";
-                        
-                        // バッテリー残量に応じた色変更・点滅演出
                         bEl.className = "battery-status";
                         if (battery.charging) {
                             bEl.classList.add('battery-charging');
@@ -1284,7 +1479,13 @@
             const target = document.getElementById('screen-' + name);
             if (target) target.classList.add('active');
         }
-        function closeScreen(name) { document.getElementById('screen-' + name).classList.remove('active'); }
+        function closeScreen(name) { 
+            document.getElementById('screen-' + name).classList.remove('active'); 
+            // もし未ログインの状態でサブ画面を閉じた場合、タイトル画面に戻す
+            if (!currentUser) {
+                document.getElementById('title-screen').classList.remove('hidden');
+            }
+        }
         function switchNav(name) {
             closeOtherMenu();
             document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
