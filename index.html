@@ -742,12 +742,10 @@
         if (!response.ok) return;
         const driveImages = await response.json();
         
-        // 取得したドライブ画像を既存のアルバムに統合（重複防ぎつつ追加）
         driveImages.forEach(dImg => {
           const exists = albumImages.some(img => img.id === dImg.id || img.url === dImg.url);
           if (!exists) {
             albumImages.push(dImg);
-            // 新規追加された画像は自動でスライドショー対象にも含める
             if (!slideshowIds.includes(dImg.id)) {
               slideshowIds.push(dImg.id);
             }
@@ -757,7 +755,6 @@
         localStorage.setItem('nexus_album_images', JSON.stringify(albumImages));
         localStorage.setItem('nexus_slideshow_ids', JSON.stringify(slideshowIds));
 
-        // 画面を再描画
         initSlideshow();
         renderAlbum();
       } catch (e) {
@@ -825,7 +822,6 @@
       });
     }
 
-    // スライドショーへの登録・解除切り替え
     function toggleSlideshow(id) {
       if (slideshowIds.includes(id)) {
         if (slideshowIds.length <= 1) {
@@ -841,7 +837,6 @@
       initSlideshow();
     }
 
-    // ➕ 外部からの画像インポート処理
     function handleLocalImageImport(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -867,7 +862,6 @@
       reader.readAsDataURL(file);
     }
 
-    // 💎 ガチャテスト処理
     function simulateGachaPull() {
       const randomId = Math.floor(Math.random() * 1000);
       const newGachaImg = {
@@ -882,11 +876,10 @@
       alert(`🎉 ガチャで「${newGachaImg.name}」を獲得しました！アルバムに追加されました。`);
     }
 
-    // 初期化実行
     window.addEventListener('DOMContentLoaded', () => {
       initSlideshow();
       renderAlbum();
-      fetchDriveImagesFromGist(); // 起動時にGistから最新のドライブ画像を同期
+      fetchDriveImagesFromGist();
 
       const savedColor = localStorage.getItem('nexus_clock_color');
       if (savedColor) {
@@ -899,7 +892,6 @@
       }
     });
 
-    // ⏰ 時計
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
@@ -918,7 +910,6 @@
       localStorage.setItem('nexus_clock_color', colorClass);
     }
 
-    // 🔋 バッテリー
     async function initBattery() {
       const bEl = document.getElementById('battery-info');
       if ('getBattery' in navigator) {
@@ -936,7 +927,6 @@
     }
     initBattery();
 
-    // 🔲 その他メニュー＆サブ画面
     function toggleOtherMenu() { document.getElementById('other-modal').classList.add('active'); }
     function closeOtherMenu() { document.getElementById('other-modal').classList.remove('active'); }
 
@@ -955,7 +945,6 @@
       if (name === 'home') document.getElementById('nav-home').classList.add('active');
     }
 
-    // ⏳ カウントダウン
     function updateCountdown() {
       const target = new Date('2026-11-30T00:00:00');
       const diff = target - new Date();
@@ -969,7 +958,6 @@
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    // 🎵 楽曲プレイヤー
     const songs = [
       { title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" },
       { title: "ハウトゥー世界征服", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" }
