@@ -64,7 +64,7 @@
             z-index: 2;
             pointer-events: none;
         }
-        /* 📊 左上：ステータスバー */
+        /* 📊 左上：ステータスバー（クリックでログイン切替可能） */
         .user-status {
             position: absolute;
             top: 15px; left: 15px;
@@ -72,13 +72,16 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0, 0, 0, 0.65);
             padding: 10px 14px;
             border-radius: 16px;
             backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            min-width: 180px;
+            border: 1px solid rgba(0, 245, 212, 0.4);
+            min-width: 190px;
+            cursor: pointer;
+            transition: background 0.2s;
         }
+        .user-status:active { background: rgba(0, 0, 0, 0.85); }
         .avatar-box {
             width: 54px; height: 54px;
             border-radius: 10px;
@@ -249,15 +252,15 @@
         <div class="overlay-top"></div>
         <div class="overlay-bottom"></div>
 
-        <!-- 📊 左上：ステータスバー -->
-        <div class="user-status">
+        <!-- 📊 左上：ステータスバー（クリックでID入力ログイン） -->
+        <div class="user-status" onclick="promptUserLogin()" title="タップしてUSER IDでログイン">
             <div class="avatar-box">
                 <img src="https://picsum.photos/id/1069/100/100" alt="アイコン">
             </div>
             <div class="status-info">
-                <div class="status-row"><span class="status-label">ID</span> <span class="status-val">24-09</span></div>
-                <div class="status-row"><span class="status-label">NAME</span> <span class="status-val">Free</span></div>
-                <div class="status-row"><span class="status-label">💎</span> <span class="gem-val">186,486</span></div>
+                <div class="status-row"><span class="status-label">ID</span> <span id="display-id" class="status-val">24-09</span></div>
+                <div class="status-row"><span class="status-label">NAME</span> <span id="display-name" class="status-val">Free</span></div>
+                <div class="status-row"><span class="status-label">💎</span> <span id="display-gem" class="gem-val">186,486</span></div>
             </div>
         </div>
 
@@ -340,7 +343,7 @@
                 <div class="other-menu-card" onclick="openScreen('settings')"><span>設定</span></div>
                 <div class="other-menu-card" onclick="openScreen('report')"><span>報告</span></div>
                 <div class="other-menu-card" onclick="checkManagePassword()"><span>管理</span></div>
-                <div class="other-menu-card" onclick="closeOtherMenu()"><span>ログアウト</span></div>
+                <div class="other-menu-card" onclick="promptUserLogin()"><span>IDログイン</span></div>
             </div>
         </div>
     </div>
@@ -391,15 +394,12 @@
         </div>
         <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 12px;">Googleドライブから自動追加された画像や、タップしてスライドショーに登録/解除できるアルバムです（枠が光っている画像がスライド中）。</p>
         
-        <!-- 画像インポートボタン -->
         <div style="margin-bottom: 15px;">
             <input type="file" id="local-image-input" accept="image/*" style="display: none;" onchange="handleLocalImageImport(event)">
             <button onclick="document.getElementById('local-image-input').click()" style="width: 100%; padding: 10px; background: #333; color: #00f5d4; border: 1px dashed #00f5d4; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit;">➕ 外部から画像をインポートする</button>
         </div>
 
-        <div class="album-grid" id="album-grid-container">
-            <!-- 動的にアルバムカードが生成されます -->
-        </div>
+        <div class="album-grid" id="album-grid-container"></div>
     </div>
 
     <!-- ⚙️ 設定画面 -->
@@ -436,57 +436,108 @@
     </div>
 
     <script>
-        // 🌐 GistのRaw URL（Googleドライブ連動の画像リスト）
+        // 🌐 GistのRaw URL（画像やメンバーデータのリスト）
         const GIST_RAW_URL = "https://gist.githubusercontent.com/nexusostave1124/ac1c05eaf442b0dcb34514cb7ed804a7/raw/images.json";
 
-        // サンプル画像を完全に排除し、最初は空（LocalStorageまたはGistから取得）にする
+        // スプレッドシートの登録メンバーデータ（ID、名前、所持ダイヤ、獲得Pなど）
+        // ※ ここにあなたの管理者ID（例: ADMINなど）や各メンバーのIDを登録して連動できます
+        let memberDatabase = JSON.parse(localStorage.getItem('nexus_members_db')) || [
+            { id: "H-25-3-1", name: "ヨウスケ", gem: 0, pt: 0 },
+            { id: "M-24-12-2", name: "Kou", gem: 0, pt: 0 },
+            { id: "N-24-11-3", name: "奨", gem: 0, pt: 0 },
+            { id: "S-24-11-4", name: "MIHO", gem: 0, pt: 0 },
+            { id: "S-24-11-5-o", name: "海惺", gem: 0, pt: 0 },
+            { id: "U-24-11-6-a", name: "タイ", gem: 0, pt: 0 },
+            { id: "N-24-11-7-o", name: "Ayu", gem: 0, pt: 0 },
+            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, pt: 0 },
+            { id: "ADMIN", name: "管理者", gem: 999999, pt: 9999 } // 🔑 管理者用特権ID
+        ];
+
+        // 現在ログイン中のユーザー情報
+        let currentUser = JSON.parse(localStorage.getItem('nexus_current_user')) || { id: "24-09", name: "Free", gem: 186486 };
+
         let albumImages = JSON.parse(localStorage.getItem('nexus_album_images')) || [];
         let slideshowIds = JSON.parse(localStorage.getItem('nexus_slideshow_ids')) || [];
 
-        // ☁️ GistからGoogleドライブの画像リストを自動取得して反映する関数
+        function updateUIUserStatus() {
+            document.getElementById('display-id').innerText = currentUser.id;
+            document.getElementById('display-name').innerText = currentUser.name;
+            document.getElementById('display-gem').innerText = Number(currentUser.gem).toLocaleString();
+        }
+
+        // 🆔 USER IDログイン機能（管理者IDならパスワードスキップで管理画面へ！）
+        function promptUserLogin() {
+            closeOtherMenu();
+            const inputId = prompt("USER ID（または管理者ID）を入力してください：");
+            if (!inputId) return;
+
+            // 管理者ID（例: ADMIN または特定のID）を入力した場合
+            if (inputId === "ADMIN" || inputId === "2024061124-admin" || inputId === "A-24-11-9-a") {
+                alert("👑 管理者権限を確認しました。パスワードをスキップして管理画面を開きます！");
+                openScreen('manage');
+                return;
+            }
+
+            // メンバーデータベースからIDを検索
+            const found = memberDatabase.find(m => m.id === inputId);
+            if (found) {
+                currentUser = found;
+                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+                updateUIUserStatus();
+                alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん（ID: ${currentUser.id}）`);
+            } else {
+                // リストに無い場合はそのIDとして新規一時ログイン
+                currentUser = { id: inputId, name: "ゲスト", gem: 0 };
+                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+                updateUIUserStatus();
+                alert(`ID 「${inputId}」でログインしました。`);
+            }
+        }
+
+        // 🔐 管理画面パスワード認証関数（従来通りのパスワードでもOK）
+        function checkManagePassword() {
+            closeOtherMenu();
+            const inputPass = prompt("管理画面のパスワードを入力してください：");
+            if (inputPass === "2024061124") {
+                openScreen('manage');
+            } else if (inputPass !== null) {
+                alert("パスワードが違います。");
+            }
+        }
+
         async function fetchDriveImagesFromGist() {
             try {
                 const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime());
                 if (!response.ok) return;
                 const driveImages = await response.json();
-                
                 albumImages = driveImages;
-
                 driveImages.forEach(dImg => {
-                    if (!slideshowIds.includes(dImg.id)) {
-                        slideshowIds.push(dImg.id);
-                    }
+                    if (!slideshowIds.includes(dImg.id)) slideshowIds.push(dImg.id);
                 });
-
                 localStorage.setItem('nexus_album_images', JSON.stringify(albumImages));
                 localStorage.setItem('nexus_slideshow_ids', JSON.stringify(slideshowIds));
-
                 initSlideshow();
                 renderAlbum();
             } catch (e) {
-                console.log("Gistからの画像取得スキップ（オフラインまたはエラー）");
+                console.log("Gistからの画像取得スキップ");
             }
         }
 
-        // 🖼️ スライドショーを描画・更新する関数
         function initSlideshow() {
             const container = document.getElementById('slideshow-container');
             if (!container) return;
             container.innerHTML = '';
-
             const activeImages = albumImages.filter(img => slideshowIds.includes(img.id));
             if (activeImages.length === 0) {
                 container.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#555;">画像がありません</div>`;
                 return;
             }
-
             activeImages.forEach((imgObj, index) => {
                 const img = document.createElement('img');
                 img.src = imgObj.url;
                 img.className = 'slide-img' + (index === 0 ? ' active' : '');
                 container.appendChild(img);
             });
-
             startSlideshowInterval();
         }
 
@@ -503,12 +554,10 @@
             }, 4000);
         }
 
-        // 📷 アルバム画面の描画（名前も正しく反映）
         function renderAlbum() {
             const grid = document.getElementById('album-grid-container');
             if (!grid) return;
             grid.innerHTML = '';
-
             albumImages.forEach(img => {
                 const isInSlideshow = slideshowIds.includes(img.id);
                 const card = document.createElement('div');
@@ -559,12 +608,7 @@
                 localStorage.setItem('nexus_slideshow_ids', JSON.stringify(slideshowIds));
                 renderAlbum();
                 initSlideshow();
-                alert('新しい画像をアルバムに追加しました！ 5秒後にスライドショーが更新されます。');
-
-                // ⏳ 5秒後に自動更新
-                setTimeout(() => {
-                    initSlideshow();
-                }, 5000);
+                alert('新しい画像をアルバムに追加しました！');
             };
             reader.readAsDataURL(file);
         }
@@ -574,26 +618,16 @@
             const newGachaImg = {
                 id: 'gacha_' + Date.now(),
                 url: `https://picsum.photos/id/${100 + (randomId % 50)}/800/1200`,
-                name: '【限定】ガチャ獲得イラスト #' + Math.floor(Math.random() * 100)
+                name: '【限定】ガチャ獲得 #' + Math.floor(Math.random() * 100)
             };
             albumImages.push(newGachaImg);
             localStorage.setItem('nexus_album_images', JSON.stringify(albumImages));
             renderAlbum();
-            alert(`🎉 ガチャで「${newGachaImg.name}」を獲得しました！アルバムに追加されました。`);
-        }
-
-        // 🔐 管理画面パスワード認証関数
-        function checkManagePassword() {
-            closeOtherMenu();
-            const inputPass = prompt("管理画面のパスワードを入力してください：");
-            if (inputPass === "2024061124") {
-                openScreen('manage');
-            } else if (inputPass !== null) {
-                alert("パスワードが違います。");
-            }
+            alert(`🎉 ガチャで「${newGachaImg.name}」を獲得しました！`);
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            updateUIUserStatus();
             initSlideshow();
             renderAlbum();
             fetchDriveImagesFromGist();
