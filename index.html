@@ -97,7 +97,7 @@
         .status-val { color: #fff; font-weight: bold; }
         .gem-val { color: #00f5d4; font-weight: bold; text-shadow: 0 0 6px rgba(0,245,212,0.6); }
 
-        /* ⏰ 右上エリア：時計、バッテリー ＆ 縦並びボタン */
+        /* ⏰ 右上エリア */
         .top-right-area {
             position: absolute;
             top: 15px; right: 15px;
@@ -254,15 +254,15 @@
         <div class="overlay-top"></div>
         <div class="overlay-bottom"></div>
 
-        <!-- 📊 左上：ステータスバー -->
-        <div class="user-status" onclick="promptUserLogin()" title="タップしてUSER IDでログイン">
+        <!-- 📊 左上：ステータスバー（ログイン中はクリックでログアウト等可能） -->
+        <div class="user-status" onclick="handleStatusClick()" title="ステータス / ログイン・ログアウト">
             <div class="avatar-box">
                 <img src="https://picsum.photos/id/1069/100/100" alt="アイコン">
             </div>
             <div class="status-info">
-                <div class="status-row"><span class="status-label">ID</span> <span id="display-id" class="status-val">24-09</span></div>
-                <div class="status-row"><span class="status-label">NAME</span> <span id="display-name" class="status-val">Free</span></div>
-                <div class="status-row"><span class="status-label">💎</span> <span id="display-gem" class="gem-val">186,486</span></div>
+                <div class="status-row"><span class="status-label">ID</span> <span id="display-id" class="status-val">未ログイン</span></div>
+                <div class="status-row"><span class="status-label">NAME</span> <span id="display-name" class="status-val">ゲスト</span></div>
+                <div class="status-row"><span class="status-label">💎</span> <span id="display-gem" class="gem-val">0</span></div>
             </div>
         </div>
 
@@ -343,7 +343,7 @@
                 <div class="other-menu-card" onclick="openScreen('settings')"><span>設定</span></div>
                 <div class="other-menu-card" onclick="openScreen('report')"><span>報告</span></div>
                 <div class="other-menu-card" onclick="checkManagePassword()"><span>管理</span></div>
-                <div class="other-menu-card" onclick="promptUserLogin()"><span>IDログイン</span></div>
+                <div class="other-menu-card" id="menu-login-btn" onclick="promptUserLogin()"><span>IDログイン</span></div>
             </div>
         </div>
     </div>
@@ -359,16 +359,20 @@
     <div id="screen-event" class="sub-screen">
         <div class="sub-header"><span class="sub-title">🎪 イベント情報</span><button class="close-btn" onclick="closeScreen('event')">閉じる</button></div>
         <div style="background: #1f1f1f; padding: 15px; border-radius: 10px; border: 1px solid #00f5d4; margin-bottom: 15px;">
-            <div id="event-status-badge" style="display:inline-block; background:#00f5d4; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px; margin-bottom:6px;">開催中</div>
+            <div style="display:flex; gap:6px; margin-bottom:6px;">
+                <span id="event-type-badge" style="background:#3388ff; color:#fff; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">シーズンイベント</span>
+                <span id="event-status-badge" style="background:#00f5d4; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">開催中</span>
+            </div>
             <h3 id="current-event-title" style="color: #00f5d4;">🎉 結成2周年イベント</h3>
             <h1 id="countdown" style="font-size: 1.3rem; margin: 10px 0;">計算中...</h1>
         </div>
     </div>
 
     <div id="screen-gacha" class="sub-screen">
-        <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ (ピックアップ開催中)</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
-        <p style="margin-bottom: 15px; font-size: 0.85rem; color: #aaa;">★2以下のアイテムを引いた場合は、全ユーザーに自動配布されます！</p>
-        <button onclick="pullGachaFromDrive()" style="padding: 12px 20px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit; width:100%;">💎 ドライブガチャを引く</button>
+        <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ (ピックアップ)</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
+        <div style="margin-bottom: 10px;"><span id="gacha-type-badge" style="background:#ff9900; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px;">通常ピックアップガチャ</span></div>
+        <p style="margin-bottom: 15px; font-size: 0.85rem; color: #aaa;">排出確率はスプレッドシート準拠。★2以下は全ユーザーに自動配布されます！</p>
+        <button onclick="pullGachaFromDrive()" style="padding: 12px 20px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit; width:100%;">💎 ガチャを引く</button>
     </div>
 
     <div id="screen-play" class="sub-screen">
@@ -424,7 +428,7 @@
     <div id="screen-history" class="sub-screen"><div class="sub-header"><span class="sub-title">📖 ヒストリー</span><button class="close-btn" onclick="closeScreen('history')">閉じる</button></div><p>グループの歴史・タイムライン</p></div>
     <div id="screen-report" class="sub-screen"><div class="sub-header"><span class="sub-title">📋 報告</span><button class="close-btn" onclick="closeScreen('report')">閉じる</button></div><p>報告画面</p></div>
     
-    <!-- 🛡️ 管理画面（イベント開催準備・ガチャ追加・プレゼント・お知らせ完備） -->
+    <!-- 🛡️ 管理画面 -->
     <div id="screen-manage" class="sub-screen">
         <div class="sub-header">
             <span class="sub-title">🛡️ 管理画面 (管理者モード)</span>
@@ -433,29 +437,41 @@
                 <button class="close-btn" onclick="closeScreen('manage')">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベントの開催準備やガチャのイラスト追加がここで行えます。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント種類、ガチャ種類、個別プレゼント配布等に対応中。</p>
         
-        <!-- 🎪 イベント開催準備 -->
+        <!-- 🎪 イベント管理（種類対応） -->
         <div class="admin-section">
             <h4>🎪 イベント開催準備・設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">イベントタイトル：</label>
             <input type="text" id="admin-event-title-input" class="admin-input" value="結成2周年イベント">
+            <label style="font-size: 0.8rem; color: #aaa;">イベント種類：</label>
+            <select id="admin-event-type-select" class="admin-input">
+                <option value="シーズンイベント">シーズンイベント</option>
+                <option value="ストーリーイベント">ストーリーイベント</option>
+            </select>
             <label style="font-size: 0.8rem; color: #aaa;">終了日時：</label>
             <input type="datetime-local" id="admin-event-end-input" class="admin-input" value="2026-11-30T00:00">
-            <label style="font-size: 0.8rem; color: #aaa;">開催ステータス：</label>
+            <label style="font-size: 0.8rem; color: #aaa;">ステータス：</label>
             <select id="admin-event-status-select" class="admin-input">
                 <option value="開催中">開催中</option>
                 <option value="開催準備中">開催準備中</option>
                 <option value="終了">終了</option>
             </select>
-            <button class="admin-btn" onclick="adminCreateEvent()">🚀 イベント開催準備を適用する</button>
+            <button class="admin-btn" onclick="adminCreateEvent()">🚀 イベント設定を適用する</button>
         </div>
 
-        <!-- 🎂 ガチャ：イラスト追加（ドライブ選択式） -->
+        <!-- 🎂 ガチャ管理（スプレッドシート準拠の種類） -->
         <div class="admin-section">
-            <h4>🎂 ガチャ・アルバムへのイラスト追加</h4>
-            <label style="font-size: 0.8rem; color: #aaa;">ガチャタイトル・バナー名（例: 2周年記念ピックアップガチャ）：</label>
+            <h4>🎂 ガチャ追加・種類設定</h4>
+            <label style="font-size: 0.8rem; color: #aaa;">ガチャ名称：</label>
             <input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
+            <label style="font-size: 0.8rem; color: #aaa;">ガチャの種類（スプレッドシート記載通り）：</label>
+            <select id="admin-gacha-type-select" class="admin-input">
+                <option value="通常ピックアップガチャ">通常ピックアップガチャ</option>
+                <option value="期間限定ガチャ">期間限定ガチャ</option>
+                <option value="バースデーガチャ">バースデーガチャ</option>
+                <option value="無料ガチャ">無料ガチャ</option>
+            </select>
             <label style="font-size: 0.8rem; color: #aaa;">レアリティ：</label>
             <select id="admin-gacha-rarity" class="admin-input">
                 <option value="★6">★6 (最高レア)</option>
@@ -471,21 +487,27 @@
             <button class="admin-btn" onclick="adminAddGachaIllustration()">➕ ガチャプールに追加する</button>
         </div>
 
-        <!-- 🎁 プレゼント配信（選択式） -->
+        <!-- 🎁 プレゼント配信（コイン・イラスト・個別宛対応） -->
         <div class="admin-section">
-            <h4>🎁 全メンバーへプレゼントを贈る</h4>
+            <h4>🎁 プレゼントを贈る（個別 / 全員）</h4>
+            <label style="font-size: 0.8rem; color: #aaa;">宛先：</label>
+            <select id="admin-gift-target" class="admin-input">
+                <option value="ALL">🌐 全メンバー一斉送信</option>
+            </select>
             <label style="font-size: 0.8rem; color: #aaa;">プレゼント名：</label>
-            <input type="text" id="admin-gift-title" class="admin-input" placeholder="記念アイテム">
-            <label style="font-size: 0.8rem; color: #aaa;">付与するダイヤ（💎）：</label>
+            <input type="text" id="admin-gift-title" class="admin-input" placeholder="記念報酬">
+            <label style="font-size: 0.8rem; color: #aaa;">ダイヤ（💎）：</label>
             <input type="number" id="admin-gift-gem" class="admin-input" value="1000">
+            <label style="font-size: 0.8rem; color: #aaa;">コイン（🪙）：</label>
+            <input type="number" id="admin-gift-coin" class="admin-input" value="500">
             <label style="font-size: 0.8rem; color: #aaa;">添付するイラスト（選択式）：</label>
             <select id="admin-gift-img-select" class="admin-input">
                 <option value="">(イラストなし)</option>
             </select>
-            <button class="admin-btn" onclick="adminSendGiftToAll()">📤 全員にプレゼントを配信する</button>
+            <button class="admin-btn" onclick="adminSendGift()">📤 プレゼントを送信する</button>
         </div>
 
-        <!-- ✉️ お知らせ作成（選択式） -->
+        <!-- ✉️ お知らせ作成 -->
         <div class="admin-section">
             <h4>✉️ お知らせを作成する（イラスト付き）</h4>
             <label style="font-size: 0.8rem; color: #aaa;">お知らせタイトル：</label>
@@ -511,25 +533,25 @@
         const GIST_RAW_URL = "https://gist.githubusercontent.com/nexusostave1124/ac1c05eaf442b0dcb34514cb7ed804a7/raw/images.json";
 
         let memberDatabase = JSON.parse(localStorage.getItem('nexus_members_db')) || [
-            { id: "H-25-3-1", name: "ヨウスケ", gem: 0, pt: 0 },
-            { id: "M-24-12-2", name: "Kou", gem: 0, pt: 0 },
-            { id: "N-24-11-3", name: "奨", gem: 0, pt: 0 },
-            { id: "S-24-11-4", name: "MIHO", gem: 0, pt: 0 },
-            { id: "S-24-11-5-o", name: "海惺", gem: 0, pt: 0 },
-            { id: "U-24-11-6-a", name: "タイ", gem: 0, pt: 0 },
-            { id: "N-24-11-7-o", name: "Ayu", gem: 0, pt: 0 },
-            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, pt: 0 },
-            { id: "ADMIN", name: "管理者", gem: 999999, pt: 9999 }
+            { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 0 },
+            { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 0 },
+            { id: "N-24-11-3", name: "奨", gem: 0, coin: 0, pt: 0 },
+            { id: "S-24-11-4", name: "MIHO", gem: 0, coin: 0, pt: 0 },
+            { id: "S-24-11-5-o", name: "海惺", gem: 0, coin: 0, pt: 0 },
+            { id: "U-24-11-6-a", name: "タイ", gem: 0, coin: 0, pt: 0 },
+            { id: "N-24-11-7-o", name: "Ayu", gem: 0, coin: 0, pt: 0 },
+            { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0 },
+            { id: "ADMIN", name: "管理者", gem: 999999, coin: 999999, pt: 9999 }
         ];
 
-        let currentUser = JSON.parse(localStorage.getItem('nexus_current_user')) || { id: "24-09", name: "Free", gem: 186486 };
+        let currentUser = JSON.parse(localStorage.getItem('nexus_current_user')) || null;
         let isAdmin = localStorage.getItem('nexus_is_admin') === 'true';
 
         let masterDriveImages = [];
 
-        function getUserAlbumKey() { return 'nexus_album_' + currentUser.id; }
-        function getUserSlideshowKey() { return 'nexus_slideshow_' + currentUser.id; }
-        function getUserGiftsKey() { return 'nexus_gifts_' + currentUser.id; }
+        function getUserAlbumKey() { return 'nexus_album_' + (currentUser ? currentUser.id : 'guest'); }
+        function getUserSlideshowKey() { return 'nexus_slideshow_' + (currentUser ? currentUser.id : 'guest'); }
+        function getUserGiftsKey() { return 'nexus_gifts_' + (currentUser ? currentUser.id : 'guest'); }
         function getGlobalNoticesKey() { return 'nexus_global_notices'; }
 
         let userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
@@ -539,27 +561,47 @@
 
         let currentEvent = JSON.parse(localStorage.getItem('nexus_current_event')) || {
             title: "結成2周年イベント",
+            type: "シーズンイベント",
             endDate: "2026-11-30T00:00:00",
             status: "開催中"
         };
 
         let currentGachaConfig = JSON.parse(localStorage.getItem('nexus_gacha_config')) || {
-            title: "記念ピックアップガチャ"
+            title: "記念ピックアップガチャ",
+            type: "通常ピックアップガチャ"
         };
 
         function updateUIUserStatus() {
-            document.getElementById('display-id').innerText = currentUser.id;
-            document.getElementById('display-name').innerText = currentUser.name + (isAdmin ? " (👑管理者)" : "");
-            document.getElementById('display-gem').innerText = Number(currentUser.gem).toLocaleString();
+            const idEl = document.getElementById('display-id');
+            const nameEl = document.getElementById('display-name');
+            const gemEl = document.getElementById('display-gem');
+            const menuLoginBtn = document.getElementById('menu-login-btn');
+
+            if (currentUser) {
+                idEl.innerText = currentUser.id;
+                nameEl.innerText = currentUser.name + (isAdmin ? " (👑管理者)" : "");
+                gemEl.innerText = Number(currentUser.gem || 0).toLocaleString();
+                if (menuLoginBtn) menuLoginBtn.innerHTML = "<span>ログアウト</span>";
+            } else {
+                idEl.innerText = "未ログイン";
+                nameEl.innerText = "ゲスト";
+                gemEl.innerText = "0";
+                if (menuLoginBtn) menuLoginBtn.innerHTML = "<span>IDログイン</span>";
+            }
+
             document.getElementById('current-event-title').innerText = "🎉 " + currentEvent.title;
-            
+            const typeBadge = document.getElementById('event-type-badge');
+            if (typeBadge) typeBadge.innerText = currentEvent.type;
+
             const badgeStatus = document.getElementById('badge-event-status');
             const screenBadge = document.getElementById('event-status-badge');
             if (badgeStatus) badgeStatus.innerText = currentEvent.status;
             if (screenBadge) screenBadge.innerText = currentEvent.status;
 
             const gachaTitleEl = document.getElementById('gacha-screen-title');
+            const gachaTypeBadge = document.getElementById('gacha-type-badge');
             if (gachaTitleEl) gachaTitleEl.innerText = "🎂 " + currentGachaConfig.title;
+            if (gachaTypeBadge) gachaTypeBadge.innerText = currentGachaConfig.type;
 
             const giftBadge = document.getElementById('badge-present');
             if (userGifts.length > 0) {
@@ -578,6 +620,17 @@
             }
         }
 
+        // 🆔 ステータスバークリックまたはログイン/ログアウト切替
+        function handleStatusClick() {
+            if (currentUser) {
+                if (confirm("ログアウトしますか？")) {
+                    adminLogout();
+                }
+            } else {
+                promptUserLogin();
+            }
+        }
+
         function promptUserLogin() {
             closeOtherMenu();
             const inputId = prompt("USER ID（または管理者ID）を入力してください：");
@@ -586,7 +639,7 @@
             if (inputId === "ADMIN" || inputId === "2024061124-admin" || inputId === "A-24-11-9-a") {
                 isAdmin = true;
                 localStorage.setItem('nexus_is_admin', 'true');
-                currentUser = memberDatabase.find(m => m.id === "ADMIN") || { id: "ADMIN", name: "管理者", gem: 999999 };
+                currentUser = memberDatabase.find(m => m.id === "ADMIN") || { id: "ADMIN", name: "管理者", gem: 999999, coin: 999999 };
                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 reloadUserData();
                 alert("👑 管理者モードでログインしました！");
@@ -605,7 +658,7 @@
             } else {
                 isAdmin = false;
                 localStorage.setItem('nexus_is_admin', 'false');
-                currentUser = { id: inputId, name: "ゲスト", gem: 0 };
+                currentUser = { id: inputId, name: "メンバー", gem: 0, coin: 0 };
                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 reloadUserData();
                 alert(`ID 「${inputId}」でログインしました。`);
@@ -613,15 +666,13 @@
         }
 
         function adminLogout() {
-            if (confirm("管理者モードをログアウトしますか？")) {
-                isAdmin = false;
-                localStorage.setItem('nexus_is_admin', 'false');
-                currentUser = { id: "24-09", name: "Free", gem: 186486 };
-                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-                reloadUserData();
-                closeScreen('manage');
-                alert("🔒 ログアウトしました。");
-            }
+            isAdmin = false;
+            localStorage.setItem('nexus_is_admin', 'false');
+            currentUser = null;
+            localStorage.removeItem('nexus_current_user');
+            reloadUserData();
+            closeScreen('manage');
+            alert("🔒 ログアウトしました。");
         }
 
         function reloadUserData() {
@@ -637,7 +688,7 @@
 
         function checkManagePassword() {
             closeOtherMenu();
-            if (isAdmin) {
+            if (isAdmin && currentUser) {
                 openScreen('manage');
                 return;
             }
@@ -645,31 +696,34 @@
             if (inputPass === "2024061124") {
                 isAdmin = true;
                 localStorage.setItem('nexus_is_admin', 'true');
-                updateUIUserStatus();
+                currentUser = memberDatabase.find(m => m.id === "ADMIN") || { id: "ADMIN", name: "管理者", gem: 999999, coin: 999999 };
+                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+                reloadUserData();
                 openScreen('manage');
             } else if (inputPass !== null) {
                 alert("パスワードが違います。");
             }
         }
 
-        // 🎪 イベント開催準備の適用
+        // 🎪 イベント設定（種類対応）
         function adminCreateEvent() {
             const title = document.getElementById('admin-event-title-input').value;
+            const type = document.getElementById('admin-event-type-select').value;
             const end = document.getElementById('admin-event-end-input').value;
             const status = document.getElementById('admin-event-status-select').value;
             if (!title || !end) return;
-            currentEvent = { title: title, endDate: end, status: status };
+            currentEvent = { title: title, type: type, endDate: end, status: status };
             localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
             updateUIUserStatus();
-            alert(`🎪 イベントの開催準備を適用しました！（ステータス: ${status}）`);
+            alert(`🎪 [${type}] 「${title}」の開催準備を適用しました！`);
         }
 
         function adminResetEventPoints() {
             if (confirm("全員の個人Pを 0 にリセットしますか？")) {
                 memberDatabase.forEach(m => m.pt = 0);
-                currentUser.pt = 0;
+                if (currentUser) currentUser.pt = 0;
                 localStorage.setItem('nexus_members_db', JSON.stringify(memberDatabase));
-                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+                if (currentUser) localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 alert("🔄 全員の個人Pを 0 にリセットしました！");
             }
         }
@@ -678,9 +732,10 @@
             alert("🏆 【順位発表演出】\n1位: ネオ (9,999 P)\n2位: ヨウスケ (--- P)");
         }
 
-        // 🎂 ガチャ追加機能
+        // 🎂 ガチャ追加（種類対応）
         function adminAddGachaIllustration() {
             const gachaTitle = document.getElementById('admin-gacha-title-input').value;
+            const gachaType = document.getElementById('admin-gacha-type-select').value;
             const rarity = document.getElementById('admin-gacha-rarity').value;
             const selectEl = document.getElementById('admin-gacha-img-select');
             const selectedUrl = selectEl.value;
@@ -691,7 +746,7 @@
                 return;
             }
 
-            currentGachaConfig.title = gachaTitle || "記念ピックアップガチャ";
+            currentGachaConfig = { title: gachaTitle || "記念ピックアップガチャ", type: gachaType };
             localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
 
             const newMasterItem = {
@@ -702,13 +757,15 @@
 
             masterDriveImages.push(newMasterItem);
             updateUIUserStatus();
-            alert(`🎂 ガチャ「${currentGachaConfig.title}」に「[${rarity}] ${selectedName}」を追加しました！`);
+            alert(`🎂 [${gachaType}] 「${currentGachaConfig.title}」に「[${rarity}] ${selectedName}」を追加しました！`);
         }
 
-        // 🎁 プレゼント配信（選択式）
-        function adminSendGiftToAll() {
+        // 🎁 プレゼント送信（個別宛 or 全員対応・コイン対応）
+        function adminSendGift() {
+            const targetId = document.getElementById('admin-gift-target').value;
             const title = document.getElementById('admin-gift-title').value;
             const gem = Number(document.getElementById('admin-gift-gem').value) || 0;
+            const coin = Number(document.getElementById('admin-gift-coin').value) || 0;
             const imgUrl = document.getElementById('admin-gift-img-select').value;
 
             if (!title) {
@@ -720,23 +777,28 @@
                 id: 'gift_' + Date.now(),
                 title: title,
                 gem: gem,
+                coin: coin,
                 imgUrl: imgUrl
             };
 
-            memberDatabase.forEach(m => {
-                let mGifts = JSON.parse(localStorage.getItem('nexus_gifts_' + m.id)) || [];
-                mGifts.push(giftObj);
-                localStorage.setItem('nexus_gifts_' + m.id, JSON.stringify(mGifts));
-            });
+            if (targetId === "ALL") {
+                memberDatabase.forEach(m => {
+                    let mGifts = JSON.parse(localStorage.getItem('nexus_gifts_' + m.id)) || [];
+                    mGifts.push(giftObj);
+                    localStorage.setItem('nexus_gifts_' + m.id, JSON.stringify(mGifts));
+                });
+                alert(`📤 全メンバーのプレゼントBOXに配信しました！`);
+            } else {
+                let targetGifts = JSON.parse(localStorage.getItem('nexus_gifts_' + targetId)) || [];
+                targetGifts.push(giftObj);
+                localStorage.setItem('nexus_gifts_' + targetId, JSON.stringify(targetGifts));
+                alert(`📤 メンバー [${targetId}] 宛にプレゼントを送信しました！`);
+            }
 
-            userGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
-            updateUIUserStatus();
-            renderGifts();
-
-            alert(`📤 全メンバーのプレゼントBOXに「${title}（💎${gem}）」を配信しました！`);
+            reloadUserData();
         }
 
-        // ✉️ お知らせ公開（選択式）
+        // ✉️ お知らせ公開
         function adminPublishNotice() {
             const title = document.getElementById('admin-notice-title').value;
             const text = document.getElementById('admin-notice-text').value;
@@ -770,13 +832,13 @@
                 if (!response.ok) return;
                 masterDriveImages = await response.json();
                 
-                if (userAlbum.length === 0 && masterDriveImages.length > 0) {
+                if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
                     userAlbum = [...masterDriveImages];
                     userSlideshowIds = masterDriveImages.map(img => img.id);
                     saveUserAlbumData();
                 }
 
-                populateDriveImageSelects();
+                populateAdminSelects();
 
                 initSlideshow();
                 renderAlbum();
@@ -785,11 +847,12 @@
             }
         }
 
-        function populateDriveImageSelects() {
+        function populateAdminSelects() {
             const gachaSelect = document.getElementById('admin-gacha-img-select');
             const giftSelect = document.getElementById('admin-gift-img-select');
             const noticeSelect = document.getElementById('admin-notice-img-select');
-            if (!gachaSelect || !giftSelect || !noticeSelect) return;
+            const targetSelect = document.getElementById('admin-gift-target');
+            if (!gachaSelect || !giftSelect || !noticeSelect || !targetSelect) return;
 
             let optionsHtml = `<option value="">(選択してください)</option>`;
             masterDriveImages.forEach(img => {
@@ -799,10 +862,22 @@
             gachaSelect.innerHTML = optionsHtml;
             giftSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
             noticeSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
+
+            let targetHtml = `<option value="ALL">🌐 全メンバー一斉送信</option>`;
+            memberDatabase.forEach(m => {
+                targetHtml += `<option value="${m.id}">${m.name} (ID: ${m.id})</option>`;
+            });
+            targetSelect.innerHTML = targetHtml;
         }
 
         // 🎂 ガチャ機能（★2以下の場合は全ユーザーに自動配布！）
         function pullGachaFromDrive() {
+            if (!currentUser) {
+                alert("ガチャを引くには、まず左上のステータスからUSER IDでログインしてください！");
+                promptUserLogin();
+                return;
+            }
+
             if (masterDriveImages.length === 0) {
                 alert("ドライブからガチャデータを読み込み中またはデータがありません。");
                 return;
@@ -818,6 +893,7 @@
                     id: 'auto_gift_' + Date.now(),
                     title: `【★2配布】${rewardImg.name}`,
                     gem: 100,
+                    coin: 50,
                     imgUrl: rewardImg.url
                 };
 
@@ -861,7 +937,7 @@
                 box.innerHTML = `
                     <div>
                         <div style="font-weight:bold; color:#00f5d4;">${gift.title}</div>
-                        <div style="font-size:0.8rem; color:#aaa;">💎 ダイヤ: +${gift.gem}</div>
+                        <div style="font-size:0.8rem; color:#aaa;">💎: +${gift.gem || 0} | 🪙: +${gift.coin || 0}</div>
                         ${gift.imgUrl ? `<img src="${gift.imgUrl}" style="width:50px; height:50px; object-fit:cover; border-radius:6px; margin-top:4px;">` : ''}
                     </div>
                     <button onclick="claimGift(${index})" style="padding: 8px 14px; background:#00f5d4; color:#000; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">受け取る</button>
@@ -872,7 +948,11 @@
 
         function claimGift(index) {
             const gift = userGifts[index];
-            currentUser.gem += (Number(gift.gem) || 0);
+            if (currentUser) {
+                currentUser.gem = (Number(currentUser.gem) || 0) + (Number(gift.gem) || 0);
+                currentUser.coin = (Number(currentUser.coin) || 0) + (Number(gift.coin) || 0);
+                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+            }
             
             if (gift.imgUrl) {
                 const newAlbumItem = { id: 'gift_img_' + Date.now(), name: gift.title, url: gift.imgUrl };
@@ -885,7 +965,6 @@
 
             userGifts.splice(index, 1);
             localStorage.setItem(getUserGiftsKey(), JSON.stringify(userGifts));
-            localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
 
             updateUIUserStatus();
             renderGifts();
