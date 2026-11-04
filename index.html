@@ -58,7 +58,7 @@
             z-index: 2; pointer-events: none;
         }
 
-        /* 🌈 虹色に変化するタイトルロゴ（少し下へ配置） */
+        /* 🌈 虹色に変化するタイトルロゴ */
         @keyframes rainbowGlow {
             0% { filter: hue-rotate(0deg); text-shadow: 0 0 12px rgba(255, 0, 0, 0.8); }
             33% { filter: hue-rotate(120deg); text-shadow: 0 0 12px rgba(0, 255, 0, 0.8); }
@@ -70,7 +70,7 @@
             position: relative;
             z-index: 10;
             text-align: center;
-            margin-top: 70px; /* 少し下に調整 */
+            margin-top: 70px;
         }
 
         .title-main-text {
@@ -554,16 +554,19 @@
 
     <div id="screen-settings" class="sub-screen">
         <div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div>
-        <p style="margin-bottom: 8px; font-weight: bold; color: #00f5d4;">⏰ ホーム画面の時計フォントカラー変更</p>
-        <div class="color-picker-grid">
-            <button class="color-btn c-white" style="background:#222;" onclick="setClockColor('c-white', this)">白</button>
-            <button class="color-btn c-blue" style="background:#222;" onclick="setClockColor('c-blue', this)">青</button>
-            <button class="color-btn c-red selected" style="background:#222;" onclick="setClockColor('c-red', this)">赤</button>
-            <button class="color-btn c-yellow" style="background:#222;" onclick="setClockColor('c-yellow', this)">黄色</button>
-            <button class="color-btn c-green" style="background:#222;" onclick="setClockColor('c-green', this)">緑</button>
-            <button class="color-btn c-skyblue" style="background:#222;" onclick="setClockColor('c-skyblue', this)">水色</button>
-            <button class="color-btn c-orange" style="background:#222;" onclick="setClockColor('c-orange', this)">オレンジ</button>
-            <button class="color-btn c-black" style="background:#ccc; color:#000;" onclick="setClockColor('c-black', this)">黒</button>
+        <!-- ログイン時のみ表示する時計カラー設定 -->
+        <div id="settings-clock-section" style="display: none;">
+            <p style="margin-bottom: 8px; font-weight: bold; color: #00f5d4;">⏰ ホーム画面の時計フォントカラー変更</p>
+            <div class="color-picker-grid">
+                <button class="color-btn c-white" style="background:#222;" onclick="setClockColor('c-white', this)">白</button>
+                <button class="color-btn c-blue" style="background:#222;" onclick="setClockColor('c-blue', this)">青</button>
+                <button class="color-btn c-red selected" style="background:#222;" onclick="setClockColor('c-red', this)">赤</button>
+                <button class="color-btn c-yellow" style="background:#222;" onclick="setClockColor('c-yellow', this)">黄色</button>
+                <button class="color-btn c-green" style="background:#222;" onclick="setClockColor('c-green', this)">緑</button>
+                <button class="color-btn c-skyblue" style="background:#222;" onclick="setClockColor('c-skyblue', this)">水色</button>
+                <button class="color-btn c-orange" style="background:#222;" onclick="setClockColor('c-orange', this)">オレンジ</button>
+                <button class="color-btn c-black" style="background:#ccc; color:#000;" onclick="setClockColor('c-black', this)">黒</button>
+            </div>
         </div>
     </div>
 
@@ -778,7 +781,7 @@
 
         function openTitleSubScreen(name) {
             document.getElementById('title-screen').classList.add('hidden');
-            openScreen(name);
+            openScreen(name, true); // タイトル画面から開いたフラグを渡す
         }
 
         function exitApp() {
@@ -834,7 +837,6 @@
             }
         }
 
-        // タイトル画面用背景スライドショー（最大8枚）
         function initTitleSlideshow() {
             const container = document.getElementById('title-bg-slideshow-container');
             if (!container) return;
@@ -1581,22 +1583,38 @@
 
         function toggleOtherMenu() { document.getElementById('other-modal').classList.add('active'); }
         function closeOtherMenu() { document.getElementById('other-modal').classList.remove('active'); }
-        function openScreen(name) {
+
+        let openedFromTitle = false;
+
+        function openScreen(name, fromTitle = false) {
             closeOtherMenu();
+            openedFromTitle = fromTitle;
             if (name === 'present') renderGifts();
             if (name === 'notice') renderNotices();
             if (name === 'history') renderHistory();
+
+            // もし設定画面を開いた場合、ログイン状態によって時計設定の表示を切り替える
+            if (name === 'settings') {
+                const clockSection = document.getElementById('settings-clock-section');
+                if (clockSection) {
+                    clockSection.style.display = currentUser ? 'block' : 'none';
+                }
+            }
+
             document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             const target = document.getElementById('screen-' + name);
             if (target) target.classList.add('active');
         }
+
         function closeScreen(name) { 
             document.getElementById('screen-' + name).classList.remove('active'); 
-            if (!currentUser) {
+            if (!currentUser || openedFromTitle) {
                 document.getElementById('title-screen').classList.remove('hidden');
+                openedFromTitle = false;
             }
         }
+
         function switchNav(name) {
             closeOtherMenu();
             document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
