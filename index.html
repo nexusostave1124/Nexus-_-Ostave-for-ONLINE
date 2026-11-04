@@ -758,7 +758,7 @@
         let isLoginLocked = localStorage.getItem('nexus_login_locked') === 'true';
 
         let masterDriveImages = [];
-        let star2DistributeStatus = JSON.parse(localStorage.getItem('nexus_star2_distribute')) || {}; // id: true/false
+        let star2DistributeStatus = JSON.parse(localStorage.getItem('nexus_star2_distribute')) || {};
 
         function getUserAlbumKey() { return 'nexus_album_' + (currentUser ? currentUser.id : 'guest'); }
         function getUserSlideshowKey() { return 'nexus_slideshow_' + (currentUser ? currentUser.id : 'guest'); }
@@ -787,7 +787,7 @@
 
         let currentGachaConfig = JSON.parse(localStorage.getItem('nexus_gacha_config')) || {
             title: "記念ピックアップガチャ",
-            type: "ネオフェス限定",
+            type: "ネオフェс限定",
             status: "開催中",
             startDate: "2026-11-01T00:00",
             endDate: "2026-11-30T00:00"
@@ -1027,7 +1027,6 @@
         function promptUserLogin() {
             closeOtherMenu();
             
-            // ログイン制限がかかっているかのチェック
             const isNeoOrAdminTemp = currentUser && (currentUser.id === "A-24-11-9-a" || currentUser.id === "ADMIN");
             if (isLoginLocked && !isNeoOrAdminTemp) {
                 const checkAdminId = prompt("現在【ログイン制限(メンテナンス中)】です。管理者IDを入力してください：");
@@ -1040,7 +1039,6 @@
             const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
             if (!inputId) return;
 
-            // ログイン制限中なら一般IDはブロック
             if (isLoginLocked && inputId !== "A-24-11-9-a" && inputId !== "ADMIN") {
                 alert("❌ 現在ログイン制限中につき、一般メンバーのログインはできません。");
                 return;
@@ -1061,7 +1059,6 @@
                 
                 alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
                 
-                // 🎵 ログインしたら楽曲を自動で流す
                 playDefaultSongOnLogin();
 
                 if (isAdmin) openScreen('manage');
@@ -1094,11 +1091,10 @@
             userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
             userSlideshowIds = JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [];
             
-            // ★2配布停止のチェック：もし配布がオフの★2プレゼントがあればユーザーのBOXから除外
             let rawGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
             userGifts = rawGifts.filter(gift => {
                 if (gift.isStar2 && star2DistributeStatus[gift.itemId] === false) {
-                    return false; // 配布停止なので除外
+                    return false;
                 }
                 return true;
             });
@@ -1111,7 +1107,6 @@
             renderHistory();
         }
 
-        // 🛡️ 管理画面の閲覧チェック（ネオ: A-24-11-9-a と ADMIN はパスワード不要）
         function checkManagePassword() {
             closeOtherMenu();
             if (currentUser && (currentUser.id === "A-24-11-9-a" || currentUser.id === "ADMIN")) {
@@ -1139,7 +1134,6 @@
             }
         }
 
-        // 管理画面を閉じる時の制御（他ユーザーはロックがかかる）
         function closeManageScreen() {
             closeScreen('manage');
             if (!currentUser || (currentUser.id !== "A-24-11-9-a" && currentUser.id !== "ADMIN")) {
@@ -1276,7 +1270,7 @@
             };
 
             if (rarity === "★2") {
-                star2DistributeStatus[itemId] = true; // デフォルト配布中
+                star2DistributeStatus[itemId] = true;
                 localStorage.setItem('nexus_star2_distribute', JSON.stringify(star2DistributeStatus));
             }
 
@@ -1315,7 +1309,7 @@
                     items.forEach(item => {
                         let extraControl = "";
                         if (rar === "★2") {
-                            const isDist = star2DistributeStatus[item.id] !== false; // デフォルトtrue
+                            const isDist = star2DistributeStatus[item.id] !== false;
                             extraControl = `<label style="font-size:0.7rem; color:#00f5d4; display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" ${isDist ? 'checked' : ''} onchange="toggleStar2Distribute('${item.id}', this)"> 配布中</label>`;
                         }
                         html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px dashed #333;">
@@ -1542,7 +1536,6 @@
             const container = document.getElementById('present-list-container');
             if (!container) return;
             
-            // 配布停止されていないか再フィルター
             let rawGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
             userGifts = rawGifts.filter(gift => {
                 if (gift.isStar2 && star2DistributeStatus[gift.itemId] === false) {
