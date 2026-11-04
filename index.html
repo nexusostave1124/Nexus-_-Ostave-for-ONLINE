@@ -20,82 +20,31 @@
             display: flex;
             flex-direction: column;
         }
-
-        /* 🌈 虹色に光るタイトル用アニメーション */
-        @keyframes rainbowGlow {
-            0% { color: #ff334b; text-shadow: 0 0 12px rgba(255,51,75,0.8); }
-            20% { color: #ff9900; text-shadow: 0 0 12px rgba(255,153,0,0.8); }
-            40% { color: #ffee00; text-shadow: 0 0 12px rgba(255,238,0,0.8); }
-            60% { color: #00ff66; text-shadow: 0 0 12px rgba(0,255,102,0.8); }
-            80% { color: #00bfff; text-shadow: 0 0 12px rgba(0,191,255,0.8); }
-            100% { color: #ff334b; text-shadow: 0 0 12px rgba(255,51,75,0.8); }
-        }
-
-        /* 🚪 タイトル画面オーバーレイ */
-        #title-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: 9000;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            padding: 30px 20px;
-            box-sizing: border-box;
-            background: #050505;
-        }
-        #title-screen.hidden { display: none; }
-
-        /* タイトル画面背景スライドショー */
-        .title-bg-slideshow {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
-        }
-        .title-slide-img {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; object-position: center; opacity: 0; transition: opacity 0.8s ease-in-out;
-        }
-        .title-slide-img.active { opacity: 1; }
-
-        .title-content-box {
-            position: relative; z-index: 10;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            flex: 1; width: 100%; gap: 30px;
-        }
-        .rainbow-title-logo {
-            font-size: 2.2rem; font-weight: 800; text-align: center;
-            animation: rainbowGlow 5s infinite linear;
-            line-height: 1.3;
-        }
-        .title-login-btn {
-            background: #ff334b; color: #fff; font-size: 1.3rem; font-weight: bold;
-            padding: 14px 40px; border: none; border-radius: 12px; cursor: pointer;
-            box-shadow: 0 6px 20px rgba(255,51,75,0.5); font-family: inherit;
-            transition: transform 0.1s;
-        }
-        .title-login-btn:active { transform: scale(0.95); }
-        .title-login-btn.maintenance { background: #555; color: #aaa; cursor: not-allowed; box-shadow: none; }
-
-        /* タイトル画面右上の時計・バッテリー */
-        .title-top-right {
-            position: absolute; top: 15px; right: 15px; z-index: 10; text-align: right;
-        }
-
-        /* 📱 メインアプリ画面エリア */
+        /* 📱 メイン画面エリア */
         .app-container {
-            position: relative; flex: 1; width: 100%; height: 100%; overflow: hidden; display: none;
+            position: relative;
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
-        .app-container.active { display: flex; flex-direction: column; }
-
-        /* 🖼️ ホーム画面背景スライドショー */
+        /* 🖼️ 背景スライドショー */
         .bg-slideshow {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
         }
         .slide-img {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; object-position: center; opacity: 0; transition: opacity 0.8s ease-in-out;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
         }
         .slide-img.active { opacity: 1; }
-
         /* 上下グラデーション */
         .overlay-top {
             position: absolute; top: 0; left: 0; right: 0; height: 160px;
@@ -107,7 +56,6 @@
             background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
             z-index: 2; pointer-events: none;
         }
-
         /* 📊 左上：ステータスバー */
         .user-status {
             position: absolute; top: 15px; left: 15px; z-index: 10;
@@ -151,16 +99,14 @@
         .c-orange { color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.8); }
         .c-black { color: #111111; text-shadow: 0 0 4px rgba(255,255,255,0.8); }
 
-        /* 🔋 バッテリー残量カラー仕様 */
         .battery-green { color: #00ff66; text-shadow: 0 0 8px rgba(0,255,102,0.8); }
-        .battery-skyblue { color: #00bfff; text-shadow: 0 0 8px rgba(0,191,255,0.8); }
         .battery-yellow { color: #ffee00; text-shadow: 0 0 8px rgba(255,238,0,0.8); }
         .battery-orange { color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.8); }
         .battery-red { color: #ff3333; text-shadow: 0 0 8px rgba(255,51,51,0.8); }
-        .battery-blink { color: #ff3333; text-shadow: 0 0 10px rgba(255,51,51,1); animation: blink 0.8s infinite; }
-        .battery-charging { color: #3388ff; text-shadow: 0 0 8px rgba(51,136,255,0.8); }
+        .battery-charging { color: #00bfff; text-shadow: 0 0 8px rgba(0,191,255,0.8); }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
+        .battery-blink { color: #ff3333; text-shadow: 0 0 10px rgba(255,51,51,1); animation: blink 0.8s infinite; }
 
         /* プレゼント＆お知らせボタン */
         .top-buttons-column { display: flex; flex-direction: column; gap: 8px; }
@@ -267,71 +213,12 @@
         .rate-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.75rem; background: #222; }
         .rate-table th, .rate-table td { border: 1px solid #444; padding: 4px; text-align: center; }
         .rate-table th { background: #333; color: #00f5d4; }
-
-        /* 🔘 右下の三点リーダー（タイトル用・ホーム用共通） */
-        .corner-menu-btn {
-            position: absolute; bottom: 20px; right: 20px; z-index: 1000;
-            width: 48px; height: 48px; background: rgba(50, 50, 50, 0.8);
-            border: 2px solid rgba(255, 255, 255, 0.4); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; color: #fff; cursor: pointer; backdrop-filter: blur(4px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-        }
-        .corner-menu-btn:active { transform: scale(0.92); }
     </style>
 </head>
 <body>
 
-    <!-- ================= 🚪 タイトル画面 ================= -->
-    <div id="title-screen">
-        <!-- タイトル画面用背景スライドショー (最大8枚) -->
-        <div class="title-bg-slideshow" id="title-slideshow-container"></div>
-        <div class="overlay-top"></div>
-        <div class="overlay-bottom"></div>
-
-        <!-- タイトル画面右上時計＆バッテリー -->
-        <div class="title-top-right">
-            <div id="title-clock" class="clock-time c-white" style="font-size: 1.4rem;">00:00:00</div>
-            <div id="title-battery" class="battery-status battery-charging" style="font-size: 0.8rem;">充電中 100%</div>
-        </div>
-
-        <div class="title-content-box">
-            <div class="rainbow-title-logo">Nexus:_:Ostave<br>for ONLINE</div>
-            <button id="login-action-btn" class="title-login-btn" onclick="handleTitleLogin()">ログイン</button>
-        </div>
-
-        <!-- タイトル画面右下の「︙」メニューボタン -->
-        <div class="corner-menu-btn" onclick="toggleTitleMenu()">⋮</div>
-    </div>
-
-    <!-- タイトル画面専用「︙」メニューポップアップ (お知らせ、報告、設定、アプリを閉じる) -->
-    <div id="title-modal" class="modal-overlay" onclick="closeTitleMenu(event)">
-        <div class="menu-dialog" onclick="event.stopPropagation()">
-            <div class="other-menu-grid">
-                <div class="other-menu-card" onclick="openScreenFromTitle('notice')">
-                    <div class="other-icon-circle">✉️</div>
-                    <span>お知らせ</span>
-                </div>
-                <div class="other-menu-card" onclick="openScreenFromTitle('report')">
-                    <div class="other-icon-circle">📋</div>
-                    <span>報告</span>
-                </div>
-                <div class="other-menu-card" onclick="openScreenFromTitle('settings')">
-                    <div class="other-icon-circle">⚙️</div>
-                    <span>設定</span>
-                </div>
-                <div class="other-menu-card" onclick="closeAppWindow()">
-                    <div class="other-icon-circle">❌</div>
-                    <span>アプリを閉じる</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ================= 📱 メインアプリ画面 ================= -->
-    <div class="app-container" id="main-app-container">
-        <!-- 🖼️ ホーム画面背景スライドショー -->
+    <div class="app-container">
+        <!-- 🖼️ 背景スライドショー -->
         <div class="bg-slideshow" id="slideshow-container"></div>
 
         <div class="overlay-top"></div>
@@ -403,7 +290,7 @@
         </div>
     </div>
 
-    <!-- ================= 🔲 ホーム画面用その他メニュー ================= -->
+    <!-- ================= 🔲 その他メニュー ================= -->
     <div id="other-modal" class="modal-overlay" onclick="closeOtherMenu(event)">
         <div class="menu-dialog" onclick="event.stopPropagation()">
             <div class="other-menu-grid">
@@ -445,9 +332,9 @@
         <div id="event-content-container"></div>
     </div>
 
-    <!-- 🎂 ガチャ画面 -->
+    <!-- 🎂 ガチャ画面（ステータス制御対応） -->
     <div id="screen-gacha" class="sub-screen">
-        <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
+        <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ</span><button class="close-btn" onclick="openScreen('gacha')">閉じる</button></div>
         <div id="gacha-content-container"></div>
     </div>
 
@@ -459,7 +346,7 @@
     <div id="screen-schedule" class="sub-screen">
         <div class="sub-header"><span class="sub-title">📝 スケジュール</span><button class="close-btn" onclick="closeScreen('schedule')">閉じる</button></div>
         <div class="calendar-wrapper">
-            <iframe src="https://calendar.google.com/calendar/embed?src=nexus.ostave.1124%40gmail.com&ctz=Asia%2preset=true" frameborder="0" scrolling="no"></iframe>
+            <iframe src="https://calendar.google.com/calendar/embed?src=nexus.ostave.1124%40gmail.com&ctz=Asia%2FTokyo&hl=ja" frameborder="0" scrolling="no"></iframe>
         </div>
     </div>
 
@@ -520,30 +407,8 @@
                 <button class="close-btn" onclick="closeScreen('manage')">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※タイトル画面スライドショー（最大8枚）、メンテナンス設定、イベント・ガチャ管理。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント種類（タイアップ・期間限定等）やガチャステータス管理に対応。</p>
         
-        <!-- 🚪 タイトル画面スライドショー管理（管理者専用） -->
-        <div class="admin-section">
-            <h4>🚪 タイトル画面スライドショー管理（最大8枚）</h4>
-            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 8px;">ドライブから画像を選択してタイトル画面のスライドショーに追加できます。</p>
-            <select id="admin-title-img-select" class="admin-input">
-                <option value="">(選択してください)</option>
-            </select>
-            <button class="admin-btn" onclick="adminAddTitleSlide()">➕ タイトルスライドに追加する</button>
-            <div id="admin-title-slides-list" style="margin-top: 10px; font-size: 0.8rem;"></div>
-        </div>
-
-        <!-- 🔧 アプリ全体設定（メンテナンスモード） -->
-        <div class="admin-section">
-            <h4>🔧 アプリ全体設定（メンテナンス）</h4>
-            <label style="font-size: 0.8rem; color: #aaa;">メンテナンス状態：</label>
-            <select id="admin-maintenance-select" class="admin-input">
-                <option value="false">通常稼働中</option>
-                <option value="true">⚠️ メンテナンス中</option>
-            </select>
-            <button class="admin-btn" onclick="adminSaveMaintenance()">💾 メンテナンス設定を保存する</button>
-        </div>
-
         <!-- 🎪 イベント管理 -->
         <div class="admin-section">
             <h4>🎪 イベント管理・ステータス設定</h4>
@@ -566,15 +431,15 @@
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
                 <option value="終了">終了 (確認可能)</option>
             </select>
-            <label style="font-size: 0.8rem; color: #aaa;">イベントバナー・イラスト：</label>
+            <label style="font-size: 0.8rem; color: #aaa;">イベントバナー・イラスト（Googleドライブ選択）：</label>
             <select id="admin-event-img-select" class="admin-input">
                 <option value="">(イラストなし)</option>
             </select>
             <button class="admin-btn" onclick="adminCreateEvent()">🚀 イベント設定を保存する</button>
-            <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを終了してヒストリーにまとめる</button>
+            <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを削除してヒストリーにまとめる</button>
         </div>
 
-        <!-- 🎂 ガチャ管理 -->
+        <!-- 🎂 ガチャ管理（ステータス導入） -->
         <div class="admin-section">
             <h4>🎂 ガチャ管理・ステータス設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">ガチャ名称：</label>
@@ -670,6 +535,7 @@
             "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
         };
 
+        // スプレッドシート準拠の正式メンバーデータベース
         const memberDatabase = [
             { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 0 },
             { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 0 },
@@ -684,12 +550,8 @@
 
         let currentUser = JSON.parse(localStorage.getItem('nexus_current_user')) || null;
         let isAdmin = localStorage.getItem('nexus_is_admin') === 'true';
-        let isMaintenance = localStorage.getItem('nexus_maintenance') === 'true';
 
         let masterDriveImages = [];
-        let titleSlides = JSON.parse(localStorage.getItem('nexus_title_slides')) || [
-            "https://picsum.photos/id/1069/800/1200"
-        ];
 
         function getUserAlbumKey() { return 'nexus_album_' + (currentUser ? currentUser.id : 'guest'); }
         function getUserSlideshowKey() { return 'nexus_slideshow_' + (currentUser ? currentUser.id : 'guest'); }
@@ -704,14 +566,20 @@
         let eventHistory = JSON.parse(localStorage.getItem(getEventHistoryKey())) || [];
 
         let currentEvent = JSON.parse(localStorage.getItem('nexus_current_event')) || {
-            title: "結成2周年イベント", type: "シーズンイベント",
-            startDate: "2026-11-01T00:00", endDate: "2026-11-30T00:00",
-            status: "開催中", imgUrl: ""
+            title: "結成2周年イベント",
+            type: "シーズンイベント",
+            startDate: "2026-11-01T00:00",
+            endDate: "2026-11-30T00:00",
+            status: "開催中",
+            imgUrl: ""
         };
 
         let currentGachaConfig = JSON.parse(localStorage.getItem('nexus_gacha_config')) || {
-            title: "記念ピックアップガチャ", type: "ネオフェス限定", status: "開催中",
-            startDate: "2026-11-01T00:00", endDate: "2026-11-30T00:00"
+            title: "記念ピックアップガチャ",
+            type: "ネオフェス限定",
+            status: "開催中",
+            startDate: "2026-11-01T00:00",
+            endDate: "2026-11-30T00:00"
         };
 
         function formatDateStr(isoStr) {
@@ -719,128 +587,11 @@
             return isoStr.replace("T", " ");
         }
 
-        // 🔋 充電ステータス＆色判定ロジック（ホーム・タイトル共通）
-        async function updateBatteryStatusDisplay() {
-            const bEls = [document.getElementById('battery-info'), document.getElementById('title-battery')];
-            let batteryText = "充電中 100%";
-            let batteryClass = "battery-charging";
-
-            if ('getBattery' in navigator) {
-                try {
-                    const battery = await navigator.getBattery();
-                    const level = Math.floor(battery.level * 100);
-                    const charging = battery.charging;
-
-                    if (charging) {
-                        batteryText = `充電中 ${level}%`;
-                        batteryClass = "battery-charging";
-                    } else {
-                        batteryText = `${level}%`;
-                        if (level >= 71) batteryClass = "battery-green";
-                        else if (level >= 51) batteryClass = "battery-skyblue";
-                        else if (level >= 31) batteryClass = "battery-yellow";
-                        else if (level >= 16) batteryClass = "battery-orange";
-                        else if (level >= 4) batteryClass = "battery-red";
-                        else batteryClass = "battery-blink"; // 3%〜1%
-                    }
-                } catch (e) {}
-            }
-
-            bEls.forEach(el => {
-                if (el) {
-                    el.innerText = batteryText;
-                    el.className = "battery-status " + batteryClass;
-                }
-            });
-        }
-
-        // 🚪 タイトル画面のログイン処理（メンテナンス中対応・楽曲自動再生）
-        function handleTitleLogin() {
-            if (isMaintenance && !isAdmin) {
-                alert("⚠️ 現在メンテナンス中です。ログインできません。");
-                return;
-            }
-            promptUserLoginFromTitle();
-        }
-
-        function promptUserLoginFromTitle() {
-            const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
-            if (!inputId) return;
-
-            const found = memberDatabase.find(m => m.id === inputId);
-            if (found) {
-                if (found.id === "ADMIN") {
-                    isAdmin = true;
-                    localStorage.setItem('nexus_is_admin', 'true');
-                } else {
-                    isAdmin = false;
-                    localStorage.setItem('nexus_is_admin', 'false');
-                }
-                currentUser = found;
-                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-                
-                // ログイン成功時：タイトルを非表示にしてメインアプリを表示＆楽曲自動再生
-                document.getElementById('title-screen').classList.add('hidden');
-                document.getElementById('main-app-container').classList.add('active');
-                
-                reloadUserData();
-                autoPlaySelectedSong();
-                alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
-                if (isAdmin) openScreen('manage');
-            } else {
-                alert("❌ ログインエラー\nスプレッドシート（登録メンバーリスト）に存在しないIDです。");
-            }
-        }
-
-        // 🎵 楽曲選択で選ばれてる曲を自動再生
-        function autoPlaySelectedSong() {
-            const audioPlayer = document.getElementById('audio-player');
-            if (audioPlayer && songs.length > 0) {
-                audioPlayer.src = songs[0].url;
-                audioPlayer.play().catch(e => console.log("自動再生ブロック許可待ち"));
-            }
-        }
-
-        // 🔒 ログアウト（タイトルに戻る）
-        function adminLogout() {
-            isAdmin = false;
-            localStorage.setItem('nexus_is_admin', 'false');
-            currentUser = null;
-            localStorage.removeItem('nexus_current_user');
-            
-            // メインアプリを隠してタイトル画面を表示
-            document.getElementById('main-app-container').classList.remove('active');
-            document.getElementById('title-screen').classList.remove('hidden');
-            reloadUserData();
-            alert("🔒 ログアウトしました。タイトル画面に戻ります。");
-        }
-
-        // ❌ アプリを閉じる（ウィンドウ・タブを閉じる）
-        function closeAppWindow() {
-            try {
-                window.close();
-            } catch (e) {}
-            alert("「アプリを閉じる」が押されました。このタブを閉じてください。");
-        }
-
         function updateUIUserStatus() {
             const idEl = document.getElementById('display-id');
             const nameEl = document.getElementById('display-name');
             const gemEl = document.getElementById('display-gem');
             const menuLoginBtn = document.getElementById('menu-login-btn');
-            const loginBtn = document.getElementById('login-action-btn');
-
-            if (isMaintenance) {
-                if (loginBtn) {
-                    loginBtn.innerText = "メンテナンス中";
-                    loginBtn.classList.add('maintenance');
-                }
-            } else {
-                if (loginBtn) {
-                    loginBtn.innerText = "ログイン";
-                    loginBtn.classList.remove('maintenance');
-                }
-            }
 
             if (currentUser) {
                 idEl.innerText = currentUser.id;
@@ -877,12 +628,18 @@
             }
         }
 
+        // 🎪 イベント画面のレンダリング
         function renderEventScreen() {
             const container = document.getElementById('event-content-container');
             if (!container) return;
 
             if (currentEvent.status === "開催準備中" && !isAdmin) {
-                container.innerHTML = `<div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #555; text-align: center;"><h3 style="color: #aaa; margin-bottom: 10px;">🔒 現在準備中のイベントはありません</h3></div>`;
+                container.innerHTML = `
+                    <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #555; text-align: center;">
+                        <h3 style="color: #aaa; margin-bottom: 10px;">🔒 現在準備中のイベントはありません</h3>
+                        <p style="font-size: 0.85rem; color: #888;">新しいイベントの開催までしばらくお待ちください。</p>
+                    </div>
+                `;
                 return;
             }
 
@@ -901,6 +658,7 @@
             `;
         }
 
+        // 🎂 ガチャ画面のレンダリング（ステータス制御対応）
         function renderGachaScreen() {
             const container = document.getElementById('gacha-content-container');
             if (!container) return;
@@ -908,7 +666,12 @@
 
             if (currentGachaConfig.status === "開催準備中" && !isAdmin) {
                 if (titleEl) titleEl.innerText = "🎂 ガチャ (準備中)";
-                container.innerHTML = `<div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #555; text-align: center; margin-top:20px;"><h3 style="color: #aaa; margin-bottom: 10px;">🔒 現在準備中のガチャはありません</h3></div>`;
+                container.innerHTML = `
+                    <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #555; text-align: center; margin-top:20px;">
+                        <h3 style="color: #aaa; margin-bottom: 10px;">🔒 現在準備中のガチャはありません</h3>
+                        <p style="font-size: 0.85rem; color: #888;">次のガチャ開催までしばらくお待ちください。</p>
+                    </div>
+                `;
                 return;
             }
 
@@ -923,12 +686,18 @@
                 </div>
                 <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 10px;">期間: ${formatDateStr(currentGachaConfig.startDate)} 〜 ${formatDateStr(currentGachaConfig.endDate)}</div>
                 <p style="margin-bottom: 10px; font-size: 0.85rem; color: #aaa;">★2以下のアイテムを引いた場合は、全ユーザーに自動配布されます！</p>
+                
                 <button onclick="pullGachaFromDrive()" style="padding: 12px 20px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit; width:100%; margin-bottom: 15px;">💎 ガチャを引く</button>
+
                 <div style="background:#1a1a1a; padding:10px; border-radius:8px; border:1px solid #333;">
                     <div style="font-size:0.8rem; font-weight:bold; color:#00f5d4; margin-bottom:4px;">📊 現在のガチャ排出確率（スプレッドシート準拠）</div>
                     <table class="rate-table">
-                        <thead><tr><th>レア</th><th>★6</th><th>★5</th><th>★4</th><th>★3</th><th>★2</th></tr></thead>
-                        <tbody><tr><td>${currentGachaConfig.type}</td><td>${rates["★6"]}%</td><td>${rates["★5"]}%</td><td>${rates["★4"]}%</td><td>${rates["★3"]}%</td><td>${rates["★2"]}%</td></tr></tbody>
+                        <thead>
+                            <tr><th>レア</th><th>★6</th><th>★5</th><th>★4</th><th>★3</th><th>★2</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>${currentGachaConfig.type}</td><td>${rates["★6"]}%</td><td>${rates["★5"]}%</td><td>${rates["★4"]}%</td><td>${rates["★3"]}%</td><td>${rates["★2"]}%</td></tr>
+                        </tbody>
                     </table>
                 </div>
             `;
@@ -936,28 +705,47 @@
 
         function handleStatusClick() {
             if (currentUser) {
-                if (confirm("ログアウトしますか？")) { adminLogout(); }
+                if (confirm("ログアウトしますか？")) {
+                    adminLogout();
+                }
             } else {
-                promptUserLoginFromTitle();
+                promptUserLogin();
             }
         }
 
+        // 🔒 スプレッドシート登録IDによる厳格ログイン
         function promptUserLogin() {
             closeOtherMenu();
             const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
             if (!inputId) return;
+
             const found = memberDatabase.find(m => m.id === inputId);
             if (found) {
-                if (found.id === "ADMIN") { isAdmin = true; localStorage.setItem('nexus_is_admin', 'true'); }
-                else { isAdmin = false; localStorage.setItem('nexus_is_admin', 'false'); }
+                if (found.id === "ADMIN") {
+                    isAdmin = true;
+                    localStorage.setItem('nexus_is_admin', 'true');
+                } else {
+                    isAdmin = false;
+                    localStorage.setItem('nexus_is_admin', 'false');
+                }
                 currentUser = found;
                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 reloadUserData();
                 alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
                 if (isAdmin) openScreen('manage');
             } else {
-                alert("❌ ログインエラー\nスプレッドシートに存在しないIDです。");
+                alert("❌ ログインエラー\nスプレッドシート（登録メンバーリスト）に存在しないIDです。正しいIDを入力してください。");
             }
+        }
+
+        function adminLogout() {
+            isAdmin = false;
+            localStorage.setItem('nexus_is_admin', 'false');
+            currentUser = null;
+            localStorage.removeItem('nexus_current_user');
+            reloadUserData();
+            closeScreen('manage');
+            alert("🔒 ログアウトしました。");
         }
 
         function reloadUserData() {
@@ -974,7 +762,10 @@
 
         function checkManagePassword() {
             closeOtherMenu();
-            if (isAdmin && currentUser) { openScreen('manage'); return; }
+            if (isAdmin && currentUser) {
+                openScreen('manage');
+                return;
+            }
             const inputPass = prompt("管理画面のパスワードを入力してください：");
             if (inputPass === "2024061124") {
                 isAdmin = true;
@@ -983,38 +774,12 @@
                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 reloadUserData();
                 openScreen('manage');
-            } else if (inputPass !== null) { alert("パスワードが違います。"); }
+            } else if (inputPass !== null) {
+                alert("パスワードが違います。");
+            }
         }
 
-        // 🚪 タイトルスライドショー管理（最大8枚）
-        function adminAddTitleSlide() {
-            const selectEl = document.getElementById('admin-title-img-select');
-            const url = selectEl.value;
-            if (!url) { alert("画像を選択してください。"); return; }
-            if (titleSlides.length >= 8) { alert("タイトルスライドは最大8枚までです。"); return; }
-
-            titleSlides.push(url);
-            localStorage.setItem('nexus_title_slides', JSON.stringify(titleSlides));
-            initTitleSlideshow();
-            renderAdminTitleSlidesList();
-            alert("✨ タイトルスライドに追加しました！");
-        }
-
-        function renderAdminTitleSlidesList() {
-            const box = document.getElementById('admin-title-slides-list');
-            if (!box) return;
-            box.innerHTML = `<b style="color:#00f5d4;">登録中スライド枚数: ${titleSlides.length} / 8枚</b>`;
-        }
-
-        // 🔧 メンテナンス設定保存
-        function adminSaveMaintenance() {
-            const val = document.getElementById('admin-maintenance-select').value === 'true';
-            isMaintenance = val;
-            localStorage.setItem('nexus_maintenance', String(val));
-            updateUIUserStatus();
-            alert(`🔧 メンテナンス設定を「${val ? 'メンテナンス中' : '通常稼働中'}」に変更しました！`);
-        }
-
+        // 🎪 イベント設定
         function adminCreateEvent() {
             const title = document.getElementById('admin-event-title-input').value;
             const type = document.getElementById('admin-event-type-select').value;
@@ -1033,12 +798,22 @@
         function adminDeleteEventToHistory() {
             if (confirm(`イベント「${currentEvent.title}」を終了・削除し、ヒストリーに記録しますか？`)) {
                 eventHistory.unshift({
-                    title: currentEvent.title, type: currentEvent.type,
+                    title: currentEvent.title,
+                    type: currentEvent.type,
                     period: `${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`,
-                    imgUrl: currentEvent.imgUrl, archivedDate: new Date().toLocaleDateString()
+                    imgUrl: currentEvent.imgUrl,
+                    archivedDate: new Date().toLocaleDateString()
                 });
                 localStorage.setItem(getEventHistoryKey(), JSON.stringify(eventHistory));
-                currentEvent = { title: "次回のイベント準備中", type: "シーズンイベント", startDate: "", endDate: "", status: "開催準備中", imgUrl: "" };
+
+                currentEvent = {
+                    title: "次回のイベント準備中",
+                    type: "シーズンイベント",
+                    startDate: "",
+                    endDate: "",
+                    status: "開催準備中",
+                    imgUrl: ""
+                };
                 localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
                 updateUIUserStatus();
                 renderHistory();
@@ -1050,12 +825,22 @@
             const container = document.getElementById('history-list-container');
             if (!container) return;
             eventHistory = JSON.parse(localStorage.getItem(getEventHistoryKey())) || [];
-            if (eventHistory.length === 0) { container.innerHTML = `<p style="color: #888; text-align: center; margin-top: 20px;">過去のイベント記録はありません。</p>`; return; }
+
+            if (eventHistory.length === 0) {
+                container.innerHTML = `<p style="color: #888; text-align: center; margin-top: 20px;">過去のイベント記録はありません。</p>`;
+                return;
+            }
+
             container.innerHTML = '';
             eventHistory.forEach(item => {
                 const box = document.createElement('div');
                 box.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:12px; border-left:3px solid #3388ff;";
-                box.innerHTML = `<div style="font-size:0.7rem; color:#888; margin-bottom:4px;">記録日: ${item.archivedDate} | ${item.type}</div><div style="font-weight:bold; color:#00f5d4; font-size:1rem; margin-bottom:4px;">${item.title}</div><div style="font-size:0.8rem; color:#aaa; margin-bottom:8px;">期間: ${item.period}</div>${item.imgUrl ? `<img src="${item.imgUrl}" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px;">` : ''}`;
+                box.innerHTML = `
+                    <div style="font-size:0.7rem; color:#888; margin-bottom:4px;">記録日: ${item.archivedDate} | ${item.type}</div>
+                    <div style="font-weight:bold; color:#00f5d4; font-size:1rem; margin-bottom:4px;">${item.title}</div>
+                    <div style="font-size:0.8rem; color:#aaa; margin-bottom:8px;">期間: ${item.period}</div>
+                    ${item.imgUrl ? `<img src="${item.imgUrl}" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px;">` : ''}
+                `;
                 container.appendChild(box);
             });
         }
@@ -1063,9 +848,494 @@
         function adminResetEventPoints() {
             if (confirm("全員の個人Pを 0 にリセットしますか？")) {
                 memberDatabase.forEach(m => m.pt = 0);
-                if (currentUser) currentUser.pt = 0;
                 alert("🔄 全員の個人Pを 0 にリセットしました！");
             }
         }
 
-        function adminShowRankingResult() { alert("🏆 【順位発表演出】\n1位: ネオ (9,999 P)");
+        function adminShowRankingResult() {
+            alert("🏆 【順位発表演出】\n1位: ネオ (9,999 P)\n2位: ヨウスケ (--- P)");
+        }
+
+        // 🎂 ガチャ設定
+        function adminAddGachaIllustration() {
+            const gachaTitle = document.getElementById('admin-gacha-title-input').value;
+            const gachaType = document.getElementById('admin-gacha-type-select').value;
+            const status = document.getElementById('admin-gacha-status-select').value;
+            const start = document.getElementById('admin-gacha-start-input').value;
+            const end = document.getElementById('admin-gacha-end-input').value;
+            const rarity = document.getElementById('admin-gacha-rarity').value;
+            const selectEl = document.getElementById('admin-gacha-img-select');
+            const selectedUrl = selectEl.value;
+            const selectedName = selectEl.options[selectEl.selectedIndex].text;
+
+            if (!selectedUrl) {
+                alert("追加するイラストを選択してください。");
+                return;
+            }
+
+            currentGachaConfig = { title: gachaTitle || "記念ピックアップガチャ", type: gachaType, status: status, startDate: start, endDate: end };
+            localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
+
+            const newMasterItem = {
+                id: 'custom_master_' + Date.now(),
+                url: selectedUrl,
+                name: `[${rarity}] ${selectedName}`
+            };
+
+            masterDriveImages.push(newMasterItem);
+            updateUIUserStatus();
+            alert(`🎂 [${gachaType} / ${status}] 「${currentGachaConfig.title}」の設定を保存しました！`);
+        }
+
+        // 🎁 プレゼント送信
+        function adminSendGift() {
+            const targetId = document.getElementById('admin-gift-target').value;
+            const title = document.getElementById('admin-gift-title').value;
+            const gem = Number(document.getElementById('admin-gift-gem').value) || 0;
+            const coin = Number(document.getElementById('admin-gift-coin').value) || 0;
+            const imgUrl = document.getElementById('admin-gift-img-select').value;
+
+            if (!title) {
+                alert("プレゼント名を入力してください。");
+                return;
+            }
+
+            const giftObj = {
+                id: 'gift_' + Date.now(),
+                title: title,
+                gem: gem,
+                coin: coin,
+                imgUrl: imgUrl
+            };
+
+            if (targetId === "ALL") {
+                memberDatabase.forEach(m => {
+                    let mGifts = JSON.parse(localStorage.getItem('nexus_gifts_' + m.id)) || [];
+                    mGifts.push(giftObj);
+                    localStorage.setItem('nexus_gifts_' + m.id, JSON.stringify(mGifts));
+                });
+                alert(`📤 全メンバーのプレゼントBOXに配信しました！`);
+            } else {
+                let targetGifts = JSON.parse(localStorage.getItem('nexus_gifts_' + targetId)) || [];
+                targetGifts.push(giftObj);
+                localStorage.setItem('nexus_gifts_' + targetId, JSON.stringify(targetGifts));
+                alert(`📤 メンバー [${targetId}] 宛にプレゼントを送信しました！`);
+            }
+
+            reloadUserData();
+        }
+
+        // ✉️ お知らせ公開
+        function adminPublishNotice() {
+            const title = document.getElementById('admin-notice-title').value;
+            const text = document.getElementById('admin-notice-text').value;
+            const imgUrl = document.getElementById('admin-notice-img-select').value;
+
+            if (!title || !text) {
+                alert("タイトルと本文を入力してください。");
+                return;
+            }
+
+            const noticeObj = {
+                id: 'notice_' + Date.now(),
+                title: title,
+                text: text,
+                imgUrl: imgUrl,
+                date: new Date().toLocaleDateString()
+            };
+
+            globalNotices.unshift(noticeObj);
+            localStorage.setItem(getGlobalNoticesKey(), JSON.stringify(globalNotices));
+
+            updateUIUserStatus();
+            renderNotices();
+            alert("📢 お知らせを全体公開しました！");
+        }
+
+        // 🌐 ドライブからマスターデータをロード
+        async function fetchDriveMasterData() {
+            try {
+                const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime());
+                if (!response.ok) return;
+                masterDriveImages = await response.json();
+                
+                if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
+                    userAlbum = [...masterDriveImages];
+                    userSlideshowIds = masterDriveImages.map(img => img.id);
+                    saveUserAlbumData();
+                }
+
+                populateAdminSelects();
+
+                initSlideshow();
+                renderAlbum();
+                renderHistory();
+            } catch (e) {
+                console.log("ドライブマスターデータの取得スキップ");
+            }
+        }
+
+        function populateAdminSelects() {
+            const gachaSelect = document.getElementById('admin-gacha-img-select');
+            const giftSelect = document.getElementById('admin-gift-img-select');
+            const noticeSelect = document.getElementById('admin-notice-img-select');
+            const eventImgSelect = document.getElementById('admin-event-img-select');
+            const targetSelect = document.getElementById('admin-gift-target');
+            if (!gachaSelect || !giftSelect || !noticeSelect || !targetSelect || !eventImgSelect) return;
+
+            let optionsHtml = `<option value="">(選択してください)</option>`;
+            masterDriveImages.forEach(img => {
+                optionsHtml += `<option value="${img.url}">${img.name}</option>`;
+            });
+
+            gachaSelect.innerHTML = optionsHtml;
+            giftSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
+            noticeSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
+            eventImgSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
+
+            let targetHtml = `<option value="ALL">🌐 全メンバー一斉送信</option>`;
+            memberDatabase.forEach(m => {
+                targetHtml += `<option value="${m.id}">${m.name} (ID: ${m.id})</option>`;
+            });
+            targetSelect.innerHTML = targetHtml;
+        }
+
+        // 🎂 ガチャ機能
+        function pullGachaFromDrive() {
+            if (!currentUser) {
+                alert("ガチャを引くには、まず左上のステータスからスプレッドシート登録IDでログインしてください！");
+                promptUserLogin();
+                return;
+            }
+
+            if (masterDriveImages.length === 0) {
+                alert("ドライブからガチャデータを読み込み中またはデータがありません。");
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * masterDriveImages.length);
+            const rewardImg = masterDriveImages[randomIndex];
+            
+            const isStar2OrLower = rewardImg.name.includes("★2") || Math.random() < 0.3;
+
+            if (isStar2OrLower) {
+                const autoGift = {
+                    id: 'auto_gift_' + Date.now(),
+                    title: `【★2配布】${rewardImg.name}`,
+                    gem: 100,
+                    coin: 50,
+                    imgUrl: rewardImg.url
+                };
+
+                memberDatabase.forEach(m => {
+                    let mGifts = JSON.parse(localStorage.getItem('nexus_gifts_' + m.id)) || [];
+                    mGifts.push(autoGift);
+                    localStorage.setItem('nexus_gifts_' + m.id, JSON.stringify(mGifts));
+                });
+
+                userGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
+                updateUIUserStatus();
+                renderGifts();
+                alert(`🌟 【★2アイテム排出！】\n「${rewardImg.name}」が排出されました！\n★2以下のため、全メンバーのプレゼントBOXに自動配布されました！`);
+            } else {
+                const alreadyHas = userAlbum.find(item => item.id === rewardImg.id);
+                if (!alreadyHas) {
+                    userAlbum.push(rewardImg);
+                    if (!userSlideshowIds.includes(rewardImg.id)) userSlideshowIds.push(rewardImg.id);
+                    saveUserAlbumData();
+                    initSlideshow();
+                    renderAlbum();
+                }
+                alert(`🎉 ガチャ結果！\n「${rewardImg.name}」を獲得しました！\nマイアルバムに自動保存されました。`);
+            }
+        }
+
+        function renderGifts() {
+            const container = document.getElementById('present-list-container');
+            if (!container) return;
+            userGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
+
+            if (userGifts.length === 0) {
+                container.innerHTML = `<p style="color: #888; text-align: center; margin-top: 20px;">現在受け取れるプレゼントはありません。</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            userGifts.forEach((gift, index) => {
+                const box = document.createElement('div');
+                box.className = 'item-box';
+                box.innerHTML = `
+                    <div>
+                        <div style="font-weight:bold; color:#00f5d4;">${gift.title}</div>
+                        <div style="font-size:0.8rem; color:#aaa;">💎: +${gift.gem || 0} | 🪙: +${gift.coin || 0}</div>
+                        ${gift.imgUrl ? `<img src="${gift.imgUrl}" style="width:50px; height:50px; object-fit:cover; border-radius:6px; margin-top:4px;">` : ''}
+                    </div>
+                    <button onclick="claimGift(${index})" style="padding: 8px 14px; background:#00f5d4; color:#000; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">受け取る</button>
+                `;
+                container.appendChild(box);
+            });
+        }
+
+        function claimGift(index) {
+            const gift = userGifts[index];
+            if (currentUser) {
+                currentUser.gem = (Number(currentUser.gem) || 0) + (Number(gift.gem) || 0);
+                currentUser.coin = (Number(currentUser.coin) || 0) + (Number(gift.coin) || 0);
+                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+            }
+            
+            if (gift.imgUrl) {
+                const newAlbumItem = { id: 'gift_img_' + Date.now(), name: gift.title, url: gift.imgUrl };
+                userAlbum.push(newAlbumItem);
+                if (!userSlideshowIds.includes(newAlbumItem.id)) userSlideshowIds.push(newAlbumItem.id);
+                saveUserAlbumData();
+                renderAlbum();
+                initSlideshow();
+            }
+
+            userGifts.splice(index, 1);
+            localStorage.setItem(getUserGiftsKey(), JSON.stringify(userGifts));
+
+            updateUIUserStatus();
+            renderGifts();
+            alert(`🎁 「${gift.title}」を受け取りました！`);
+        }
+
+        function renderNotices() {
+            const container = document.getElementById('notice-list-container');
+            if (!container) return;
+            globalNotices = JSON.parse(localStorage.getItem(getGlobalNoticesKey())) || [];
+
+            if (globalNotices.length === 0) {
+                container.innerHTML = `<p style="color: #888; text-align: center; margin-top: 20px;">新しいお知らせはありません。</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            globalNotices.forEach(notice => {
+                const box = document.createElement('div');
+                box.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:12px; border-left:3px solid #00f5d4;";
+                box.innerHTML = `
+                    <div style="font-size:0.75rem; color:#888; margin-bottom:4px;">${notice.date}</div>
+                    <div style="font-weight:bold; color:#00f5d4; font-size:1rem; margin-bottom:6px;">${notice.title}</div>
+                    <div style="font-size:0.9rem; color:#ddd; white-space:pre-wrap; margin-bottom:8px;">${notice.text}</div>
+                    ${notice.imgUrl ? `<img src="${notice.imgUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:8px;">` : ''}
+                `;
+                container.appendChild(box);
+            });
+        }
+
+        function saveUserAlbumData() {
+            localStorage.setItem(getUserAlbumKey(), JSON.stringify(userAlbum));
+            localStorage.setItem(getUserSlideshowKey(), JSON.stringify(userSlideshowIds));
+        }
+
+        function initSlideshow() {
+            const container = document.getElementById('slideshow-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const activeImages = userAlbum.filter(img => userSlideshowIds.includes(img.id));
+            if (activeImages.length === 0) {
+                container.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#555;">画像がありません</div>`;
+                return;
+            }
+            activeImages.forEach((imgObj, index) => {
+                const img = document.createElement('img');
+                img.src = imgObj.url;
+                img.className = 'slide-img' + (index === 0 ? ' active' : '');
+                container.appendChild(img);
+            });
+            startSlideshowInterval();
+        }
+
+        let slideTimer = null;
+        function startSlideshowInterval() {
+            if (slideTimer) clearInterval(slideTimer);
+            const slides = document.querySelectorAll('.slide-img');
+            if (slides.length <= 1) return;
+            let current = 0;
+            slideTimer = setInterval(() => {
+                slides[current].classList.remove('active');
+                current = (current + 1) % slides.length;
+                slides[current].classList.add('active');
+            }, 4000);
+        }
+
+        function renderAlbum() {
+            const grid = document.getElementById('album-grid-container');
+            if (!grid) return;
+            grid.innerHTML = '';
+            if (userAlbum.length === 0) {
+                grid.innerHTML = `<p style="grid-column: span 2; text-align:center; color:#888;">獲得したイラストはありません。</p>`;
+                return;
+            }
+            userAlbum.forEach(img => {
+                const isInSlideshow = userSlideshowIds.includes(img.id);
+                const card = document.createElement('div');
+                card.className = 'album-card' + (isInSlideshow ? ' in-slideshow' : '');
+                card.innerHTML = `
+                    <div class="album-img-box"><img src="${img.url}" alt="${img.name}"></div>
+                    <div class="album-card-info">
+                        <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${img.name}</div>
+                        <div style="font-size:0.7rem; color:${isInSlideshow ? '#00f5d4' : '#888'};">${isInSlideshow ? '✓ スライド中' : 'タップして登録'}</div>
+                    </div>
+                `;
+                card.onclick = () => toggleSlideshow(img.id);
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleSlideshow(id) {
+            if (userSlideshowIds.includes(id)) {
+                if (userSlideshowIds.length <= 1) {
+                    alert('スライドショーには最低1枚の画像が必要です。');
+                    return;
+                }
+                userSlideshowIds = userSlideshowIds.filter(i => i !== id);
+            } else {
+                userSlideshowIds.push(id);
+            }
+            saveUserAlbumData();
+            renderAlbum();
+            initSlideshow();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            reloadUserData();
+            fetchDriveMasterData();
+
+            const savedColor = localStorage.getItem('nexus_clock_color');
+            if (savedColor) {
+                const clockEl = document.getElementById('real-clock');
+                clockEl.className = "clock-time " + savedColor;
+                document.querySelectorAll('.color-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                    if (btn.classList.contains(savedColor)) btn.classList.add('selected');
+                });
+            }
+        });
+
+        // ⏰ 端末の時計をリアルタイムに反映
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('real-clock').innerText = `${h}:${m}:${s}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function setClockColor(colorClass, btnElement) {
+            const clockEl = document.getElementById('real-clock');
+            clockEl.className = "clock-time " + colorClass;
+            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('selected'));
+            btnElement.classList.add('selected');
+            localStorage.setItem('nexus_clock_color', colorClass);
+        }
+
+        // 🔋 端末のバッテリー状況をリアルタイム反映
+        async function initBattery() {
+            const bEl = document.getElementById('battery-info');
+            if ('getBattery' in navigator) {
+                try {
+                    const battery = await navigator.getBattery();
+                    function updateBattery() {
+                        const level = Math.floor(battery.level * 100);
+                        bEl.innerText = (battery.charging ? "充電中 " : "") + level + "%";
+                        
+                        // バッテリー残量に応じた色変更・点滅演出
+                        bEl.className = "battery-status";
+                        if (battery.charging) {
+                            bEl.classList.add('battery-charging');
+                        } else if (level <= 15) {
+                            bEl.classList.add('battery-blink');
+                        } else if (level <= 30) {
+                            bEl.classList.add('battery-red');
+                        } else if (level <= 50) {
+                            bEl.classList.add('battery-orange');
+                        } else {
+                            bEl.classList.add('battery-green');
+                        }
+                    }
+                    updateBattery();
+                    battery.addEventListener('levelchange', updateBattery);
+                    battery.addEventListener('chargingchange', updateBattery);
+                } catch (e) { 
+                    bEl.innerText = "充電中 100%"; 
+                    bEl.className = "battery-status battery-charging";
+                }
+            } else { 
+                bEl.innerText = "充電中 100%"; 
+                bEl.className = "battery-status battery-charging";
+            }
+        }
+        initBattery();
+
+        function toggleOtherMenu() { document.getElementById('other-modal').classList.add('active'); }
+        function closeOtherMenu() { document.getElementById('other-modal').classList.remove('active'); }
+        function openScreen(name) {
+            closeOtherMenu();
+            if (name === 'present') renderGifts();
+            if (name === 'notice') renderNotices();
+            if (name === 'history') renderHistory();
+            document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const target = document.getElementById('screen-' + name);
+            if (target) target.classList.add('active');
+        }
+        function closeScreen(name) { document.getElementById('screen-' + name).classList.remove('active'); }
+        function switchNav(name) {
+            closeOtherMenu();
+            document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if (name === 'home') document.getElementById('nav-home').classList.add('active');
+        }
+
+        function updateCountdown() {
+            if (!currentEvent.endDate || currentEvent.status === "開催準備中") return;
+            const target = new Date(currentEvent.endDate);
+            const diff = target - new Date();
+            const cdEl = document.getElementById('countdown');
+            if (!cdEl) return;
+            if (diff <= 0) {
+                cdEl.innerText = "🎉 イベント終了・集計中";
+                return;
+            }
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const m = Math.floor((diff / 1000 / 60) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+            cdEl.innerText = `${d}日 ${h}時間 ${m}分 ${s}秒`;
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        const songs = [
+            { title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" },
+            { title: "ハウトゥー世界征服", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" }
+        ];
+        const audioPlayer = document.getElementById('audio-player');
+        const playlist = document.getElementById('playlist');
+        const miniTitle = document.getElementById('mini-song-title');
+        const nowPlayingText = document.getElementById('now-playing-text');
+
+        function initPlaylist() {
+            playlist.innerHTML = "";
+            songs.forEach((song) => {
+                const item = document.createElement('div');
+                item.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; cursor:pointer;";
+                item.innerHTML = `<span>▶ ${song.title}</span><span style="color:#888;">再生</span>`;
+                item.onclick = () => {
+                    audioPlayer.src = song.url;
+                    audioPlayer.play();
+                    miniTitle.innerText = song.title;
+                    nowPlayingText.innerText = "再生中の曲: " + song.title;
+                };
+                playlist.appendChild(item);
+            });
+        }
+        initPlaylist();
+    </script>
+</body>
+</html>
