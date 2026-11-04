@@ -726,15 +726,9 @@
     // 🌐 GistのRaw URL（Googleドライブ連動の画像リスト）
     const GIST_RAW_URL = "https://gist.githubusercontent.com/nexusostave1124/ac1c05eaf442b0dcb34514cb7ed804a7/raw/images.json";
 
-    // 🎨 アルバム・スライドショー管理の初期データ
-    let albumImages = JSON.parse(localStorage.getItem('nexus_album_images')) || [
-      { id: 'def_1', url: 'https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/images/home_bg.jpg', name: 'デフォルト背景1' },
-      { id: 'def_2', url: 'https://picsum.photos/id/1074/800/1200', name: 'サンプルイラストA' },
-      { id: 'def_3', url: 'https://picsum.photos/id/1080/800/1200', name: 'サンプルイラストB' }
-    ];
-
-    let slideshowIds = JSON.parse(localStorage.getItem('nexus_slideshow_ids')) || ['def_1', 'def_2', 'def_3'];
-
+    let albumImages = JSON.parse(localStorage.getItem('nexus_album_images')) || [];
+let slideshowIds = JSON.parse(localStorage.getItem('nexus_slideshow_ids')) || [];
+    
     // ☁️ GistからGoogleドライブの画像リストを自動取得してマージする関数
     async function fetchDriveImagesFromGist() {
       try {
