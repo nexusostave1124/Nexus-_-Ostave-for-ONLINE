@@ -243,6 +243,7 @@
         .c-skyblue { color: #00bfff; text-shadow: 0 0 8px rgba(0,191,255,0.8); }
         .c-orange { color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.8); }
         .c-black { color: #111111; text-shadow: 0 0 4px rgba(255,255,255,0.8); }
+
         .battery-green { color: #00ff66; text-shadow: 0 0 8px rgba(0,255,102,0.8); }
         .battery-yellow { color: #ffee00; text-shadow: 0 0 8px rgba(255,238,0,0.8); }
         .battery-orange { color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.8); }
@@ -287,6 +288,7 @@
         .nav-item.active { color: #00f5d4; }
         .nav-icon { font-size: 1.35rem; margin-bottom: 1px; }
 
+        /* 🎈 下部イベント用吹き出し（残り何日） */
         .event-day-bubble {
             position: absolute; top: -14px; background: #ff334b; color: #fff;
             font-size: 0.65rem; font-weight: bold; border-radius: 12px; padding: 2px 7px;
@@ -301,8 +303,8 @@
         .modal-overlay.active { display: block; }
         .menu-dialog {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(30, 30, 30, 0.95); border: 2px solid #00f5d4; border-radius: 20px;
-            width: 90%; max-width: 380px; padding: 20px 15px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px);
+            background: rgba(80, 80, 80, 0.95); border: 3px solid #aaa; border-radius: 20px;
+            width: 88%; max-width: 340px; padding: 20px 15px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px);
         }
         .other-menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 10px; }
         .other-menu-card {
@@ -346,8 +348,6 @@
         .admin-section h4 { color: #00f5d4; margin-bottom: 10px; font-size: 1rem; border-left: 3px solid #00f5d4; padding-left: 8px; }
         .admin-btn { width: 100%; padding: 10px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family: inherit; margin-top: 8px; }
         .admin-btn:active { opacity: 0.8; }
-        .admin-btn-secondary { background: #3388ff; color: #fff; }
-        .admin-btn-reset { background: #ff9900; color: #000; }
         .admin-input { width: 100%; padding: 8px 10px; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; font-family: inherit; margin-top: 6px; margin-bottom: 10px; }
 
         .item-box { background: #1f1f1f; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
@@ -357,26 +357,43 @@
 
         /* ================= 🎪 全画面イベント専用スタイル ================= */
         #screen-event {
-            padding: 0; background: #000; overflow: hidden;
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 100;
         }
-        .event-full-bg-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        .event-bg-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0; transition: opacity 0.5s ease; }
+
+        .event-full-bg-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; touch-action: pan-y;
+        }
+        .event-bg-slide {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; object-position: center;
+            opacity: 0; transition: opacity 0.5s ease;
+        }
         .event-bg-slide.active { opacity: 1; }
 
+        /* 左上：獲得P & 現在順位 */
         .event-user-status {
             position: absolute; top: 15px; left: 15px; z-index: 10;
             display: flex; align-items: center; gap: 10px;
             background: rgba(0, 0, 0, 0.65); padding: 8px 14px; border-radius: 14px;
             backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.2);
         }
-        .event-avatar-box { width: 46px; height: 46px; border-radius: 8px; border: 2px solid #ffee00; overflow: hidden; background: #222; flex-shrink: 0; }
+        .event-avatar-box {
+            width: 46px; height: 46px; border-radius: 8px; border: 2px solid #ffee00;
+            overflow: hidden; background: #222; flex-shrink: 0;
+        }
         .event-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
         .event-status-info { display: flex; flex-direction: column; font-size: 0.85rem; }
         .event-status-row { display: flex; gap: 8px; align-items: baseline; }
         .event-pt-val { font-size: 1.25rem; font-weight: 800; color: #fff; text-shadow: 0 0 6px rgba(255,255,255,0.6); }
         .event-rank-val { font-size: 1.1rem; font-weight: 800; color: #ffee00; text-shadow: 0 0 6px rgba(255,238,0,0.6); }
 
+        /* 左上？ヘルプボタン */
         .event-help-btn {
             position: absolute; top: 75px; left: 15px; z-index: 10;
             width: 38px; height: 38px; border-radius: 50%;
@@ -386,35 +403,39 @@
             cursor: pointer; backdrop-filter: blur(4px);
         }
 
-        .event-top-right { position: absolute; top: 15px; right: 15px; z-index: 10; text-align: right; }
+        /* 右上：時計のみ */
+        .event-top-right {
+            position: absolute; top: 15px; right: 15px; z-index: 10;
+            text-align: right;
+        }
 
-        /* 左下の枠（背景と役割を明確に分離） */
+        /* 左下：期間＆イベントタイトル画像（枠いっぱい仕様） */
         .event-bottom-left {
             position: absolute; bottom: 85px; left: 15px; z-index: 10;
             max-width: 65%; display: flex; flex-direction: column; gap: 6px;
         }
         .event-period-badge {
-            background: rgba(0,0,0,0.75); border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3);
             color: #fff; font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 6px;
             display: inline-block; backdrop-filter: blur(4px);
         }
         .event-title-banner {
-            background: rgba(30,30,30,0.85); border: 2px solid rgba(255,255,255,0.4);
+            background: rgba(40,40,40,0.85); border: 2px solid rgba(255,255,255,0.4);
             border-radius: 14px; overflow: hidden; color: #fff;
-            font-size: 1rem; font-weight: bold; backdrop-filter: blur(6px);
+            font-size: 1.1rem; font-weight: bold; backdrop-filter: blur(6px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.6);
             display: flex; align-items: center; justify-content: center;
-            padding: 10px; min-height: 50px; max-height: 90px; width: 100%;
+            max-height: 90px; width: 100%;
         }
-        .event-title-banner img { width: 100%; height: 100%; max-height: 90px; object-fit: cover; display: block; }
-
-        /* 左下に別フレームで重なる自由配置ロゴ */
-        .event-custom-logo {
-            position: absolute; bottom: 185px; left: 15px; z-index: 12;
-            max-width: 120px; max-height: 60px; object-fit: contain; pointer-events: none;
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.9));
+        .event-title-banner img {
+            width: 100%;
+            height: 100%;
+            max-height: 90px;
+            object-fit: cover; /* 枠いっぱいに表示 */
+            display: block;
         }
 
+        /* 右下：アクションボタン (イベント・ランキング) */
         .event-action-column {
             position: absolute; bottom: 85px; right: 15px; z-index: 10;
             display: flex; flex-direction: column; gap: 12px; align-items: center;
@@ -428,28 +449,23 @@
         .event-action-btn:active { transform: scale(0.94); }
         .event-action-icon { font-size: 1.8rem; margin-bottom: 2px; }
 
+        /* 右下カスタムロゴ */
+        .event-custom-logo {
+            position: absolute; bottom: 210px; right: 15px; z-index: 10;
+            max-width: 100px; max-height: 70px; object-fit: contain; pointer-events: none;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.8));
+        }
+
         .event-no-event-box {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: rgba(0,0,0,0.85); border: 2px solid #ff334b; border-radius: 16px;
             padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320px;
         }
-
-        /* 🎮 ミニゲーム画面スタイル */
-        .mg-box { background: #181818; border: 1px solid #333; border-radius: 12px; padding: 12px; margin-bottom: 12px; text-align: center; }
-        .mg-title { font-size: 1rem; color: #ffee00; font-weight: bold; margin-bottom: 6px; }
-        .mg-desc { font-size: 0.75rem; color: #aaa; margin-bottom: 10px; }
-        .mg-display { font-size: 1.8rem; font-weight: bold; color: #00f5d4; margin: 10px 0; background: #000; padding: 10px; border-radius: 8px; letter-spacing: 2px; border: 1px solid #444; }
-        .mg-btn-group { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
-        .mg-btn { padding: 10px 16px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; flex: 1; min-width: 80px; }
-        .mg-btn:active { opacity: 0.8; transform: scale(0.96); }
-        .mg-log { font-size: 0.8rem; color: #ffee00; min-height: 24px; margin-top: 8px; font-weight: bold; }
-        .slot-reels { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
-        .slot-reel { width: 55px; height: 70px; background: #000; border: 2px solid #00f5d4; border-radius: 8px; font-size: 2rem; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #fff; }
     </style>
 </head>
 <body>
 
-    <!-- ================= 🌟 タイトル画面 ================= -->
+   <!-- ================= 🌟 タイトル画面 ================= -->
     <div id="title-screen">
         <div class="title-bg-slideshow" id="title-bg-slideshow-container"></div>
         <div class="title-overlay-top"></div>
@@ -585,6 +601,7 @@
         <div class="overlay-top"></div>
         <div class="overlay-bottom"></div>
 
+        <!-- 左上：獲得P & 現在順位 -->
         <div class="event-user-status">
             <div class="event-avatar-box">
                 <img src="https://picsum.photos/id/1069/100/100" id="event-avatar-img">
@@ -595,17 +612,19 @@
             </div>
         </div>
 
+        <!-- 左上：？ヘルプボタン -->
         <div class="event-help-btn" onclick="openEventHelpModal()">?</div>
 
+        <!-- 右上：時計のみ（ホーム画面の時計カラー設定クラスを自動連動） -->
         <div class="event-top-right">
             <div class="clock-title" style="font-size:0.6rem; color:#aaa;">現在時刻</div>
             <div id="event-clock" class="clock-time c-red" style="font-size:1.4rem;">00:00:00</div>
         </div>
 
-        <!-- 左下：自由配置イベントロゴ（背景と枠から分離） -->
+        <!-- 右下カスタムロゴ -->
         <img id="event-custom-logo-img" class="event-custom-logo" src="" style="display:none;">
 
-        <!-- 左下：期間＆タイトル枠 -->
+        <!-- 左下：期間 & イベントタイトル/画像（枠いっぱい仕様） -->
         <div class="event-bottom-left" id="event-info-bottom-left">
             <div id="event-period-text" class="event-period-badge">2026.11.30 18:00〜2026.12.12 20:59</div>
             <div id="event-title-banner-box" class="event-title-banner">
@@ -613,11 +632,11 @@
             </div>
         </div>
 
-        <!-- 右下：ミニゲーム & ランキングボタン -->
+        <!-- 右下：イベント＆ランキングボタン -->
         <div class="event-action-column" id="event-action-btns">
             <div class="event-action-btn" onclick="handleEventActionButton()">
-                <span class="event-action-icon">🎮</span>
-                <span>ミニゲーム</span>
+                <span class="event-action-icon">💍</span>
+                <span>イベント</span>
             </div>
             <div class="event-action-btn" onclick="openRankingModal()">
                 <span class="event-action-icon">⚔️</span>
@@ -625,6 +644,7 @@
             </div>
         </div>
 
+        <!-- 非開催表示 -->
         <div id="event-no-event-modal" class="event-no-event-box" style="display:none;">
             <h3 style="color:#ff334b; font-size:1.1rem; margin-bottom:8px;">🔒 お知らせ</h3>
             <p style="font-size:0.9rem; color:#ccc;">現在開催中のイベントはありません</p>
@@ -674,8 +694,8 @@
     </div>
 
     <div id="screen-album" class="sub-screen">
-        <div class="sub-header"><span class="sub-title">📷 マイアルバム (最大7枚登録可能)</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div>
-        <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 12px;">獲得イラストをタップしてスライドショーに登録できます（最大7枚）。</p>
+        <div class="sub-header"><span class="sub-title">📷 マイアルバム & スライドショー設定</span><button class="close-btn" onclick="closeScreen('album')">閉じる</button></div>
+        <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 12px;">ガチャやプレゼントで獲得したイラストをタップしてスライドショーに登録できます。</p>
         <div class="album-grid" id="album-grid-container"></div>
     </div>
 
@@ -691,6 +711,7 @@
         <div class="admin-section" style="border-color:#3388ff;">
             <h4 style="color:#3388ff; border-left-color:#3388ff;">報告フォーム</h4>
             <p style="font-size:0.8rem; color:#aaa; margin-bottom:12px;">不具合やご意見、トラブルなどを管理者に報告できます。</p>
+
             <label style="font-size:0.8rem; color:#aaa;">報告カテゴリ (5つから選択):</label>
             <select id="user-report-category" class="admin-input">
                 <option value="エラーやバグによる報告">エラーやバグによる報告</option>
@@ -699,14 +720,17 @@
                 <option value="ガイドラインに関する報告">ガイドラインに関する報告</option>
                 <option value="その他">その他</option>
             </select>
+
             <label style="font-size:0.8rem; color:#aaa; margin-top:8px; display:block;">報告内容の記述:</label>
             <textarea id="user-report-content" class="admin-input" rows="5" placeholder="詳細な内容をご記入ください..."></textarea>
+
             <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="submitUserReport()">📤 管理者に送信する</button>
         </div>
     </div>
 
     <div id="screen-settings" class="sub-screen">
         <div class="sub-header"><span class="sub-title">⚙️ 設定</span><button class="close-btn" onclick="closeScreen('settings')">閉じる</button></div>
+        
         <div class="admin-section" style="margin-bottom:12px;">
             <h4 style="color:#00f5d4;">🔊 端末連動・システム設定</h4>
             <div style="margin-bottom: 10px;">
@@ -720,17 +744,20 @@
             <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="refreshAppData()">🔄 更新 (データ再取得)</button>
             <button class="admin-btn" style="background:#ff9900; color:#fff;" onclick="restartApp()">♻️ 再起動</button>
         </div>
+
         <div id="settings-home-exclusive" class="admin-section" style="display: none; margin-bottom:12px;">
             <h4 style="color:#ffee00;">🏠 ホーム画面専用設定</h4>
             <label style="font-size:0.8rem; color:#aaa;">名前変更:</label>
             <input type="text" id="settings-name-input" class="admin-input" placeholder="新しい名前">
             <button class="admin-btn" onclick="saveUserNameChange()">💾 名前を保存</button>
-            <label style="font-size:0.8rem; color:#aaa; margin-top:10px; display:block;">アイコン変更:</label>
+
+            <label style="font-size:0.8rem; color:#aaa; margin-top:10px; display:block;">アイコン変更 (アルバムのイラスト選択 / デフォルト削除):</label>
             <select id="settings-avatar-select" class="admin-input">
                 <option value="">(デフォルト・削除)</option>
             </select>
             <button class="admin-btn" onclick="saveUserAvatarChange()">🖼️ アイコンを適用</button>
         </div>
+
         <div id="settings-title-exclusive" class="admin-section" style="display: none; border-color:#ff334b; margin-bottom:12px;">
             <h4 style="color:#ff334b; border-left-color:#ff334b;">⚠️ タイトル画面限定: フォークリセット</h4>
             <p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">端末内のすべてのデータを完全に初期化します。</p>
@@ -740,8 +767,9 @@
             </label>
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="executeForkReset()">🗑️ すべてのデータを削除して初期化</button>
         </div>
+
         <div id="settings-clock-section" class="admin-section" style="display: none;">
-            <h4 style="color:#00f5d4;">⏰ 時計フォントカラー</h4>
+            <h4 style="color:#00f5d4;">⏰ ホーム画面の時計フォントカラー</h4>
             <div class="color-picker-grid">
                 <button class="color-btn c-white" style="background:#222;" onclick="setClockColor('c-white', this)">白</button>
                 <button class="color-btn c-blue" style="background:#222;" onclick="setClockColor('c-blue', this)">青</button>
@@ -755,31 +783,30 @@
         </div>
     </div>
 
-    <div id="screen-shop" class="sub-screen">
-        <div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div>
-        <p>交換所画面です。</p>
-    </div>
-
+    <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
+    
     <!-- 🛡️ 管理画面 -->
     <div id="screen-manage" class="sub-screen">
         <div class="sub-header">
-            <span class="sub-title">🛡️ 管理画面</span>
-            <div style="display: flex; gap: 6px;">
-                <button class="close-btn" style="background:#00f5d4; color:#000;" onclick="saveAndCloseManageScreen()">💾 保存</button>
-                <button class="close-btn" style="background:#ff9900; color:#000;" onclick="resetManageScreenForm()">🔄 リセット</button>
+            <span class="sub-title">🛡️ 管理画面 (管理者モード)</span>
+            <div>
                 <button class="close-btn" onclick="closeManageScreen()">閉じる</button>
             </div>
         </div>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※「閉じる」ボタンを押すと変更内容が自動強制保存されます。</p>
 
+        <!-- 🔗 スプレッドシート & GAS 連携設定 -->
         <div class="admin-section" style="border-color:#3388ff;">
             <h4 style="color:#3388ff; border-left-color:#3388ff;">🔗 Googleスプレッドシート & GAS 連携</h4>
+            <p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">GASのウェブアプリURLを入力してスプレッドシートとデータを同期できます。</p>
             <label style="font-size:0.8rem; color:#aaa;">GASウェブアプリ URL:</label>
             <input type="text" id="admin-gas-url-input" class="admin-input" placeholder="https://script.google.com/macros/s/.../exec">
-            <button class="admin-btn admin-btn-secondary" onclick="saveAndSyncGasUrl()">🔄 スプレッドシートと同期する</button>
+            <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="saveAndSyncGasUrl()">🔄 スプレッドシートと同期する</button>
         </div>
 
+        <!-- 🎪 イベント管理＆ボーナス値設定＆P算出計算機 -->
         <div class="admin-section">
-            <h4>🎪 イベント管理</h4>
+            <h4>🎪 イベント管理・ボーナス値 & P算出設定</h4>
             <label style="font-size: 0.8rem; color: #aaa;">イベントタイトル：</label>
             <input type="text" id="admin-event-title-input" class="admin-input" value="結成2周年記念イベント">
             
@@ -787,7 +814,10 @@
             <select id="admin-event-type-select" class="admin-input">
                 <option value="シーズンイベント">シーズンイベント</option>
                 <option value="ストーリーイベント">ストーリーイベント</option>
+                <option value="タイアップイベント">タイアップイベント</option>
+                <option value="期間限定イベント">期間限定イベント</option>
             </select>
+
             <label style="font-size: 0.8rem; color: #aaa;">開始日時：</label>
             <input type="datetime-local" id="admin-event-start-input" class="admin-input" value="2026-11-30T18:00">
             <label style="font-size: 0.8rem; color: #aaa;">終了日時：</label>
@@ -798,48 +828,91 @@
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
                 <option value="終了">終了 (確認可能)</option>
             </select>
-            <label style="font-size: 0.8rem; color: #aaa;">イベントバナー・背景：</label>
+            <label style="font-size: 0.8rem; color: #aaa;">イベントバナー・背景（Googleドライブ選択 / Windows対応）：</label>
             <select id="admin-event-img-select" class="admin-input"><option value="">(画像なし)</option></select>
             
-            <label style="font-size: 0.8rem; color: #ffee00; margin-top:8px; display:block;">左下重ね置きロゴ（自由配置）：</label>
+            <label style="font-size: 0.8rem; color: #ffee00; margin-top:8px; display:block;">右下の自由配置イベントロゴ（Googleドライブ選択）：</label>
             <select id="admin-event-logo-select" class="admin-input"><option value="">(ロゴなし)</option></select>
+
             <button class="admin-btn" onclick="adminCreateEvent()">🚀 イベント設定を保存する</button>
-            <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを終了してヒストリーへ移行</button>
+            <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを終了してヒストリーにまとめる</button>
         </div>
 
+        <!-- 🧮 イベントP算出計算機 -->
         <div class="admin-section" style="border-color: #00f5d4;">
-            <h4 style="color: #00f5d4; border-left-color: #00f5d4;">🧮 イベントP算出・ボーナス手入力</h4>
+            <h4 style="color: #00f5d4; border-left-color: #00f5d4;">🧮 イベントP算出・ボーナス手入力エディタ</h4>
+            <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 8px;">公式: [ 獲得P + ガチャボーナス(%) + イラストボーナス(%) + ボーナス(%) ] (小数以下繰上げ)</p>
+            
             <label style="font-size:0.8rem; color:#aaa;">対象メンバー選択：</label>
             <select id="calc-target-member" class="admin-input" onchange="loadMemberBonusToCalc()">
                 <option value="">(メンバーを選択)</option>
             </select>
+
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                <div><label style="font-size:0.75rem; color:#aaa;">獲得P:</label><input type="number" id="calc-base-pt" class="admin-input" value="0" oninput="runPtCalculator()"></div>
-                <div><label style="font-size:0.75rem; color:#aaa;">ガチャボーナス (%):</label><input type="number" id="calc-gacha-bonus" class="admin-input" value="0" oninput="runPtCalculator()"></div>
-                <div><label style="font-size:0.75rem; color:#aaa;">イラストボーナス (%):</label><input type="number" id="calc-illust-bonus" class="admin-input" value="0" oninput="runPtCalculator()"></div>
-                <div><label style="font-size:0.75rem; color:#aaa;">ボーナス (%):</label><input type="number" id="calc-extra-bonus" class="admin-input" value="0" oninput="runPtCalculator()"></div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">獲得P (稼いだP)：</label>
+                    <input type="number" id="calc-base-pt" class="admin-input" value="0" oninput="runPtCalculator()">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">ガチャボーナス (%):</label>
+                    <input type="number" id="calc-gacha-bonus" class="admin-input" value="0" oninput="runPtCalculator()">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">イラストボーナス (%):</label>
+                    <input type="number" id="calc-illust-bonus" class="admin-input" value="0" oninput="runPtCalculator()">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">ボーナス (%):</label>
+                    <input type="number" id="calc-extra-bonus" class="admin-input" value="0" oninput="runPtCalculator()">
+                </div>
             </div>
+
             <div style="background:#222; padding:10px; border-radius:6px; margin-top:8px; text-align:center;">
                 <span style="font-size:0.8rem; color:#aaa;">計算結果 (合計P): </span>
                 <span id="calc-result-display" style="font-size:1.3rem; font-weight:bold; color:#00f5d4;">0 P</span>
             </div>
-            <button class="admin-btn" onclick="saveCalculatedPtToMember()">💾 ポイントを適用する</button>
+            <button class="admin-btn" onclick="saveCalculatedPtToMember()">💾 計算結果をメンバーのイベントPに適用する</button>
         </div>
 
         <div class="admin-section">
-            <h4>📊 ポイント（P）一覧 & 調整</h4>
+            <h4>📊 ポイント（P）一覧 & スプレッドシート連携手入力調整</h4>
             <div id="admin-member-points-container" style="margin-bottom: 10px; font-size: 0.8rem; background: #222; padding: 8px; border-radius: 6px;"></div>
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminResetEventPoints()">🔄 全員の個人Pを0にリセット</button>
-            <button class="admin-btn admin-btn-secondary" onclick="openRankingModal()">🏆 ランキング確認</button>
+            <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="openRankingModal()">🏆 ランキング確認</button>
         </div>
 
         <div class="admin-section" style="border-color: #3388ff;">
-            <h4 style="color: #3388ff; border-left-color: #3388ff;">📋 ユーザー報告一覧</h4>
+            <h4 style="color: #3388ff; border-left-color: #3388ff;">📋 ユーザーからの報告一覧</h4>
             <div id="admin-reports-container" style="margin-top: 10px;"></div>
+        </div>
+        
+        <div class="admin-section" style="border-color: #00f5d4;">
+            <h4 style="color: #00f5d4; border-left-color: #00f5d4;">📷 メンバーのアルバム閲覧・削除 (管理者限定)</h4>
+            <label style="font-size: 0.8rem; color: #aaa;">確認するメンバー：</label>
+            <select id="admin-target-album-select" class="admin-input" onchange="renderAdminMemberAlbumView()">
+                <option value="">(メンバーを選択してください)</option>
+            </select>
+            <div id="admin-member-album-container" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="admin-section" style="border-color: #ff334b;">
+            <h4 style="color: #ff334b; border-left-color: #ff334b;">🔒 ユーザーアクセス制限・アカウント管理</h4>
+            <label style="font-size: 0.8rem; color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 12px;">
+                <input type="checkbox" id="admin-login-lock-toggle" onchange="toggleLoginLock(this)" style="width: 18px; height: 18px;">
+                全一般ユーザーのログインを一斉ブロックする
+            </label>
+            <div id="admin-user-restriction-list" style="background:#222; padding:8px; border-radius:6px; font-size:0.8rem;"></div>
         </div>
 
         <div class="admin-section">
-            <h4>🎂 ガチャ管理 & 💎消費設定</h4>
+            <h4>🖼️ タイトル画面 背景画像管理 (最大8枚)</h4>
+            <select id="admin-title-bg-select" class="admin-input"><option value="">(選択してください)</option></select>
+            <button class="admin-btn" onclick="adminAddTitleBg()">➕ タイトル背景に追加する</button>
+            <div id="admin-title-bg-list" style="margin-top: 10px; font-size: 0.8rem;"></div>
+        </div>
+
+        <div class="admin-section">
+            <h4>🎂 ガチャ管理・バナー画像＆ラインナップ・💎消費設定</h4>
             <input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
             <select id="admin-gacha-type-select" class="admin-input">
                 <option value="ネオフェス限定">ネオフェス限定</option>
@@ -847,6 +920,8 @@
                 <option value="限定">限定</option>
                 <option value="復刻・バースデー">復刻・バースデー</option>
                 <option value="イベント">イベント</option>
+                <option value="限定復刻">限定復刻</option>
+                <option value="限定/恒常">限定/恒常</option>
             </select>
             <select id="admin-gacha-status-select" class="admin-input">
                 <option value="開催中">開催中</option>
@@ -854,61 +929,65 @@
                 <option value="終了">終了 (引くのをロック)</option>
             </select>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                <div><label style="font-size:0.75rem; color:#aaa;">1連 💎消費:</label><input type="number" id="admin-gacha-cost-single" class="admin-input" value="300"></div>
-                <div><label style="font-size:0.75rem; color:#aaa;">10連 💎消費:</label><input type="number" id="admin-gacha-cost-multi" class="admin-input" value="3000"></div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">1連 💎消費数:</label>
+                    <input type="number" id="admin-gacha-cost-single" class="admin-input" value="300">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">10連 💎消費数:</label>
+                    <input type="number" id="admin-gacha-cost-multi" class="admin-input" value="3000">
+                </div>
             </div>
-            <label style="font-size:0.8rem; color:#aaa;">バナー画像：</label>
+            <label style="font-size:0.8rem; color:#aaa;">ガチャバナー（Googleドライブ選択）：</label>
             <select id="admin-gacha-banner-select" class="admin-input"><option value="">(バナーなし)</option></select>
-            <button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ基本設定を保存</button>
+            <input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
+            <input type="datetime-local" id="admin-gacha-end-input" class="admin-input" value="2026-11-30T00:00">
+            <button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ基本設定を保存する</button>
+
             <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-            
-            <h5 style="color:#ffee00; margin-bottom:8px;">🎯 ガチャアイテム追加 & ★2自動配布</h5>
-            <label style="font-size:0.8rem; color:#aaa;">対象イラスト：</label>
+            <h5 style="color:#ffee00; margin-bottom:8px;">🎯 レアリティ別アイテム追加</h5>
+            <label style="font-size:0.8rem; color:#aaa;">イラスト（Googleドライブ選択）：</label>
             <select id="admin-gacha-img-select" class="admin-input"><option value="">(選択してください)</option></select>
-            <label style="font-size:0.8rem; color:#aaa;">レアリティ：</label>
-            <select id="admin-gacha-rarity" class="admin-input" onchange="toggleStar2AutoDistributeCheck(this.value)">
+            <label style="font-size:0.8rem; color:#aaa;">付与レアリティ：</label>
+            <select id="admin-gacha-rarity" class="admin-input">
                 <option value="★6">★6</option>
                 <option value="★5">★5</option>
                 <option value="★4">★4</option>
                 <option value="★3">★3</option>
-                <option value="★2">★2</option>
+                <option value="★2">★2 (プレゼント自動配布対象)</option>
             </select>
-            
-            <!-- ガチャの☆2配布チェック -->
-            <label id="star2-auto-dist-label" style="font-size:0.85rem; color:#ffee00; display:flex; align-items:center; gap:8px; margin:8px 0; cursor:pointer;">
-                <input type="checkbox" id="star2-auto-dist-chk" checked style="width:18px; height:18px;">
-                🎁 このアイテムを全ユーザーのプレゼントBOXに自動配布する
-            </label>
-            <button class="admin-btn" onclick="adminAddGachaIllustration()">➕ ラインナップに追加</button>
+            <button class="admin-btn" onclick="adminAddGachaIllustration()">➕ ガチャラインナップに追加する</button>
+
             <div id="admin-gacha-lineup-by-rarity" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
 
+        <!-- 🎁 プレゼント・個別／複数／全員一斉送信管理 -->
         <div class="admin-section">
-            <h4>🎁 プレゼント一斉・個別送信</h4>
+            <h4>🎁 プレゼント・一斉または特定メンバー（複数選択可）への送信</h4>
+            <label style="font-size:0.8rem; color:#aaa;">送信先（複数選択チェックボックス）：</label>
             <div id="admin-gift-target-checkboxes" style="background:#222; padding:8px; border-radius:6px; max-height:120px; overflow-y:auto; margin-bottom:10px; font-size:0.8rem;"></div>
-            <input type="text" id="admin-gift-title" class="admin-input" placeholder="記念配布">
-            <input type="number" id="admin-gift-gem" class="admin-input" value="1000" placeholder="ジェム数">
-            <input type="number" id="admin-gift-coin" class="admin-input" value="500" placeholder="コイン数">
+
+            <input type="text" id="admin-gift-title" class="admin-input" placeholder="記念報酬">
+            <input type="number" id="admin-gift-gem" class="admin-input" value="1000">
+            <input type="number" id="admin-gift-coin" class="admin-input" value="500">
+            <label style="font-size:0.8rem; color:#aaa;">添付イラスト（Googleドライブ選択）：</label>
             <select id="admin-gift-img-select" class="admin-input"><option value="">(イラストなし)</option></select>
-            <button class="admin-btn" onclick="adminSendGift()">📤 プレゼントを送信</button>
+            <button class="admin-btn" onclick="adminSendGift()">📤 プレゼントを送信する</button>
             <div id="admin-gift-manage-list" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
-    </div>
 
-    <!-- 🎮 ミニゲームモーダル -->
-    <div id="minigame-modal" class="modal-overlay" onclick="closeMinigameModal(event)">
-        <div class="menu-dialog" onclick="event.stopPropagation()">
-            <h3 style="color:#00f5d4; margin-bottom:10px; text-align:center;" id="minigame-modal-title">🎮 ミニゲーム</h3>
-            <div id="minigame-menu-container">
-                <p style="font-size:0.8rem; color:#aaa; margin-bottom:12px; text-align:center;">挑戦するゲームを選んでね！</p>
-                <div id="minigame-list-buttons" style="display:flex; flex-direction:column; gap:8px;"></div>
-            </div>
-            <div id="minigame-game-screen" style="display:none; margin-top:10px;"></div>
-            <button class="close-btn" onclick="closeMinigameModal()" style="width:100%; margin-top:15px;">閉じる</button>
+        <div class="admin-section">
+            <h4>✉️ お知らせを作成・管理する</h4>
+            <input type="text" id="admin-notice-title" class="admin-input" placeholder="新機能追加のお知らせ">
+            <textarea id="admin-notice-text" class="admin-input" rows="3" placeholder="お知らせの詳細内容..."></textarea>
+            <label style="font-size:0.8rem; color:#aaa;">添付イラスト（Googleドライブ選択）：</label>
+            <select id="admin-notice-img-select" class="admin-input"><option value="">(イラストなし)</option></select>
+            <button class="admin-btn" onclick="adminPublishNotice()">📢 お知らせを全体公開する</button>
+            <div id="admin-notice-manage-list" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
     </div>
 
-    <!-- 🏆 ランキングモーダル -->
+    <!-- 🏆 イベントランキング専用モーダル -->
     <div id="ranking-modal" class="modal-overlay" onclick="closeRankingModal(event)">
         <div class="menu-dialog" style="max-width:360px; max-height:80vh; overflow-y:auto;" onclick="event.stopPropagation()">
             <h3 style="color:#ffee00; text-align:center; margin-bottom:12px;">🏆 イベントランキング</h3>
@@ -917,27 +996,58 @@
         </div>
     </div>
 
-    <!-- ❓ イベントヘルプ -->
+    <!-- ❓ イベントヘルプ専用モーダル（操作方法・P加算方法） -->
     <div id="event-help-modal" class="modal-overlay" onclick="closeEventHelpModal(event)">
         <div class="menu-dialog" style="max-width:360px; max-height:85vh; overflow-y:auto;" onclick="event.stopPropagation()">
-            <h3 style="color:#00f5d4; text-align:center; margin-bottom:12px;">❓ イベントガイド</h3>
+            <h3 style="color:#00f5d4; text-align:center; margin-bottom:12px;">❓ イベント詳細ガイド</h3>
             <div style="background:#222; padding:12px; border-radius:8px; font-size:0.82rem; color:#ddd; line-height:1.6; margin-bottom:15px;">
-                <p style="margin-bottom:8px; color:#ffee00; font-weight:bold;">🎮 ミニゲームでポイント稼ぎ！</p>
-                <p>イベントの種類に応じて切り替わるミニゲームに挑戦し、イベントポイントを獲得しましょう！</p>
+                <div style="font-weight:bold; color:#ffee00; margin-bottom:4px;">🎮 イベント画面の操作方法</div>
+                <p style="margin-bottom:10px;">・背景を上下にスワイプして切り替え。<br>・右下の「イベント」ボタンからミニゲーム（High & Low・連打チャレンジ）に挑戦可能。<br>・右下の「ランキング」ボタンから現在の順位やポイント状況をリアルタイム確認できます。</p>
+                
+                <div style="font-weight:bold; color:#ffee00; margin-bottom:4px;">📊 P加算方法</div>
+                <p>・ミニゲームのクリア報酬や、 Discord・LINE通話参加 / グループチャットでの発言数に応じて管理者がポイントを加算。<br>・公式計算式: [ 獲得P + ガチャボーナス(%) + イラストボーナス(%) + ボーナス(%) ] (小数以下繰上げ) にて最終Pが算出されます。</p>
             </div>
             <button class="close-btn" onclick="closeEventHelpModal()" style="width:100%;">閉じる</button>
+        </div>
+    </div>
+<!-- 🃏 ミニゲームモーダル（シーズン / ストーリー対応） -->
+    <div id="minigame-modal" class="modal-overlay" onclick="closeMinigameModal(event)">
+        <div class="menu-dialog" style="max-width:380px; max-height:85vh; overflow-y:auto;" onclick="event.stopPropagation()">
+            <h3 style="color:#00f5d4; margin-bottom:10px; text-align:center;" id="minigame-modal-title">🎮 ミニゲーム広場</h3>
+            <div id="minigame-menu-container">
+                <p style="font-size:0.85rem; color:#ccc; margin-bottom:12px; text-align:center;">挑戦するミニゲームを選んでね！</p>
+                <div id="minigame-list-buttons" style="display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
+            <div id="minigame-game-screen" style="display:none; background:#222; padding:15px; border-radius:10px; margin-top:10px;"></div>
+            <button class="close-btn" onclick="closeMinigameModal()" style="width:100%; margin-top:15px;">閉じる</button>
+        </div>
+    </div>
+
+    <!-- 💬 ストーリーイベントモーダル -->
+    <div id="story-event-modal" class="modal-overlay" onclick="closeStoryEventModal(event)">
+        <div class="menu-dialog" style="max-width:360px;" onclick="event.stopPropagation()">
+            <h3 style="color:#00f5d4; margin-bottom:8px; text-align:center;">💬 ストーリーイベント</h3>
+            <p style="font-size:0.8rem; color:#ccc; margin-bottom:12px; text-align:center;">LINEのチャット発言や通話参加でストーリーを進めよう！</p>
+            <div style="background:#222; padding:12px; border-radius:8px; font-size:0.8rem; color:#ddd; line-height:1.5; margin-bottom:15px;">
+                ・<b>参加方法</b>: DiscordやLINEでの通話参加、グループチャットでの発言数に応じて管理者がポイントを加算します。<br>
+                ・<b>現在の状況</b>: 全メンバーの合計Pでエピソードが解放されます！
+            </div>
+            <button class="close-btn" onclick="closeStoryEventModal()" style="width:100%;">閉じる</button>
         </div>
     </div>
 
     <script>
         const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
         let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "";
+
         const GACHA_RATES = {
             "ネオフェス限定": { "★6": 0.4, "★5": 6.6, "★4": 23, "★3": 30, "★2": 40 },
             "タイアップ限定": { "★6": 0.3, "★5": 1.7, "★4": 30, "★3": 30, "★2": 38 },
             "限定": { "★6": 0, "★5": 2.0, "★4": 18, "★3": 35, "★2": 45 },
             "復刻・バースデー": { "★6": 0, "★5": 4.0, "★4": 26, "★3": 30, "★2": 40 },
-            "イベント": { "★6": 0, "★5": 0, "★4": 5, "★3": 45, "★2": 50 }
+            "イベント": { "★6": 0, "★5": 0, "★4": 5, "★3": 45, "★2": 50 },
+            "限定復刻": { "★6": 100, "★5": 0, "★4": 0, "★3": 0, "★2": 0 },
+            "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
         };
 
         let memberDatabase = JSON.parse(localStorage.getItem('nexus_member_db')) || [
@@ -951,12 +1061,15 @@
             { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 }
         ];
 
-        function saveMemberDb() { localStorage.setItem('nexus_member_db', JSON.stringify(memberDatabase)); }
+        function saveMemberDb() {
+            localStorage.setItem('nexus_member_db', JSON.stringify(memberDatabase));
+        }
 
         let currentUser = JSON.parse(localStorage.getItem('nexus_current_user')) || null;
         let isAdmin = localStorage.getItem('nexus_is_admin') === 'true';
         let isLoginLocked = localStorage.getItem('nexus_login_locked') === 'true';
         let userRestrictionMap = JSON.parse(localStorage.getItem('nexus_restricted_users')) || {};
+
         let masterDriveImages = JSON.parse(localStorage.getItem('nexus_master_gacha_images')) || [];
         let globalGifts = JSON.parse(localStorage.getItem('nexus_global_gifts')) || [];
         let globalReports = JSON.parse(localStorage.getItem('nexus_global_reports')) || [];
@@ -970,9 +1083,10 @@
         function getGlobalReportsKey() { return 'nexus_global_reports'; }
         function getEventHistoryKey() { return 'nexus_event_history'; }
         function getTitleBgKey() { return 'nexus_title_bg_images'; }
-
+        
         let userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
         let userSlideshowIds = JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [];
+        let userGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
         let userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
         let globalNotices = JSON.parse(localStorage.getItem(getGlobalNoticesKey())) || [];
         let eventHistory = JSON.parse(localStorage.getItem(getEventHistoryKey())) || [];
@@ -1001,28 +1115,55 @@
             costMulti: 3000
         };
 
-        function toggleTitleMenu(e) { e.stopPropagation(); document.getElementById('title-menu-dropdown').classList.toggle('active'); }
+        function toggleTitleMenu(e) {
+            e.stopPropagation();
+            document.getElementById('title-menu-dropdown').classList.toggle('active');
+        }
         window.addEventListener('click', () => {
             const dropdown = document.getElementById('title-menu-dropdown');
             if (dropdown) dropdown.classList.remove('active');
         });
-        function openTitleSubScreen(name) { document.getElementById('title-screen').classList.add('hidden'); openScreen(name, true); }
-        function exitApp() { if (confirm("アプリを終了しますか？")) { window.close(); window.location.href = "about:blank"; } }
-        function formatDateStr(isoStr) { if (!isoStr) return "未設定"; return isoStr.replace("T", " "); }
+
+        function openTitleSubScreen(name) {
+            document.getElementById('title-screen').classList.add('hidden');
+            openScreen(name, true);
+        }
+
+        function exitApp() {
+            if (confirm("アプリを終了しますか？")) {
+                window.close();
+                window.location.href = "about:blank";
+            }
+        }
+
+        function formatDateStr(isoStr) {
+            if (!isoStr) return "未設定";
+            return isoStr.replace("T", " ");
+        }
 
         function updateUIUserStatus() {
             const idEl = document.getElementById('display-id');
             const nameEl = document.getElementById('display-name');
             const gemEl = document.getElementById('display-gem');
             const avatarImg = document.getElementById('main-avatar-img');
+
             if (currentUser) {
+                // データベース上の最新のgemを反映
                 const freshUser = memberDatabase.find(m => m.id === currentUser.id);
                 if (freshUser) currentUser = freshUser;
+
                 idEl.innerText = currentUser.id;
-                nameEl.innerText = currentUser.name + (currentUser.id === "A-24-11-9-a" ? " (👑管理者)" : "");
+                const isNeo = (currentUser.id === "A-24-11-9-a");
+                nameEl.innerText = currentUser.name + (isNeo ? " (👑管理者)" : "");
                 gemEl.innerText = Number(currentUser.gem || 0).toLocaleString();
+                
                 userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
-                avatarImg.src = userAvatarUrl || "https://picsum.photos/id/1069/100/100";
+                if (userAvatarUrl) {
+                    avatarImg.src = userAvatarUrl;
+                } else {
+                    avatarImg.src = "https://picsum.photos/id/1069/100/100";
+                }
+
                 document.getElementById('title-screen').classList.add('hidden');
             } else {
                 idEl.innerText = "未ログイン";
@@ -1032,15 +1173,26 @@
                 document.getElementById('title-screen').classList.remove('hidden');
                 initTitleSlideshow();
             }
+
             renderEventScreen();
             renderGachaScreen();
+
             const combinedGifts = getCombinedUserGifts();
             const giftBadge = document.getElementById('badge-present');
-            if (combinedGifts.length > 0) { giftBadge.innerText = combinedGifts.length; giftBadge.style.display = 'block'; }
-            else { giftBadge.style.display = 'none'; }
+            if (combinedGifts.length > 0) {
+                giftBadge.innerText = combinedGifts.length;
+                giftBadge.style.display = 'block';
+            } else {
+                giftBadge.style.display = 'none';
+            }
+
             const noticeBadge = document.getElementById('badge-notice');
-            if (globalNotices.length > 0) { noticeBadge.innerText = globalNotices.length; noticeBadge.style.display = 'block'; }
-            else { noticeBadge.style.display = 'none'; }
+            if (globalNotices.length > 0) {
+                noticeBadge.innerText = globalNotices.length;
+                noticeBadge.style.display = 'block';
+            } else {
+                noticeBadge.style.display = 'none';
+            }
         }
 
         function initTitleSlideshow() {
@@ -1048,6 +1200,7 @@
             if (!container) return;
             container.innerHTML = '';
             titleBgImages = JSON.parse(localStorage.getItem(getTitleBgKey())) || titleBgImages;
+
             titleBgImages.forEach((imgObj, index) => {
                 const img = document.createElement('img');
                 img.src = imgObj.url;
@@ -1056,6 +1209,7 @@
             });
             startTitleSlideshowInterval();
         }
+
         let titleSlideTimer = null;
         function startTitleSlideshowInterval() {
             if (titleSlideTimer) clearInterval(titleSlideTimer);
@@ -1069,7 +1223,7 @@
             }, 4000);
         }
 
-        /* 🎪 イベント画面レンダリング */
+        /* ================= 🎪 イベント画面のレンダリング・ロジック ================= */
         function renderEventScreen() {
             const noEventModal = document.getElementById('event-no-event-modal');
             const infoLeft = document.getElementById('event-info-bottom-left');
@@ -1081,6 +1235,7 @@
             const bannerBox = document.getElementById('event-title-banner-box');
             const logoImg = document.getElementById('event-custom-logo-img');
             const bgImg = document.getElementById('event-bg-img');
+
             const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
 
             if (currentEvent.status === "開催準備中" && !isNeo) {
@@ -1094,13 +1249,18 @@
                 if (actionBtns) actionBtns.style.display = "flex";
             }
 
-            if (bgImg && currentEvent.imgUrl) bgImg.src = currentEvent.imgUrl;
+            if (bgImg && currentEvent.imgUrl) {
+                bgImg.src = currentEvent.imgUrl;
+            }
 
             if (currentUser) {
                 userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
                 eventAvatar.src = userAvatarUrl || "https://picsum.photos/id/1069/100/100";
+
                 const userDb = memberDatabase.find(m => m.id === currentUser.id);
-                ptEl.innerText = userDb ? (userDb.pt || 0).toLocaleString() : 0;
+                const currentPt = userDb ? (userDb.pt || 0) : 0;
+                ptEl.innerText = currentPt.toLocaleString();
+
                 const sorted = [...memberDatabase].sort((a,b) => (b.pt || 0) - (a.pt || 0));
                 const rankIndex = sorted.findIndex(m => m.id === currentUser.id);
                 rankEl.innerText = (rankIndex !== -1) ? `${rankIndex + 1}位` : "-位";
@@ -1110,433 +1270,151 @@
                 rankEl.innerText = "-位";
             }
 
-            if (periodEl) periodEl.innerText = `${formatDateStr(currentEvent.startDate).replace(/-/g, '.')}〜${formatDateStr(currentEvent.endDate).replace(/-/g, '.')}`;
-            if (bannerBox) bannerBox.innerText = currentEvent.title || "イベントタイトル";
-            if (logoImg) {
-                if (currentEvent.logoUrl) { logoImg.src = currentEvent.logoUrl; logoImg.style.display = "block"; }
-                else { logoImg.style.display = "none"; }
+            if (periodEl) {
+                const sStr = formatDateStr(currentEvent.startDate).replace(/-/g, '.');
+                const eStr = formatDateStr(currentEvent.endDate).replace(/-/g, '.');
+                periodEl.innerText = `sStr〜{eStr}`;
             }
+
+            if (bannerBox) {
+                if (currentEvent.imgUrl) {
+                    bannerBox.innerHTML = `<img src="${currentEvent.imgUrl}" alt="イベントタイトルロゴ">`;
+                } else {
+                    bannerBox.innerText = currentEvent.title || "イベントタイトル";
+                }
+            }
+
+            if (logoImg) {
+                if (currentEvent.logoUrl) {
+                    logoImg.src = currentEvent.logoUrl;
+                    logoImg.style.display = "block";
+                } else {
+                    logoImg.style.display = "none";
+                }
+            }
+
             updateEventBubbleDate();
         }
 
         function updateEventBubbleDate() {
             const bubble = document.getElementById('badge-event-day-bubble');
             if (!bubble) return;
-            if (!currentEvent.endDate || currentEvent.status === "開催準備中") { bubble.style.display = "none"; return; }
-            const diffMs = new Date(currentEvent.endDate) - new Date();
-            if (diffMs <= 0) { bubble.innerText = "終了"; bubble.style.display = "block"; return; }
+
+            if (!currentEvent.endDate || currentEvent.status === "開催準備中") {
+                bubble.style.display = "none";
+                return;
+            }
+
+            const target = new Date(currentEvent.endDate);
+            const diffMs = target - new Date();
+            if (diffMs <= 0) {
+                bubble.innerText = "終了";
+                bubble.style.display = "block";
+                return;
+            }
+
             const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-            if (daysLeft <= 7) { bubble.innerText = `残り ${daysLeft} 日`; bubble.style.display = "block"; }
-            else { bubble.style.display = "none"; }
+            if (daysLeft <= 7) {
+                bubble.innerText = `残り ${daysLeft} 日`;
+                bubble.style.display = "block";
+            } else {
+                bubble.style.display = "none";
+            }
         }
 
-        function openEventHelpModal() { document.getElementById('event-help-modal').classList.add('active'); }
-        function closeEventHelpModal() { document.getElementById('event-help-modal').classList.remove('active'); }
-        function handleEventActionButton() { openMinigameModal(); }
+        function openEventHelpModal() {
+            document.getElementById('event-help-modal').classList.add('active');
+        }
+        function closeEventHelpModal() {
+            document.getElementById('event-help-modal').classList.remove('active');
+        }
 
-        /* 🎮 ミニゲームモーダル制御 & 各ゲームの実装 (画面内動作・アラート一切なし) */
+        function handleEventActionButton() {
+            if (currentEvent.type === "ストーリーイベント") {
+                document.getElementById('story-event-modal').classList.add('active');
+            } else {
+                openMinigameModal();
+            }
+        }
+
+        let currentCardVal = 7;
         function openMinigameModal() {
             document.getElementById('minigame-modal').classList.add('active');
-            renderMinigameMenuList();
+            currentCardVal = Math.floor(Math.random() * 12) + 1;
+            const cardDisplay = document.getElementById('hl-card-display');
+            if (cardDisplay) cardDisplay.innerText = "♠ " + currentCardVal;
         }
         function closeMinigameModal() {
             document.getElementById('minigame-modal').classList.remove('active');
-            stopHoldTimer();
             renderEventScreen();
         }
 
-        function renderMinigameMenuList() {
-            document.getElementById('minigame-menu-container').style.display = 'block';
-            document.getElementById('minigame-game-screen').style.display = 'none';
-            const btnBox = document.getElementById('minigame-list-buttons');
-            btnBox.innerHTML = '';
+        function playHighLow(guess) {
+            const nextVal = Math.floor(Math.random() * 12) + 1;
+            let win = false;
+            if (guess === 'HIGH' && nextVal >= currentCardVal) win = true;
+            if (guess === 'LOW' && nextVal <= currentCardVal) win = true;
 
-            const type = currentEvent.type;
-            let games = [];
-            if (type === "シーズンイベント") {
-                games = [
-                    { name: "🎰 スロット (共通)", fn: "initSlotGame" },
-                    { name: "🃏 High & Low (1~16)", fn: "initHighLowGame" },
-                    { name: "♠️ ブラックジャック", fn: "initBJGame" },
-                    { name: "⚡ ボタン連打", fn: "initMashGame" },
-                    { name: "⏱️ ストップウォッチ", fn: "initStopwatchGame" }
-                ];
-            } else {
-                games = [
-                    { name: "🎰 スロット (共通)", fn: "initSlotGame" },
-                    { name: "🔘 ボタン長押し", fn: "initHoldGame" },
-                    { name: "🔢 Big or Small (1~9)", fn: "initBigSmallGame" }
-                ];
-            }
-
-            games.forEach(g => {
-                const btn = document.createElement('button');
-                btn.className = 'mg-btn';
-                btn.innerText = g.name;
-                btn.onclick = () => window[g.fn]();
-                btnBox.appendChild(btn);
-            });
-        }
-
-        function showMgScreen(html) {
-            document.getElementById('minigame-menu-container').style.display = 'none';
-            const sc = document.getElementById('minigame-game-screen');
-            sc.style.display = 'block';
-            sc.innerHTML = html + `<button class="mg-btn admin-btn-reset" onclick="renderMinigameMenuList()" style="margin-top:12px;">🔙 メニューに戻る</button>`;
-        }
-
-        function addEventPt(pt) {
+            const earned = win ? 500 : 100;
+            alert(win ? `🎉 正解！ ${earned} P 獲得！ (次のカード: ${nextVal})` : `😢 ハズレ... ${earned} P 獲得 (次のカード: ${nextVal})`);
+            
             if (currentUser) {
                 let userDb = memberDatabase.find(m => m.id === currentUser.id);
                 if (userDb) {
-                    userDb.pt = (userDb.pt || 0) + pt;
+                    userDb.pt = (userDb.pt || 0) + earned;
                     saveMemberDb();
                 }
             }
+            currentCardVal = nextVal;
+            const cardDisplay = document.getElementById('hl-card-display');
+            if (cardDisplay) cardDisplay.innerText = "♠ " + currentCardVal;
+            renderEventScreen();
         }
 
-        /* 1. High & Low (1~16) */
-        let hlNum = 8, hlWins = 0;
-        function initHighLowGame() {
-            hlNum = Math.floor(Math.random() * 16) + 1;
-            hlWins = 0;
-            updateHlUI();
-        }
-        function updateHlUI(log = "") {
-            showMgScreen(`
-                <div class="mg-box">
-                    <div class="mg-title">🃏 High & Low (1~16)</div>
-                    <div class="mg-desc">次の数字が今より大きいか小さいかを予測！</div>
-                    <div class="mg-display">現在の数字: ${hlNum}</div>
-                    <div style="font-size:0.8rem; color:#aaa;">現在の連勝数: <b style="color:#ffee00;">${hlWins}</b> 連勝</div>
-                    <div class="mg-btn-group">
-                        <button class="mg-btn" onclick="playHl('HIGH')">HIGH (大きい)</button>
-                        <button class="mg-btn" onclick="playHl('LOW')">LOW (小さい)</button>
-                    </div>
-                    <div class="mg-log">${log}</div>
-                </div>
-            `);
-        }
-        function playHl(guess) {
-            const next = Math.floor(Math.random() * 16) + 1;
-            let win = false;
-            if (guess === 'HIGH' && next >= hlNum) win = true;
-            if (guess === 'LOW' && next <= hlNum) win = true;
-
-            let log = "";
-            if (win) {
-                hlWins++;
-                let bonus = (hlWins % 3 === 0) ? 1.6 : 1.0;
-                let earned = Math.ceil(300 * bonus);
-                addEventPt(earned);
-                log = `🎉 正解！(次:${next}) +${earned}P 獲得！`;
-            } else {
-                hlWins = 0;
-                log = `😢 ハズレ...(次:${next}) 0P`;
-            }
-            hlNum = next;
-            updateHlUI(log);
-        }
-
-        /* 2. ブラックジャック */
-        let bjPlayer = [], bjDealer = [], bjWins = 0, bjOver = false;
-        function initBJGame() {
-            bjPlayer = [drawCard(), drawCard()];
-            bjDealer = [drawCard(), drawCard()];
-            bjOver = false;
-            updateBjUI();
-        }
-        function drawCard() { return Math.floor(Math.random() * 10) + 1; }
-        function getBjScore(hand) { return hand.reduce((a,b) => a+b, 0); }
-        function updateBjUI(log = "") {
-            const pScore = getBjScore(bjPlayer);
-            const dScore = bjOver ? getBjScore(bjDealer) : bjDealer[0] + " + ?";
-            showMgScreen(`
-                <div class="mg-box">
-                    <div class="mg-title">♠️ ブラックジャック</div>
-                    <div class="mg-desc">21に近づけろ！(超えるとバースト)</div>
-                    <div class="mg-display" style="font-size:1.2rem;">
-                        あなた: ${bjPlayer.join(', ')} (${pScore})<br>
-                        ディーラー: ${bjOver ? bjDealer.join(', ') : bjDealer[0] + ', ?'} (${dScore})
-                    </div>
-                    <div style="font-size:0.8rem; color:#aaa;">連勝: <b style="color:#ffee00;">${bjWins}</b></div>
-                    ${!bjOver ? `
-                    <div class="mg-btn-group">
-                        <button class="mg-btn" onclick="hitBj()">ヒット (引く)</button>
-                        <button class="mg-btn" onclick="standBj()">スタンド (勝負)</button>
-                    </div>` : `
-                    <button class="mg-btn" onclick="initBJGame()" style="margin-top:8px;">もう一度遊ぶ</button>`}
-                    <div class="mg-log">${log}</div>
-                </div>
-            `);
-        }
-        function hitBj() {
-            bjPlayer.push(drawCard());
-            if (getBjScore(bjPlayer) > 21) {
-                bjOver = true;
-                bjWins = 0;
-                updateBjUI("💥 バースト！あなたの負け (0P)");
-            } else {
-                updateBjUI();
-            }
-        }
-        function standBj() {
-            bjOver = true;
-            while (getBjScore(bjDealer) < 17) bjDealer.push(drawCard());
-            const p = getBjScore(bjPlayer), d = getBjScore(bjDealer);
-            let log = "";
-            if (d > 21 || p > d) {
-                bjWins++;
-                let bonus = (bjWins % 3 === 0) ? 1.8 : 1.0;
-                let earned = Math.ceil(350 * bonus);
-                addEventPt(earned);
-                log = `🎉 勝利！ +${earned}P 獲得！`;
-            } else {
-                bjWins = 0;
-                log = `😢 敗北... 0P`;
-            }
-            updateBjUI(log);
-        }
-
-        /* 3. ボタン連打 */
-        let mashCount = 0;
-        function initMashGame() {
-            mashCount = 0;
-            updateMashUI();
-        }
-        function updateMashUI(log = "") {
-            showMgScreen(`
-                <div class="mg-box">
-                    <div class="mg-title">⚡ ボタン連打</div>
-                    <div class="mg-desc">1回につき2P獲得！(10回の倍数で+20%ボーナス)</div>
-                    <div class="mg-display">${mashCount} 回</div>
-                    <button class="mg-btn" style="padding:20px; font-size:1.2rem; background:#ff334b; color:#fff;" onclick="clickMash()">🔥 連打！！</button>
-                    <div class="mg-log">${log}</div>
-                </div>
-            `);
-        }
-        function clickMash() {
-            mashCount++;
-            let earned = 2;
-            if (mashCount % 10 === 0) earned = Math.ceil(2 * 1.2);
-            addEventPt(earned);
-            updateMashUI(`+${earned}P 獲得！`);
-        }
-
-        /* 4. ストップウォッチ */
-        let swTarget = 5, swStartTime = 0, swTimer = null, swRunning = false;
-        function initStopwatchGame() {
-            swTarget = Math.floor(Math.random() * 5) + 3; // 3~7秒
-            swRunning = false;
-            showMgScreen(`
-                <div class="mg-box">
-                    <div class="mg-title">⏱️ ストップウォッチ</div>
-                    <div class="mg-desc">目標: <b style="color:#ffee00; font-size:1.2rem;">${swTarget}.00 秒</b> でピッタリ止めろ！</div>
-                    <div class="mg-display" id="sw-display">0.00 秒</div>
-                    <div class="mg-btn-group">
-                        <button class="mg-btn" id="sw-btn" onclick="toggleSw()">START</button>
-                    </div>
-                    <div class="mg-log" id="sw-log"></div>
-                </div>
-            `);
-        }
-        function toggleSw() {
-            const btn = document.getElementById('sw-btn');
-            const disp = document.getElementById('sw-display');
-            const log = document.getElementById('sw-log');
-            if (!swRunning) {
-                swRunning = true;
-                swStartTime = Date.now();
-                btn.innerText = "STOP!";
-                swTimer = setInterval(() => {
-                    disp.innerText = ((Date.now() - swStartTime) / 1000).toFixed(2) + " 秒";
-                }, 30);
-            } else {
-                swRunning = false;
-                clearInterval(swTimer);
-                btn.innerText = "RESTART";
-                const elapsed = (Date.now() - swStartTime) / 1000;
-                disp.innerText = elapsed.toFixed(2) + " 秒";
-                const diff = Math.abs(elapsed - swTarget);
-
-                let earned = 0;
-                if (diff <= 0.5) {
-                    earned = Math.ceil(800 * 2.5); // ピッタリ(+150%)
-                    log.innerText = `🎯 奇跡のピッタリ！ +${earned}P 獲得！`;
-                } else if (diff <= 4.0) {
-                    earned = Math.max(0, Math.ceil(800 - (diff * 100)));
-                    log.innerText = `👏 惜しい！(誤差 ${diff.toFixed(2)}秒) +${earned}P 獲得！`;
-                } else {
-                    log.innerText = `😢 誤差が大きすぎます (-2P)`;
+        let mashClicks = 0;
+        function mashButton() {
+            mashClicks++;
+            const mashCount = document.getElementById('mash-count');
+            if (mashCount) mashCount.innerText = mashClicks + " 回";
+            if (mashClicks % 10 === 0 && currentUser) {
+                let userDb = memberDatabase.find(m => m.id === currentUser.id);
+                if (userDb) {
+                    userDb.pt = (userDb.pt || 0) + 200;
+                    saveMemberDb();
                 }
-                if (earned > 0) addEventPt(earned);
+                renderEventScreen();
             }
         }
 
-        /* 5. ボタン長押し */
-        let holdSec = 0, holdTimer = null;
-        function initHoldGame() {
-            stopHoldTimer();
-            holdSec = 0;
-            showMgScreen(`
-                <div class="mg-box">
-                    <div class="mg-title">🔘 ボタン長押し</div>
-                    <div class="mg-desc">押し続けている間ポイントUP！(2秒毎に3P / 6秒毎に+40%)</div>
-                    <div class="mg-display" id="hold-display">0 秒</div>
-                    <button class="mg-btn" style="padding:20px; font-size:1.2rem; background:#ffee00; color:#000;" 
-                        onmousedown="startHold()" onmouseup="stopHoldTimer()" onmouseleave="stopHoldTimer()"
-                        ontouchstart="startHold()" ontouchend="stopHoldTimer()">押し続けろ！</button>
-                    <div class="mg-log" id="hold-log"></div>
-                </div>
-            `);
-        }
-        function startHold() {
-            stopHoldTimer();
-            const disp = document.getElementById('hold-display');
-            const log = document.getElementById('hold-log');
-            holdSec = 0;
-            holdTimer = setInterval(() => {
-                holdSec++;
-                disp.innerText = holdSec + " 秒";
-                if (holdSec % 2 === 0) {
-                    let earned = 3;
-                    if (holdSec % 6 === 0) earned = Math.ceil(3 * 1.4);
-                    addEventPt(earned);
-                    log.innerText = `+${earned}P 獲得中...`;
-                }
-            }, 1000);
-        }
-        function stopHoldTimer() {
-            if (holdTimer) { clearInterval(holdTimer); holdTimer = null; }
-            const log = document.getElementById('hold-log');
-            if (log) log.innerText = "ボタンから手が離れました";
+        function closeStoryEventModal() {
+            document.getElementById('story-event-modal').classList.remove('active');
         }
 
-        /* 6. Big or Small (1~9) */
-        let bsNum = 5, bsWins = 0;
-        function initBigSmallGame() {
-            bsNum = Math.floor(Math.random() * 9) + 1;
-            bsWins = 0;
-            updateBsUI();
-        }
-        function updateBsUI(log = "") {
-            showMgScreen(`
-                <div class="mg-box">
-                    <div class="mg-title">🔢 Big or Small (1~9)</div>
-                    <div class="mg-desc">次の数字が今より大きいか小さいかを当てる</div>
-                    <div class="mg-display">現在の数字: ${bsNum}</div>
-                    <div style="font-size:0.8rem; color:#aaa;">連勝: <b style="color:#ffee00;">${bsWins}</b></div>
-                    <div class="mg-btn-group">
-                        <button class="mg-btn" onclick="playBs('BIG')">BIG (大きい)</button>
-                        <button class="mg-btn" onclick="playBs('SMALL')">SMALL (小さい)</button>
-                    </div>
-                    <div class="mg-log">${log}</div>
-                </div>
-            `);
-        }
-        function playBs(guess) {
-            const next = Math.floor(Math.random() * 9) + 1;
-            let win = false;
-            if (guess === 'BIG' && next >= bsNum) win = true;
-            if (guess === 'SMALL' && next <= bsNum) win = true;
-            let log = "";
-            if (win) {
-                bsWins++;
-                let bonus = (bsWins % 3 === 0) ? 1.4 : 1.0;
-                let earned = Math.ceil(250 * bonus);
-                addEventPt(earned);
-                log = `🎉 正解！(次:${next}) +${earned}P 獲得！`;
-            } else {
-                bsWins = 0;
-                log = `😢 ハズレ...(次:${next}) 0P`;
-            }
-            bsNum = next;
-            updateBsUI(log);
-        }
-
-        /* 7. スロット (共通) */
-        let slotReels = [1, 1, 1], slotStops = [true, true, true];
-        function initSlotGame() {
-            slotReels = [1, 1, 1];
-            slotStops = [true, true, true];
-            updateSlotUI();
-        }
-        function updateSlotUI(log = "") {
-            showMgScreen(`
-                <div class="mg-box">
-                    <div class="mg-title">🎰 スロット (1-9)</div>
-                    <div class="mg-desc">ボタンを押して目押し！(揃えば3000P / 3・7揃いで+120%)</div>
-                    <div class="slot-reels">
-                        <div class="slot-reel" id="r1">${slotReels[0]}</div>
-                        <div class="slot-reel" id="r2">${slotReels[1]}</div>
-                        <div class="slot-reel" id="r3">${slotReels[2]}</div>
-                    </div>
-                    <div class="mg-btn-group">
-                        <button class="mg-btn" onclick="startSlot()" style="background:#ffee00; color:#000;">SPIN</button>
-                    </div>
-                    <div class="mg-btn-group" style="margin-top:6px;">
-                        <button class="mg-btn" onclick="stopReel(0)">STOP 1</button>
-                        <button class="mg-btn" onclick="stopReel(1)">STOP 2</button>
-                        <button class="mg-btn" onclick="stopReel(2)">STOP 3</button>
-                    </div>
-                    <div class="mg-log" id="slot-log">${log}</div>
-                </div>
-            `);
-        }
-        let slotTimers = [null, null, null];
-        function startSlot() {
-            if (!slotStops[0] || !slotStops[1] || !slotStops[2]) return;
-            slotStops = [false, false, false];
-            document.getElementById('slot-log').innerText = "回転中...";
-            for (let i = 0; i < 3; i++) {
-                slotTimers[i] = setInterval(() => {
-                    slotReels[i] = Math.floor(Math.random() * 9) + 1;
-                    const r = document.getElementById('r' + (i + 1));
-                    if (r) r.innerText = slotReels[i];
-                }, 50);
-            }
-        }
-        function stopReel(idx) {
-            if (slotStops[idx]) return;
-            slotStops[idx] = true;
-            clearInterval(slotTimers[idx]);
-
-            // 確率 1/24 で揃い確定アシスト
-            if (slotStops.filter(s => s).length === 3) {
-                if (Math.random() < (1 / 24)) {
-                    const hitVal = (Math.random() < 0.5) ? 7 : 3;
-                    slotReels = [hitVal, hitVal, hitVal];
-                    for (let i = 1; i <= 3; i++) document.getElementById('r' + i).innerText = hitVal;
-                }
-                checkSlotResult();
-            }
-        }
-        function checkSlotResult() {
-            const log = document.getElementById('slot-log');
-            if (slotReels[0] === slotReels[1] && slotReels[1] === slotReels[2]) {
-                const num = slotReels[0];
-                let earned = 3000;
-                if (num === 3 || num === 7) earned = Math.ceil(3000 * 2.2);
-                addEventPt(earned);
-                log.innerText = `🎉🎉 大当たり！！ [${num}${num}${num}] 揃い！ +${earned}P 獲得！`;
-            } else {
-                log.innerText = "😢 残念... ハズレ！";
-            }
-        }
-
-        /* 🏆 ランキング */
+        /* 🏆 イベントと同じデザインスタイルのランキングモーダル */
         function openRankingModal() {
             const sorted = [...memberDatabase].sort((a,b) => (b.pt || 0) - (a.pt || 0));
             const contentEl = document.getElementById('ranking-modal-content');
             if (!contentEl) return;
-            let html = `<div style="display:flex; flex-direction:column; gap:6px;">`;
+
+            let html = `
+                <div style="font-size:0.75rem; color:#aaa; margin-bottom:10px; text-align:center;">
+                    🎪 イベント名: <b>${currentEvent.title}</b><br>
+                    算出公式: [ 獲得P + ボーナス ] (小数以下繰上げ)
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+            `;
+
             sorted.forEach((m, idx) => {
                 const isMe = currentUser && (currentUser.id === m.id);
-                let rankColor = idx === 0 ? "#ffee00" : idx === 1 ? "#00f5d4" : idx === 2 ? "#ff9900" : "#fff";
+                let rankColor = "#fff";
+                if (idx === 0) rankColor = "#ffee00";
+                else if (idx === 1) rankColor = "#00f5d4";
+                else if (idx === 2) rankColor = "#ff9900";
+
                 html += `
                     <div style="background:#222; padding:8px 12px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid ${rankColor}; ${isMe ? 'background:rgba(0,245,212,0.15);' : ''}">
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="font-weight:bold; font-size:1rem; color:${rankColor}; min-width:30px;">#${idx + 1}</span>
+                            <span style="font-weight:bold; font-size:1rem; color:rankColor;min-width:30px;">#{idx + 1}</span>
                             <div>
                                 <div style="font-weight:bold; font-size:0.9rem; color:#fff;">${m.name} ${isMe ? '<span style="color:#00f5d4; font-size:0.75rem;">(あなた)</span>' : ''}</div>
                                 <div style="font-size:0.7rem; color:#888;">ID: ${m.id}</div>
@@ -1550,44 +1428,71 @@
             contentEl.innerHTML = html;
             document.getElementById('ranking-modal').classList.add('active');
         }
+
         function closeRankingModal(e) {
             if (!e || e.target.id === 'ranking-modal' || e.target.classList.contains('close-btn')) {
                 document.getElementById('ranking-modal').classList.remove('active');
             }
         }
 
-        /* 🧮 計算機 */
+        /* 🧮 計算機ロジック (小数以下繰上げ) */
         function loadMemberBonusToCalc() {
             const targetId = document.getElementById('calc-target-member').value;
             const user = memberDatabase.find(m => m.id === targetId);
             if (!user) return;
+
             document.getElementById('calc-base-pt').value = user.basePt || user.pt || 0;
             document.getElementById('calc-gacha-bonus').value = user.gachaBonus || 0;
             document.getElementById('calc-illust-bonus').value = user.illustBonus || 0;
             document.getElementById('calc-extra-bonus').value = user.extraBonus || 0;
             runPtCalculator();
         }
+
         function runPtCalculator() {
             const base = Number(document.getElementById('calc-base-pt').value) || 0;
             const gacha = Number(document.getElementById('calc-gacha-bonus').value) || 0;
             const illust = Number(document.getElementById('calc-illust-bonus').value) || 0;
             const extra = Number(document.getElementById('calc-extra-bonus').value) || 0;
-            const finalPt = Math.ceil(base * (1 + (gacha + illust + extra) / 100));
+
+            const totalPercent = 1 + ((gacha + illust + extra) / 100);
+            const rawTotal = base * totalPercent;
+            const finalPt = Math.ceil(rawTotal); // 小数以下全て繰上げ
+
             document.getElementById('calc-result-display').innerText = finalPt.toLocaleString() + " P";
             return finalPt;
         }
+
         function saveCalculatedPtToMember() {
             const targetId = document.getElementById('calc-target-member').value;
             const user = memberDatabase.find(m => m.id === targetId);
-            if (!user) return;
+            if (!user) {
+                alert("対象メンバーを選択してください。");
+                return;
+            }
+
             user.basePt = Number(document.getElementById('calc-base-pt').value) || 0;
             user.gachaBonus = Number(document.getElementById('calc-gacha-bonus').value) || 0;
             user.illustBonus = Number(document.getElementById('calc-illust-bonus').value) || 0;
             user.extraBonus = Number(document.getElementById('calc-extra-bonus').value) || 0;
             user.pt = runPtCalculator();
+
             saveMemberDb();
             renderAdminMemberPointsList();
             renderEventScreen();
+            alert(`✅ [${user.name}] のイベントPを計算・更新しました（合計: ${user.pt.toLocaleString()} P）！`);
+        }
+
+        function adminChangeUserPt(userId) {
+            const user = memberDatabase.find(m => m.id === userId);
+            if (!user) return;
+            const input = prompt(`[${user.name}] の現在のP: ${user.pt || 0}\n直接変更するP（半角数字）を入力してください：`, user.pt || 0);
+            if (input !== null && !isNaN(input)) {
+                user.pt = Number(input);
+                saveMemberDb();
+                renderAdminMemberPointsList();
+                renderEventScreen();
+                alert(`📊 [${user.name}] のポイントを ${user.pt} P に更新しました！`);
+            }
         }
 
         function renderAdminMemberPointsList() {
@@ -1596,14 +1501,17 @@
             if (!container) return;
             container.innerHTML = "";
             let selectHtml = `<option value="">(メンバーを選択)</option>`;
+
             memberDatabase.forEach(m => {
-                selectHtml += `<option value="${m.id}">${m.name} (${m.id})</option>`;
+                const isNeo = m.id === "A-24-11-9-a";
+                selectHtml += `<option value="m.id">{m.name} (${m.id})</option>`;
                 const row = document.createElement('div');
                 row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #333;";
                 row.innerHTML = `
                     <span>👤 ${m.name} (ID: ${m.id})</span>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="color:#ffee00; font-weight:bold;">${m.pt || 0} P</span>
+                        <span style="color:isNeo?'#888':'#ffee00';font-weight:bold;">{m.pt || 0} P</span>
+                        <button onclick="adminChangeUserPt('${m.id}')" style="background:#00f5d4; color:#000; border:none; padding:2px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem;">直接P変更</button>
                     </div>
                 `;
                 container.appendChild(row);
@@ -1611,11 +1519,19 @@
             if (calcSelect) calcSelect.innerHTML = selectHtml;
         }
 
+        /* 🔗 GAS連携・スプレッドシート同期 */
         async function saveAndSyncGasUrl() {
-            GAS_WEB_APP_URL = document.getElementById('admin-gas-url-input').value.trim();
+            const urlInput = document.getElementById('admin-gas-url-input').value.trim();
+            GAS_WEB_APP_URL = urlInput;
             localStorage.setItem('nexus_gas_url', GAS_WEB_APP_URL);
-            if (!GAS_WEB_APP_URL) return;
+
+            if (!GAS_WEB_APP_URL) {
+                alert("GASのウェブアプリURLを入力してください。");
+                return;
+            }
+
             try {
+                alert("🔄 スプレッドシート（GAS）と通信中...");
                 const res = await fetch(GAS_WEB_APP_URL);
                 if (res.ok) {
                     const data = await res.json();
@@ -1624,29 +1540,21 @@
                         saveMemberDb();
                         renderAdminMemberPointsList();
                         updateUIUserStatus();
+                        alert("✅ スプレッドシートとのデータ同期に成功しました！");
+                    } else {
+                        alert("✅ GAS接続成功しましたが、データ形式を確認してください。");
                     }
+                } else {
+                    alert("❌ 接続に失敗しました。URLを確認してください。");
                 }
-            } catch (e) { }
+            } catch (e) {
+                alert("⚠️ CORS制限またはURLエラーのため直接同期できませんでした（GAS側の doGet/doPost 設定をご確認ください）。ローカルストレージで動作継続します。");
+            }
         }
 
-        /* 💾 管理画面 保存・リセット機能 */
-        function saveAndCloseManageScreen() {
-            forceSaveAdminChanges();
-            closeScreen('manage');
-        }
-
-        function resetManageScreenForm() {
-            document.getElementById('admin-event-title-input').value = "結成2周年記念イベント";
-            document.getElementById('admin-event-type-select').value = "シーズンイベント";
-            document.getElementById('admin-event-status-select').value = "開催中";
-            document.getElementById('admin-gacha-title-input').value = "記念ピックアップガチャ";
-            document.getElementById('admin-gacha-type-select').value = "ネオフェス限定";
-            document.getElementById('admin-gacha-status-select').value = "開催中";
-            document.getElementById('admin-gacha-cost-single').value = 300;
-            document.getElementById('admin-gacha-cost-multi').value = 3000;
-        }
-
+        /* 🛡️ 管理画面の編集内容を強制保存する関数 */
         function forceSaveAdminChanges() {
+            // イベント設定保存
             const title = document.getElementById('admin-event-title-input').value;
             const type = document.getElementById('admin-event-type-select').value;
             const start = document.getElementById('admin-event-start-input').value;
@@ -1654,76 +1562,222 @@
             const status = document.getElementById('admin-event-status-select').value;
             const imgUrl = document.getElementById('admin-event-img-select').value;
             const logoUrl = document.getElementById('admin-event-logo-select').value;
+
             if (title) {
-                currentEvent = { title, type, startDate: start, endDate: end, status, imgUrl, logoUrl };
+                currentEvent = { title: title, type: type, startDate: start, endDate: end, status: status, imgUrl: imgUrl, logoUrl: logoUrl };
                 localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
             }
 
+            // ガチャ設定・💎コスト保存
             const gachaTitle = document.getElementById('admin-gacha-title-input').value;
             const gachaType = document.getElementById('admin-gacha-type-select').value;
             const gachaStatus = document.getElementById('admin-gacha-status-select').value;
             const bannerUrl = document.getElementById('admin-gacha-banner-select').value;
+            const gStart = document.getElementById('admin-gacha-start-input').value;
+            const gEnd = document.getElementById('admin-gacha-end-input').value;
             const costSingle = Number(document.getElementById('admin-gacha-cost-single').value) || 300;
             const costMulti = Number(document.getElementById('admin-gacha-cost-multi').value) || 3000;
+
             if (gachaTitle) {
-                currentGachaConfig = { title: gachaTitle, type: gachaType, status: gachaStatus, bannerUrl, costSingle, costMulti };
+                currentGachaConfig = {
+                    title: gachaTitle,
+                    type: gachaType,
+                    status: gachaStatus,
+                    startDate: gStart,
+                    endDate: gEnd,
+                    bannerUrl: bannerUrl,
+                    costSingle: costSingle,
+                    costMulti: costMulti
+                };
                 localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
             }
+
             updateUIUserStatus();
         }
 
-        function adminCreateEvent() { forceSaveAdminChanges(); }
+        function adminCreateEvent() {
+            forceSaveAdminChanges();
+            alert(`🎪 イベント設定を強制保存しました！`);
+        }
+
         function adminDeleteEventToHistory() {
-            eventHistory.unshift({
-                title: currentEvent.title,
-                type: currentEvent.type,
-                period: `${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`,
-                imgUrl: currentEvent.imgUrl,
-                archivedDate: new Date().toLocaleDateString()
+            if (confirm(`イベント「${currentEvent.title}」を終了・削除し、ヒストリーに記録しますか？`)) {
+                eventHistory.unshift({
+                    title: currentEvent.title,
+                    type: currentEvent.type,
+                    period: `${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`,
+                    imgUrl: currentEvent.imgUrl,
+                    archivedDate: new Date().toLocaleDateString()
+                });
+                localStorage.setItem(getEventHistoryKey(), JSON.stringify(eventHistory));
+                
+                currentEvent = {
+                    title: "次回のイベント準備中",
+                    type: "シーズンイベント",
+                    startDate: "",
+                    endDate: "",
+                    status: "開催準備中",
+                    imgUrl: "",
+                    logoUrl: ""
+                };
+                localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
+                updateUIUserStatus();
+                renderHistory();
+                alert("📖 イベントを終了し、ヒストリーにまとめました！");
+            }
+        }
+
+        function adminAddTitleBg() {
+            const selectEl = document.getElementById('admin-title-bg-select');
+            const url = selectEl.value;
+            const name = selectEl.options[selectEl.selectedIndex].text;
+            if (!url) {
+                alert("画像を選択してください。");
+                return;
+            }
+            if (titleBgImages.length >= 8) {
+                alert("タイトル背景スライドショーには最大8枚までしか登録できません。");
+                return;
+            }
+            if (titleBgImages.some(img => img.url === url)) {
+                alert("すでに登録されている画像です。");
+                return;
+            }
+            titleBgImages.push({ id: 'bg_' + Date.now(), url: url, name: name });
+            localStorage.setItem(getTitleBgKey(), JSON.stringify(titleBgImages));
+            renderAdminTitleBgList();
+            alert("🖼️ タイトル画面のスライドショー背景に追加しました！");
+        }
+
+        function adminRemoveTitleBg(id) {
+            if (titleBgImages.length <= 1) {
+                alert("最低1枚の背景画像が必要です。");
+                return;
+            }
+            titleBgImages = titleBgImages.filter(img => img.id !== id);
+            localStorage.setItem(getTitleBgKey(), JSON.stringify(titleBgImages));
+            renderAdminTitleBgList();
+            initTitleSlideshow();
+        }
+
+        function renderAdminTitleBgList() {
+            const listEl = document.getElementById('admin-title-bg-list');
+            if (!listEl) return;
+            titleBgImages = JSON.parse(localStorage.getItem(getTitleBgKey())) || titleBgImages;
+            listEl.innerHTML = `<div style="color:#00f5d4; margin-bottom:4px;">登録中 (${titleBgImages.length}/8枚):</div>`;
+            titleBgImages.forEach(img => {
+                const row = document.createElement('div');
+                row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#222; padding:6px; border-radius:6px; margin-bottom:4px;";
+                row.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;">img.name</span><buttononclick="adminRemoveTitleBg('{img.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">削除</button>`;
+                listEl.appendChild(row);
             });
-            localStorage.setItem(getEventHistoryKey(), JSON.stringify(eventHistory));
-            currentEvent = { title: "次回イベント準備中", type: "シーズンイベント", startDate: "", endDate: "", status: "開催準備中", imgUrl: "", logoUrl: "" };
-            localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
-            updateUIUserStatus();
-            renderHistory();
         }
 
         function renderGachaScreen() {
             const container = document.getElementById('gacha-content-container');
             if (!container) return;
             const titleEl = document.getElementById('gacha-screen-title');
-            if (titleEl) titleEl.innerText = "🎂 " + currentGachaConfig.title;
 
+            const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
+
+            if (currentGachaConfig.status === "終了" && !isNeo) {
+                if (titleEl) titleEl.innerText = "🎂 ガチャ (終了)";
+                container.innerHTML = `
+                    <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #ff334b; text-align: center; margin-top:20px;">
+                        <h3 style="color: #ff334b; margin-bottom: 10px;">🔒 このガチャは終了しました</h3>
+                        <p style="font-size: 0.85rem; color: #888;">次のガチャ開催までお待ちください。</p>
+                    </div>
+                `;
+                return;
+            }
+
+            if (titleEl) titleEl.innerText = "🎂 " + currentGachaConfig.title;
+            const rates = GACHA_RATES[currentGachaConfig.type] || { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 100 };
+            let statusColor = currentGachaConfig.status === "開催中" ? "#00f5d4" : "#ff9900";
             const costSingle = currentGachaConfig.costSingle || 300;
             const costMulti = currentGachaConfig.costMulti || 3000;
-            const rates = GACHA_RATES[currentGachaConfig.type] || { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 100 };
 
             container.innerHTML = `
-                ${currentGachaConfig.bannerUrl ? `<img src="${currentGachaConfig.bannerUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:10px; margin-bottom:12px;">` : ''}
+                ${currentGachaConfig.bannerUrl ? `<img src="${currentGachaConfig.bannerUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:10px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.2);">` : ''}
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
                     <span style="background:#ff9900; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.type}</span>
-                    <span style="background:#00f5d4; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.status}</span>
+                    <span style="background:statusColor;color:#000;font-size:0.65rem;font-weight:bold;padding:2px8px;border-radius:4px;">{currentGachaConfig.status}</span>
                 </div>
+                <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 12px;">期間: ${formatDateStr(currentGachaConfig.startDate)} 〜 ${formatDateStr(currentGachaConfig.endDate)}</div>
+                
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom: 15px;">
-                    <button onclick="pullGacha(1)" style="padding: 12px 10px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">💎 ${costSingle} (1回)</button>
-                    <button onclick="pullGacha(10)" style="padding: 12px 10px; background: #ffee00; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">💎 ${costMulti} (10連)</button>
+                    <button onclick="pullGacha(1)" style="padding: 12px 10px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit;">💎 ${costSingle} (1回)</button>
+                    <button onclick="pullGacha(10)" style="padding: 12px 10px; background: #ffee00; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit;">💎 ${costMulti} (10連)</button>
+                </div>
+
+                <div style="background:#1a1a1a; padding:10px; border-radius:8px; border:1px solid #333;">
+                    <div style="font-size:0.8rem; font-weight:bold; color:#00f5d4; margin-bottom:4px;">📊 現在のガチャ排出確率</div>
+                    <table class="rate-table">
+                        <thead>
+                            <tr><th>レア</th><th>★6</th><th>★5</th><th>★4</th><th>★3</th><th>★2</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>currentGachaConfig.type</td><td>{rates["★6"]}%</td><td>rates["★5"]%</td><td>{rates["★4"]}%</td><td>rates["★3"]%</td><td>{rates["★2"]}%</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             `;
         }
 
-        function handleStatusClick() { if (currentUser) { adminLogout(); } else { promptUserLogin(); } }
+        function handleStatusClick() {
+            if (currentUser) {
+                if (confirm("ログアウトしますか？")) {
+                    adminLogout();
+                }
+            } else {
+                promptUserLogin();
+            }
+        }
+
         function promptUserLogin() {
             closeOtherMenu();
-            const inputId = prompt("USER ID を入力してください：");
+            
+            const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
             if (!inputId) return;
+
+            if (userRestrictionMap[inputId] === true) {
+                alert("❌ このアカウントは管理者によりアクセス制限（凍結）されています。");
+                return;
+            }
+
+            if (isLoginLocked && inputId !== "A-24-11-9-a") {
+                alert("❌ 現在ログイン制限（メンテナンス中）につき、一般メンバーのログインはできません。");
+                return;
+            }
+
             const found = memberDatabase.find(m => m.id === inputId);
             if (found) {
-                isAdmin = (found.id === "A-24-11-9-a");
-                localStorage.setItem('nexus_is_admin', isAdmin ? 'true' : 'false');
+                if (found.id === "A-24-11-9-a") {
+                    isAdmin = true;
+                    localStorage.setItem('nexus_is_admin', 'true');
+                } else {
+                    isAdmin = false;
+                    localStorage.setItem('nexus_is_admin', 'false');
+                }
                 currentUser = found;
                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                 reloadUserData();
+                
+                alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
+                playDefaultSongOnLogin();
+
                 if (isAdmin) openScreen('manage');
+            } else {
+                alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
+            }
+        }
+
+        function playDefaultSongOnLogin() {
+            if (songs.length > 0) {
+                audioPlayer.src = songs[0].url;
+                audioPlayer.play().catch(e => console.log("自動再生保護:", e));
+                miniTitle.innerText = songs[0].title;
+                if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + songs[0].title;
             }
         }
 
@@ -1734,12 +1788,17 @@
             localStorage.removeItem('nexus_current_user');
             reloadUserData();
             closeOtherMenu();
+            if (audioPlayer) audioPlayer.pause();
+            alert("🔒 ログアウトしました。");
         }
 
         function reloadUserData() {
             userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
             userSlideshowIds = JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [];
             userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
+            userGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
+            globalGifts = JSON.parse(localStorage.getItem(getGlobalGiftsKey())) || [];
+
             updateUIUserStatus();
             initSlideshow();
             renderAlbum();
@@ -1757,12 +1816,15 @@
                 openScreen('manage');
                 return;
             }
-            const inputPass = prompt("管理画面パスワードを入力：");
+
+            const inputPass = prompt("管理画面のパスワードを入力してください：");
             if (inputPass === "2024061124") {
                 isAdmin = true;
                 localStorage.setItem('nexus_is_admin', 'true');
                 setupAdminManageScreen();
                 openScreen('manage');
+            } else if (inputPass !== null) {
+                alert("パスワードが違います。");
             }
         }
 
@@ -1771,28 +1833,58 @@
             renderAdminGiftManageList();
             renderAdminGachaLineupByRarity();
             renderAdminMemberPointsList();
+            renderAdminUserRestrictionList();
             renderAdminReportsList();
             renderAdminGiftTargetCheckboxes();
+            populateAdminAlbumMemberSelect();
             populateAdminSelects();
+            document.getElementById('admin-login-lock-toggle').checked = isLoginLocked;
+            const gasUrlInput = document.getElementById('admin-gas-url-input');
+            if (gasUrlInput) gasUrlInput.value = GAS_WEB_APP_URL;
+
+            // ガチャ設定の初期値反映
+            document.getElementById('admin-gacha-title-input').value = currentGachaConfig.title || "記念ピックアップガチャ";
+            document.getElementById('admin-gacha-type-select').value = currentGachaConfig.type || "ネオフェス限定";
+            document.getElementById('admin-gacha-status-select').value = currentGachaConfig.status || "開催中";
+            document.getElementById('admin-gacha-cost-single').value = currentGachaConfig.costSingle || 300;
+            document.getElementById('admin-gacha-cost-multi').value = currentGachaConfig.costMulti || 3000;
         }
 
         function closeManageScreen() {
+            // 管理画面閉じる時に強制保存
             forceSaveAdminChanges();
             closeScreen('manage');
+            if (!currentUser || currentUser.id !== "A-24-11-9-a") {
+                isAdmin = false;
+                localStorage.setItem('nexus_is_admin', 'false');
+            }
+            alert("💾 変更内容を強制保存して管理画面を閉じました。");
         }
 
         function submitUserReport() {
             const category = document.getElementById('user-report-category').value;
             const content = document.getElementById('user-report-content').value.trim();
-            if (!content) return;
-            globalReports.unshift({
+
+            if (!content) {
+                alert("報告内容の記述を入力してください。");
+                return;
+            }
+
+            const reportObj = {
                 id: 'report_' + Date.now(),
-                userId: currentUser ? currentUser.id : "GUEST",
-                userName: currentUser ? currentUser.name : "ゲスト",
-                category, content, date: new Date().toLocaleString()
-            });
+                userId: currentUser ? currentUser.id : "GUEST (未ログイン)",
+                userName: currentUser ? currentUser.name : "ゲストユーザー",
+                category: category,
+                content: content,
+                date: new Date().toLocaleString()
+            };
+
+            globalReports = JSON.parse(localStorage.getItem(getGlobalReportsKey())) || [];
+            globalReports.unshift(reportObj);
             localStorage.setItem(getGlobalReportsKey(), JSON.stringify(globalReports));
+
             document.getElementById('user-report-content').value = "";
+            alert("📤 管理者へ報告を送信しました。ご協力ありがとうございます！");
             closeScreen('report');
         }
 
@@ -1800,18 +1892,170 @@
             const container = document.getElementById('admin-reports-container');
             if (!container) return;
             globalReports = JSON.parse(localStorage.getItem(getGlobalReportsKey())) || [];
+
+            if (globalReports.length === 0) {
+                container.innerHTML = `<div style="color:#888; font-size:0.8rem;">届いている報告はありません。</div>`;
+                return;
+            }
+
             let html = "";
             globalReports.forEach(report => {
-                html += `<div style="background:#222; padding:8px; border-radius:6px; margin-bottom:6px; font-size:0.8rem;">
-                    <b>[${report.category}] ${report.userName}</b>: ${report.content}
-                </div>`;
+                html += `
+                    <div style="background:#222; border-left:3px solid #3388ff; padding:10px; border-radius:6px; margin-bottom:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#aaa; margin-bottom:4px;">
+                            <span style="background:#3388ff; color:#fff; padding:1px 6px; border-radius:4px; font-weight:bold;">${report.category}</span>
+                            <span>${report.date}</span>
+                        </div>
+                        <div style="font-size:0.85rem; font-weight:bold; color:#ffee00; margin-bottom:4px;">
+                            👤 ${report.userName} (ID: ${report.userId})
+                        </div>
+                        <div style="font-size:0.8rem; color:#fff; white-space:pre-wrap; background:#181818; padding:8px; border-radius:4px; margin-bottom:6px;">${report.content}</div>
+                        <button onclick="adminDeleteReport('${report.id}')" style="background:#ff334b; color:#fff; border:none; padding:3px 8px; border-radius:4px; cursor:pointer; font-size:0.7rem;">確認完了（削除）</button>
+                    </div>
+                `;
             });
-            container.innerHTML = html || "<div style='color:#888;'>報告はありません</div>";
+            container.innerHTML = html;
         }
 
-        function toggleStar2AutoDistributeCheck(val) {
-            const lbl = document.getElementById('star2-auto-dist-label');
-            if (lbl) lbl.style.display = (val === "★2") ? "flex" : "none";
+        function adminDeleteReport(reportId) {
+            if (confirm("この報告を確認済みとして削除しますか？")) {
+                globalReports = globalReports.filter(r => r.id !== reportId);
+                localStorage.setItem(getGlobalReportsKey(), JSON.stringify(globalReports));
+                renderAdminReportsList();
+                alert("🗑️ 報告を削除しました。");
+            }
+        }
+
+        function populateAdminAlbumMemberSelect() {
+            const selectEl = document.getElementById('admin-target-album-select');
+            if (!selectEl) return;
+            let html = `<option value="">(メンバーを選択してください)</option>`;
+            memberDatabase.forEach(m => {
+                html += `<option value="m.id">{m.name} (ID: ${m.id})</option>`;
+            });
+            selectEl.innerHTML = html;
+        }
+
+        function renderAdminMemberAlbumView() {
+            const selectEl = document.getElementById('admin-target-album-select');
+            const container = document.getElementById('admin-member-album-container');
+            if (!selectEl || !container) return;
+
+            const targetId = selectEl.value;
+            if (!targetId) {
+                container.innerHTML = "";
+                return;
+            }
+
+            const targetAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey(targetId))) || [];
+            const targetSlideshow = JSON.parse(localStorage.getItem(getUserSlideshowKey(targetId))) || [];
+
+            if (targetAlbum.length === 0) {
+                container.innerHTML = `<div style="color:#888; font-size:0.8rem; padding:8px;">このメンバーのアルバムにはまだ画像がありません。</div>`;
+                return;
+            }
+
+            let html = `<div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-top:8px;">`;
+            targetAlbum.forEach(img => {
+                const inSlide = targetSlideshow.includes(img.id);
+                html += `
+                    <div style="background:#222; border:1px solid #444; border-radius:8px; overflow:hidden; padding:6px;">
+                        <img src="${img.url}" style="width:100%; height:90px; object-fit:cover; border-radius:6px; margin-bottom:4px;">
+                        <div style="font-size:0.75rem; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px;">${img.name}</div>
+                        <button onclick="adminDeleteMemberAlbumItem('targetId','{img.id}')" style="width:100%; background:#ff334b; color:#fff; border:none; padding:4px; border-radius:4px; font-weight:bold; font-size:0.7rem; cursor:pointer;">削除する</button>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function adminDeleteMemberAlbumItem(targetId, imgId) {
+            if (confirm("このメンバーのアルバムから該当のイラストを削除しますか？")) {
+                let targetAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey(targetId))) || [];
+                let targetSlideshow = JSON.parse(localStorage.getItem(getUserSlideshowKey(targetId))) || [];
+
+                targetAlbum = targetAlbum.filter(i => i.id !== imgId);
+                targetSlideshow = targetSlideshow.filter(i => i !== imgId);
+
+                localStorage.setItem(getUserAlbumKey(targetId), JSON.stringify(targetAlbum));
+                localStorage.setItem(getUserSlideshowKey(targetId), JSON.stringify(targetSlideshow));
+
+                renderAdminMemberAlbumView();
+                alert("🗑️ メンバーのアルバムから画像を削除しました！");
+            }
+        }
+
+        function toggleLoginLock(checkbox) {
+            isLoginLocked = checkbox.checked;
+            localStorage.setItem('nexus_login_locked', isLoginLocked);
+            alert(isLoginLocked ? "🔒 ログイン制限を【有効】にしました。" : "🔓 ログイン制限を【解除】しました。");
+        }
+
+        function toggleIndividualUserRestriction(userId, checkbox) {
+            userRestrictionMap[userId] = checkbox.checked;
+            localStorage.setItem('nexus_restricted_users', JSON.stringify(userRestrictionMap));
+            alert(checkbox.checked ? `🚫 [userId]のアクセスを【制限】しました。`:`🔓[{userId}] の制限を【解除】しました。`);
+        }
+
+        function renderAdminUserRestrictionList() {
+            const container = document.getElementById('admin-user-restriction-list');
+            if (!container) return;
+            container.innerHTML = "";
+            memberDatabase.forEach(m => {
+                if (m.id === "A-24-11-9-a") return;
+                const isRestricted = userRestrictionMap[m.id] === true;
+                const row = document.createElement('div');
+                row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #333;";
+                row.innerHTML = `
+                    <span>👤 m.name({m.id})</span>
+                    <label style="font-size:0.75rem; color:${isRestricted ? '#ff334b' : '#00f5d4'}; cursor:pointer;">
+                        <input type="checkbox" isRestricted?'checked':''onchange="toggleIndividualUserRestriction('{m.id}', this)"> アクセス制限
+                    </label>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('history-list-container');
+            if (!container) return;
+            eventHistory = JSON.parse(localStorage.getItem(getEventHistoryKey())) || [];
+
+            if (eventHistory.length === 0) {
+                container.innerHTML = `<p style="color: #888; text-align: center; margin-top: 20px;">過去のイベント記録はありません。</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            eventHistory.forEach(item => {
+                const box = document.createElement('div');
+                box.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:12px; border-left:3px solid #3388ff;";
+                box.innerHTML = `
+                    <div style="font-size:0.7rem; color:#888; margin-bottom:4px;">記録日: ${item.archivedDate} | ${item.type}</div>
+                    <div style="font-weight:bold; color:#00f5d4; font-size:1rem; margin-bottom:4px;">${item.title}</div>
+                    <div style="font-size:0.8rem; color:#aaa; margin-bottom:8px;">期間: ${item.period}</div>
+                    ${item.imgUrl ? `<img src="${item.imgUrl}" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px;">` : ''}
+                `;
+                container.appendChild(box);
+            });
+        }
+
+        function adminResetEventPoints() {
+            if (confirm("全員の個人Pを 0 にリセットしますか？")) {
+                memberDatabase.forEach(m => {
+                    if (m.id !== "A-24-11-9-a") m.pt = 0;
+                });
+                saveMemberDb();
+                renderAdminMemberPointsList();
+                renderEventScreen();
+                alert("🔄 全員の個人Pを 0 にリセットしました！");
+            }
+        }
+
+        function adminSaveGachaConfig() {
+            forceSaveAdminChanges();
+            alert(`🎂 ガチャ基本設定・消費数設定を保存しました！`);
         }
 
         function adminAddGachaIllustration() {
@@ -1819,18 +2063,29 @@
             const selectEl = document.getElementById('admin-gacha-img-select');
             const selectedUrl = selectEl.value;
             const selectedName = selectEl.options[selectEl.selectedIndex].text;
-            const autoDist = document.getElementById('star2-auto-dist-chk').checked;
 
-            if (!selectedUrl) return;
+            if (!selectedUrl) {
+                alert("追加するイラストを選択してください。");
+                return;
+            }
+
             const itemId = 'gacha_item_' + Date.now();
-            const newMasterItem = { id: itemId, url: selectedUrl, name: `[${rarity}] ${selectedName}`, rarity };
+            const newMasterItem = {
+                id: itemId,
+                url: selectedUrl,
+                name: `[${rarity}] ${selectedName}`,
+                rarity: rarity
+            };
 
-            /* ガチャの★2自動配布連動 */
-            if (rarity === "★2" && autoDist) {
+            if (rarity === "★2") {
                 const autoGift = {
                     id: 'star2_auto_' + itemId,
                     title: `【★2配布】${newMasterItem.name}`,
-                    gem: 100, coin: 50, imgUrl: selectedUrl, active: true, date: new Date().toLocaleDateString()
+                    gem: 100,
+                    coin: 50,
+                    imgUrl: selectedUrl,
+                    active: true,
+                    date: new Date().toLocaleDateString()
                 };
                 globalGifts.push(autoGift);
                 localStorage.setItem(getGlobalGiftsKey(), JSON.stringify(globalGifts));
@@ -1840,119 +2095,469 @@
             localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
             renderAdminGachaLineupByRarity();
             renderAdminGiftManageList();
+            alert(`🎂 ガチャラインナップに「${newMasterItem.name}」を追加しました！（メモリーに保存）`);
         }
 
-        function renderAdminGachaLineupByRarity() {
-            const container = document.getElementById('admin-gacha-lineup-by-rarity');
-            if (!container) return;
-            container.innerHTML = `<div style="color:#00f5d4; font-weight:bold;">ラインナップ一覧 (${masterDriveImages.length}件)</div>`;
+        function adminRemoveGachaIllustration(id) {
+            masterDriveImages = masterDriveImages.filter(item => item.id !== id);
+            localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+            renderAdminGachaLineupByRarity();
+            alert("🗑️ ラインナップから削除しました。");
         }
 
-        function adminSendGift() {
-            const title = document.getElementById('admin-gift-title').value;
-            const gem = Number(document.getElementById('admin-gift-gem').value) || 0;
-            const coin = Number(document.getElementById('admin-gift-coin').value) || 0;
-            const imgUrl = document.getElementById('admin-gift-img-select').value;
-            if (!title) return;
+        function toggleGiftActive(id) {
+            const gift = globalGifts.find(g => g.id === id);
+            if (gift) {
+                gift.active = !gift.active;
+                localStorage.setItem(getGlobalGiftsKey(), JSON.stringify(globalGifts));
+                renderAdminGiftManageList();
+                updateUIUserStatus();
+            }
+        }
 
-            globalGifts.push({ id: 'gift_' + Date.now(), title, gem, coin, imgUrl, active: true, date: new Date().toLocaleDateString() });
-            localStorage.setItem(getGlobalGiftsKey(), JSON.stringify(globalGifts));
-            renderAdminGiftManageList();
-            reloadUserData();
+        function adminDeleteGlobalGift(id) {
+            if (confirm("このプレゼント配布項目を完全に削除しますか？")) {
+                globalGifts = globalGifts.filter(g => g.id !== id);
+                localStorage.setItem(getGlobalGiftsKey(), JSON.stringify(globalGifts));
+                renderAdminGiftManageList();
+                updateUIUserStatus();
+                alert("🗑️ プレゼント項目を削除しました。");
+            }
         }
 
         function renderAdminGiftManageList() {
             const listEl = document.getElementById('admin-gift-manage-list');
             if (!listEl) return;
             globalGifts = JSON.parse(localStorage.getItem(getGlobalGiftsKey())) || [];
-            listEl.innerHTML = `配布プレゼント: ${globalGifts.length}件`;
+            listEl.innerHTML = `<div style="color:#00f5d4; font-weight:bold; margin-bottom:6px;">📦 配布中・管理中のプレゼント・★2自動配布 (${globalGifts.length}件):</div>`;
+            if (globalGifts.length === 0) {
+                listEl.innerHTML += `<div style="color:#888;">管理中のプレゼントはありません。</div>`;
+                return;
+            }
+            globalGifts.forEach(gift => {
+                const isActive = gift.active !== false;
+                const row = document.createElement('div');
+                row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#222; padding:6px 10px; border-radius:6px; margin-bottom:4px;";
+                row.innerHTML = `
+                    <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px;">${gift.title}</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button onclick="toggleGiftActive('gift.id')"style="background:{isActive ? '#00f5d4' : '#555'}; color:isActive?'#000':'#fff';border:none;padding:2px8px;border-radius:4px;cursor:pointer;font-size:0.75rem;">{isActive ? '配布中(ON)' : '一時停止(OFF)'}</button>
+                        <button onclick="adminDeleteGlobalGift('${gift.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;">削除</button>
+                    </div>
+                `;
+                listEl.appendChild(row);
+            });
         }
 
-        function renderAdminGiftTargetCheckboxes() {}
-        function renderAdminNoticeManageList() {}
+        function renderAdminGiftTargetCheckboxes() {
+            const container = document.getElementById('admin-gift-target-checkboxes');
+            if (!container) return;
+            let html = `
+                <label style="display:flex; align-items:center; gap:6px; margin-bottom:4px; cursor:pointer; color:#00f5d4; font-weight:bold;">
+                    <input type="checkbox" id="gift-target-all" onchange="toggleAllGiftTargets(this)"> 🌐 全メンバー一斉送信
+                </label>
+                <hr style="border:0; border-top:1px solid #444; margin:4px 0;">
+            `;
+            memberDatabase.forEach(m => {
+                html += `
+                    <label style="display:flex; align-items:center; gap:6px; margin-bottom:2px; cursor:pointer;">
+                        <input type="checkbox" class="gift-target-chk" value="${m.id}"> m.name({m.id})
+                    </label>
+                `;
+            });
+            container.innerHTML = html;
+        }
 
+        function toggleAllGiftTargets(masterChk) {
+            const chks = document.querySelectorAll('.gift-target-chk');
+            chks.forEach(chk => chk.checked = masterChk.checked);
+        }
+
+        function renderAdminGachaLineupByRarity() {
+            const container = document.getElementById('admin-gacha-lineup-by-rarity');
+            if (!container) return;
+            container.innerHTML = `<div style="color:#00f5d4; font-weight:bold; margin-bottom:8px;">📊 レアリティ別ガチャラインナップ管理 (メモリー保存):</div>`;
+
+            const rarities = ["★6", "★5", "★4", "★3", "★2"];
+            rarities.forEach(rar => {
+                const items = masterDriveImages.filter(i => (i.rarity === rar) || (!i.rarity && i.name.includes(rar)));
+                let html = `<div style="background:#222; padding:8px; border-radius:6px; margin-bottom:6px;">`;
+                html += `<div style="color:#ffee00; font-weight:bold; border-bottom:1px solid #444; padding-bottom:2px; margin-bottom:4px;">rar({items.length}件)</div>`;
+                
+                if (items.length === 0) {
+                    html += `<div style="color:#888; font-size:0.75rem;">アイテムなし</div>`;
+                } else {
+                    items.forEach(item => {
+                        html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px dashed #333;">
+                            <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px;">${item.name}</span>
+                            <button onclick="adminRemoveGachaIllustration('${item.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 6px; border-radius:4px; cursor:pointer; font-size:0.7rem;">削除</button>
+                        </div>`;
+                    });
+                }
+                html += `</div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        /* 🎁 複数または全員へのプレゼント送信機能 */
+        function adminSendGift() {
+            const title = document.getElementById('admin-gift-title').value;
+            const gem = Number(document.getElementById('admin-gift-gem').value) || 0;
+            const coin = Number(document.getElementById('admin-gift-coin').value) || 0;
+            const imgUrl = document.getElementById('admin-gift-img-select').value;
+
+            if (!title) {
+                alert("プレゼント名を入力してください。");
+                return;
+            }
+
+            const giftObj = {
+                id: 'gift_' + Date.now(),
+                title: title,
+                gem: gem,
+                coin: coin,
+                imgUrl: imgUrl,
+                active: true,
+                date: new Date().toLocaleDateString()
+            };
+
+            const allChecked = document.getElementById('gift-target-all').checked;
+            const selectedChks = document.querySelectorAll('.gift-target-chk:checked');
+
+            if (allChecked) {
+                globalGifts.push(giftObj);
+                localStorage.setItem(getGlobalGiftsKey(), JSON.stringify(globalGifts));
+                alert(`📤 全メンバーのプレゼントBOXに一斉配信しました！`);
+            } else if (selectedChks.length > 0) {
+                selectedChks.forEach(chk => {
+                    const targetId = chk.value;
+                    let targetGifts = JSON.parse(localStorage.getItem('nexus_gifts_' + targetId)) || [];
+                    targetGifts.push(giftObj);
+                    localStorage.setItem('nexus_gifts_' + targetId, JSON.stringify(targetGifts));
+                });
+                alert(`📤 選択された ${selectedChks.length} 名のメンバー宛にプレゼントを送信しました！`);
+            } else {
+                alert("送信先（全員または特定メンバー）を選択してください。");
+                return;
+            }
+
+            renderAdminGiftManageList();
+            reloadUserData();
+        }
+
+        function adminPublishNotice() {
+            const title = document.getElementById('admin-notice-title').value;
+            const text = document.getElementById('admin-notice-text').value;
+            const imgUrl = document.getElementById('admin-notice-img-select').value;
+
+            if (!title || !text) {
+                alert("タイトルと本文を入力してください。");
+                return;
+            }
+
+            const noticeObj = {
+                id: 'notice_' + Date.now(),
+                title: title,
+                text: text,
+                imgUrl: imgUrl,
+                date: new Date().toLocaleDateString()
+            };
+
+            globalNotices.unshift(noticeObj);
+            localStorage.setItem(getGlobalNoticesKey(), JSON.stringify(globalNotices));
+
+            document.getElementById('admin-notice-title').value = '';
+            document.getElementById('admin-notice-text').value = '';
+
+            updateUIUserStatus();
+            renderNotices();
+            renderAdminNoticeManageList();
+            alert("📢 お知らせを全体公開しました！");
+        }
+
+        function adminDeleteNotice(id) {
+            if (confirm("このお知らせを削除してもよろしいですか？")) {
+                globalNotices = globalNotices.filter(n => n.id !== id);
+                localStorage.setItem(getGlobalNoticesKey(), JSON.stringify(globalNotices));
+                updateUIUserStatus();
+                renderNotices();
+                renderAdminNoticeManageList();
+                alert("🗑️ お知らせを削除しました！");
+            }
+        }
+
+        function renderAdminNoticeManageList() {
+            const listEl = document.getElementById('admin-notice-manage-list');
+            if (!listEl) return;
+            globalNotices = JSON.parse(localStorage.getItem(getGlobalNoticesKey())) || [];
+            listEl.innerHTML = `<div style="color:#00f5d4; font-weight:bold; margin-bottom:6px;">📋 公開中のお知らせ管理 (${globalNotices.length}件):</div>`;
+            if (globalNotices.length === 0) {
+                listEl.innerHTML += `<div style="color:#888;">公開中のお知らせはありません。</div>`;
+                return;
+            }
+            globalNotices.forEach(notice => {
+                const row = document.createElement('div');
+                row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#222; padding:6px 10px; border-radius:6px; margin-bottom:4px;";
+                row.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:210px;">notice.title({notice.date})</span><button onclick="adminDeleteNotice('${notice.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">削除</button>`;
+                listEl.appendChild(row);
+            });
+        }
+
+        /* 🌐 Windows / スマホ / タブレット全対応のGoogleドライブ＆マスター画像取得 */
         async function fetchDriveMasterData() {
             try {
                 const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime(), { mode: 'cors' });
                 if (!response.ok) return;
                 const fetchedData = await response.json();
+                
                 fetchedData.forEach(item => {
+                    if (item.name.includes("【★2配布】脹相") || (item.name.includes("脹相") && item.name.includes("★1"))) return;
                     if (!masterDriveImages.some(existing => existing.url === item.url)) {
-                        masterDriveImages.push({ ...item, rarity: "★3" });
+                        const rarity = item.name.includes("★6") ? "★6" : item.name.includes("★5") ? "★5" : item.name.includes("★4") ? "★4" : item.name.includes("★3") ? "★3" : "★2";
+                        masterDriveImages.push({ ...item, rarity: rarity });
                     }
                 });
+
                 localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+                
+                if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
+                    userAlbum = masterDriveImages.filter(i => !(i.name.includes("【★2配布】脹相") || (i.name.includes("脹相") && i.name.includes("★1"))));
+                    userSlideshowIds = userAlbum.map(img => img.id);
+                    saveUserAlbumData();
+                }
+
                 populateAdminSelects();
+                populateSettingsAvatarSelect();
+
                 initSlideshow();
                 renderAlbum();
-            } catch (e) { }
+                renderHistory();
+            } catch (e) {
+                console.log("ドライブマスターデータの取得（Windows/クロスドメイン環境対応フォールバック）");
+            }
         }
 
         function populateAdminSelects() {
             const gachaSelect = document.getElementById('admin-gacha-img-select');
-            if (!gachaSelect) return;
+            const gachaBannerSelect = document.getElementById('admin-gacha-banner-select');
+            const giftSelect = document.getElementById('admin-gift-img-select');
+            const noticeSelect = document.getElementById('admin-notice-img-select');
+            const eventImgSelect = document.getElementById('admin-event-img-select');
+            const eventLogoSelect = document.getElementById('admin-event-logo-select');
+            const titleBgSelect = document.getElementById('admin-title-bg-select');
+            if (!gachaSelect || !giftSelect || !noticeSelect || !eventImgSelect || !titleBgSelect || !gachaBannerSelect || !eventLogoSelect) return;
+
             let optionsHtml = `<option value="">(選択してください)</option>`;
-            masterDriveImages.forEach(img => { optionsHtml += `<option value="${img.url}">${img.name}</option>`; });
+            masterDriveImages.forEach(img => {
+                optionsHtml += `<option value="img.url">{img.name}</option>`;
+            });
+
             gachaSelect.innerHTML = optionsHtml;
-            document.getElementById('admin-gacha-banner-select').innerHTML = optionsHtml;
-            document.getElementById('admin-event-img-select').innerHTML = optionsHtml;
-            document.getElementById('admin-event-logo-select').innerHTML = optionsHtml;
-            document.getElementById('admin-gift-img-select').innerHTML = optionsHtml;
+            gachaBannerSelect.innerHTML = `<option value="">(バナーなし)</option>` + optionsHtml;
+            giftSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
+            noticeSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
+            eventImgSelect.innerHTML = `<option value="">(画像なし)</option>` + optionsHtml;
+            eventLogoSelect.innerHTML = `<option value="">(ロゴなし)</option>` + optionsHtml;
+            titleBgSelect.innerHTML = optionsHtml;
+
+            renderAdminTitleBgList();
+            renderAdminNoticeManageList();
+            renderAdminGiftManageList();
+            renderAdminGachaLineupByRarity();
+            renderAdminMemberPointsList();
+            renderAdminUserRestrictionList();
+            renderAdminReportsList();
+            renderAdminGiftTargetCheckboxes();
+            populateAdminAlbumMemberSelect();
         }
 
+        function populateSettingsAvatarSelect() {
+            const selectEl = document.getElementById('settings-avatar-select');
+            if (!selectEl) return;
+            let html = `<option value="">(デフォルト・削除)</option>`;
+            userAlbum.forEach(img => {
+                html += `<option value="img.url">{img.name}</option>`;
+            });
+            selectEl.innerHTML = html;
+        }
+
+        /* 💎 1連・10連ガチャ消費機能対応 */
         function pullGacha(count = 1) {
-            if (!currentUser || masterDriveImages.length === 0) return;
+            if (currentGachaConfig.status === "終了") {
+                alert("🔒 このガチャは終了しているため引くことができません。");
+                return;
+            }
+
+            if (!currentUser) {
+                alert("ガチャを引くには、まずログインしてください！");
+                promptUserLogin();
+                return;
+            }
+
+            if (masterDriveImages.length === 0) {
+                alert("ガチャのラインナップが存在しません。");
+                return;
+            }
+
             const cost = count === 10 ? (currentGachaConfig.costMulti || 3000) : (currentGachaConfig.costSingle || 300);
             const userDb = memberDatabase.find(m => m.id === currentUser.id) || currentUser;
-            if ((userDb.gem || 0) < cost) return;
 
-            userDb.gem -= cost;
+            if ((userDb.gem || 0) < cost) {
+                alert(`❌ 💎 ジェムが不足しています！\n必要: ${cost} 💎 (所持: ${userDb.gem || 0} 💎)`);
+                return;
+            }
+
+            // ジェム消費
+            userDb.gem = (userDb.gem || 0) - cost;
             saveMemberDb();
             updateUIUserStatus();
 
+            let resultsText = `🎉 ${count}連ガチャ結果！\n--------------------\n`;
             let newRewards = [];
+
             for (let i = 0; i < count; i++) {
-                const reward = masterDriveImages[Math.floor(Math.random() * masterDriveImages.length)];
-                if (!userAlbum.some(item => item.id === reward.id)) newRewards.push(reward);
+                const randomIndex = Math.floor(Math.random() * masterDriveImages.length);
+                const rewardImg = masterDriveImages[randomIndex];
+                resultsText += `・${rewardImg.name}\n`;
+
+                const alreadyHas = userAlbum.find(item => item.id === rewardImg.id);
+                if (!alreadyHas && !newRewards.some(r => r.id === rewardImg.id)) {
+                    newRewards.push(rewardImg);
+                }
             }
+
             if (newRewards.length > 0) {
-                newRewards.forEach(r => { userAlbum.push(r); if (userSlideshowIds.length < 7) userSlideshowIds.push(r.id); });
+                newRewards.forEach(r => {
+                    userAlbum.push(r);
+                    if (!userSlideshowIds.includes(r.id)) userSlideshowIds.push(r.id);
+                });
                 saveUserAlbumData();
-                renderAlbum();
                 initSlideshow();
+                renderAlbum();
+                populateSettingsAvatarSelect();
             }
+
+            alert(resultsText);
         }
 
         function getCombinedUserGifts() {
+            const personalGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
             const activeGlobalGifts = globalGifts.filter(g => g.active !== false);
             const claimedIds = JSON.parse(localStorage.getItem('nexus_claimed_global_' + (currentUser ? currentUser.id : 'guest'))) || [];
-            return activeGlobalGifts.filter(g => !claimedIds.includes(g.id));
+            
+            const unclickedGlobal = activeGlobalGifts.filter(g => !claimedIds.includes(g.id));
+            return [...personalGifts, ...unclickedGlobal];
         }
 
         function renderGifts() {
             const container = document.getElementById('present-list-container');
             if (!container) return;
-            const gifts = getCombinedUserGifts();
-            if (gifts.length === 0) { container.innerHTML = `<p style="color:#888; text-align:center; margin-top:20px;">プレゼントはありません。</p>`; return; }
+            
+            const combinedGifts = getCombinedUserGifts();
+
+            if (combinedGifts.length === 0) {
+                container.innerHTML = `<p style="color: #888; text-align: center; margin-top: 20px;">現在受け取れるプレゼントはありません。</p>`;
+                return;
+            }
+
             container.innerHTML = '';
-            gifts.forEach((gift, idx) => {
+            combinedGifts.forEach((gift, index) => {
                 const box = document.createElement('div');
                 box.className = 'item-box';
-                box.innerHTML = `<div><b>${gift.title}</b></div><button class="mg-btn" onclick="claimGift('${gift.id}')">受け取る</button>`;
+                box.innerHTML = `
+                    <div>
+                        <div style="font-weight:bold; color:#00f5d4;">${gift.title}</div>
+                        <div style="font-size:0.8rem; color:#aaa;">💎: +gift.gem||0|🪙:+{gift.coin || 0}</div>
+                        ${gift.imgUrl ? `<img src="${gift.imgUrl}" style="width:50px; height:50px; object-fit:cover; border-radius:6px; margin-top:4px;">` : ''}
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="claimGift(${index})" style="padding: 8px 12px; background:#00f5d4; color:#000; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">受け取る</button>
+                        <button onclick="deleteGift(${index})" style="padding: 8px 10px; background:#ff334b; color:#fff; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">削除</button>
+                    </div>
+                `;
                 container.appendChild(box);
             });
         }
 
-        function claimGift(id) {
-            let claimedIds = JSON.parse(localStorage.getItem('nexus_claimed_global_' + (currentUser ? currentUser.id : 'guest'))) || [];
-            claimedIds.push(id);
-            localStorage.setItem('nexus_claimed_global_' + (currentUser ? currentUser.id : 'guest'), JSON.stringify(claimedIds));
+        function claimGift(index) {
+            const combinedGifts = getCombinedUserGifts();
+            const gift = combinedGifts[index];
+
+            if (currentUser) {
+                let userDb = memberDatabase.find(m => m.id === currentUser.id) || currentUser;
+                userDb.gem = (Number(userDb.gem) || 0) + (Number(gift.gem) || 0);
+                userDb.coin = (Number(userDb.coin) || 0) + (Number(gift.coin) || 0);
+                saveMemberDb();
+            }
+            
+            if (gift.imgUrl) {
+                const newAlbumItem = { id: 'gift_img_' + Date.now(), name: gift.title, url: gift.imgUrl };
+                if (!userAlbum.some(i => i.url === gift.imgUrl)) {
+                    userAlbum.push(newAlbumItem);
+                    if (!userSlideshowIds.includes(newAlbumItem.id)) userSlideshowIds.push(newAlbumItem.id);
+                    saveUserAlbumData();
+                    renderAlbum();
+                    initSlideshow();
+                    populateSettingsAvatarSelect();
+                }
+            }
+
+            let personalGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
+            if (index < personalGifts.length) {
+                personalGifts.splice(index, 1);
+                localStorage.setItem(getUserGiftsKey(), JSON.stringify(personalGifts));
+            } else {
+                let claimedIds = JSON.parse(localStorage.getItem('nexus_claimed_global_' + (currentUser ? currentUser.id : 'guest'))) || [];
+                claimedIds.push(gift.id);
+                localStorage.setItem('nexus_claimed_global_' + (currentUser ? currentUser.id : 'guest'), JSON.stringify(claimedIds));
+            }
+
             updateUIUserStatus();
             renderGifts();
+            alert(`🎁 「${gift.title}」を受け取りました！`);
         }
 
-        function renderNotices() {}
-        function renderHistory() {}
+        function deleteGift(index) {
+            if (confirm("このプレゼントを履歴から削除しますか？")) {
+                const combinedGifts = getCombinedUserGifts();
+                const gift = combinedGifts[index];
+                let personalGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
+                if (index < personalGifts.length) {
+                    personalGifts.splice(index, 1);
+                    localStorage.setItem(getUserGiftsKey(), JSON.stringify(personalGifts));
+                } else {
+                    let claimedIds = JSON.parse(localStorage.getItem('nexus_claimed_global_' + (currentUser ? currentUser.id : 'guest'))) || [];
+                    claimedIds.push(gift.id);
+                    localStorage.setItem('nexus_claimed_global_' + (currentUser ? currentUser.id : 'guest'), JSON.stringify(claimedIds));
+                }
+                renderGifts();
+                updateUIUserStatus();
+            }
+        }
+
+        function renderNotices() {
+            const container = document.getElementById('notice-list-container');
+            if (!container) return;
+            globalNotices = JSON.parse(localStorage.getItem(getGlobalNoticesKey())) || [];
+
+            if (globalNotices.length === 0) {
+                container.innerHTML = `<p style="color: #888; text-align: center; margin-top: 20px;">新しいお知らせはありません。</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            globalNotices.forEach(notice => {
+                const box = document.createElement('div');
+                box.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:12px; border-left:3px solid #00f5d4;";
+                box.innerHTML = `
+                    <div style="font-size:0.75rem; color:#888; margin-bottom:4px;">${notice.date}</div>
+                    <div style="font-weight:bold; color:#00f5d4; font-size:1rem; margin-bottom:6px;">${notice.title}</div>
+                    <div style="font-size:0.9rem; color:#ddd; white-space:pre-wrap; margin-bottom:8px;">${notice.text}</div>
+                    ${notice.imgUrl ? `<img src="${notice.imgUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:8px;">` : ''}
+                `;
+                container.appendChild(box);
+            });
+        }
 
         function saveUserAlbumData() {
             localStorage.setItem(getUserAlbumKey(), JSON.stringify(userAlbum));
@@ -1964,6 +2569,10 @@
             if (!container) return;
             container.innerHTML = '';
             const activeImages = userAlbum.filter(img => userSlideshowIds.includes(img.id));
+            if (activeImages.length === 0) {
+                container.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#555;">画像がありません</div>`;
+                return;
+            }
             activeImages.forEach((imgObj, index) => {
                 const img = document.createElement('img');
                 img.src = imgObj.url;
@@ -1979,7 +2588,7 @@
             const slides = document.querySelectorAll('.slide-img');
             if (slides.length <= 1) return;
             let current = 0;
-            slideTimer = setInterval(() => {
+            titleSlideTimer = setInterval(() => {
                 slides[current].classList.remove('active');
                 current = (current + 1) % slides.length;
                 slides[current].classList.add('active');
@@ -1990,15 +2599,19 @@
             const grid = document.getElementById('album-grid-container');
             if (!grid) return;
             grid.innerHTML = '';
+            if (userAlbum.length === 0) {
+                grid.innerHTML = `<p style="grid-column: span 2; text-align:center; color:#888;">獲得したイラストはありません。</p>`;
+                return;
+            }
             userAlbum.forEach(img => {
                 const isInSlideshow = userSlideshowIds.includes(img.id);
                 const card = document.createElement('div');
                 card.className = 'album-card' + (isInSlideshow ? ' in-slideshow' : '');
                 card.innerHTML = `
-                    <div class="album-img-box"><img src="${img.url}"></div>
+                    <div class="album-img-box"><img src="img.url"alt="{img.name}"></div>
                     <div class="album-card-info">
-                        <div>${img.name}</div>
-                        <div style="font-size:0.7rem; color:${isInSlideshow ? '#00f5d4' : '#888'};">${isInSlideshow ? '✓ スライド中' : 'タップで登録'}</div>
+                        <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${img.name}</div>
+                        <div style="font-size:0.7rem; color:isInSlideshow?'#00f5d4':'#888';">{isInSlideshow ? '✓ スライド中' : 'タップしてスライド登録'}</div>
                     </div>
                 `;
                 card.onclick = () => toggleSlideshow(img.id);
@@ -2006,13 +2619,14 @@
             });
         }
 
-        /* スライドショー登録枚数を最大7枚に制御 */
         function toggleSlideshow(id) {
             if (userSlideshowIds.includes(id)) {
-                if (userSlideshowIds.length <= 1) return;
+                if (userSlideshowIds.length <= 1) {
+                    alert('スライドショーには最低1枚の画像が必要です。');
+                    return;
+                }
                 userSlideshowIds = userSlideshowIds.filter(i => i !== id);
             } else {
-                if (userSlideshowIds.length >= 7) return; // 最大7枚まで
                 userSlideshowIds.push(id);
             }
             saveUserAlbumData();
@@ -2024,64 +2638,243 @@
             reloadUserData();
             fetchDriveMasterData();
             initTitleSlideshow();
+
+            const savedColor = localStorage.getItem('nexus_clock_color');
+            if (savedColor) {
+                applyClockColorToAll(savedColor);
+            }
         });
 
         function updateClock() {
             const now = new Date();
-            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-            if (document.getElementById('real-clock')) document.getElementById('real-clock').innerText = timeStr;
-            if (document.getElementById('title-clock')) document.getElementById('title-clock').innerText = timeStr;
-            if (document.getElementById('event-clock')) document.getElementById('event-clock').innerText = timeStr;
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            const timeStr = `h:{m}:${s}`;
+            
+            const rClock = document.getElementById('real-clock');
+            if (rClock) rClock.innerText = timeStr;
+            const titleClock = document.getElementById('title-clock');
+            if (titleClock) titleClock.innerText = timeStr;
+            const eventClock = document.getElementById('event-clock');
+            if (eventClock) eventClock.innerText = timeStr;
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        function setClockColor(colorClass, btnElement) {
-            document.getElementById('real-clock').className = "clock-time " + colorClass;
-            document.getElementById('event-clock').className = "clock-time " + colorClass;
+        function applyClockColorToAll(colorClass) {
+            const clockEl = document.getElementById('real-clock');
+            if (clockEl) clockEl.className = "clock-time " + colorClass;
+            const eventClock = document.getElementById('event-clock');
+            if (eventClock) eventClock.className = "clock-time " + colorClass;
+
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                if (btn.classList.contains(colorClass)) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
         }
+
+        function setClockColor(colorClass, btnElement) {
+            applyClockColorToAll(colorClass);
+            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('selected'));
+            btnElement.classList.add('selected');
+            localStorage.setItem('nexus_clock_color', colorClass);
+        }
+
+        async function initBattery() {
+            const bEl = document.getElementById('battery-info');
+            const titleBEl = document.getElementById('title-battery-info');
+            
+            if ('getBattery' in navigator) {
+                try {
+                    const battery = await navigator.getBattery();
+                    function updateBattery() {
+                        const level = Math.floor(battery.level * 100);
+                        const text = (battery.charging ? "充電中 " : "") + level + "%";
+                        
+                        if (bEl) bEl.innerText = text;
+                        if (titleBEl) titleBEl.innerText = text;
+                    }
+                    updateBattery();
+                } catch (e) { }
+            }
+        }
+        initBattery();
 
         function toggleOtherMenu() { document.getElementById('other-modal').classList.add('active'); }
         function closeOtherMenu() { document.getElementById('other-modal').classList.remove('active'); }
 
+        let openedFromTitle = false;
+
         function openScreen(name, fromTitle = false) {
             closeOtherMenu();
+            openedFromTitle = fromTitle;
+            
+            const bottomNav = document.getElementById('main-bottom-nav');
+            if (fromTitle) {
+                if (bottomNav) bottomNav.classList.add('hide-menu');
+            } else {
+                if (bottomNav) bottomNav.classList.remove('hide-menu');
+            }
+
             if (name === 'event') renderEventScreen();
             if (name === 'present') renderGifts();
+            if (name === 'notice') renderNotices();
+            if (name === 'history') renderHistory();
             if (name === 'album') renderAlbum();
+
+            if (name === 'settings') {
+                const clockSection = document.getElementById('settings-clock-section');
+                const homeEx = document.getElementById('settings-home-exclusive');
+                const titleEx = document.getElementById('settings-title-exclusive');
+
+                if (fromTitle) {
+                    if (titleEx) titleEx.style.display = 'block';
+                    if (homeEx) homeEx.style.display = 'none';
+                    if (clockSection) clockSection.style.display = 'none';
+                } else {
+                    if (titleEx) titleEx.style.display = 'none';
+                    if (homeEx) homeEx.style.display = currentUser ? 'block' : 'none';
+                    if (clockSection) clockSection.style.display = currentUser ? 'block' : 'none';
+                    populateSettingsAvatarSelect();
+                    const nameInput = document.getElementById('settings-name-input');
+                    if (nameInput && currentUser) nameInput.value = currentUser.name;
+                }
+            }
+
             document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            if (name !== 'home' && document.getElementById('nav-' + name)) {
+                document.getElementById('nav-' + name).classList.add('active');
+            }
+
             const target = document.getElementById('screen-' + name);
             if (target) target.classList.add('active');
         }
 
-        function closeScreen(name) {
-            document.getElementById('screen-' + name).classList.remove('active');
-            if (!currentUser) document.getElementById('title-screen').classList.remove('hidden');
+        function closeScreen(name) { 
+            const screen = document.getElementById('screen-' + name);
+            if (screen) screen.classList.remove('active'); 
+            
+            const bottomNav = document.getElementById('main-bottom-nav');
+            if (bottomNav) bottomNav.classList.remove('hide-menu');
+
+            if (name === 'settings') {
+                updateUIUserStatus();
+            }
+
+            if (!currentUser || openedFromTitle) {
+                document.getElementById('title-screen').classList.remove('hidden');
+                openedFromTitle = false;
+            }
         }
 
         function switchNav(name) {
             closeOtherMenu();
+            const bottomNav = document.getElementById('main-bottom-nav');
+            if (bottomNav) bottomNav.classList.remove('hide-menu');
+
             document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             if (name === 'home') document.getElementById('nav-home').classList.add('active');
         }
 
-        function adjustVolume(val) { if (audioPlayer) audioPlayer.volume = val / 100; }
-        function adjustBrightness(val) { document.body.style.filter = `brightness(${val / 100})`; }
-        function refreshAppData() { reloadUserData(); }
-        function restartApp() { window.location.reload(); }
+        function adjustVolume(val) {
+            const vol = val / 100;
+            if (audioPlayer) audioPlayer.volume = vol;
+        }
+        function adjustBrightness(val) {
+            document.body.style.filter = `brightness(${val / 100})`;
+        }
+        function refreshAppData() {
+            fetchDriveMasterData();
+            reloadUserData();
+            alert("🔄 データを最新に更新しました！");
+        }
+        function restartApp() {
+            if (confirm("アプリを再起動しますか？")) {
+                window.location.reload();
+            }
+        }
+
         function saveUserNameChange() {
+            const newName = document.getElementById('settings-name-input').value.trim();
+            if (!newName) {
+                alert("有効な名前を入力してください。");
+                return;
+            }
             if (currentUser) {
-                currentUser.name = document.getElementById('settings-name-input').value.trim();
-                saveMemberDb();
+                currentUser.name = newName;
+                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+                updateUIUserStatus();
+                alert(`✏️ 名前を「${newName}」に変更しました！`);
+            }
+        }
+
+        function saveUserAvatarChange() {
+            const selectEl = document.getElementById('settings-avatar-select');
+            const url = selectEl.value;
+            if (currentUser) {
+                if (url) {
+                    localStorage.setItem(getUserAvatarKey(), url);
+                    userAvatarUrl = url;
+                    alert("🖼️ アイコンを変更しました！");
+                } else {
+                    localStorage.removeItem(getUserAvatarKey());
+                    userAvatarUrl = "";
+                    alert("🗑️ アイコンをデフォルト（削除）に戻しました！");
+                }
                 updateUIUserStatus();
             }
         }
-        function saveUserAvatarChange() {}
-        function executeForkReset() { localStorage.clear(); window.location.reload(); }
 
-        const songs = [{ title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" }];
+        function executeForkReset() {
+            const checkBox = document.getElementById('reset-check-box');
+            if (!checkBox.checked) {
+                alert("「本当にデータをすべて削除しますか？」のチェックボックスにチェックを入れてください。");
+                return;
+            }
+
+            if (confirm("⚠️ 【最終確認】本当にすべてのデータを完全初期化しますか？この操作は取り消せません。")) {
+                if (confirm("🚨 【再確認】消去したデータは復元できません。本当に実行しますか？")) {
+                    localStorage.clear();
+                    alert("🗑️ すべてのデータを削除しました。アプリを再起動します。");
+                    window.location.reload();
+                }
+            }
+        }
+
+        const songs = [
+            { title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" },
+            { title: "ハウトゥー世界征服", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" }
+        ];
         const audioPlayer = document.getElementById('audio-player');
+        const playlist = document.getElementById('playlist');
+        const miniTitle = document.getElementById('mini-song-title');
+        const nowPlayingText = document.getElementById('now-playing-text');
+
+        function initPlaylist() {
+            playlist.innerHTML = "";
+            songs.forEach((song) => {
+                const item = document.createElement('div');
+                item.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; cursor:pointer;";
+                item.innerHTML = `<span>▶ ${song.title}</span><span style="color:#888;">再生</span>`;
+                item.onclick = () => {
+                    audioPlayer.src = song.url;
+                    audioPlayer.play();
+                    miniTitle.innerText = song.title;
+                    nowPlayingText.innerText = "再生中の曲: " + song.title;
+                };
+                playlist.appendChild(item);
+            });
+        }
+        initPlaylist();
     </script>
 </body>
 </html>
+
+
