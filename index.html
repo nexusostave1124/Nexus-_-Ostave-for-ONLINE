@@ -409,7 +409,7 @@
             text-align: right;
         }
 
-        /* 左下：期間＆イベントタイトル画像 */
+        /* 左下：期間＆イベントタイトル画像（枠いっぱい仕様） */
         .event-bottom-left {
             position: absolute; bottom: 85px; left: 15px; z-index: 10;
             max-width: 65%; display: flex; flex-direction: column; gap: 6px;
@@ -421,11 +421,19 @@
         }
         .event-title-banner {
             background: rgba(40,40,40,0.85); border: 2px solid rgba(255,255,255,0.4);
-            border-radius: 14px; padding: 12px; text-align: center; color: #fff;
+            border-radius: 14px; overflow: hidden; color: #fff;
             font-size: 1.1rem; font-weight: bold; backdrop-filter: blur(6px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            display: flex; align-items: center; justify-content: center;
+            max-height: 90px; width: 100%;
         }
-        .event-title-banner img { width: 100%; max-height: 80px; object-fit: contain; border-radius: 8px; }
+        .event-title-banner img {
+            width: 100%;
+            height: 100%;
+            max-height: 90px;
+            object-fit: cover; /* 枠いっぱいに表示 */
+            display: block;
+        }
 
         /* 右下：アクションボタン (イベント・ランキング) */
         .event-action-column {
@@ -607,16 +615,16 @@
         <!-- 左上：？ヘルプボタン -->
         <div class="event-help-btn" onclick="openEventHelpModal()">?</div>
 
-        <!-- 右上：時計のみ -->
+        <!-- 右上：時計のみ（ホーム画面の時計カラー設定クラスを自動連動） -->
         <div class="event-top-right">
             <div class="clock-title" style="font-size:0.6rem; color:#aaa;">現在時刻</div>
-            <div id="event-clock" class="clock-time c-white" style="font-size:1.4rem;">00:00:00</div>
+            <div id="event-clock" class="clock-time c-red" style="font-size:1.4rem;">00:00:00</div>
         </div>
 
         <!-- 右下カスタムロゴ -->
         <img id="event-custom-logo-img" class="event-custom-logo" src="" style="display:none;">
 
-        <!-- 左下：期間 & イベントタイトル/画像 -->
+        <!-- 左下：期間 & イベントタイトル/画像（枠いっぱい仕様） -->
         <div class="event-bottom-left" id="event-info-bottom-left">
             <div id="event-period-text" class="event-period-badge">2026.11.30 18:00〜2026.12.12 20:59</div>
             <div id="event-title-banner-box" class="event-title-banner">
@@ -785,7 +793,7 @@
                 <button class="close-btn" onclick="closeManageScreen()">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント設定・GASスプレッドシート連携・複数人へのプレゼント送信に対応。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※「閉じる」ボタンを押すと変更内容が自動強制保存されます。</p>
 
         <!-- 🔗 スプレッドシート & GAS 連携設定 -->
         <div class="admin-section" style="border-color:#3388ff;">
@@ -870,7 +878,7 @@
             <h4>📊 ポイント（P）一覧 & スプレッドシート連携手入力調整</h4>
             <div id="admin-member-points-container" style="margin-bottom: 10px; font-size: 0.8rem; background: #222; padding: 8px; border-radius: 6px;"></div>
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminResetEventPoints()">🔄 全員の個人Pを0にリセット</button>
-            <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="adminShowRankingResult()">🏆 順位発表演出</button>
+            <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="openRankingModal()">🏆 ランキング確認</button>
         </div>
 
         <div class="admin-section" style="border-color: #3388ff;">
@@ -904,7 +912,7 @@
         </div>
 
         <div class="admin-section">
-            <h4>🎂 ガチャ管理・バナー画像＆ラインナップ設定 (メモリー保存)</h4>
+            <h4>🎂 ガチャ管理・バナー画像＆ラインナップ・💎消費設定</h4>
             <input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
             <select id="admin-gacha-type-select" class="admin-input">
                 <option value="ネオフェス限定">ネオフェス限定</option>
@@ -920,11 +928,21 @@
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
                 <option value="終了">終了 (引くのをロック)</option>
             </select>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">1連 💎消費数:</label>
+                    <input type="number" id="admin-gacha-cost-single" class="admin-input" value="300">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">10連 💎消費数:</label>
+                    <input type="number" id="admin-gacha-cost-multi" class="admin-input" value="3000">
+                </div>
+            </div>
             <label style="font-size:0.8rem; color:#aaa;">ガチャバナー（Googleドライブ選択）：</label>
             <select id="admin-gacha-banner-select" class="admin-input"><option value="">(バナーなし)</option></select>
             <input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
             <input type="datetime-local" id="admin-gacha-end-input" class="admin-input" value="2026-11-30T00:00">
-            <button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ基本設定・バナーを保存する</button>
+            <button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ基本設定を保存する</button>
 
             <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
             <h5 style="color:#ffee00; margin-bottom:8px;">🎯 レアリティ別アイテム追加</h5>
@@ -966,6 +984,30 @@
             <select id="admin-notice-img-select" class="admin-input"><option value="">(イラストなし)</option></select>
             <button class="admin-btn" onclick="adminPublishNotice()">📢 お知らせを全体公開する</button>
             <div id="admin-notice-manage-list" style="margin-top: 15px; font-size: 0.8rem;"></div>
+        </div>
+    </div>
+
+    <!-- 🏆 イベントランキング専用モーダル -->
+    <div id="ranking-modal" class="modal-overlay" onclick="closeRankingModal(event)">
+        <div class="menu-dialog" style="max-width:360px; max-height:80vh; overflow-y:auto;" onclick="event.stopPropagation()">
+            <h3 style="color:#ffee00; text-align:center; margin-bottom:12px;">🏆 イベントランキング</h3>
+            <div id="ranking-modal-content" style="font-size:0.85rem; margin-bottom:15px;"></div>
+            <button class="close-btn" onclick="closeRankingModal()" style="width:100%;">閉じる</button>
+        </div>
+    </div>
+
+    <!-- ❓ イベントヘルプ専用モーダル（操作方法・P加算方法） -->
+    <div id="event-help-modal" class="modal-overlay" onclick="closeEventHelpModal(event)">
+        <div class="menu-dialog" style="max-width:360px; max-height:85vh; overflow-y:auto;" onclick="event.stopPropagation()">
+            <h3 style="color:#00f5d4; text-align:center; margin-bottom:12px;">❓ イベント詳細ガイド</h3>
+            <div style="background:#222; padding:12px; border-radius:8px; font-size:0.82rem; color:#ddd; line-height:1.6; margin-bottom:15px;">
+                <div style="font-weight:bold; color:#ffee00; margin-bottom:4px;">🎮 イベント画面の操作方法</div>
+                <p style="margin-bottom:10px;">・背景を上下にスワイプして切り替え。<br>・右下の「イベント」ボタンからミニゲーム（High & Low・連打チャレンジ）に挑戦可能。<br>・右下の「ランキング」ボタンから現在の順位やポイント状況をリアルタイム確認できます。</p>
+                
+                <div style="font-weight:bold; color:#ffee00; margin-bottom:4px;">📊 P加算方法</div>
+                <p>・ミニゲームのクリア報酬や、 Discord・LINE通話参加 / グループチャットでの発言数に応じて管理者がポイントを加算。<br>・公式計算式: [ 獲得P + ガチャボーナス(%) + イラストボーナス(%) + ボーナス(%) ] (小数以下繰上げ) にて最終Pが算出されます。</p>
+            </div>
+            <button class="close-btn" onclick="closeEventHelpModal()" style="width:100%;">閉じる</button>
         </div>
     </div>
 
@@ -1023,13 +1065,13 @@
         };
 
         let memberDatabase = JSON.parse(localStorage.getItem('nexus_member_db')) || [
-            { id: "H-25-3-1", name: "ヨウスケ", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-            { id: "M-24-12-2", name: "Kou", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-            { id: "N-24-11-3", name: "奨", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-            { id: "S-24-11-4", name: "MIHO", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-            { id: "S-24-11-5-o", name: "海惺", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-            { id: "U-24-11-6-a", name: "タイ", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-            { id: "N-24-11-7-o", name: "Ayu", gem: 0, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "H-25-3-1", name: "ヨウスケ", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "M-24-12-2", name: "Kou", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "N-24-11-3", name: "奨", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "S-24-11-4", name: "MIHO", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "S-24-11-5-o", name: "海惺", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "U-24-11-6-a", name: "タイ", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "N-24-11-7-o", name: "Ayu", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
             { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 }
         ];
 
@@ -1082,7 +1124,9 @@
             status: "開催中",
             startDate: "2026-11-01T00:00",
             endDate: "2026-11-30T00:00",
-            bannerUrl: ""
+            bannerUrl: "",
+            costSingle: 300,
+            costMulti: 3000
         };
 
         function toggleTitleMenu(e) {
@@ -1118,6 +1162,10 @@
             const avatarImg = document.getElementById('main-avatar-img');
 
             if (currentUser) {
+                // データベース上の最新のgemを反映
+                const freshUser = memberDatabase.find(m => m.id === currentUser.id);
+                if (freshUser) currentUser = freshUser;
+
                 idEl.innerText = currentUser.id;
                 const isNeo = (currentUser.id === "A-24-11-9-a");
                 nameEl.innerText = currentUser.name + (isNeo ? " (👑管理者)" : "");
@@ -1244,7 +1292,7 @@
 
             if (bannerBox) {
                 if (currentEvent.imgUrl) {
-                    bannerBox.innerHTML = `<img src="${currentEvent.imgUrl}">`;
+                    bannerBox.innerHTML = `<img src="${currentEvent.imgUrl}" alt="イベントタイトルロゴ">`;
                 } else {
                     bannerBox.innerText = currentEvent.title || "イベントタイトル";
                 }
@@ -1289,7 +1337,10 @@
         }
 
         function openEventHelpModal() {
-            alert(`❓ 【${currentEvent.title} (${currentEvent.type})】ヘルプ\n\n・算出方法: [獲得P + ガチャボーナス(%) + イラストボーナス(%) + ボーナス(%)] (小数以下繰上げ)\n・期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`);
+            document.getElementById('event-help-modal').classList.add('active');
+        }
+        function closeEventHelpModal() {
+            document.getElementById('event-help-modal').classList.remove('active');
         }
 
         function handleEventActionButton() {
@@ -1353,14 +1404,49 @@
             document.getElementById('story-event-modal').classList.remove('active');
         }
 
+        /* 🏆 イベントと同じデザインスタイルのランキングモーダル */
         function openRankingModal() {
             const sorted = [...memberDatabase].sort((a,b) => (b.pt || 0) - (a.pt || 0));
-            let rankText = `⚔️ 【${currentEvent.title}】ランキング詳細\n------------------------------------\n`;
+            const contentEl = document.getElementById('ranking-modal-content');
+            if (!contentEl) return;
+
+            let html = `
+                <div style="font-size:0.75rem; color:#aaa; margin-bottom:10px; text-align:center;">
+                    🎪 イベント名: <b>${currentEvent.title}</b><br>
+                    算出公式: [ 獲得P + ボーナス ] (小数以下繰上げ)
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+            `;
+
             sorted.forEach((m, idx) => {
                 const isMe = currentUser && (currentUser.id === m.id);
-                rankText += `${idx + 1}位 : ${m.name} (${Number(m.pt || 0).toLocaleString()} P) ${isMe ? '👈(あなた)' : ''}\n`;
+                let rankColor = "#fff";
+                if (idx === 0) rankColor = "#ffee00";
+                else if (idx === 1) rankColor = "#00f5d4";
+                else if (idx === 2) rankColor = "#ff9900";
+
+                html += `
+                    <div style="background:#222; padding:8px 12px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid ${rankColor}; ${isMe ? 'background:rgba(0,245,212,0.15);' : ''}">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-weight:bold; font-size:1rem; color:${rankColor}; min-width:30px;">#${idx + 1}</span>
+                            <div>
+                                <div style="font-weight:bold; font-size:0.9rem; color:#fff;">${m.name} ${isMe ? '<span style="color:#00f5d4; font-size:0.75rem;">(あなた)</span>' : ''}</div>
+                                <div style="font-size:0.7rem; color:#888;">ID: ${m.id}</div>
+                            </div>
+                        </div>
+                        <div style="font-weight:bold; font-size:1.1rem; color:#ffee00;">${Number(m.pt || 0).toLocaleString()} <span style="font-size:0.75rem; color:#aaa;">P</span></div>
+                    </div>
+                `;
             });
-            alert(rankText);
+            html += `</div>`;
+            contentEl.innerHTML = html;
+            document.getElementById('ranking-modal').classList.add('active');
+        }
+
+        function closeRankingModal(e) {
+            if (!e || e.target.id === 'ranking-modal' || e.target.classList.contains('close-btn')) {
+                document.getElementById('ranking-modal').classList.remove('active');
+            }
         }
 
         /* 🧮 計算機ロジック (小数以下繰上げ) */
@@ -1480,7 +1566,9 @@
             }
         }
 
-        function adminCreateEvent() {
+        /* 🛡️ 管理画面の編集内容を強制保存する関数 */
+        function forceSaveAdminChanges() {
+            // イベント設定保存
             const title = document.getElementById('admin-event-title-input').value;
             const type = document.getElementById('admin-event-type-select').value;
             const start = document.getElementById('admin-event-start-input').value;
@@ -1489,12 +1577,41 @@
             const imgUrl = document.getElementById('admin-event-img-select').value;
             const logoUrl = document.getElementById('admin-event-logo-select').value;
 
-            if (!title || !start || !end) return;
+            if (title) {
+                currentEvent = { title: title, type: type, startDate: start, endDate: end, status: status, imgUrl: imgUrl, logoUrl: logoUrl };
+                localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
+            }
 
-            currentEvent = { title: title, type: type, startDate: start, endDate: end, status: status, imgUrl: imgUrl, logoUrl: logoUrl };
-            localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
+            // ガチャ設定・💎コスト保存
+            const gachaTitle = document.getElementById('admin-gacha-title-input').value;
+            const gachaType = document.getElementById('admin-gacha-type-select').value;
+            const gachaStatus = document.getElementById('admin-gacha-status-select').value;
+            const bannerUrl = document.getElementById('admin-gacha-banner-select').value;
+            const gStart = document.getElementById('admin-gacha-start-input').value;
+            const gEnd = document.getElementById('admin-gacha-end-input').value;
+            const costSingle = Number(document.getElementById('admin-gacha-cost-single').value) || 300;
+            const costMulti = Number(document.getElementById('admin-gacha-cost-multi').value) || 3000;
+
+            if (gachaTitle) {
+                currentGachaConfig = {
+                    title: gachaTitle,
+                    type: gachaType,
+                    status: gachaStatus,
+                    startDate: gStart,
+                    endDate: gEnd,
+                    bannerUrl: bannerUrl,
+                    costSingle: costSingle,
+                    costMulti: costMulti
+                };
+                localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
+            }
+
             updateUIUserStatus();
-            alert(`🎪 [${type}] 「${title}」のイベント設定を保存しました！`);
+        }
+
+        function adminCreateEvent() {
+            forceSaveAdminChanges();
+            alert(`🎪 イベント設定を強制保存しました！`);
         }
 
         function adminDeleteEventToHistory() {
@@ -1593,6 +1710,8 @@
             if (titleEl) titleEl.innerText = "🎂 " + currentGachaConfig.title;
             const rates = GACHA_RATES[currentGachaConfig.type] || { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 100 };
             let statusColor = currentGachaConfig.status === "開催中" ? "#00f5d4" : "#ff9900";
+            const costSingle = currentGachaConfig.costSingle || 300;
+            const costMulti = currentGachaConfig.costMulti || 3000;
 
             container.innerHTML = `
                 ${currentGachaConfig.bannerUrl ? `<img src="${currentGachaConfig.bannerUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:10px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.2);">` : ''}
@@ -1600,9 +1719,12 @@
                     <span style="background:#ff9900; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.type}</span>
                     <span style="background:${statusColor}; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.status}</span>
                 </div>
-                <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 10px;">期間: ${formatDateStr(currentGachaConfig.startDate)} 〜 ${formatDateStr(currentGachaConfig.endDate)}</div>
+                <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 12px;">期間: ${formatDateStr(currentGachaConfig.startDate)} 〜 ${formatDateStr(currentGachaConfig.endDate)}</div>
                 
-                <button onclick="pullGachaFromDrive()" style="padding: 12px 20px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit; width:100%; margin-bottom: 15px;">💎 ガチャを引く</button>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom: 15px;">
+                    <button onclick="pullGacha(1)" style="padding: 12px 10px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit;">💎 ${costSingle} (1回)</button>
+                    <button onclick="pullGacha(10)" style="padding: 12px 10px; background: #ffee00; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family:inherit;">💎 ${costMulti} (10連)</button>
+                </div>
 
                 <div style="background:#1a1a1a; padding:10px; border-radius:8px; border:1px solid #333;">
                     <div style="font-size:0.8rem; font-weight:bold; color:#00f5d4; margin-bottom:4px;">📊 現在のガチャ排出確率</div>
@@ -1735,14 +1857,24 @@
             document.getElementById('admin-login-lock-toggle').checked = isLoginLocked;
             const gasUrlInput = document.getElementById('admin-gas-url-input');
             if (gasUrlInput) gasUrlInput.value = GAS_WEB_APP_URL;
+
+            // ガチャ設定の初期値反映
+            document.getElementById('admin-gacha-title-input').value = currentGachaConfig.title || "記念ピックアップガチャ";
+            document.getElementById('admin-gacha-type-select').value = currentGachaConfig.type || "ネオフェス限定";
+            document.getElementById('admin-gacha-status-select').value = currentGachaConfig.status || "開催中";
+            document.getElementById('admin-gacha-cost-single').value = currentGachaConfig.costSingle || 300;
+            document.getElementById('admin-gacha-cost-multi').value = currentGachaConfig.costMulti || 3000;
         }
 
         function closeManageScreen() {
+            // 管理画面閉じる時に強制保存
+            forceSaveAdminChanges();
             closeScreen('manage');
             if (!currentUser || currentUser.id !== "A-24-11-9-a") {
                 isAdmin = false;
                 localStorage.setItem('nexus_is_admin', 'false');
             }
+            alert("💾 変更内容を強制保存して管理画面を閉じました。");
         }
 
         function submitUserReport() {
@@ -1937,22 +2069,9 @@
             }
         }
 
-        function adminShowRankingResult() {
-            openRankingModal();
-        }
-
         function adminSaveGachaConfig() {
-            const gachaTitle = document.getElementById('admin-gacha-title-input').value;
-            const gachaType = document.getElementById('admin-gacha-type-select').value;
-            const status = document.getElementById('admin-gacha-status-select').value;
-            const bannerUrl = document.getElementById('admin-gacha-banner-select').value;
-            const start = document.getElementById('admin-gacha-start-input').value;
-            const end = document.getElementById('admin-gacha-end-input').value;
-
-            currentGachaConfig = { title: gachaTitle || "記念ピックアップガチャ", type: gachaType, status: status, startDate: start, endDate: end, bannerUrl: bannerUrl };
-            localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
-            updateUIUserStatus();
-            alert(`🎂 ガチャ基本設定・バナーを保存しました！`);
+            forceSaveAdminChanges();
+            alert(`🎂 ガチャ基本設定・消費数設定を保存しました！`);
         }
 
         function adminAddGachaIllustration() {
@@ -2278,7 +2397,8 @@
             selectEl.innerHTML = html;
         }
 
-        function pullGachaFromDrive() {
+        /* 💎 1連・10連ガチャ消費機能対応 */
+        function pullGacha(count = 1) {
             if (currentGachaConfig.status === "終了") {
                 alert("🔒 このガチャは終了しているため引くことができません。");
                 return;
@@ -2295,20 +2415,45 @@
                 return;
             }
 
-            const randomIndex = Math.floor(Math.random() * masterDriveImages.length);
-            const rewardImg = masterDriveImages[randomIndex];
-            
-            const alreadyHas = userAlbum.find(item => item.id === rewardImg.id);
-            if (!alreadyHas) {
-                userAlbum.push(rewardImg);
-                if (!userSlideshowIds.includes(rewardImg.id)) userSlideshowIds.push(rewardImg.id);
+            const cost = count === 10 ? (currentGachaConfig.costMulti || 3000) : (currentGachaConfig.costSingle || 300);
+            const userDb = memberDatabase.find(m => m.id === currentUser.id) || currentUser;
+
+            if ((userDb.gem || 0) < cost) {
+                alert(`❌ 💎 ジェムが不足しています！\n必要: ${cost} 💎 (所持: ${userDb.gem || 0} 💎)`);
+                return;
+            }
+
+            // ジェム消費
+            userDb.gem = (userDb.gem || 0) - cost;
+            saveMemberDb();
+            updateUIUserStatus();
+
+            let resultsText = `🎉 ${count}連ガチャ結果！\n--------------------\n`;
+            let newRewards = [];
+
+            for (let i = 0; i < count; i++) {
+                const randomIndex = Math.floor(Math.random() * masterDriveImages.length);
+                const rewardImg = masterDriveImages[randomIndex];
+                resultsText += `・${rewardImg.name}\n`;
+
+                const alreadyHas = userAlbum.find(item => item.id === rewardImg.id);
+                if (!alreadyHas && !newRewards.some(r => r.id === rewardImg.id)) {
+                    newRewards.push(rewardImg);
+                }
+            }
+
+            if (newRewards.length > 0) {
+                newRewards.forEach(r => {
+                    userAlbum.push(r);
+                    if (!userSlideshowIds.includes(r.id)) userSlideshowIds.push(r.id);
+                });
                 saveUserAlbumData();
                 initSlideshow();
                 renderAlbum();
                 populateSettingsAvatarSelect();
             }
 
-            alert(`🎉 ガチャ結果！\n「${rewardImg.name}」を獲得しました！`);
+            alert(resultsText);
         }
 
         function getCombinedUserGifts() {
@@ -2355,9 +2500,10 @@
             const gift = combinedGifts[index];
 
             if (currentUser) {
-                currentUser.gem = (Number(currentUser.gem) || 0) + (Number(gift.gem) || 0);
-                currentUser.coin = (Number(currentUser.coin) || 0) + (Number(gift.coin) || 0);
-                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+                let userDb = memberDatabase.find(m => m.id === currentUser.id) || currentUser;
+                userDb.gem = (Number(userDb.gem) || 0) + (Number(gift.gem) || 0);
+                userDb.coin = (Number(userDb.coin) || 0) + (Number(gift.coin) || 0);
+                saveMemberDb();
             }
             
             if (gift.imgUrl) {
@@ -2511,8 +2657,7 @@
 
             const savedColor = localStorage.getItem('nexus_clock_color');
             if (savedColor) {
-                const clockEl = document.getElementById('real-clock');
-                if (clockEl) clockEl.className = "clock-time " + savedColor;
+                applyClockColorToAll(savedColor);
             }
         });
 
@@ -2533,9 +2678,23 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        function setClockColor(colorClass, btnElement) {
+        function applyClockColorToAll(colorClass) {
             const clockEl = document.getElementById('real-clock');
             if (clockEl) clockEl.className = "clock-time " + colorClass;
+            const eventClock = document.getElementById('event-clock');
+            if (eventClock) eventClock.className = "clock-time " + colorClass;
+
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                if (btn.classList.contains(colorClass)) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+        }
+
+        function setClockColor(colorClass, btnElement) {
+            applyClockColorToAll(colorClass);
             document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('selected'));
             btnElement.classList.add('selected');
             localStorage.setItem('nexus_clock_color', colorClass);
