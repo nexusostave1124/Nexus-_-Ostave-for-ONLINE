@@ -624,7 +624,7 @@
             </div>
         </div>
 
-        <!-- 右下：イベント（P稼ぎ／LINE風参加方法）＆ランキングボタン -->
+        <!-- 右下：イベント＆ランキングボタン -->
         <div class="event-action-column" id="event-action-btns">
             <div class="event-action-btn" onclick="handleEventActionButton()">
                 <span class="event-action-icon">💍</span>
@@ -802,10 +802,10 @@
             <label style="font-size: 0.8rem; color: #aaa;">イベントタイトル：</label>
             <input type="text" id="admin-event-title-input" class="admin-input" value="結成2周年記念イベント">
             
-            <label style="font-size: 0.8rem; color: #aaa;">イベント種類（シーズン：競い合う / ストーリー：協力）：</label>
+            <label style="font-size: 0.8rem; color: #aaa;">イベント種類：</label>
             <select id="admin-event-type-select" class="admin-input">
-                <option value="シーズンイベント">シーズンイベント (競い合う・High&Low/連打等)</option>
-                <option value="ストーリーイベント">ストーリーイベント (協力・LINE風発言/通話等)</option>
+                <option value="シーズンイベント">シーズンイベント</option>
+                <option value="ストーリーイベント">ストーリーイベント</option>
                 <option value="タイアップイベント">タイアップイベント</option>
                 <option value="期間限定イベント">期間限定イベント</option>
             </select>
@@ -972,7 +972,7 @@
     <!-- 🃏 ミニゲームモーダル -->
     <div id="minigame-modal" class="modal-overlay" onclick="closeMinigameModal(event)">
         <div class="menu-dialog" style="max-width:360px; text-align:center;" onclick="event.stopPropagation()">
-            <h3 style="color:#00f5d4; margin-bottom:10px;">🃏 シーズンイベント P稼ぎ</h3>
+            <h3 style="color:#00f5d4; margin-bottom:10px;">🃏 イベント P稼ぎ</h3>
             <p id="minigame-desc" style="font-size:0.85rem; color:#ccc; margin-bottom:15px;">ミニゲームを遊んでイベントPを稼ごう！</p>
             
             <div id="highlow-container" style="background:#222; padding:15px; border-radius:10px; margin-bottom:15px;">
@@ -995,14 +995,14 @@
         </div>
     </div>
 
-    <!-- 💬 ストーリーイベント協力モーダル -->
+    <!-- 💬 ストーリーイベントモーダル -->
     <div id="story-event-modal" class="modal-overlay" onclick="closeStoryEventModal(event)">
         <div class="menu-dialog" style="max-width:360px;" onclick="event.stopPropagation()">
-            <h3 style="color:#00f5d4; margin-bottom:8px; text-align:center;">💬 ストーリーイベント (協力)</h3>
-            <p style="font-size:0.8rem; color:#ccc; margin-bottom:12px; text-align:center;">LINEのチャット発言や通話参加でみんなで協力してストーリーを進めよう！</p>
+            <h3 style="color:#00f5d4; margin-bottom:8px; text-align:center;">💬 ストーリーイベント</h3>
+            <p style="font-size:0.8rem; color:#ccc; margin-bottom:12px; text-align:center;">LINEのチャット発言や通話参加でストーリーを進めよう！</p>
             <div style="background:#222; padding:12px; border-radius:8px; font-size:0.8rem; color:#ddd; line-height:1.5; margin-bottom:15px;">
                 ・<b>参加方法</b>: DiscordやLINEでの通話参加、グループチャットでの発言数に応じて管理者がポイントを加算します。<br>
-                ・<b>現在の協力状況</b>: 全メンバーの合計Pでエピソードが解放されます！
+                ・<b>現在の状況</b>: 全メンバーの合計Pでエピソードが解放されます！
             </div>
             <button class="close-btn" onclick="closeStoryEventModal()" style="width:100%;">閉じる</button>
         </div>
@@ -1289,7 +1289,7 @@
         }
 
         function openEventHelpModal() {
-            alert(`❓ 【${currentEvent.title} (${currentEvent.type})】ヘルプ\n\n・算出方法: [獲得P + ガチャボーナス(%) + イラストボーナス(%) + ボーナス(%)] (小数以下繰上げ)\n・シーズンイベントはミニゲームでP稼ぎ、ストーリーイベントはLINE発言や通話参加等で協力してPを獲得！\n・期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`);
+            alert(`❓ 【${currentEvent.title} (${currentEvent.type})】ヘルプ\n\n・算出方法: [獲得P + ガチャボーナス(%) + イラストボーナス(%) + ボーナス(%)] (小数以下繰上げ)\n・期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`);
         }
 
         function handleEventActionButton() {
