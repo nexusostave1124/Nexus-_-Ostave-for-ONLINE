@@ -250,6 +250,13 @@
             position: absolute; top: -5px; right: -5px; background: #ff334b; color: #fff;
             font-size: 0.65rem; font-weight: bold; border-radius: 10px; padding: 1px 5px; border: 1px solid #000; display: none;
         }
+        /* 🌟 自動「！」マークバッジ（黄色） */
+        .exclamation-badge {
+            position: absolute; top: -4px; right: -4px; background: #ffee00; color: #000;
+            font-size: 0.65rem; font-weight: 800; border-radius: 50%; width: 18px; height: 18px;
+            display: flex; align-items: center; justify-content: center; border: 1px solid #000; box-shadow: 0 2px 5px rgba(0,0,0,0.8);
+            display: none; z-index: 15;
+        }
         .mini-player {
             position: absolute; bottom: 75px; right: 15px; z-index: 10;
             background: rgba(15, 15, 15, 0.85); border: 1px solid rgba(0, 245, 212, 0.4);
@@ -273,7 +280,7 @@
         .nav-item.active { color: #00f5d4; }
         .nav-icon { font-size: 1.35rem; margin-bottom: 1px; }
         
-        /* 🎈 複数イベント・ガチャ選択ポップアップ（下らへん表示） */
+        /* 🎈 複数イベント・ガチャ選択ポップアップ */
         .selector-popup {
             position: absolute; bottom: 68px; left: 50%; transform: translateX(-50%);
             background: rgba(25, 25, 25, 0.95); border: 1px solid #00f5d4; border-radius: 12px;
@@ -341,7 +348,6 @@
         .admin-btn { width: 100%; padding: 10px; background: #00f5d4; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family: inherit; margin-top: 8px; }
         .admin-btn:active { opacity: 0.8; }
         .admin-input { width: 100%; padding: 8px 10px; background: #222; border: 1px solid #444; border-radius: 6px; color: #fff; font-family: inherit; margin-top: 6px; margin-bottom: 10px; }
-        .item-box { background: #1f1f1f; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .rate-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.75rem; background: #222; }
         .rate-table th, .rate-table td { border: 1px solid #444; padding: 4px; text-align: center; }
         .rate-table th { background: #333; color: #00f5d4; }
@@ -484,10 +490,12 @@
             <div class="top-buttons-column">
                 <div class="icon-badge-btn" onclick="openScreen('present')">
                     🎁 <span class="badge" id="badge-present">0</span>
+                    <div class="exclamation-badge" id="exclamation-present">!</div>
                     <span class="icon-label">プレゼント</span>
                 </div>
                 <div class="icon-badge-btn" onclick="openScreen('notice')">
                     ✉️ <span class="badge" id="badge-notice">0</span>
+                    <div class="exclamation-badge" id="exclamation-notice">!</div>
                     <span class="icon-label">お知らせ</span>
                 </div>
             </div>
@@ -500,7 +508,7 @@
             </div>
         </div>
         
-        <!-- 🎪 イベント・ガチャ複数選択ポップアップ（下らへん表示） -->
+        <!-- 🎪 イベント・ガチャ複数選択ポップアップ -->
         <div id="event-selector-popup" class="selector-popup">
             <div style="font-size:0.7rem; color:#00f5d4; font-weight:bold;">🎪 イベント選択</div>
             <div id="event-selector-list" style="display:flex; flex-direction:column; gap:4px;"></div>
@@ -522,10 +530,12 @@
             </div>
             <div class="nav-item" id="nav-gacha" onclick="handleGachaNavClick(event)">
                 <span class="nav-icon">🎂</span>
+                <div class="exclamation-badge" id="exclamation-gacha" style="top:0px; right:4px;">!</div>
                 <span>ガチャ</span>
             </div>
             <div class="nav-item" id="nav-play" onclick="openScreen('play')">
                 <span class="nav-icon">🎰</span>
+                <div class="exclamation-badge" id="exclamation-play" style="top:0px; right:4px;">!</div>
                 <span>遊戯</span>
             </div>
             <div class="nav-item" id="nav-other" onclick="toggleOtherMenu()">
@@ -548,10 +558,12 @@
                 </div>
                 <div class="other-menu-card" onclick="openScreen('album')">
                     <div class="other-icon-circle">📷</div>
+                    <div class="exclamation-badge" id="exclamation-album" style="top:6px; right:6px;">!</div>
                     <span>アルバム</span>
                 </div>
                 <div class="other-menu-card" onclick="openScreen('history')">
                     <div class="other-icon-circle">📖</div>
+                    <div class="exclamation-badge" id="exclamation-history" style="top:6px; right:6px;">!</div>
                     <span>ヒストリー</span>
                 </div>
                 <div class="other-menu-card" onclick="openScreen('settings')"><span>設定</span></div>
@@ -687,7 +699,6 @@
                 <label style="font-size:0.8rem; color:#aaa;">画面明るさ (端末連動):</label>
                 <input type="range" min="20" max="100" value="100" class="admin-input" oninput="adjustBrightness(this.value)">
             </div>
-            <!-- 全画面表示設定のON/OFF追加 -->
             <div style="margin-bottom: 10px;">
                 <label style="font-size:0.8rem; color:#ffee00; display:flex; align-items:center; gap:8px; cursor:pointer;">
                     <input type="checkbox" id="settings-fullscreen-toggle" style="width:18px; height:18px;" onchange="saveFullscreenSetting(this)">
@@ -785,7 +796,12 @@
             <label style="font-size: 0.8rem; color: #aaa;">終了日時：</label>
             <input type="datetime-local" id="admin-event-end-input" class="admin-input" value="2026-12-12T20:59">
             
-            <label style="font-size: 0.8rem; color: #aaa;">ステータス：</label>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; margin-bottom:6px;">
+                <label style="font-size: 0.8rem; color: #aaa;">ステータス：</label>
+                <label style="font-size: 0.75rem; color: #00f5d4; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                    <input type="checkbox" id="admin-event-show-status" style="width:15px; height:15px;" checked> ステータスマークを表示 (ON/OFF)
+                </label>
+            </div>
             <select id="admin-event-status-select" class="admin-input">
                 <option value="開催中">開催中</option>
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
@@ -855,12 +871,22 @@
             <div id="admin-reports-container" style="margin-top: 10px;"></div>
         </div>
         
-        <!-- 📖 新機能：管理画面のみヒストリー削除機能 -->
+        <!-- 📖 ヒストリー削除機能 -->
         <div class="admin-section" style="border-color: #ff334b;">
             <h4 style="color: #ff334b; border-left-color: #ff334b;">📖 管理画面: ヒストリー（過去イベント）一括・個別削除管理</h4>
             <p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">過去にアーカイブされたイベントの記録を管理者が削除できます。</p>
             <div id="admin-history-manage-container" style="background:#222; padding:8px; border-radius:6px; font-size:0.8rem; margin-bottom:8px;"></div>
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminClearAllHistory()">🗑️ ヒストリーの記録をすべて削除</button>
+        </div>
+
+        <!-- 🎁 メンバーのプレゼント管理・削除 (管理者用) -->
+        <div class="admin-section" style="border-color: #00f5d4;">
+            <h4 style="color: #00f5d4; border-left-color: #00f5d4;">🎁 メンバーのプレゼント閲覧・削除 (管理者限定)</h4>
+            <label style="font-size: 0.8rem; color: #aaa;">確認するメンバー：</label>
+            <select id="admin-target-present-select" class="admin-input" onchange="renderAdminMemberPresentView()">
+                <option value="">(メンバーを選択してください)</option>
+            </select>
+            <div id="admin-member-present-container" style="margin-top: 10px;"></div>
         </div>
 
         <div class="admin-section" style="border-color: #00f5d4;">
@@ -899,11 +925,19 @@
                 <option value="限定復刻">限定復刻</option>
                 <option value="限定/恒常">限定/恒常</option>
             </select>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; margin-bottom:6px;">
+                <label style="font-size: 0.8rem; color: #aaa;">ステータス：</label>
+                <label style="font-size: 0.75rem; color: #00f5d4; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                    <input type="checkbox" id="admin-gacha-show-status" style="width:15px; height:15px;" checked> ステータスマークを表示 (ON/OFF)
+                </label>
+            </div>
             <select id="admin-gacha-status-select" class="admin-input">
                 <option value="開催中">開催中</option>
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
                 <option value="終了">終了 (引くのをロック)</option>
             </select>
+            
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                 <div>
                     <label style="font-size:0.75rem; color:#aaa;">1連 💎消費数:</label>
@@ -922,6 +956,7 @@
                 <button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ設定保存</button>
                 <button class="admin-btn" style="background:#00f5d4; color:#000;" onclick="adminAddNewGacha()">➕ 新規ガチャ追加</button>
             </div>
+            <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteCurrentGacha()">🗑️ 現在のガチャを削除・ヒストリーへ</button>
             <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
             <h5 style="color:#ffee00; margin-bottom:8px;">🎯 レアリティ別アイテム追加 (★2自動プレゼント配布対応)</h5>
             <label style="font-size:0.8rem; color:#aaa;">イラスト（Googleドライブ選択）：</label>
@@ -971,7 +1006,7 @@
             <button class="close-btn" onclick="closeRankingModal()" style="width:100%;">閉じる</button>
         </div>
     </div>
-    <!-- ❓ イベントヘルプ専用モーダル（ミニゲームのルール追加） -->
+    <!-- ❓ イベントヘルプ専用モーダル -->
     <div id="event-help-modal" class="modal-overlay" onclick="closeEventHelpModal(event)">
         <div class="menu-dialog" style="max-width:360px; max-height:85vh; overflow-y:auto;" onclick="event.stopPropagation()">
             <h3 style="color:#00f5d4; text-align:center; margin-bottom:12px;">❓ イベント詳細 & ルールガイド</h3>
@@ -1045,6 +1080,7 @@
                 startDate: "2026-11-30T18:00",
                 endDate: "2026-12-12T20:59",
                 status: "開催中",
+                showStatus: true,
                 imgUrl: "",
                 logoUrl: "",
                 minigames: { highlow: true, blackjack: true, mash: true, stopwatch: true, slot: true, presshold: false, bigsmall: false }
@@ -1056,6 +1092,7 @@
                 startDate: "2026-12-01T00:00",
                 endDate: "2026-12-25T23:59",
                 status: "開催中",
+                showStatus: true,
                 imgUrl: "",
                 logoUrl: "",
                 minigames: { highlow: false, blackjack: false, mash: false, stopwatch: false, slot: true, presshold: true, bigsmall: true }
@@ -1070,6 +1107,7 @@
                 title: "記念ピックアップガチャ",
                 type: "ネオフェス限定",
                 status: "開催中",
+                showStatus: true,
                 startDate: "2026-11-01T00:00",
                 endDate: "2026-11-30T00:00",
                 bannerUrl: "",
@@ -1079,7 +1117,8 @@
         ];
         let currentGachaId = localStorage.getItem('nexus_current_gacha_id') || (gachaList[0] ? gachaList[0].id : 'g_1');
         let currentGachaConfig = gachaList.find(g => g.id === currentGachaId) || gachaList[0];
-        
+        let gachaHistory = JSON.parse(localStorage.getItem('nexus_gacha_history')) || [];
+
         function getUserAlbumKey(userId) { return 'nexus_album_' + (userId || (currentUser ? currentUser.id : 'guest')); }
         function getUserSlideshowKey(userId) { return 'nexus_slideshow_' + (userId || (currentUser ? currentUser.id : 'guest')); }
         function getUserGiftsKey() { return 'nexus_gifts_' + (currentUser ? currentUser.id : 'guest'); }
@@ -1088,6 +1127,7 @@
         function getGlobalGiftsKey() { return 'nexus_global_gifts'; }
         function getGlobalReportsKey() { return 'nexus_global_reports'; }
         function getEventHistoryKey() { return 'nexus_event_history'; }
+        function getGachaHistoryKey() { return 'nexus_gacha_history'; }
         function getTitleBgKey() { return 'nexus_title_bg_images'; }
         function getAppIconKey() { return 'nexus_custom_app_icon'; }
         function getFullscreenSettingKey() { return 'nexus_fullscreen_setting'; }
@@ -1101,6 +1141,39 @@
         let titleBgImages = JSON.parse(localStorage.getItem(getTitleBgKey())) || [
             { id: 'default_title_bg', url: 'https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/2984.png', name: 'デフォルト画像' }
         ];
+
+        /* ================= 🌟 自動「！」マーク判定機能 ================= */
+        const viewedStatusKey = 'nexus_viewed_status_' + (currentUser ? currentUser.id : 'guest');
+        let viewedStatusMap = JSON.parse(localStorage.getItem(viewedStatusKey)) || { present: false, notice: false, album: false, history: false, play: false, gacha: false };
+
+        function checkExclamationMarks() {
+            const combinedGifts = getCombinedUserGifts();
+            const hasNewPresent = combinedGifts.length > 0 && !viewedStatusMap.present;
+            const activeNotices = globalNotices.filter(n => n.active !== false);
+            const hasNewNotice = activeNotices.length > 0 && !viewedStatusMap.notice;
+            const hasNewAlbum = userAlbum.length > 0 && !viewedStatusMap.album;
+            const hasNewHistory = eventHistory.length > 0 && !viewedStatusMap.history;
+            const hasNewPlay = !viewedStatusMap.play;
+            const hasNewGacha = gachaList.length > 0 && !viewedStatusMap.gacha;
+
+            setExclamationVisible('exclamation-present', hasNewPresent);
+            setExclamationVisible('exclamation-notice', hasNewNotice);
+            setExclamationVisible('exclamation-album', hasNewAlbum);
+            setExclamationVisible('exclamation-history', hasNewHistory);
+            setExclamationVisible('exclamation-play', hasNewPlay);
+            setExclamationVisible('exclamation-gacha', hasNewGacha);
+        }
+
+        function setExclamationVisible(elemId, visible) {
+            const el = document.getElementById(elemId);
+            if (el) el.style.display = visible ? 'flex' : 'none';
+        }
+
+        function markAsViewed(featureKey) {
+            viewedStatusMap[featureKey] = true;
+            localStorage.setItem(viewedStatusKey, JSON.stringify(viewedStatusMap));
+            checkExclamationMarks();
+        }
 
         function toggleTitleMenu(e) {
             e.stopPropagation();
@@ -1116,7 +1189,6 @@
             openScreen(name, true);
         }
         
-        // 🔒 ログアウトしないとアプリ終了できないようにする制限
         function exitApp() {
             if (currentUser) {
                 alert("🔒 アプリを終了するには、一度ログアウトしてください。");
@@ -1132,7 +1204,69 @@
             if (!isoStr) return "未設定";
             return isoStr.replace("T", " ");
         }
+
+        // 🌟 自動時刻判定によるステータス変更（開始時刻で「開催中」、終了時刻で「開催終了」）
+        function checkAndUpdateAutomaticStatus() {
+            const now = new Date();
+            let changed = false;
+
+            eventsList.forEach(ev => {
+                if (!ev.startDate || !ev.endDate) return;
+                const start = new Date(ev.startDate);
+                const end = new Date(ev.endDate);
+                let targetStatus = ev.status;
+
+                if (now >= start && now < end) {
+                    if (ev.status === "開催準備中") targetStatus = "開催中";
+                } else if (now >= end) {
+                    if (ev.status === "開催中" || ev.status === "開催準備中" || ev.status === "結果") {
+                        targetStatus = "開催終了";
+                        // 開催終了時はミニゲーム中であっても強制終了
+                        if (currentEvent && currentEvent.id === ev.id) {
+                            forceStopMinigamesOnEnd();
+                        }
+                    }
+                }
+                if (targetStatus !== ev.status) {
+                    ev.status = targetStatus;
+                    changed = true;
+                }
+            });
+
+            gachaList.forEach(g => {
+                if (!g.startDate || !g.endDate) return;
+                const start = new Date(g.startDate);
+                const end = new Date(g.endDate);
+                let targetStatus = g.status;
+                if (now >= start && now < end) {
+                    if (g.status === "開催準備中") targetStatus = "開催中";
+                } else if (now >= end) {
+                    if (g.status === "開催中" || g.status === "開催準備中") targetStatus = "終了";
+                }
+                if (targetStatus !== g.status) {
+                    g.status = targetStatus;
+                    changed = true;
+                }
+            });
+
+            if (changed) {
+                localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
+                localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+                renderEventScreen();
+                renderGachaScreen();
+            }
+        }
+
+        function forceStopMinigamesOnEnd() {
+            const mgModal = document.getElementById('minigame-modal');
+            if (mgModal && mgModal.classList.contains('active')) {
+                closeMinigameModal();
+                alert("⚠️ イベントが終了したため、ミニゲームは強制終了されました。");
+            }
+        }
+
         function updateUIUserStatus() {
+            checkAndUpdateAutomaticStatus();
             const idEl = document.getElementById('display-id');
             const nameEl = document.getElementById('display-name');
             const gemEl = document.getElementById('display-gem');
@@ -1162,23 +1296,10 @@
             }
             renderEventScreen();
             renderGachaScreen();
-            const combinedGifts = getCombinedUserGifts();
-            const giftBadge = document.getElementById('badge-present');
-            if (combinedGifts.length > 0) {
-                giftBadge.innerText = combinedGifts.length;
-                giftBadge.style.display = 'block';
-            } else {
-                giftBadge.style.display = 'none';
-            }
-            const noticeBadge = document.getElementById('badge-notice');
-            if (globalNotices.length > 0) {
-                noticeBadge.innerText = globalNotices.length;
-                noticeBadge.style.display = 'block';
-            } else {
-                noticeBadge.style.display = 'none';
-            }
+            checkExclamationMarks();
             applyCustomAppIcon();
         }
+
         function applyCustomAppIcon() {
             const customIcon = localStorage.getItem(getAppIconKey());
             if (customIcon) {
@@ -1215,7 +1336,6 @@
             }, 4000);
         }
 
-        /* ================= 🎪 イベント・ガチャ切り替え（0件対応） ================= */
         function closeAllSelectors() {
             const evPop = document.getElementById('event-selector-popup');
             const gaPop = document.getElementById('gacha-selector-popup');
@@ -1260,6 +1380,7 @@
 
         function handleGachaNavClick(e) {
             e.stopPropagation();
+            markAsViewed('gacha');
             if (gachaList.length === 0) {
                 openScreen('gacha');
                 return;
@@ -1310,7 +1431,6 @@
             
             if (navLabel) navLabel.innerText = currentEvent && currentEvent.type === "シーズンイベント" ? "シーズンイベント" : "イベント";
             
-            // 🌟 0件のとき、または開催中イベントがないとき
             if (eventsList.length === 0 || !currentEvent) {
                 if (noEventModal) {
                     if (noEventMsg) noEventMsg.innerText = "現在開催しているイベントはありません";
@@ -1323,7 +1443,6 @@
 
             const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
             
-            // 🌟 ステータスごとの表示制御（開催準備中 / 開催終了 / 結果）
             if (currentEvent.status === "開催準備中" && !isNeo) {
                 if (noEventModal) {
                     if (noEventMsg) noEventMsg.innerText = "現在開催中のイベントはありません";
@@ -1333,7 +1452,6 @@
                 if (actionBtns) actionBtns.style.display = "none";
                 return;
             } else if (currentEvent.status === "開催終了" && !isNeo) {
-                // 🌟 開催終了時はランキングもイベントも使用不可
                 if (noEventModal) {
                     if (noEventMsg) noEventMsg.innerText = "このイベントは開催終了しました（使用不可）";
                     noEventModal.style.display = "block";
@@ -1342,7 +1460,6 @@
                 if (actionBtns) actionBtns.style.display = "none";
                 return;
             } else if (currentEvent.status === "結果" && !isNeo) {
-                // 🌟 結果ステータス時はランキングのみ見れる。イベント本体は不可
                 if (noEventModal) noEventModal.style.display = "none";
                 if (infoLeft) infoLeft.style.display = "flex";
                 if (actionBtns) {
@@ -1354,7 +1471,14 @@
                 if (infoLeft) infoLeft.style.display = "flex";
                 if (actionBtns) {
                     actionBtns.style.display = "flex";
-                    if (minigameBtn) minigameBtn.style.display = "flex";
+                    if (minigameBtn) {
+                        // 🌟 開催中以外のステータスの場合はミニゲームも触れないようにする
+                        if (currentEvent.status === "開催中") {
+                            minigameBtn.style.display = "flex";
+                        } else {
+                            minigameBtn.style.display = "none";
+                        }
+                    }
                 }
             }
 
@@ -1377,7 +1501,9 @@
                 rankEl.innerText = "-位";
             }
             if (periodEl) {
-                if (currentEvent.status === "開催終了" || currentEvent.status === "結果") {
+                // 🌟 開催終了時は赤色表示を削除（標準表示または通常のテキストに）
+                const showStatusFlag = currentEvent.showStatus !== false;
+                if ((currentEvent.status === "開催終了" || currentEvent.status === "結果") && !showStatusFlag) {
                     periodEl.innerText = "開催終了";
                 } else {
                     const sStr = formatDateStr(currentEvent.startDate).replace(/-/g, '.');
@@ -1401,7 +1527,7 @@
             updateEventBubbleDate();
         }
 
-        // 🌟 イベント日程：終了日程が3日前からはカウントダウンを行う。終了・結果の場合は開催終了と記載
+        // 🌟 72時間（3日）未満のカウントダウン実装
         function updateEventBubbleDate() {
             const bubble = document.getElementById('badge-event-day-bubble');
             if (!bubble) return;
@@ -1421,12 +1547,20 @@
                 bubble.style.display = "block";
                 return;
             }
-            const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-            if (daysLeft <= 3) {
-                bubble.innerText = `残り ${daysLeft} 日`;
+            const hoursLeft = diffMs / (1000 * 60 * 60);
+            if (hoursLeft < 72) {
+                const hrs = Math.floor(hoursLeft);
+                const mins = Math.floor((hoursLeft - hrs) * 60);
+                bubble.innerText = `残り ${hrs}時間${mins}分`;
                 bubble.style.display = "block";
             } else {
-                bubble.style.display = "none";
+                const daysLeft = Math.ceil(hoursLeft / 24);
+                if (daysLeft <= 3) {
+                    bubble.innerText = `残り ${daysLeft} 日`;
+                    bubble.style.display = "block";
+                } else {
+                    bubble.style.display = "none";
+                }
             }
         }
         function openEventHelpModal() {
@@ -1436,11 +1570,20 @@
             document.getElementById('event-help-modal').classList.remove('active');
         }
         function handleEventActionButton() {
+            // 🌟 開催中以外の場合はミニゲームを触れないようにする
+            if (!currentEvent || currentEvent.status !== "開催中") {
+                alert("🔒 現在、イベントが開催中ではないためミニゲームはプレイできません。");
+                return;
+            }
             openMinigameModal();
         }
         
         /* ================= 🎮 ミニゲーム実装 ================= */
         function openMinigameModal() {
+            if (!currentEvent || currentEvent.status !== "開催中") {
+                alert("🔒 現在開催中のイベントではないためプレイできません。");
+                return;
+            }
             const modalTitle = document.getElementById('minigame-modal-title');
             if (modalTitle) modalTitle.innerText = currentEvent.type === "シーズンイベント" ? "🎪 シーズンイベント ミニゲーム" : "💬 ストーリーイベント ミニゲーム";
             
@@ -1519,7 +1662,7 @@
             }
         }
 
-        // ♠️ Blackjack: ドロー時は次回獲得Pを2倍にする
+        // Blackjack
         let bjPlayer = [], bjDealer = [], bjGameOver = false, bjMultiplier = 1;
         function startBlackjackGame() {
             document.getElementById('minigame-game-screen').style.display = 'block';
@@ -1674,7 +1817,7 @@
             }
         }
 
-        // 🎰 スロット（スタート時「1・2・3」並び、長押し連打対応）
+        // スロット
         let slotAnimating = false;
         let slotSpinsSinceLastHit = 0;
         let slotInST = false;
@@ -1947,7 +2090,6 @@
             }
         }
 
-        /* 🏆 イベントランキング専用モーダル（ランキングロック対応） */
         function openRankingModal() {
             if (rankingLocked) {
                 alert("🔒 現在、管理者の設定によりランキングはロックされています。");
@@ -1996,7 +2138,6 @@
             }
         }
 
-        /* 🧮 計算機ロジック */
         function loadMemberBonusToCalc() {
             const targetId = document.getElementById('calc-target-member').value;
             const user = memberDatabase.find(m => m.id === targetId);
@@ -2110,6 +2251,7 @@
             renderAdminGiftTargetCheckboxes();
             renderAdminHistoryManageList();
             populateAdminAlbumMemberSelect();
+            populateAdminPresentMemberSelect();
             populateAdminSelects();
             populateAdminEventSwitcher();
             populateAdminGachaSwitcher();
@@ -2216,6 +2358,7 @@
                 document.getElementById('admin-event-start-input').value = "";
                 document.getElementById('admin-event-end-input').value = "";
                 document.getElementById('admin-event-status-select').value = "開催中";
+                document.getElementById('admin-event-show-status').checked = true;
                 document.getElementById('admin-event-img-select').value = "";
                 document.getElementById('admin-event-logo-select').value = "";
                 return;
@@ -2225,6 +2368,7 @@
             document.getElementById('admin-event-start-input').value = currentEvent.startDate || "";
             document.getElementById('admin-event-end-input').value = currentEvent.endDate || "";
             document.getElementById('admin-event-status-select').value = currentEvent.status || "開催中";
+            document.getElementById('admin-event-show-status').checked = currentEvent.showStatus !== false;
             document.getElementById('admin-event-img-select').value = currentEvent.imgUrl || "";
             document.getElementById('admin-event-logo-select').value = currentEvent.logoUrl || "";
             renderAdminEventMinigameCheckboxes();
@@ -2244,7 +2388,6 @@
             `;
         }
         
-        // 🌟 ご指定のデフォルトミニゲーム設定を反映
         function toggleEventMinigameCheckboxesType() {
             const type = document.getElementById('admin-event-type-select').value;
             if (!currentEvent) return;
@@ -2268,6 +2411,7 @@
             currentEvent.startDate = document.getElementById('admin-event-start-input').value;
             currentEvent.endDate = document.getElementById('admin-event-end-input').value;
             currentEvent.status = document.getElementById('admin-event-status-select').value;
+            currentEvent.showStatus = document.getElementById('admin-event-show-status').checked;
             currentEvent.imgUrl = document.getElementById('admin-event-img-select').value;
             currentEvent.logoUrl = document.getElementById('admin-event-logo-select').value;
             
@@ -2291,7 +2435,6 @@
         function adminAddNewEvent() {
             const newId = 'ev_' + Date.now();
             const type = document.getElementById('admin-event-type-select') ? document.getElementById('admin-event-type-select').value : "シーズンイベント";
-            // 🌟 シーズン / ストーリーごとのデフォルトミニゲーム設定を適用
             let defaultMg = (type === "シーズンイベント") ? 
                 { highlow: true, blackjack: true, mash: true, stopwatch: true, slot: true, presshold: false, bigsmall: false } :
                 { highlow: false, blackjack: false, mash: false, stopwatch: false, slot: true, presshold: true, bigsmall: true };
@@ -2303,6 +2446,7 @@
                 startDate: "2026-12-01T00:00",
                 endDate: "2026-12-31T23:59",
                 status: "開催中",
+                showStatus: true,
                 imgUrl: "",
                 logoUrl: "",
                 minigames: defaultMg
@@ -2348,6 +2492,8 @@
                 alert("🗑️ イベントを削除しヒストリーへ移行しました。");
             }
         }
+
+        /* ================= 🎂 ガチャ削除・ヒストリー機能追加 ================= */
         function populateAdminGachaSwitcher() {
             const sel = document.getElementById('admin-gacha-switcher-select');
             if (!sel) return;
@@ -2382,6 +2528,7 @@
                 document.getElementById('admin-gacha-title-input').value = "";
                 document.getElementById('admin-gacha-type-select').value = "ネオフェス限定";
                 document.getElementById('admin-gacha-status-select').value = "開催中";
+                document.getElementById('admin-gacha-show-status').checked = true;
                 document.getElementById('admin-gacha-banner-select').value = "";
                 document.getElementById('admin-gacha-start-input').value = "";
                 document.getElementById('admin-gacha-end-input').value = "";
@@ -2392,6 +2539,7 @@
             document.getElementById('admin-gacha-title-input').value = currentGachaConfig.title || "";
             document.getElementById('admin-gacha-type-select').value = currentGachaConfig.type || "ネオフェス限定";
             document.getElementById('admin-gacha-status-select').value = currentGachaConfig.status || "開催中";
+            document.getElementById('admin-gacha-show-status').checked = currentGachaConfig.showStatus !== false;
             document.getElementById('admin-gacha-banner-select').value = currentGachaConfig.bannerUrl || "";
             document.getElementById('admin-gacha-start-input').value = currentGachaConfig.startDate || "";
             document.getElementById('admin-gacha-end-input').value = currentGachaConfig.endDate || "";
@@ -2406,6 +2554,7 @@
             currentGachaConfig.title = document.getElementById('admin-gacha-title-input').value;
             currentGachaConfig.type = document.getElementById('admin-gacha-type-select').value;
             currentGachaConfig.status = document.getElementById('admin-gacha-status-select').value;
+            currentGachaConfig.showStatus = document.getElementById('admin-gacha-show-status').checked;
             currentGachaConfig.bannerUrl = document.getElementById('admin-gacha-banner-select').value;
             currentGachaConfig.startDate = document.getElementById('admin-gacha-start-input').value;
             currentGachaConfig.endDate = document.getElementById('admin-gacha-end-input').value;
@@ -2426,6 +2575,7 @@
                 title: "新規ピックアップガチャ",
                 type: "ネオフェス限定",
                 status: "開催中",
+                showStatus: true,
                 startDate: "2026-11-01T00:00",
                 endDate: "2026-11-30T00:00",
                 bannerUrl: "",
@@ -2443,6 +2593,37 @@
             updateUIUserStatus();
             alert("➕ 新規ガチャを追加し選択しました！");
         }
+        function adminDeleteCurrentGacha() {
+            if (!currentGachaConfig) return;
+            if (confirm(`ガチャ「${currentGachaConfig.title}」を終了・削除しヒストリーに記録しますか？`)) {
+                gachaHistory = JSON.parse(localStorage.getItem(getGachaHistoryKey())) || [];
+                gachaHistory.unshift({
+                    title: currentGachaConfig.title,
+                    type: currentGachaConfig.type,
+                    period: `${formatDateStr(currentGachaConfig.startDate)} 〜 ${formatDateStr(currentGachaConfig.endDate)}`,
+                    bannerUrl: currentGachaConfig.bannerUrl,
+                    archivedDate: new Date().toLocaleDateString()
+                });
+                localStorage.setItem(getGachaHistoryKey(), JSON.stringify(gachaHistory));
+                gachaList = gachaList.filter(g => g.id !== currentGachaConfig.id);
+                currentGachaConfig = gachaList.length > 0 ? gachaList[0] : null;
+                currentGachaId = currentGachaConfig ? currentGachaConfig.id : "";
+                localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+                if (currentGachaConfig) {
+                    localStorage.setItem('nexus_current_gacha_id', currentGachaId);
+                    localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
+                } else {
+                    localStorage.removeItem('nexus_current_gacha_id');
+                    localStorage.removeItem('nexus_gacha_config');
+                }
+                populateAdminGachaSwitcher();
+                loadCurrentGachaToAdminForm();
+                updateUIUserStatus();
+                renderHistory();
+                alert("🗑️ ガチャを削除しヒストリーへ移行しました。");
+            }
+        }
+
         function saveManageSettings() {
             adminSaveEventConfig();
             adminSaveGachaConfig();
@@ -2516,7 +2697,7 @@
             if (!container) return;
             const titleEl = document.getElementById('gacha-screen-title');
             
-            // 🌟 ガチャが0件の場合
+            // 🌟 ガチャが0件の場合の対応
             if (gachaList.length === 0 || !currentGachaConfig) {
                 if (titleEl) titleEl.innerText = "🎂 ガチャ";
                 container.innerHTML = `
@@ -2541,6 +2722,7 @@
             }
             if (titleEl) titleEl.innerText = "🎂 " + currentGachaConfig.title;
             const rates = GACHA_RATES[currentGachaConfig.type] || { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 100 };
+            const showStatusFlag = currentGachaConfig.showStatus !== false;
             let statusColor = currentGachaConfig.status === "開催中" ? "#00f5d4" : "#ff9900";
             const costSingle = currentGachaConfig.costSingle || 300;
             const costMulti = currentGachaConfig.costMulti || 3000;
@@ -2548,7 +2730,7 @@
                 ${currentGachaConfig.bannerUrl ? `<img src="${currentGachaConfig.bannerUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:10px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.2);">` : ''}
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
                     <span style="background:#ff9900; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.type}</span>
-                    <span style="background:${statusColor}; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.status}</span>
+                    ${showStatusFlag ? `<span style="background:${statusColor}; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.status}</span>` : ''}
                 </div>
                 <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 12px;">期間: ${formatDateStr(currentGachaConfig.startDate)} 〜 ${formatDateStr(currentGachaConfig.endDate)}</div>
                 
@@ -2776,6 +2958,56 @@
             });
             selectEl.innerHTML = html;
         }
+        
+        // 🌟 管理画面でのプレゼント閲覧・削除機能
+        function populateAdminPresentMemberSelect() {
+            const selectEl = document.getElementById('admin-target-present-select');
+            if (!selectEl) return;
+            let html = `<option value="">(メンバーを選択してください)</option>`;
+            memberDatabase.forEach(m => {
+                html += `<option value="${m.id}">${m.name} (ID: ${m.id})</option>`;
+            });
+            selectEl.innerHTML = html;
+        }
+        function renderAdminMemberPresentView() {
+            const selectEl = document.getElementById('admin-target-present-select');
+            const container = document.getElementById('admin-member-present-container');
+            if (!selectEl || !container) return;
+            const targetId = selectEl.value;
+            if (!targetId) {
+                container.innerHTML = "";
+                return;
+            }
+            const targetGifts = JSON.parse(localStorage.getItem('nexus_gifts_' + targetId)) || [];
+            if (targetGifts.length === 0) {
+                container.innerHTML = `<div style="color:#888; font-size:0.8rem; padding:8px;">このメンバーのプレゼントBOXにはまだアイテムがありません。</div>`;
+                return;
+            }
+            let html = `<div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">`;
+            targetGifts.forEach((gift, idx) => {
+                html += `
+                    <div style="background:#222; border:1px solid #444; border-radius:8px; padding:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-weight:bold; font-size:0.85rem; color:#fff;">🎁 ${gift.title}</div>
+                            <div style="font-size:0.7rem; color:#00f5d4;">💎:+${gift.gem || 0} | 🪙:+${gift.coin || 0}</div>
+                        </div>
+                        <button onclick="adminDeleteMemberPresentItem('${targetId}', ${idx})" style="background:#ff334b; color:#fff; border:none; padding:4px 10px; border-radius:4px; font-weight:bold; font-size:0.75rem; cursor:pointer;">削除する</button>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+        function adminDeleteMemberPresentItem(targetId, index) {
+            if (confirm("このメンバーのプレゼントを削除しますか？")) {
+                let targetGifts = JSON.parse(localStorage.getItem('nexus_gifts_' + targetId)) || [];
+                targetGifts.splice(index, 1);
+                localStorage.setItem('nexus_gifts_' + targetId, JSON.stringify(targetGifts));
+                renderAdminMemberPresentView();
+                alert("🗑️ メンバーのプレゼントを削除しました！");
+            }
+        }
+
         function renderAdminMemberAlbumView() {
             const selectEl = document.getElementById('admin-target-album-select');
             const container = document.getElementById('admin-member-album-container');
@@ -2821,7 +3053,6 @@
             alert(isLoginLocked ? "🔒 ログイン制限を【有効】にしました。" : "🔓 ログイン制限を【解除】しました。");
         }
         
-        // 🌟 ランキングロック切り替え
         function toggleRankingLock(checkbox) {
             rankingLocked = checkbox.checked;
             localStorage.setItem('nexus_ranking_locked', rankingLocked);
@@ -2861,19 +3092,34 @@
             }
 
             eventHistory = JSON.parse(localStorage.getItem(getEventHistoryKey())) || [];
-            if (eventHistory.length === 0) {
-                container.innerHTML = `<p style="color: #888; text-align: center; margin-top: 20px;">過去のイベント記録はありません。</p>`;
+            gachaHistory = JSON.parse(localStorage.getItem(getGachaHistoryKey())) || [];
+
+            if (eventHistory.length === 0 && gachaHistory.length === 0) {
+                container.innerHTML = `<p style="color: #888; text-align: center; margin-top: 20px;">過去のヒストリー記録はありません。</p>`;
                 return;
             }
             container.innerHTML = '';
+            
             eventHistory.forEach(item => {
                 const box = document.createElement('div');
                 box.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:12px; border-left:3px solid #3388ff;";
                 box.innerHTML = `
-                    <div style="font-size:0.7rem; color:#888; margin-bottom:4px;">記録日: ${item.archivedDate} | ${item.type}</div>
-                    <div style="font-weight:bold; color:#00f5d4; font-size:1rem; margin-bottom:4px;">${item.title}</div>
+                    <div style="font-size:0.7rem; color:#888; margin-bottom:4px;">[イベント記録] ${item.archivedDate} | ${item.type}</div>
+                    <div style="font-weight:bold; color:#00f5d4; font-size:1rem; margin-bottom:4px;">🎪 ${item.title}</div>
                     <div style="font-size:0.8rem; color:#aaa; margin-bottom:8px;">期間: ${item.period}</div>
                     ${item.imgUrl ? `<img src="${item.imgUrl}" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px;">` : ''}
+                `;
+                container.appendChild(box);
+            });
+
+            gachaHistory.forEach(item => {
+                const box = document.createElement('div');
+                box.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:12px; border-left:3px solid #ff9900;";
+                box.innerHTML = `
+                    <div style="font-size:0.7rem; color:#888; margin-bottom:4px;">[ガチャ記録] ${item.archivedDate} | ${item.type}</div>
+                    <div style="font-weight:bold; color:#ff9900; font-size:1rem; margin-bottom:4px;">🎂 ${item.title}</div>
+                    <div style="font-size:0.8rem; color:#aaa; margin-bottom:8px;">期間: ${item.period}</div>
+                    ${item.bannerUrl ? `<img src="${item.bannerUrl}" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px;">` : ''}
                 `;
                 container.appendChild(box);
             });
@@ -3185,6 +3431,7 @@
             renderAdminGiftTargetCheckboxes();
             renderAdminHistoryManageList();
             populateAdminAlbumMemberSelect();
+            populateAdminPresentMemberSelect();
         }
         function populateSettingsAvatarSelect() {
             const selectEl = document.getElementById('settings-avatar-select');
@@ -3250,7 +3497,6 @@
             return [...personalGifts, ...unclickedGlobal];
         }
 
-        /* ================= 🎁 プレゼント閲覧・削除機能（アルバムと同様の実装） ================= */
         function renderGifts() {
             const grid = document.getElementById('present-grid-container');
             if (!grid) return;
@@ -3457,6 +3703,8 @@
             if (titleClock) titleClock.innerText = timeStr;
             const eventClock = document.getElementById('event-clock');
             if (eventClock) eventClock.innerText = timeStr;
+
+            checkAndUpdateAutomaticStatus();
         }
         setInterval(updateClock, 1000);
         updateClock();
@@ -3481,7 +3729,6 @@
             localStorage.setItem('nexus_clock_color', colorClass);
         }
 
-        /* ================= 🔋 充電状況連動・バッテリーカラー自動変化 ================= */
         async function initBattery() {
             const bEl = document.getElementById('battery-info');
             const titleBEl = document.getElementById('title-battery-info');
@@ -3545,6 +3792,14 @@
             closeAllSelectors();
             openedFromTitle = fromTitle;
             
+            // 🌟 各画面を開いたときに自動「！」マークを既読（非表示）にする
+            if (name === 'present') markAsViewed('present');
+            if (name === 'notice') markAsViewed('notice');
+            if (name === 'album') markAsViewed('album');
+            if (name === 'history') markAsViewed('history');
+            if (name === 'play') markAsViewed('play');
+            if (name === 'gacha') markAsViewed('gacha');
+
             const bottomNav = document.getElementById('main-bottom-nav');
             if (fromTitle) {
                 if (bottomNav) bottomNav.classList.add('hide-menu');
