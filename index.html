@@ -239,7 +239,6 @@
             100% { opacity: 1; color: #ff334b; }
         }
         .battery-blink { animation: blinkRed 0.8s infinite; }
-
         .top-buttons-column { display: flex; flex-direction: column; gap: 8px; }
         .icon-badge-btn {
             position: relative; width: 42px; height: 42px;
@@ -298,7 +297,6 @@
             font-size: 0.85rem; font-weight: bold; color: #fff; cursor: pointer; border: 1px solid #444;
         }
         .selector-popup-item:active { background: #00f5d4; color: #000; }
-
         .event-day-bubble {
             position: absolute; top: -14px; background: #ff334b; color: #fff;
             font-size: 0.65rem; font-weight: bold; border-radius: 12px; padding: 2px 7px;
@@ -526,7 +524,6 @@
             <div id="gacha-selector-list" style="display:flex; flex-direction:column; gap:4px;"></div>
         </div>
     </div>
-
     <!-- 🌟 下部メニュー: 全画面表示時も常に復元・常時表示され、セーフエリアを考慮してタッチ可能 -->
     <div class="bottom-nav" id="main-bottom-nav">
         <div class="nav-item active" id="nav-home" onclick="switchNav('home')">
@@ -553,7 +550,6 @@
             <span>その他</span>
         </div>
     </div>
-
     <!-- ================= 🔲 その他メニュー ================= -->
     <div id="other-modal" class="modal-overlay" onclick="closeOtherMenu(event)">
         <div class="menu-dialog" onclick="event.stopPropagation()">
@@ -587,7 +583,7 @@
     <!-- ================= 🎪 全画面イベント専用UI画面 ================= -->
     <div id="screen-event" class="sub-screen">
         <div class="event-full-bg-container" id="event-swipe-bg-container">
-            <img src="https://picsum.photos/id/1025/600/1000" class="event-bg-slide active" id="event-bg-img">
+            <img src="" class="event-bg-slide active" id="event-bg-img" style="display:none;">
         </div>
         <div class="overlay-top"></div>
         <div class="overlay-bottom"></div>
@@ -630,7 +626,13 @@
     
     <!-- 📄 その他の各種サブ画面 -->
     <div id="screen-player" class="sub-screen">
-        <div class="sub-header"><span class="sub-title">🎵 楽曲選択</span><button class="close-btn" onclick="closeScreen('player')">閉じる</button></div>
+        <div class="sub-header">
+            <span class="sub-title">🎵 楽曲選択</span>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <button class="close-btn" onclick="openScreen('home')">ホームへ</button>
+                <button class="close-btn" onclick="closeScreen('player')">閉じる</button>
+            </div>
+        </div>
         <div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: SPECIALZ</div>
         <audio id="audio-player" controls style="width: 100%; margin-bottom: 15px;" preload="auto"></audio>
         <div id="playlist"></div>
@@ -808,7 +810,6 @@
             
             <div id="admin-shop-manage-list" style="margin-top:12px; font-size:0.8rem;"></div>
         </div>
-
         <!-- 🔗 スプレッドシート & GAS 連携設定 -->
         <div class="admin-section" style="border-color:#3388ff;">
             <h4 style="color:#3388ff; border-left-color:#3388ff;">🔗 Googleスプレッドシート & GAS 連携</h4>
@@ -865,7 +866,6 @@
                 <option value="開催終了">開催終了 (参加・ランキング不可)</option>
                 <option value="結果">結果 (ランキングのみ閲覧可)</option>
             </select>
-
             <label style="font-size: 0.8rem; color: #aaa;">イベント背景（Googleドライブ選択）：</label>
             <select id="admin-event-img-select" class="admin-input"><option value="">(画像なし)</option></select>
             
@@ -936,7 +936,6 @@
             <div id="admin-history-manage-container" style="background:#222; padding:8px; border-radius:6px; font-size:0.8rem; margin-bottom:8px;"></div>
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminClearAllHistory()">🗑️ ヒストリーの記録をすべて削除</button>
         </div>
-
         <!-- 🎁 メンバーのプレゼント管理・削除 (管理者用) -->
         <div class="admin-section" style="border-color: #00f5d4;">
             <h4 style="color: #00f5d4; border-left-color: #00f5d4;">🎁 メンバーのプレゼント閲覧・削除 (管理者限定)</h4>
@@ -946,7 +945,6 @@
             </select>
             <div id="admin-member-present-container" style="margin-top: 10px;"></div>
         </div>
-
         <div class="admin-section" style="border-color: #00f5d4;">
             <h4 style="color: #00f5d4; border-left-color: #00f5d4;">📷 メンバーのアルバム閲覧・削除 (管理者限定)</h4>
             <label style="font-size: 0.8rem; color: #aaa;">確認するメンバー：</label>
@@ -1100,7 +1098,6 @@
             <button class="close-btn" onclick="closeMinigameModal()" style="width:100%; margin-top:15px;">閉じる</button>
         </div>
     </div>
-
     <script>
         const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
         let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "";
@@ -1140,7 +1137,6 @@
             { id: 'shop_1', name: 'ジェムパック大', imgType: 'emoji', imgVal: '💎', cost: 1000 },
             { id: 'shop_2', name: '記念お祝いギフト', imgType: 'emoji', imgVal: '🎁', cost: 500 }
         ];
-
         let eventsList = JSON.parse(localStorage.getItem('nexus_events_list')) || [
             {
                 id: 'ev_1',
@@ -1176,7 +1172,7 @@
             {
                 id: 'g_1',
                 title: "記念ピックアップガチャ",
-                type: "ネオフェス限定",
+                type: "ネオフェс限定",
                 status: "開催中",
                 manualOverride: false,
                 showStatus: true,
@@ -1190,7 +1186,6 @@
         let currentGachaId = localStorage.getItem('nexus_current_gacha_id') || (gachaList[0] ? gachaList[0].id : 'g_1');
         let currentGachaConfig = gachaList.find(g => g.id === currentGachaId) || gachaList[0];
         let gachaHistory = JSON.parse(localStorage.getItem('nexus_gacha_history')) || [];
-
         function getUserAlbumKey(userId) { return 'nexus_album_' + (userId || (currentUser ? currentUser.id : 'guest')); }
         function getUserSlideshowKey(userId) { return 'nexus_slideshow_' + (userId || (currentUser ? currentUser.id : 'guest')); }
         function getUserGiftsKey() { return 'nexus_gifts_' + (currentUser ? currentUser.id : 'guest'); }
@@ -1213,11 +1208,9 @@
         let titleBgImages = JSON.parse(localStorage.getItem(getTitleBgKey())) || [
             { id: 'default_title_bg', url: 'https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/2984.png', name: 'デフォルト画像' }
         ];
-
-        /* ================= 🌟 自動「！」マーク判定機能 ================= */
+        /* 🌟 自動「！」マーク判定機能 */
         const viewedStatusKey = 'nexus_viewed_status_' + (currentUser ? currentUser.id : 'guest');
         let viewedStatusMap = JSON.parse(localStorage.getItem(viewedStatusKey)) || { present: false, notice: false, album: false, history: false, play: false, gacha: false };
-
         function checkExclamationMarks() {
             const combinedGifts = getCombinedUserGifts();
             const hasNewPresent = combinedGifts.length > 0 && !viewedStatusMap.present;
@@ -1227,7 +1220,6 @@
             const hasNewHistory = eventHistory.length > 0 && !viewedStatusMap.history;
             const hasNewPlay = !viewedStatusMap.play;
             const hasNewGacha = gachaList.length > 0 && !viewedStatusMap.gacha;
-
             setExclamationVisible('exclamation-present', hasNewPresent);
             setExclamationVisible('exclamation-notice', hasNewNotice);
             setExclamationVisible('exclamation-album', hasNewAlbum);
@@ -1235,18 +1227,15 @@
             setExclamationVisible('exclamation-play', hasNewPlay);
             setExclamationVisible('exclamation-gacha', hasNewGacha);
         }
-
         function setExclamationVisible(elemId, visible) {
             const el = document.getElementById(elemId);
             if (el) el.style.display = visible ? 'flex' : 'none';
         }
-
         function markAsViewed(featureKey) {
             viewedStatusMap[featureKey] = true;
             localStorage.setItem(viewedStatusKey, JSON.stringify(viewedStatusMap));
             checkExclamationMarks();
         }
-
         function toggleTitleMenu(e) {
             e.stopPropagation();
             document.getElementById('title-menu-dropdown').classList.toggle('active');
@@ -1276,21 +1265,17 @@
             if (!isoStr) return "未設定";
             return isoStr.replace("T", " ");
         }
-
         /* 🌟 開催終了後の自動化後も手動切替が優先されるように改修 */
         function checkAndUpdateAutomaticStatus() {
             const now = new Date();
             let changed = false;
-
             eventsList.forEach(ev => {
                 if (!ev.startDate || !ev.endDate) return;
-                // manualOverrideがtrueの場合は自動判定を行わず手動ステータスを維持
+                // manualOverrideがtrueの場合は自動判定を行わない
                 if (ev.manualOverride) return;
-
                 const start = new Date(ev.startDate);
                 const end = new Date(ev.endDate);
                 let targetStatus = ev.status;
-
                 if (now >= start && now < end) {
                     if (ev.status === "開催準備中") targetStatus = "開催中";
                 } else if (now >= end) {
@@ -1309,11 +1294,9 @@
                     changed = true;
                 }
             });
-
             gachaList.forEach(g => {
                 if (!g.startDate || !g.endDate) return;
                 if (g.manualOverride) return;
-
                 const start = new Date(g.startDate);
                 const end = new Date(g.endDate);
                 let targetStatus = g.status;
@@ -1330,7 +1313,6 @@
                     changed = true;
                 }
             });
-
             if (changed) {
                 localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
                 localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
@@ -1338,7 +1320,6 @@
                 renderGachaScreen();
             }
         }
-
         function forceStopMinigamesOnEnd() {
             const mgModal = document.getElementById('minigame-modal');
             if (mgModal && mgModal.classList.contains('active')) {
@@ -1346,7 +1327,6 @@
                 alert("⚠️ イベントが終了したため、ミニゲームは強制終了されました。");
             }
         }
-
         function updateUIUserStatus() {
             checkAndUpdateAutomaticStatus();
             const idEl = document.getElementById('display-id');
@@ -1381,7 +1361,6 @@
             checkExclamationMarks();
             applyCustomAppIcon();
         }
-
         function applyCustomAppIcon() {
             const customIcon = localStorage.getItem(getAppIconKey());
             if (customIcon) {
@@ -1417,14 +1396,12 @@
                 slides[current].classList.add('active');
             }, 4000);
         }
-
         function closeAllSelectors() {
             const evPop = document.getElementById('event-selector-popup');
             const gaPop = document.getElementById('gacha-selector-popup');
             if (evPop) evPop.classList.remove('active');
             if (gaPop) gaPop.classList.remove('active');
         }
-
         function handleEventNavClick(e) {
             e.stopPropagation();
             if (eventsList.length === 0) {
@@ -1446,7 +1423,6 @@
             listContainer.innerHTML = html;
             popup.classList.add('active');
         }
-
         function selectEventById(eventId) {
             const ev = eventsList.find(e => e.id === eventId);
             if (ev) {
@@ -1459,7 +1435,6 @@
                 openScreen('event');
             }
         }
-
         function handleGachaNavClick(e) {
             e.stopPropagation();
             markAsViewed('gacha');
@@ -1482,7 +1457,6 @@
             listContainer.innerHTML = html;
             popup.classList.add('active');
         }
-
         function selectGachaById(gachaId) {
             const g = gachaList.find(item => item.id === gachaId);
             if (g) {
@@ -1495,7 +1469,6 @@
                 openScreen('gacha');
             }
         }
-
         function renderEventScreen() {
             const noEventModal = document.getElementById('event-no-event-modal');
             const noEventMsg = document.getElementById('event-no-event-msg');
@@ -1520,9 +1493,9 @@
                 }
                 if (infoLeft) infoLeft.style.display = "none";
                 if (actionBtns) actionBtns.style.display = "none";
+                if (bgImg) bgImg.style.display = "none";
                 return;
             }
-
             const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
             
             if (currentEvent.status === "開催準備中" && !isNeo) {
@@ -1532,6 +1505,7 @@
                 }
                 if (infoLeft) infoLeft.style.display = "none";
                 if (actionBtns) actionBtns.style.display = "none";
+                if (bgImg) bgImg.style.display = "none";
                 return;
             } else if (currentEvent.status === "開催終了" && !isNeo) {
                 if (noEventModal) {
@@ -1540,6 +1514,7 @@
                 }
                 if (infoLeft) infoLeft.style.display = "none";
                 if (actionBtns) actionBtns.style.display = "none";
+                if (bgImg) bgImg.style.display = "none";
                 return;
             } else if (currentEvent.status === "結果" && !isNeo) {
                 if (noEventModal) noEventModal.style.display = "none";
@@ -1562,9 +1537,13 @@
                     }
                 }
             }
-
-            if (bgImg && currentEvent.imgUrl) {
-                bgImg.src = currentEvent.imgUrl;
+            if (bgImg) {
+                if (currentEvent.imgUrl) {
+                    bgImg.src = currentEvent.imgUrl;
+                    bgImg.style.display = "block";
+                } else {
+                    bgImg.style.display = "none";
+                }
             }
             if (currentUser) {
                 userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
@@ -1606,7 +1585,6 @@
             }
             updateEventBubbleDate();
         }
-
         function updateEventBubbleDate() {
             const bubble = document.getElementById('badge-event-day-bubble');
             if (!bubble) return;
@@ -1688,7 +1666,6 @@
             document.getElementById('minigame-modal').classList.remove('active');
             renderEventScreen();
         }
-
         // High & Low
         let hlLeftNum = 8, hlRightNum = 5, hlStreak = 0;
         function startHighLowGame() {
@@ -1739,7 +1716,6 @@
                 renderHighLowUI(`ハズレ... 0P 右の数字は ${revealed} でした。`);
             }
         }
-
         // Blackjack
         let bjPlayer = [], bjDealer = [], bjGameOver = false, bjMultiplier = 1;
         function startBlackjackGame() {
@@ -1816,7 +1792,6 @@
                 bjMultiplier = 1;
             }
         }
-
         // ボタン連打
         let mashCount = 0, mashTotalEarned = 0;
         function startMashGame() {
@@ -1841,7 +1816,6 @@
             addCurrentPt(pts);
             renderMashUI(`+${pts}P 獲得中！`);
         }
-
         // ストップウォッチ
         let swTarget = 5, swStart = 0, swTimer = null, currentElapsedDisplay = 0;
         function startStopwatchGame() {
@@ -1895,14 +1869,12 @@
                 if (resEl) resEl.innerHTML = `結果: ${currentElapsedDisplay.toFixed(2)}秒 (誤差: ${diff.toFixed(2)}秒)<br><span style="color:${pts >= 0 ? '#00f5d4' : '#ff334b'};">${pts >= 0 ? '+' : ''}${pts}P</span>`;
             }
         }
-
         // スロット
         let slotAnimating = false;
         let slotSpinsSinceLastHit = 0;
         let slotInST = false;
         let slotRemainingSTSpins = 0;
         let slotHoldInterval = null;
-
         function getColoredDigitHtml(num) {
             let color = "#fff";
             let n = Number(num);
@@ -1911,13 +1883,11 @@
             else if (n === 2 || n === 4 || n === 6 || n === 8) color = "#00bfff";
             return `<span style="color: ${color};">${num}</span>`;
         }
-
         function startSlotGame() {
             document.getElementById('minigame-game-screen').style.display = 'block';
             let initDisplay = `${getColoredDigitHtml(1)} - ${getColoredDigitHtml(2)} - ${getColoredDigitHtml(3)}`;
             renderSlotUI(initDisplay, "レバーを押すか長押ししてスピン！");
         }
-
         function renderSlotUI(displayHtml, msg) {
             let subInfoStr = slotInST ? `🔥 【ST中】残り ${slotRemainingSTSpins} 回転 (確率 1/7)` : `前回の当りからの回転数: ${slotSpinsSinceLastHit} 回転`;
             document.getElementById('minigame-game-screen').innerHTML = `
@@ -1953,7 +1923,6 @@
                 spinBtn.ontouchend = endSpinHold;
             }
         }
-
         function spinSlot() {
             if (slotAnimating) return;
             slotAnimating = true;
@@ -1979,7 +1948,6 @@
                 }
             }, 60);
         }
-
         function finalizeSlotResult() {
             slotAnimating = false;
             let winRate = slotInST ? (1 / 7) : (1 / 34);
@@ -2041,7 +2009,6 @@
                 if (subEl) subEl.innerText = subInfoStr;
             }, 100);
         }
-
         // ボタン長押しゲーム
         let holdTimer = null, holdSec = 0, holdEarned = 0;
         function startPressHoldGame() {
@@ -2114,7 +2081,6 @@
                 newBtn.ontouchend = newBtn.onmouseup;
             }
         }
-
         // Big or Small
         let bsLeftNum = 5, bsRightNum = 3;
         function startBigSmallGame() {
@@ -2168,7 +2134,6 @@
                 saveMemberDb();
             }
         }
-
         function openRankingModal() {
             if (rankingLocked) {
                 alert("🔒 現在、管理者の設定によりランキングはロックされています。");
@@ -2216,7 +2181,6 @@
                 document.getElementById('ranking-modal').classList.remove('active');
             }
         }
-
         function loadMemberBonusToCalc() {
             const targetId = document.getElementById('calc-target-member').value;
             const user = memberDatabase.find(m => m.id === targetId);
@@ -2318,7 +2282,6 @@
                 alert("⚠️ CORS制限またはURLエラーのため直接同期できませんでした。ローカルストレージで動作継続します。");
             }
         }
-
         /* 💖 交換所機能関連ロジック */
         function toggleShopImgInputType() {
             const type = document.getElementById('admin-shop-img-type').value;
@@ -2456,7 +2419,6 @@
                 alert(`🎁 交換成功！「${item.name}」をプレゼントBOXに送りました。`);
             }
         }
-
         /* 🛡️ 管理画面のセットアップ */
         function setupAdminManageScreen() {
             renderAdminNoticeManageList();
@@ -2480,7 +2442,6 @@
             loadCurrentEventToAdminForm();
             loadCurrentGachaToAdminForm();
         }
-
         function renderAdminHistoryManageList() {
             const container = document.getElementById('admin-history-manage-container');
             if (!container) return;
@@ -2518,7 +2479,6 @@
                 alert("🗑️ すべてのヒストリーを削除しました。");
             }
         }
-
         function openHistoryDeleteMode() {
             if (!isAdmin) return;
             const container = document.getElementById('history-list-container');
@@ -2538,7 +2498,6 @@
             });
             container.innerHTML = html;
         }
-
         function populateAdminEventSwitcher() {
             const sel = document.getElementById('admin-event-switcher-select');
             if (!sel) return;
@@ -2618,7 +2577,6 @@
             }
             renderAdminEventMinigameCheckboxes();
         }
-
         function adminSaveEventConfig() {
             if (!currentEvent) {
                 alert("保存するイベントが存在しません。新規追加してください。");
@@ -2657,7 +2615,6 @@
             let defaultMg = (type === "シーズンイベント") ? 
                 { highlow: true, blackjack: true, mash: true, stopwatch: true, slot: true, presshold: false, bigsmall: false } :
                 { highlow: false, blackjack: false, mash: false, stopwatch: false, slot: true, presshold: true, bigsmall: true };
-
             const newEv = {
                 id: newId,
                 title: "新規開催イベント",
@@ -2712,7 +2669,6 @@
                 alert("🗑️ イベントを削除しヒストリーへ移行しました。");
             }
         }
-
         function populateAdminGachaSwitcher() {
             const sel = document.getElementById('admin-gacha-switcher-select');
             if (!sel) return;
@@ -2844,7 +2800,6 @@
                 alert("🗑️ ガチャを削除しヒストリーへ移行しました。");
             }
         }
-
         function saveManageSettings() {
             adminSaveEventConfig();
             adminSaveGachaConfig();
@@ -2928,7 +2883,6 @@
                 `;
                 return;
             }
-
             const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
             if (currentGachaConfig.status === "終了" && !isNeo) {
                 if (titleEl) titleEl.innerText = "🎂 ガチャ (終了)";
@@ -3007,9 +2961,7 @@
                 
                 alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
                 playDefaultSongOnLogin();
-
                 checkAndTriggerFullscreenOnLogin();
-
                 if (isAdmin) openScreen('manage');
             } else {
                 alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
@@ -3054,7 +3006,6 @@
                 requestFullscreenMode();
             }
         }
-
         function playDefaultSongOnLogin() {
             if (songs.length > 0) {
                 audioPlayer.src = songs[0].url;
@@ -3226,7 +3177,6 @@
                 alert("🗑️ メンバーのプレゼントを削除しました！");
             }
         }
-
         function renderAdminMemberAlbumView() {
             const selectEl = document.getElementById('admin-target-album-select');
             const container = document.getElementById('admin-member-album-container');
@@ -3277,7 +3227,6 @@
             localStorage.setItem('nexus_ranking_locked', rankingLocked);
             alert(rankingLocked ? "🏆 ランキングを【ロック】しました。" : "🏆 ランキングのロックを【解除】しました。");
         }
-
         function toggleIndividualUserRestriction(userId, checkbox) {
             userRestrictionMap[userId] = checkbox.checked;
             localStorage.setItem('nexus_restricted_users', JSON.stringify(userRestrictionMap));
@@ -3309,10 +3258,8 @@
             if (deleteBtn) {
                 deleteBtn.style.display = isAdmin ? 'inline-block' : 'none';
             }
-
             eventHistory = JSON.parse(localStorage.getItem(getEventHistoryKey())) || [];
             gachaHistory = JSON.parse(localStorage.getItem(getGachaHistoryKey())) || [];
-
             if (eventHistory.length === 0 && gachaHistory.length === 0) {
                 container.innerHTML = `<p style="color: #888; text-align: center; margin-top: 20px;">過去のヒストリー記録はありません。</p>`;
                 return;
@@ -3330,7 +3277,6 @@
                 `;
                 container.appendChild(box);
             });
-
             gachaHistory.forEach(item => {
                 const box = document.createElement('div');
                 box.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:12px; border-left:3px solid #ff9900;";
@@ -3532,7 +3478,6 @@
             }
             const now = new Date();
             const timeFormatted = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
             const noticeObj = {
                 id: 'notice_' + Date.now(),
                 title: title,
@@ -3646,7 +3591,6 @@
             titleBgSelect.innerHTML = optionsHtml;
             appIconSelect.innerHTML = `<option value="">(デフォルト)</option>` + optionsHtml;
             shopDriveSelect.innerHTML = optionsHtml;
-
             renderAdminTitleBgList();
             renderAdminNoticeManageList();
             renderAdminGiftManageList();
@@ -3723,7 +3667,6 @@
             const unclickedGlobal = activeGlobalGifts.filter(g => !claimedIds.includes(g.id));
             return [...personalGifts, ...unclickedGlobal];
         }
-
         function renderGifts() {
             const grid = document.getElementById('present-grid-container');
             if (!grid) return;
@@ -3841,6 +3784,15 @@
             const container = document.getElementById('slideshow-container');
             if (!container) return;
             container.innerHTML = '';
+            
+            // 🌟 イベント非開催時は後ろの背景や画像も何もない状態にする（空のチェック）
+            const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
+            const hasActiveEvent = currentEvent && (currentEvent.status === "開催中" || (currentEvent.status === "結果" && isNeo) || (currentEvent.status === "開催準備中" && isNeo));
+            if (!hasActiveEvent && eventsList.length > 0) {
+                // イベント開催中でない場合は背景画像をスライドショー表示させない
+                return;
+            }
+
             const activeImages = userAlbum.filter(img => userSlideshowIds.includes(img.id));
             if (activeImages.length === 0) {
                 container.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#555;">画像がありません</div>`;
@@ -3930,7 +3882,6 @@
             if (titleClock) titleClock.innerText = timeStr;
             const eventClock = document.getElementById('event-clock');
             if (eventClock) eventClock.innerText = timeStr;
-
             checkAndUpdateAutomaticStatus();
         }
         setInterval(updateClock, 1000);
@@ -3955,7 +3906,6 @@
             btnElement.classList.add('selected');
             localStorage.setItem('nexus_clock_color', colorClass);
         }
-
         async function initBattery() {
             const bEl = document.getElementById('battery-info');
             const titleBEl = document.getElementById('title-battery-info');
@@ -3979,12 +3929,10 @@
                 fallbackBatteryMock(bEl, titleBEl);
             }
         }
-
         function applyBatteryStyle(level, charging, element) {
             if (!element) return;
             element.className = "battery-status";
             let text = "";
-
             if (charging) {
                 text = `充電中 ${level}%`;
                 element.classList.add('c-blue');
@@ -4004,12 +3952,10 @@
             }
             element.innerText = text;
         }
-
         function fallbackBatteryMock(el1, el2) {
             if (el1) { el1.className = "battery-status c-green"; el1.innerText = "100%"; }
             if (el2) { el2.className = "battery-status c-green"; el2.innerText = "100%"; }
         }
-
         function toggleOtherMenu() { document.getElementById('other-modal').classList.add('active'); }
         function closeOtherMenu() { document.getElementById('other-modal').classList.remove('active'); }
         
@@ -4025,13 +3971,11 @@
             if (name === 'history') markAsViewed('history');
             if (name === 'play') markAsViewed('play');
             if (name === 'gacha') markAsViewed('gacha');
-
             // 🌟 イベント画面を含め、全画面表示中も下部メニュー (bottom-nav) を常に表示し、隠れないように制御
             const bottomNav = document.getElementById('main-bottom-nav');
             if (bottomNav) {
                 bottomNav.classList.remove('hide-menu');
             }
-
             if (name === 'event') renderEventScreen();
             if (name === 'present') renderGifts();
             if (name === 'notice') renderNotices();
@@ -4160,14 +4104,34 @@
                 }
             }
         }
-        const songs = [
+        
+        // 🌟 音源をドライブからGAS経由で音源をGitHubで再生できるようにする（GASから音声リストを取得またはフォールバック）
+        let songs = [
             { title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" },
             { title: "ハウトゥー世界征服", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" }
         ];
+        
         const audioPlayer = document.getElementById('audio-player');
         const playlist = document.getElementById('playlist');
         const miniTitle = document.getElementById('mini-song-title');
         const nowPlayingText = document.getElementById('now-playing-text');
+        
+        async function fetchAudioListFromGas() {
+            if (!GAS_WEB_APP_URL) return;
+            try {
+                const res = await fetch(GAS_WEB_APP_URL + "?action=getSongs");
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.songs && data.songs.length > 0) {
+                        songs = data.songs;
+                        initPlaylist();
+                    }
+                }
+            } catch (e) {
+                console.log("GASからの楽曲リスト取得フォールバック:", e);
+            }
+        }
+
         function initPlaylist() {
             playlist.innerHTML = "";
             songs.forEach((song) => {
@@ -4178,13 +4142,13 @@
                     audioPlayer.src = song.url;
                     audioPlayer.play();
                     miniTitle.innerText = song.title;
-                    nowPlayingText.innerText = "再生中の曲: " + song.title;
+                    if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + song.title;
                 };
                 playlist.appendChild(item);
             });
         }
         initPlaylist();
+        fetchAudioListFromGas();
     </script>
 </body>
 </html>
-
