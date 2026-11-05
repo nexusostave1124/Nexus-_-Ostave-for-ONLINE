@@ -744,7 +744,15 @@
             </div>
         </div>
     </div>
-    <div id="screen-shop" class="sub-screen"><div class="sub-header"><span class="sub-title">💖 交換所</span><button class="close-btn" onclick="closeScreen('shop')">閉じる</button></div><p>交換所画面です。</p></div>
+    
+    <!-- 💖 交換所画面 -->
+    <div id="screen-shop" class="sub-screen">
+        <div class="sub-header">
+            <span class="sub-title">💖 交換所</span>
+            <button class="close-btn" onclick="closeScreen('shop')">閉じる</button>
+        </div>
+        <div id="shop-items-container" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; padding-bottom:30px;"></div>
+    </div>
     
     <!-- 🛡️ 管理画面 -->
     <div id="screen-manage" class="sub-screen">
@@ -756,6 +764,39 @@
                 <button class="close-btn" onclick="closeManageScreen()">閉じる</button>
             </div>
         </div>
+        
+        <!-- 💖 管理者用: 交換所商品追加セクション (最大10個) -->
+        <div class="admin-section" style="border-color:#00f5d4;">
+            <h4 style="color:#00f5d4; border-left-color:#00f5d4;">💖 交換所 商品管理 (最大10個配置)</h4>
+            <p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">絵文字または画像URLを選び、必要な💎ジェム数を決めて交換所に並べます。</p>
+            
+            <label style="font-size:0.8rem; color:#aaa;">商品名:</label>
+            <input type="text" id="admin-shop-item-name" class="admin-input" placeholder="例: スペシャル限定報酬">
+            
+            <label style="font-size:0.8rem; color:#aaa;">画像の種類:</label>
+            <select id="admin-shop-img-type" class="admin-input" onchange="toggleShopImgInputType()">
+                <option value="emoji">絵文字 (例: 💎, 🎁, ⭐)</option>
+                <option value="drive">Googleドライブ画像 (選択)</option>
+            </select>
+            
+            <div id="admin-shop-emoji-box">
+                <label style="font-size:0.8rem; color:#aaa;">絵文字入力:</label>
+                <input type="text" id="admin-shop-emoji-input" class="admin-input" value="🎁" maxlength="4">
+            </div>
+            
+            <div id="admin-shop-drive-box" style="display:none;">
+                <label style="font-size:0.8rem; color:#aaa;">ドライブ画像選択:</label>
+                <select id="admin-shop-drive-select" class="admin-input"><option value="">(画像を選択)</option></select>
+            </div>
+            
+            <label style="font-size:0.8rem; color:#aaa;">必要💎ジェム数:</label>
+            <input type="number" id="admin-shop-item-cost" class="admin-input" value="1000">
+            
+            <button class="admin-btn" style="background:#00f5d4; color:#000;" onclick="adminAddShopItem()">➕ 交換所に商品を並べる (MAX10個)</button>
+            
+            <div id="admin-shop-manage-list" style="margin-top:12px; font-size:0.8rem;"></div>
+        </div>
+
         <!-- 🔗 スプレッドシート & GAS 連携設定 -->
         <div class="admin-section" style="border-color:#3388ff;">
             <h4 style="color:#3388ff; border-left-color:#3388ff;">🔗 Googleスプレッドシート & GAS 連携</h4>
@@ -913,7 +954,6 @@
         </div>
         <div class="admin-section">
             <h4>🎂 ガチャ複数開催・ラインナップ・★2イラスト・💎消費設定</h4>
-            <label style="font-size: 0.8rem; color: #aaa;">開催中ガチャ選択:</label>
             <select id="admin-gacha-switcher-select" class="admin-input" onchange="adminSelectGachaToEdit(this.value)"></select>
             <input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
             <select id="admin-gacha-type-select" class="admin-input">
@@ -1018,7 +1058,7 @@
                 <p style="margin-bottom:6px;"><b>・High & Low:</b> 1〜16の数字。お題より次が大きいか小さいか当てます。</p>
                 <p style="margin-bottom:6px;"><b>・Blackjack:</b> 21に近づけるゲーム。ドロー（引き分け）時は次回獲得Pが2倍になります。</p>
                 <p style="margin-bottom:6px;"><b>・ボタン連打:</b> ボタンを素早く連打してポイントを稼ぎます。</p>
-                <p style="margin-bottom:6px;"><b>・ストップウォッチ:</b> 目標秒数にぴたっと止めると大量P！</p>
+                <p style="margin-bottom:6px;"><b>・ストップウォッチ:</b> 表示されている秒数を基準に目標秒数にぴたっと止めると大量P！</p>
                 <p style="margin-bottom:6px;"><b>・スロット:</b> スタート時は1・2・3の並び。長押し連打対応で大当り＆STを目指せ！</p>
                 <p style="margin-bottom:6px;"><b>・ボタン長押し:</b> 押し続けた秒数に応じてP獲得。離すと0秒にリセットされます。</p>
                 <p><b>・Big or Small:</b> 1〜9の数字。5以上(BIG)か4以下(SMALL)か当てます。</p>
@@ -1072,6 +1112,12 @@
         let globalGifts = JSON.parse(localStorage.getItem('nexus_global_gifts')) || [];
         let globalReports = JSON.parse(localStorage.getItem('nexus_global_reports')) || [];
         
+        // 💖 交換所商品リスト (最大10個)
+        let shopItemsList = JSON.parse(localStorage.getItem('nexus_shop_items')) || [
+            { id: 'shop_1', name: 'ジェムパック大', imgType: 'emoji', imgVal: '💎', cost: 1000 },
+            { id: 'shop_2', name: '記念お祝いギフト', imgType: 'emoji', imgVal: '🎁', cost: 500 }
+        ];
+
         let eventsList = JSON.parse(localStorage.getItem('nexus_events_list')) || [
             {
                 id: 'ev_1',
@@ -1205,7 +1251,6 @@
             return isoStr.replace("T", " ");
         }
 
-        // 🌟 自動時刻判定によるステータス変更（開始時刻で「開催中」、終了時刻で「開催終了」）
         function checkAndUpdateAutomaticStatus() {
             const now = new Date();
             let changed = false;
@@ -1221,7 +1266,6 @@
                 } else if (now >= end) {
                     if (ev.status === "開催中" || ev.status === "開催準備中" || ev.status === "結果") {
                         targetStatus = "開催終了";
-                        // 開催終了時はミニゲーム中であっても強制終了
                         if (currentEvent && currentEvent.id === ev.id) {
                             forceStopMinigamesOnEnd();
                         }
@@ -1464,7 +1508,7 @@
                 if (infoLeft) infoLeft.style.display = "flex";
                 if (actionBtns) {
                     actionBtns.style.display = "flex";
-                    if (minigameBtn) minigameBtn.style.display = "none"; // イベント不可
+                    if (minigameBtn) minigameBtn.style.display = "none";
                 }
             } else {
                 if (noEventModal) noEventModal.style.display = "none";
@@ -1472,7 +1516,6 @@
                 if (actionBtns) {
                     actionBtns.style.display = "flex";
                     if (minigameBtn) {
-                        // 🌟 開催中以外のステータスの場合はミニゲームも触れないようにする
                         if (currentEvent.status === "開催中") {
                             minigameBtn.style.display = "flex";
                         } else {
@@ -1501,7 +1544,6 @@
                 rankEl.innerText = "-位";
             }
             if (periodEl) {
-                // 🌟 開催終了時は赤色表示を削除（標準表示または通常のテキストに）
                 const showStatusFlag = currentEvent.showStatus !== false;
                 if ((currentEvent.status === "開催終了" || currentEvent.status === "結果") && !showStatusFlag) {
                     periodEl.innerText = "開催終了";
@@ -1527,7 +1569,6 @@
             updateEventBubbleDate();
         }
 
-        // 🌟 72時間（3日）未満のカウントダウン実装
         function updateEventBubbleDate() {
             const bubble = document.getElementById('badge-event-day-bubble');
             if (!bubble) return;
@@ -1570,7 +1611,6 @@
             document.getElementById('event-help-modal').classList.remove('active');
         }
         function handleEventActionButton() {
-            // 🌟 開催中以外の場合はミニゲームを触れないようにする
             if (!currentEvent || currentEvent.status !== "開催中") {
                 alert("🔒 現在、イベントが開催中ではないためミニゲームはプレイできません。");
                 return;
@@ -1764,11 +1804,12 @@
             renderMashUI(`+${pts}P 獲得中！`);
         }
 
-        // ストップウォッチ
-        let swTarget = 5, swStart = 0, swTimer = null;
+        // ストップウォッチ (🌟 画面に表示されている秒数を使用して判定するよう修正)
+        let swTarget = 5, swStart = 0, swTimer = null, currentElapsedDisplay = 0;
         function startStopwatchGame() {
             document.getElementById('minigame-game-screen').style.display = 'block';
             swTarget = Math.floor(Math.random() * 5) + 3;
+            currentElapsedDisplay = 0;
             renderStopwatchUI();
         }
         function changeStopwatchTarget() {
@@ -1793,9 +1834,9 @@
                 btn.style.background = "#ff334b";
                 btn.style.color = "#fff";
                 swTimer = setInterval(() => {
-                    let elapsed = (Date.now() - swStart) / 1000;
+                    currentElapsedDisplay = (Date.now() - swStart) / 1000;
                     const disp = document.getElementById('sw-disp');
-                    if (disp) disp.innerText = elapsed.toFixed(2);
+                    if (disp) disp.innerText = currentElapsedDisplay.toFixed(2);
                 }, 30);
             } else {
                 clearInterval(swTimer);
@@ -1803,8 +1844,9 @@
                 btn.innerText = "スタート";
                 btn.style.background = "#00f5d4";
                 btn.style.color = "#000";
-                let finalElapsed = (Date.now() - swStart) / 1000;
-                let diff = Math.abs(finalElapsed - swTarget);
+                
+                // 🌟 表示されている実際の数値 (currentElapsedDisplay) を使って判定
+                let diff = Math.abs(currentElapsedDisplay - swTarget);
                 let pts = 0;
                 if (diff <= 1.0) {
                     pts = Math.round(600 * (1 - diff / 1.0) + 200);
@@ -1813,7 +1855,7 @@
                 }
                 addCurrentPt(pts);
                 const resEl = document.getElementById('sw-res');
-                if (resEl) resEl.innerHTML = `結果: ${finalElapsed.toFixed(2)}秒 (誤差: ${diff.toFixed(2)}秒)<br><span style="color:${pts >= 0 ? '#00f5d4' : '#ff334b'};">${pts >= 0 ? '+' : ''}${pts}P</span>`;
+                if (resEl) resEl.innerHTML = `結果: ${currentElapsedDisplay.toFixed(2)}秒 (誤差: ${diff.toFixed(2)}秒)<br><span style="color:${pts >= 0 ? '#00f5d4' : '#ff334b'};">${pts >= 0 ? '+' : ''}${pts}P</span>`;
             }
         }
 
@@ -2240,6 +2282,145 @@
             }
         }
 
+        /* 💖 交換所機能関連ロジック */
+        function toggleShopImgType() {
+            const type = document.getElementById('admin-shop-img-type').value;
+            document.getElementById('admin-shop-emoji-box').style.display = (type === 'emoji') ? 'block' : 'none';
+            document.getElementById('admin-shop-drive-box').style.display = (type === 'drive') ? 'block' : 'none';
+        }
+        function adminAddShopItem() {
+            if (shopItemsList.length >= 10) {
+                alert("⚠️ 交換所に並べられる商品は最大10個までです。");
+                return;
+            }
+            const name = document.getElementById('admin-shop-item-name').value.trim();
+            const imgType = document.getElementById('admin-shop-img-type').value;
+            const cost = Number(document.getElementById('admin-shop-item-cost').value) || 1000;
+            
+            let imgVal = "";
+            if (imgType === 'emoji') {
+                imgVal = document.getElementById('admin-shop-emoji-input').value.trim() || '🎁';
+            } else {
+                imgVal = document.getElementById('admin-shop-drive-select').value;
+                if (!imgVal) {
+                    alert("画像を選択してください。");
+                    return;
+                }
+            }
+            if (!name) {
+                alert("商品名を入力してください。");
+                return;
+            }
+            const newItem = {
+                id: 'shop_item_' + Date.now(),
+                name: name,
+                imgType: imgType,
+                imgVal: imgVal,
+                cost: cost
+            };
+            shopItemsList.push(newItem);
+            localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
+            document.getElementById('admin-shop-item-name').value = "";
+            renderAdminShopManageList();
+            renderShopScreen();
+            alert(`💖 交換所に商品「${name}」を追加しました！`);
+        }
+        function adminDeleteShopItem(id) {
+            if (confirm("この商品を交換所から削除しますか？")) {
+                shopItemsList = shopItemsList.filter(item => item.id !== id);
+                localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
+                renderAdminShopManageList();
+                renderShopScreen();
+                alert("🗑️ 商品を削除しました。");
+            }
+        }
+        function renderAdminShopManageList() {
+            const container = document.getElementById('admin-shop-manage-list');
+            if (!container) return;
+            shopItemsList = JSON.parse(localStorage.getItem('nexus_shop_items')) || [];
+            container.innerHTML = `<div style="color:#00f5d4; font-weight:bold; margin-bottom:6px;">配置中商品 (${shopItemsList.length}/10個):</div>`;
+            if (shopItemsList.length === 0) {
+                container.innerHTML += `<div style="color:#888;">登録されている商品はありません。</div>`;
+                return;
+            }
+            shopItemsList.forEach(item => {
+                const imgRender = (item.imgType === 'emoji') ? `<span style="font-size:1.2rem;">${item.imgVal}</span>` : `<img src="${item.imgVal}" style="width:24px; height:24px; object-fit:cover; border-radius:4px;">`;
+                const row = document.createElement('div');
+                row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#222; padding:6px 10px; border-radius:6px; margin-bottom:4px;";
+                row.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        ${imgRender}
+                        <span style="font-weight:bold; color:#fff;">${item.name}</span>
+                        <span style="color:#00f5d4; font-size:0.75rem;">💎 ${item.cost.toLocaleString()}</span>
+                    </div>
+                    <button onclick="adminDeleteShopItem('${item.id}')" style="background:#ff334b; color:#fff; border:none; padding:3px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;">削除</button>
+                `;
+                container.appendChild(row);
+            });
+        }
+        function renderShopScreen() {
+            const container = document.getElementById('shop-items-container');
+            if (!container) return;
+            shopItemsList = JSON.parse(localStorage.getItem('nexus_shop_items')) || [];
+            if (shopItemsList.length === 0) {
+                container.innerHTML = `<p style="grid-column: span 2; text-align:center; color:#888; margin-top:20px;">現在販売中の商品はありません。</p>`;
+                return;
+            }
+            container.innerHTML = "";
+            shopItemsList.forEach(item => {
+                const imgRender = (item.imgType === 'emoji') ? 
+                    `<div style="font-size:2.5rem; display:flex; align-items:center; justify-content:center; height:100%;">${item.imgVal}</div>` : 
+                    `<img src="${item.imgVal}" style="width:100%; height:100%; object-fit:cover;">`;
+                
+                const card = document.createElement('div');
+                card.className = 'album-card';
+                card.innerHTML = `
+                    <div class="album-img-box">${imgRender}</div>
+                    <div class="album-card-info">
+                        <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px;">${item.name}</div>
+                        <div style="font-size:0.8rem; color:#00f5d4; font-weight:bold; margin-bottom:6px;">💎 ${item.cost.toLocaleString()}</div>
+                        <button onclick="buyShopItem('${item.id}')" style="width:100%; background:#00f5d4; color:#000; border:none; padding:6px; border-radius:6px; font-weight:bold; font-size:0.8rem; cursor:pointer;">交換する</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        function buyShopItem(itemId) {
+            if (!currentUser) {
+                alert("交換するにはログインしてください。");
+                promptUserLogin();
+                return;
+            }
+            const item = shopItemsList.find(i => i.id === itemId);
+            if (!item) return;
+            const userDb = memberDatabase.find(m => m.id === currentUser.id) || currentUser;
+            if ((userDb.gem || 0) < item.cost) {
+                alert(`❌ 💎 ジェムが不足しています！\n必要: ${item.cost.toLocaleString()} 💎 (所持: ${(userDb.gem || 0).toLocaleString()} 💎)`);
+                return;
+            }
+            if (confirm(`「${item.name}」を 💎 ${item.cost.toLocaleString()} で交換しますか？`)) {
+                userDb.gem -= item.cost;
+                saveMemberDb();
+                updateUIUserStatus();
+                
+                // プレゼントBOXに自動付与
+                const giftObj = {
+                    id: 'shop_reward_' + Date.now(),
+                    title: `【交換所】${item.name}`,
+                    gem: 0,
+                    coin: 0,
+                    imgUrl: (item.imgType === 'drive') ? item.imgVal : "",
+                    active: true,
+                    date: new Date().toLocaleDateString()
+                };
+                let personalGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
+                personalGifts.push(giftObj);
+                localStorage.setItem(getUserGiftsKey(), JSON.stringify(personalGifts));
+                
+                alert(`🎁 交換成功！「${item.name}」をプレゼントBOXに送りました。`);
+            }
+        }
+
         /* 🛡️ 管理画面のセットアップ */
         function setupAdminManageScreen() {
             renderAdminNoticeManageList();
@@ -2250,6 +2431,7 @@
             renderAdminReportsList();
             renderAdminGiftTargetCheckboxes();
             renderAdminHistoryManageList();
+            renderAdminShopManageList();
             populateAdminAlbumMemberSelect();
             populateAdminPresentMemberSelect();
             populateAdminSelects();
@@ -2493,7 +2675,6 @@
             }
         }
 
-        /* ================= 🎂 ガチャ削除・ヒストリー機能追加 ================= */
         function populateAdminGachaSwitcher() {
             const sel = document.getElementById('admin-gacha-switcher-select');
             if (!sel) return;
@@ -2697,7 +2878,6 @@
             if (!container) return;
             const titleEl = document.getElementById('gacha-screen-title');
             
-            // 🌟 ガチャが0件の場合の対応
             if (gachaList.length === 0 || !currentGachaConfig) {
                 if (titleEl) titleEl.innerText = "🎂 ガチャ";
                 container.innerHTML = `
@@ -2959,7 +3139,6 @@
             selectEl.innerHTML = html;
         }
         
-        // 🌟 管理画面でのプレゼント閲覧・削除機能
         function populateAdminPresentMemberSelect() {
             const selectEl = document.getElementById('admin-target-present-select');
             if (!selectEl) return;
@@ -3408,7 +3587,9 @@
             const eventLogoSelect = document.getElementById('admin-event-logo-select');
             const titleBgSelect = document.getElementById('admin-title-bg-select');
             const appIconSelect = document.getElementById('admin-app-icon-select');
-            if (!gachaSelect || !giftSelect || !noticeSelect || !eventImgSelect || !titleBgSelect || !gachaBannerSelect || !eventLogoSelect || !appIconSelect) return;
+            const shopDriveSelect = document.getElementById('admin-shop-drive-select');
+            
+            if (!gachaSelect || !giftSelect || !shopDriveSelect) return;
             let optionsHtml = `<option value="">(選択してください)</option>`;
             masterDriveImages.forEach(img => {
                 optionsHtml += `<option value="${img.url}">${img.name}</option>`;
@@ -3421,6 +3602,8 @@
             eventLogoSelect.innerHTML = `<option value="">(ロゴなし)</option>` + optionsHtml;
             titleBgSelect.innerHTML = optionsHtml;
             appIconSelect.innerHTML = `<option value="">(デフォルト)</option>` + optionsHtml;
+            shopDriveSelect.innerHTML = optionsHtml;
+
             renderAdminTitleBgList();
             renderAdminNoticeManageList();
             renderAdminGiftManageList();
@@ -3430,6 +3613,7 @@
             renderAdminReportsList();
             renderAdminGiftTargetCheckboxes();
             renderAdminHistoryManageList();
+            renderAdminShopManageList();
             populateAdminAlbumMemberSelect();
             populateAdminPresentMemberSelect();
         }
@@ -3792,7 +3976,6 @@
             closeAllSelectors();
             openedFromTitle = fromTitle;
             
-            // 🌟 各画面を開いたときに自動「！」マークを既読（非表示）にする
             if (name === 'present') markAsViewed('present');
             if (name === 'notice') markAsViewed('notice');
             if (name === 'album') markAsViewed('album');
@@ -3800,17 +3983,16 @@
             if (name === 'play') markAsViewed('play');
             if (name === 'gacha') markAsViewed('gacha');
 
+            // 🌟 全画面表示時も下のメニュー（bottom-nav）は消さない仕様に変更
             const bottomNav = document.getElementById('main-bottom-nav');
-            if (fromTitle) {
-                if (bottomNav) bottomNav.classList.add('hide-menu');
-            } else {
-                if (bottomNav) bottomNav.classList.remove('hide-menu');
-            }
+            if (bottomNav) bottomNav.classList.remove('hide-menu');
+
             if (name === 'event') renderEventScreen();
             if (name === 'present') renderGifts();
             if (name === 'notice') renderNotices();
             if (name === 'history') renderHistory();
             if (name === 'album') renderAlbum();
+            if (name === 'shop') renderShopScreen();
             if (name === 'settings') {
                 const clockSection = document.getElementById('settings-clock-section');
                 const homeEx = document.getElementById('settings-home-exclusive');
