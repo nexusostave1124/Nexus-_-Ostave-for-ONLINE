@@ -4119,6 +4119,13 @@
         const playlist = document.getElementById('playlist');
         const miniTitle = document.getElementById('mini-song-title');
         const nowPlayingText = document.getElementById('now-playing-text');
+        
+        // 🎵 音源URLを直接組み込んだプレイリストデータ
+        const songs = [
+            { title: "SPECIALZ", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/SPECIALZ.mp3" },
+            { title: "ハウトゥー世界征服", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/%E3%83%8F%E3%82%A6%E3%83%88%E3%82%A5%E3%83%BC%E4%B8%96%E7%95%8C%E5%BE%81%E6%9C%8D%20(4).mp3" }
+        ];
+
         function initPlaylist() {
             playlist.innerHTML = "";
             songs.forEach((song) => {
