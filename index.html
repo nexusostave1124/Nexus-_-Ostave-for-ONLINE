@@ -269,12 +269,12 @@
         .song-sub-text { font-size: 0.65rem; color: #aaa; }
         
         .bottom-nav {
-            position: absolute; bottom: 0; left: 0; width: 100%;
+            position: fixed; bottom: 0; left: 0; width: 100%;
             height: calc(62px + env(safe-area-inset-bottom, 0px));
             padding-bottom: env(safe-area-inset-bottom, 0px);
             background: rgba(18, 18, 18, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.15);
             display: flex; justify-content: space-around; align-items: center;
-            z-index: 500; backdrop-filter: blur(10px);
+            z-index: 5000; backdrop-filter: blur(10px);
         }
         .nav-item {
             position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -322,11 +322,21 @@
             width: 44px; height: 44px; background: #fff; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 5px; box-shadow: 0 3px 6px rgba(0,0,0,0.3);
         }
+        
+        /* Sub-screens (Scrolling enabled for settings, shop, notice, history, album, report, manage, present, player) */
         .sub-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #121212; z-index: 100; display: none; flex-direction: column; padding: 15px; box-sizing: border-box; overflow-y: auto;
+            background: #121212; z-index: 100; display: none; flex-direction: column; padding: 15px; box-sizing: border-box; 
+            overflow-y: auto; -webkit-overflow-scrolling: touch;
+            padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px));
         }
         .sub-screen.active { display: flex; }
+        
+        /* Non-scrolling screens (event, gacha, play) */
+        #screen-event, #screen-gacha, #screen-play {
+            overflow: hidden;
+        }
+
         .sub-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #333; margin-bottom: 15px; flex-shrink: 0; }
         .sub-title { font-size: 1.1rem; color: #00f5d4; font-weight: bold; }
         .close-btn { padding: 5px 14px; background: #333; color: #fff; border: 1px solid #555; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit; }
@@ -524,7 +534,7 @@
         </div>
     </div>
     
-    <!-- 🌟 下部メニュー -->
+    <!-- 🌟 下部メニュー (Fixed) -->
     <div class="bottom-nav" id="main-bottom-nav">
         <div class="nav-item active" id="nav-home" onclick="switchNav('home')">
             <span class="nav-icon">🏠</span>
@@ -620,12 +630,12 @@
             </div>
         </div>
         <div id="event-no-event-modal" class="event-no-event-box" style="display:none;">
-            <h3 style="color:#ff334b; font-size:1.1rem; margin-bottom:8px;">🔒 お知らせ</h3>
+            <h3 style="color:#ff334b; font-size:1.1rem; margin-bottom:8px;" id="event-no-event-title">🔒 お知らせ</h3>
             <p style="font-size:0.9rem; color:#ccc;" id="event-no-event-msg">現在開催中のイベントはありません</p>
         </div>
     </div>
     
-    <!-- 📄 その他の各種サブ画面 -->
+    <!-- 📄 その他の各種サブ画面 (Scrollable) -->
     <div id="screen-player" class="sub-screen">
         <div class="sub-header">
             <span class="sub-title">🎵 楽曲選択 (GAS連携対応)</span>
@@ -769,7 +779,7 @@
         <div id="shop-items-container" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; padding-bottom:30px;"></div>
     </div>
     
-    <!-- 🛡️ 管理画面 -->
+    <!-- 🛡️ 管理画面 (Scrollable) -->
     <div id="screen-manage" class="sub-screen">
         <div class="sub-header">
             <span class="sub-title">🛡️ 管理画面 (管理者モード)</span>
@@ -780,6 +790,54 @@
             </div>
         </div>
         
+        <!-- 💎 全ユーザーのダイヤ・コイン所持数 管理セクション -->
+        <div class="admin-section" style="border-color:#ffee00;">
+            <h4 style="color:#ffee00; border-left-color:#ffee00;">💎 全ユーザーのダイヤ(💎)・コイン(🪙)所持数管理</h4>
+            <p style="font-size:0.75rem; color:#aaa; margin-bottom:10px;">各ユーザーの💎と🪙の残高を確認・直接増減・変更できます。</p>
+            <div id="admin-user-currency-container" style="background:#222; padding:8px; border-radius:6px; font-size:0.8rem;"></div>
+        </div>
+
+        <!-- ⚙️ ミニゲーム・通話発言の獲得P 設定セクション -->
+        <div class="admin-section" style="border-color:#00f5d4;">
+            <h4 style="color:#00f5d4; border-left-color:#00f5d4;">⚙️ ミニゲーム・通話発言の獲得P 設定 (1回・1秒等のP閲覧・変更)</h4>
+            <p style="font-size:0.75rem; color:#aaa; margin-bottom:10px;">各アクション（発言・通話・ミニゲーム等）で獲得できる基準Pをここで一括変更できます。</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">💬 発言1回あたりのP:</label>
+                    <input type="number" id="rate-speech-pt" class="admin-input" value="10">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">📞 通話1分あたりのP:</label>
+                    <input type="number" id="rate-call-pt" class="admin-input" value="20">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">🃏 High&Low勝利P:</label>
+                    <input type="number" id="rate-highlow-pt" class="admin-input" value="300">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">♠️ Blackjack勝利P:</label>
+                    <input type="number" id="rate-bj-pt" class="admin-input" value="350">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">👆 ボタン連打P (1打):</label>
+                    <input type="number" id="rate-mash-pt" class="admin-input" value="2">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">⏱️ ストップウォッチ最高P:</label>
+                    <input type="number" id="rate-sw-pt" class="admin-input" value="800">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">🎰 スロット大当りP:</label>
+                    <input type="number" id="rate-slot-pt" class="admin-input" value="3500">
+                </div>
+                <div>
+                    <label style="font-size:0.75rem; color:#aaa;">🔘 長押しP (1秒):</label>
+                    <input type="number" id="rate-hold-pt" class="admin-input" value="5">
+                </div>
+            </div>
+            <button class="admin-btn" style="background:#00f5d4; color:#000;" onclick="savePointRates()">💾 獲得Pレート設定を保存する</button>
+        </div>
+
         <!-- 💖 管理者用: 交換所商品追加セクション (最大10個) -->
         <div class="admin-section" style="border-color:#00f5d4;">
             <h4 style="color:#00f5d4; border-left-color:#00f5d4;">💖 交換所 商品管理 (最大10個配置)</h4>
@@ -971,7 +1029,7 @@
             <h4 style="color: #ff334b; border-left-color: #ff334b;">🔒 ユーザーアクセス制限・アカウント管理</h4>
             <label style="font-size: 0.8rem; color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 12px;">
                 <input type="checkbox" id="admin-login-lock-toggle" onchange="toggleLoginLock(this)" style="width: 18px; height: 18px;">
-                全一般ユーザーのログインを一斉ブロックする
+                全一般ユーザーのログインを一斉ブロックする (メンテナンス中と表示)
             </label>
             <div id="admin-user-restriction-list" style="background:#222; padding:8px; border-radius:6px; font-size:0.8rem;"></div>
         </div>
@@ -1086,10 +1144,7 @@
     <div id="event-help-modal" class="modal-overlay" onclick="closeEventHelpModal(event)">
         <div class="menu-dialog" style="max-width:360px; max-height:85vh; overflow-y:auto;" onclick="event.stopPropagation()">
             <h3 style="color:#00f5d4; text-align:center; margin-bottom:12px;">❓ イベント詳細 & ルールガイド</h3>
-            <div style="background:#222; padding:12px; border-radius:8px; font-size:0.82rem; color:#ddd; line-height:1.6; margin-bottom:15px;">
-                <div style="font-weight:bold; color:#ffee00; margin-bottom:4px;">🎮 基本操作</div>
-                <p style="margin-bottom:10px;">・背景を上下にスワイプして切り替え。<br>・下部の「イベント」ボタンを押して複数のイベントを切り替え。<br>・ミニゲームやランキング、発言回数・通話時間でイベントポイント（P）を競えます。</p>
-            </div>
+            <div style="background:#222; padding:12px; border-radius:8px; font-size:0.82rem; color:#ddd; line-height:1.6; margin-bottom:15px;" id="event-help-content-box"></div>
             <button class="close-btn" onclick="closeEventHelpModal()" style="width:100%;">閉じる</button>
         </div>
     </div>
@@ -1109,6 +1164,42 @@
     <script>
         const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
         let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "";
+        
+        /* ⚙️ ポイントレート設定 */
+        let pointRates = JSON.parse(localStorage.getItem('nexus_point_rates')) || {
+            speech: 10,
+            call: 20,
+            highlow: 300,
+            blackjack: 350,
+            mash: 2,
+            stopwatch: 800,
+            slot: 3500,
+            hold: 5
+        };
+        function savePointRates() {
+            pointRates.speech = Number(document.getElementById('rate-speech-pt').value) || 10;
+            pointRates.call = Number(document.getElementById('rate-call-pt').value) || 20;
+            pointRates.highlow = Number(document.getElementById('rate-highlow-pt').value) || 300;
+            pointRates.blackjack = Number(document.getElementById('rate-bj-pt').value) || 350;
+            pointRates.mash = Number(document.getElementById('rate-mash-pt').value) || 2;
+            pointRates.stopwatch = Number(document.getElementById('rate-sw-pt').value) || 800;
+            pointRates.slot = Number(document.getElementById('rate-slot-pt').value) || 3500;
+            pointRates.hold = Number(document.getElementById('rate-hold-pt').value) || 5;
+            localStorage.setItem('nexus_point_rates', JSON.stringify(pointRates));
+            alert("💾 獲得Pレート設定を保存しました！");
+        }
+        function loadPointRatesToForm() {
+            if (!document.getElementById('rate-speech-pt')) return;
+            document.getElementById('rate-speech-pt').value = pointRates.speech;
+            document.getElementById('rate-call-pt').value = pointRates.call;
+            document.getElementById('rate-highlow-pt').value = pointRates.highlow;
+            document.getElementById('rate-bj-pt').value = pointRates.blackjack;
+            document.getElementById('rate-mash-pt').value = pointRates.mash;
+            document.getElementById('rate-sw-pt').value = pointRates.stopwatch;
+            document.getElementById('rate-slot-pt').value = pointRates.slot;
+            document.getElementById('rate-hold-pt').value = pointRates.hold;
+        }
+
         const GACHA_RATES = {
             "ネオフェス限定": { "★6": 0.4, "★5": 6.6, "★4": 23, "★3": 30, "★2": 40 },
             "タイアップ限定": { "★6": 0.3, "★5": 1.7, "★4": 30, "★3": 30, "★2": 38 },
@@ -1119,13 +1210,13 @@
             "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
         };
         let memberDatabase = JSON.parse(localStorage.getItem('nexus_member_db')) || [
-            { id: "H-25-3-1", name: "ヨウスケ", gem: 5000, coin: 0, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-            { id: "M-24-12-2", name: "Kou", gem: 5000, coin: 0, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-            { id: "N-24-11-3", name: "奨", gem: 5000, coin: 0, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-            { id: "S-24-11-4", name: "MIHO", gem: 5000, coin: 0, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-            { id: "S-24-11-5-o", name: "海惺", gem: 5000, coin: 0, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-            { id: "U-24-11-6-a", name: "タイ", gem: 5000, coin: 0, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-            { id: "N-24-11-7-o", name: "Ayu", gem: 5000, coin: 0, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "H-25-3-1", name: "ヨウスケ", gem: 5000, coin: 500, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "M-24-12-2", name: "Kou", gem: 5000, coin: 500, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "N-24-11-3", name: "奨", gem: 5000, coin: 500, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "S-24-11-4", name: "MIHO", gem: 5000, coin: 500, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "S-24-11-5-o", name: "海惺", gem: 5000, coin: 500, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "U-24-11-6-a", name: "タイ", gem: 5000, coin: 500, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+            { id: "N-24-11-7-o", name: "Ayu", gem: 5000, coin: 500, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
             { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0, speechCount: 0, callMinutes: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 }
         ];
         function saveMemberDb() {
@@ -1166,7 +1257,7 @@
             {
                 id: 'g_1',
                 title: "記念ピックアップガチャ",
-                type: "ネオフェс限定",
+                type: "ネオフェス限定",
                 status: "開催中",
                 manualOverride: false,
                 showStatus: true,
@@ -1452,10 +1543,11 @@
             }
         }
         
-        /* 🌟 機能3: イベント非開催時の表示制御 */
+        /* 🌟 イベント非開催時・メンテナンス時の表示制御 */
         function renderEventScreen() {
             const noEventModal = document.getElementById('event-no-event-modal');
             const noEventMsg = document.getElementById('event-no-event-msg');
+            const noEventTitle = document.getElementById('event-no-event-title');
             const infoLeft = document.getElementById('event-info-bottom-left');
             const actionBtns = document.getElementById('event-action-btns');
             const ptEl = document.getElementById('event-user-pt');
@@ -1470,9 +1562,23 @@
             
             if (navLabel) navLabel.innerText = currentEvent && currentEvent.type === "シーズンイベント" ? "シーズンイベント" : "イベント";
             
+            // 🌟 メンテナンス中のアクセス制限チェック
+            if (isLoginLocked && currentUser && currentUser.id !== "A-24-11-9-a") {
+                if (noEventModal) {
+                    if (noEventTitle) noEventTitle.innerText = "⚠️ メンテナンス中";
+                    if (noEventMsg) noEventMsg.innerText = "現在メンテナンス中です。一般ユーザーのアクセスが制限されています。";
+                    noEventModal.style.display = "block";
+                }
+                if (infoLeft) infoLeft.style.display = "none";
+                if (actionBtns) actionBtns.style.display = "none";
+                if (bgImg) bgImg.style.display = "none";
+                return;
+            }
+
             const isEventOff = !currentEvent || currentEvent.status === "OFF";
             if (eventsList.length === 0 || isEventOff) {
                 if (noEventModal) {
+                    if (noEventTitle) noEventTitle.innerText = "🔒 お知らせ";
                     if (noEventMsg) noEventMsg.innerText = "現在開催中のイベントはありません（OFF）";
                     noEventModal.style.display = "block";
                 }
@@ -1485,6 +1591,7 @@
             
             if (currentEvent.status === "開催準備中" && !isNeo) {
                 if (noEventModal) {
+                    if (noEventTitle) noEventTitle.innerText = "🔒 お知らせ";
                     if (noEventMsg) noEventMsg.innerText = "現在開催中のイベントはありません";
                     noEventModal.style.display = "block";
                 }
@@ -1494,6 +1601,7 @@
                 return;
             } else if (currentEvent.status === "開催終了" && !isNeo) {
                 if (noEventModal) {
+                    if (noEventTitle) noEventTitle.innerText = "🔒 お知らせ";
                     if (noEventMsg) noEventMsg.innerText = "このイベントは開催終了しました（使用不可）";
                     noEventModal.style.display = "block";
                 }
@@ -1594,7 +1702,30 @@
                 }
             }
         }
+        
+        /* 🌟 イベント画面の？にミニゲームの説明と獲得Pを記載する (変更される度に連動) */
         function openEventHelpModal() {
+            const contentBox = document.getElementById('event-help-content-box');
+            if (!contentBox) return;
+            
+            const mg = currentEvent && currentEvent.minigames ? currentEvent.minigames : {};
+            let mgDescHtml = "";
+            if (mg.highlow) mgDescHtml += `・<b>High & Low</b>: 1〜16の数字予測 (勝利率約50% / 勝利時 +${pointRates.highlow}P)<br>`;
+            if (mg.blackjack) mgDescHtml += `・<b>Blackjack</b>: 21を作るカードゲーム (勝利時 +${pointRates.blackjack}P / ドロー時倍化)<br>`;
+            if (mg.mash) mgDescHtml += `・<b>ボタン連打</b>: 連打回数に応じてP獲得 (1打 +${pointRates.mash}P)<br>`;
+            if (mg.stopwatch) mgDescHtml += `・<b>ストップウォッチ</b>: 目標秒数ぴたっと止め (成功時最大 +${pointRates.stopwatch}P)<br>`;
+            if (mg.slot) mgDescHtml += `・<b>スロット</b>: ST・長押し連打対応 (大当り +${pointRates.slot}P)<br>`;
+            if (mg.presshold) mgDescHtml += `・<b>ボタン長押し</b>: 1秒ごとに +${pointRates.hold}P 獲得<br>`;
+            if (mg.bigsmall) mgDescHtml += `・<b>Big or Small</b>: 1〜9の大小予測<br>`;
+            
+            if (!mgDescHtml) mgDescHtml = "現在有効なミニゲームはありません。<br>";
+
+            contentBox.innerHTML = `
+                <div style="font-weight:bold; color:#ffee00; margin-bottom:4px;">🎮 イベント基本操作</div>
+                <p style="margin-bottom:10px;">・背景を上下にスワイプして切り替え。<br>・下部の「イベント」ボタンを押して複数のイベントを切り替え。<br>・💬 発言回数 (1回=<b>${pointRates.speech}P</b>) および 📞 通話時間 (1分=<b>${pointRates.call}P</b>) が自動加算されます。</p>
+                <div style="font-weight:bold; color:#00f5d4; margin-bottom:4px; border-top:1px dashed #444; padding-top:8px;">🕹️ 有効なミニゲームと獲得P一覧</div>
+                <p style="margin-bottom:4px;">${mgDescHtml}</p>
+            `;
             document.getElementById('event-help-modal').classList.add('active');
         }
         function closeEventHelpModal() {
@@ -1621,12 +1752,12 @@
             if (btnList) {
                 let html = "";
                 const mg = currentEvent.minigames || {};
-                if (mg.highlow) html += `<button class="game-btn" onclick="startHighLowGame()">🃏 High & Low (1〜16)</button>`;
-                if (mg.blackjack) html += `<button class="game-btn" onclick="startBlackjackGame()">♠️ Blackjack (21を作る / ドロー時倍化)</button>`;
-                if (mg.mash) html += `<button class="game-btn" onclick="startMashGame()">👆 ボタン連打</button>`;
-                if (mg.stopwatch) html += `<button class="game-btn" onclick="startStopwatchGame()">⏱️ ストップウォッチ</button>`;
-                if (mg.slot) html += `<button class="game-btn" onclick="startSlotGame()">🎰 スロット (ST・長押し対応)</button>`;
-                if (mg.presshold) html += `<button class="game-btn" onclick="startPressHoldGame()">🔘 ボタン長押しゲーム</button>`;
+                if (mg.highlow) html += `<button class="game-btn" onclick="startHighLowGame()">🃏 High & Low (1〜16) [勝:+${pointRates.highlow}P]</button>`;
+                if (mg.blackjack) html += `<button class="game-btn" onclick="startBlackjackGame()">♠️ Blackjack (21を作る) [勝:+${pointRates.blackjack}P]</button>`;
+                if (mg.mash) html += `<button class="game-btn" onclick="startMashGame()">👆 ボタン連打 [1打:+${pointRates.mash}P]</button>`;
+                if (mg.stopwatch) html += `<button class="game-btn" onclick="startStopwatchGame()">⏱️ ストップウォッチ [最大:+${pointRates.stopwatch}P]</button>`;
+                if (mg.slot) html += `<button class="game-btn" onclick="startSlotGame()">🎰 スロット (ST・長押し) [当:+${pointRates.slot}P]</button>`;
+                if (mg.presshold) html += `<button class="game-btn" onclick="startPressHoldGame()">🔘 ボタン長押しゲーム [1秒:+${pointRates.hold}P]</button>`;
                 if (mg.bigsmall) html += `<button class="game-btn" onclick="startBigSmallGame()">🎲 Big or Small (1〜9)</button>`;
                 if (!html) {
                     html = `<p style="color:#aaa; text-align:center; font-size:0.85rem;">現在選択可能なミニゲームはありません。</p>`;
@@ -1651,7 +1782,7 @@
         }
         function renderHighLowUI(msg = "") {
             document.getElementById('minigame-game-screen').innerHTML = `
-                <h4 style="color:#00f5d4; margin-bottom:8px;">🃏 High & Low (1〜16)</h4>
+                <h4 style="color:#00f5d4; margin-bottom:8px;">🃏 High & Low (勝利:+${pointRates.highlow}P)</h4>
                 <div style="display:flex; justify-content:center; align-items:center; gap:20px; margin:12px 0;">
                     <div style="background:#111; padding:12px 20px; border-radius:8px; border:2px solid #00f5d4;">
                         <div style="font-size:0.75rem; color:#aaa;">お題</div>
@@ -1675,7 +1806,7 @@
             let win = (choice === 'HIGH' && hlRightNum >= hlLeftNum) || (choice === 'LOW' && hlRightNum <= hlLeftNum);
             if (win) {
                 hlStreak++;
-                let pts = 300;
+                let pts = pointRates.highlow;
                 if (hlStreak % 3 === 0) pts = Math.round(pts * 1.6);
                 addCurrentPt(pts);
                 let revealed = hlRightNum;
@@ -1715,7 +1846,7 @@
                     <button class="game-btn" style="background:#ffee00; color:#000;" onclick="bjStand()">スタンド</button>
                 </div>`;
             document.getElementById('minigame-game-screen').innerHTML = `
-                <h4 style="color:#00f5d4; margin-bottom:8px;">♠️ Blackjack ${bjMultiplier > 1 ? `<span style="color:#ffee00;">(次回P ${bjMultiplier}倍中!)</span>` : ''}</h4>
+                <h4 style="color:#00f5d4; margin-bottom:8px;">♠️ Blackjack (勝利:+${pointRates.blackjack}P) ${bjMultiplier > 1 ? `<span style="color:#ffee00;">(次回P ${bjMultiplier}倍中!)</span>` : ''}</h4>
                 <div style="background:#181818; padding:10px; border-radius:8px; margin-bottom:8px; text-align:left;">
                     <div style="font-size:0.75rem; color:#aaa;">ディーラー (上)</div>
                     <div style="font-size:1.1rem; font-weight:bold; color:#ff334b;">${dealerDisplay}</div>
@@ -1757,7 +1888,7 @@
                 bjMultiplier *= 2;
                 renderBjUI(`🤝 ドロー (引き分け)！次回獲得Pが ${bjMultiplier}倍 にアップします！`);
             } else if (dScore > 21 || pScore > dScore) {
-                let pts = 350 * bjMultiplier;
+                let pts = pointRates.blackjack * bjMultiplier;
                 addCurrentPt(pts);
                 renderBjUI(`勝利！ (+${pts}P / ${bjMultiplier}倍ボーナス適用) ディーラー: ${dScore}`);
                 bjMultiplier = 1;
@@ -1776,7 +1907,7 @@
         }
         function renderMashUI(msg = "") {
             document.getElementById('minigame-game-screen').innerHTML = `
-                <h4 style="color:#00f5d4; margin-bottom:8px;">👆 ボタン連打チャレンジ</h4>
+                <h4 style="color:#00f5d4; margin-bottom:8px;">👆 ボタン連打チャレンジ (1打:+${pointRates.mash}P)</h4>
                 <div style="font-size:1.1rem; color:#ffee00; margin:10px 0;">獲得P: <span style="font-size:1.6rem; font-weight:bold;">${mashTotalEarned}</span> P</div>
                 <button class="game-btn" style="background:#00f5d4; padding:18px; font-size:1.1rem;" onclick="tapMashButton()">連打！</button>
                 <div style="margin-top:8px; font-size:0.85rem; color:#00f5d4;">${msg}</div>
@@ -1784,7 +1915,7 @@
         }
         function tapMashButton() {
             mashCount++;
-            let pts = 2;
+            let pts = pointRates.mash;
             if (mashCount % 10 === 0) pts = Math.round(pts * 1.2);
             mashTotalEarned += pts;
             addCurrentPt(pts);
@@ -1804,7 +1935,7 @@
         }
         function renderStopwatchUI(msg = "") {
             document.getElementById('minigame-game-screen').innerHTML = `
-                <h4 style="color:#00f5d4; margin-bottom:8px;">⏱️ ストップウォッチ</h4>
+                <h4 style="color:#00f5d4; margin-bottom:8px;">⏱️ ストップウォッチ (最大:+${pointRates.stopwatch}P)</h4>
                 <div style="font-size:0.9rem; color:#ccc;">目標: <span style="color:#ffee00; font-weight:bold;">${swTarget}.00 秒</span> ぴたっと止めよう！</div>
                 <div id="sw-disp" style="font-size:2.2rem; font-weight:bold; color:#fff; margin:10px 0;">0.00</div>
                 <button class="game-btn" id="sw-btn" style="background:#00f5d4;" onclick="toggleStopwatch()">スタート</button>
@@ -1832,7 +1963,7 @@
                 btn.style.color = "#000";
                 
                 let diff = Math.abs(currentElapsedDisplay - swTarget);
-                let pts = diff <= 1.0 ? Math.round(600 * (1 - diff / 1.0) + 200) : -400;
+                let pts = diff <= 1.0 ? Math.round(pointRates.stopwatch * (1 - diff / 1.0) + 200) : -400;
                 addCurrentPt(pts);
                 const resEl = document.getElementById('sw-res');
                 if (resEl) resEl.innerHTML = `結果: ${currentElapsedDisplay.toFixed(2)}秒 (誤差: ${diff.toFixed(2)}秒)<br><span style="color:${pts >= 0 ? '#00f5d4' : '#ff334b'};">${pts >= 0 ? '+' : ''}${pts}P</span>`;
@@ -1860,7 +1991,7 @@
         function renderSlotUI(displayHtml, msg) {
             let subInfoStr = slotInST ? `🔥 【ST中】残り ${slotRemainingSTSpins} 回転 (確率 1/7)` : `前回の当りからの回転数: ${slotSpinsSinceLastHit} 回転`;
             document.getElementById('minigame-game-screen').innerHTML = `
-                <h4 style="color:#00f5d4; margin-bottom:4px;">🎰 スロット (ST・長押し対応)</h4>
+                <h4 style="color:#00f5d4; margin-bottom:4px;">🎰 スロット (大当り:+${pointRates.slot}P)</h4>
                 <div style="font-size:0.75rem; color:#ffee00; margin-bottom:10px;">${subInfoStr}</div>
                 <div style="font-size:2.5rem; letter-spacing:10px; margin:15px 0; font-weight:bold;" id="slot-disp">${displayHtml}</div>
                 <button class="game-btn" id="slot-spin-btn" style="background:#ffee00; color:#000; padding:12px;">スピン！ (長押し連打対応)</button>
@@ -1925,7 +2056,7 @@
             let colorName = "青色";
             let entersST = false;
             if (n1 === n2 && n2 === n3) {
-                let pts = 3500;
+                let pts = pointRates.slot;
                 slotSpinsSinceLastHit = 0;
                 if (n1 === 3 || n1 === 7) { colorName = "金色"; entersST = true; }
                 else if (n1 === 1 || n1 === 5 || n1 === 9) { colorName = "赤色"; entersST = true; }
@@ -1954,7 +2085,7 @@
         }
         function renderPressHoldUI(msg = "") {
             document.getElementById('minigame-game-screen').innerHTML = `
-                <h4 style="color:#00f5d4; margin-bottom:6px;">🔘 ボタン長押しゲーム</h4>
+                <h4 style="color:#00f5d4; margin-bottom:6px;">🔘 ボタン長押しゲーム (1秒:+${pointRates.hold}P)</h4>
                 <div style="font-size:1.5rem; color:#ffee00; margin:6px 0;" id="hold-time-disp">${holdSec} 秒</div>
                 <div style="font-size:0.9rem; color:#00f5d4; margin-bottom:8px;">獲得P: <span id="hold-earn-disp">${holdEarned}</span> P</div>
                 <button class="game-btn" id="hold-action-btn" style="background:#00f5d4; padding:15px;">押し続ける (離すと0秒にリセット)</button>
@@ -1969,7 +2100,7 @@
                     holdEarned = 0;
                     holdTimer = setInterval(() => {
                         holdSec++;
-                        let pts = 5;
+                        let pts = pointRates.hold;
                         holdEarned += pts;
                         addCurrentPt(pts);
                         renderPressHoldUI();
@@ -2048,7 +2179,7 @@
             let html = `
                 <div style="font-size:0.75rem; color:#aaa; margin-bottom:10px; text-align:center;">
                     🎪 イベント名: <b>${currentEvent ? currentEvent.title : 'なし'}</b><br>
-                    算出公式: [ ミニゲームP + 発言P(1回=10P) + 通話P(1分=20P) + ボーナス ]
+                    算出公式: [ ミニゲームP + 発言P(1回=${pointRates.speech}P) + 通話P(1分=${pointRates.call}P) + ボーナス ]
                 </div>
                 <div style="display:flex; flex-direction:column; gap:6px;">
             `;
@@ -2078,7 +2209,7 @@
             }
         }
         
-        /* 🌟 機能4: 発言回数・通話時間のポイント（P）加算機能 & 計算処理 */
+        /* 🌟 発言回数・通話時間のポイント（P）加算機能 & 計算処理 */
         function loadMemberBonusToCalc() {
             const targetId = document.getElementById('calc-target-member').value;
             const user = memberDatabase.find(m => m.id === targetId);
@@ -2096,9 +2227,9 @@
             const speechCount = Number(document.getElementById('calc-speech-count').value) || 0;
             const callMinutes = Number(document.getElementById('calc-call-minutes').value) || 0;
             
-            // 💬 発言回数1回につき10P、📞 通話時間1分につき20Pを加算
-            const speechPt = speechCount * 10;
-            const callPt = callMinutes * 20;
+            // 💬 発言回数・通話時間に応じた設定レートによるP加算
+            const speechPt = speechCount * pointRates.speech;
+            const callPt = callMinutes * pointRates.call;
             const subtotal = base + speechPt + callPt;
             
             const gacha = Number(document.getElementById('calc-gacha-bonus').value) || 0;
@@ -2164,7 +2295,45 @@
             if (calcSelect) calcSelect.innerHTML = selectHtml;
         }
         
-        /* 🌟 機能5: GAS経由の音源連携 & データ同期 */
+        /* 💎 管理画面での全ユーザーの💎と🪙の所持数管理機能 */
+        function renderAdminUserCurrencyList() {
+            const container = document.getElementById('admin-user-currency-container');
+            if (!container) return;
+            container.innerHTML = "";
+            memberDatabase.forEach(m => {
+                const row = document.createElement('div');
+                row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #333; gap:10px;";
+                row.innerHTML = `
+                    <div style="min-width:100px;">
+                        <div style="font-weight:bold; color:#fff;">${m.name}</div>
+                        <div style="font-size:0.7rem; color:#888;">ID: ${m.id}</div>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <div>
+                            <span style="font-size:0.7rem; color:#00f5d4;">💎ダイヤ</span>
+                            <input type="number" id="adm-gem-${m.id}" value="${m.gem || 0}" class="admin-input" style="margin:0; width:90px; padding:4px;" onchange="updateUserCurrencyDirect('${m.id}')">
+                        </div>
+                        <div>
+                            <span style="font-size:0.7rem; color:#ffee00;">🪙コイン</span>
+                            <input type="number" id="adm-coin-${m.id}" value="${m.coin || 0}" class="admin-input" style="margin:0; width:90px; padding:4px;" onchange="updateUserCurrencyDirect('${m.id}')">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+        function updateUserCurrencyDirect(userId) {
+            const user = memberDatabase.find(m => m.id === userId);
+            if (!user) return;
+            const newGem = Number(document.getElementById(`adm-gem-${userId}`).value) || 0;
+            const newCoin = Number(document.getElementById(`adm-coin-${userId}`).value) || 0;
+            user.gem = newGem;
+            user.coin = newCoin;
+            saveMemberDb();
+            updateUIUserStatus();
+        }
+        
+        /* GAS経由の音源連携 & データ同期 */
         async function saveAndSyncGasUrl() {
             const urlInput = document.getElementById('admin-gas-url-input').value.trim();
             GAS_WEB_APP_URL = urlInput;
@@ -2317,6 +2486,8 @@
             renderAdminGiftTargetCheckboxes();
             renderAdminHistoryManageList();
             renderAdminShopManageList();
+            renderAdminUserCurrencyList();
+            loadPointRatesToForm();
             populateAdminAlbumMemberSelect();
             populateAdminPresentMemberSelect();
             populateAdminSelects();
@@ -2788,7 +2959,7 @@
                 return;
             }
             if (isLoginLocked && inputId !== "A-24-11-9-a") {
-                alert("❌ 現在ログイン制限（メンテナンス中）につき、一般メンバーのログインはできません。");
+                alert("❌ メンテナンス中です。一般ユーザーのアクセスは制限されています。");
                 return;
             }
             const found = memberDatabase.find(m => m.id === inputId);
@@ -3011,7 +3182,7 @@
         function toggleLoginLock(checkbox) {
             isLoginLocked = checkbox.checked;
             localStorage.setItem('nexus_login_locked', isLoginLocked);
-            alert(isLoginLocked ? "🔒 ログイン制限を【有効】にしました。" : "🔓 解除しました。");
+            alert(isLoginLocked ? "🔒 メンテナンス中（一斉ログイン制限）を有効にしました。" : "🔓 解除しました。");
         }
         function toggleRankingLock(checkbox) {
             rankingLocked = checkbox.checked;
@@ -3438,7 +3609,6 @@
             if (!container) return;
             container.innerHTML = '';
             
-            // 🌟 イベント非開催時 (OFF / 未設定時) はイベント用背景画像等を自動非表示
             const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
             const isEventOff = !currentEvent || currentEvent.status === "OFF";
             const hasActiveEvent = currentEvent && (currentEvent.status === "開催中" || (currentEvent.status === "結果" && isNeo) || (currentEvent.status === "開催準備中" && isNeo));
