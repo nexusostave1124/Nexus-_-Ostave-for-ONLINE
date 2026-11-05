@@ -768,7 +768,7 @@
         <!-- 💖 管理者用: 交換所商品追加セクション (最大10個) -->
         <div class="admin-section" style="border-color:#00f5d4;">
             <h4 style="color:#00f5d4; border-left-color:#00f5d4;">💖 交換所 商品管理 (最大10個配置)</h4>
-            <p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">絵文字または画像URLを選び、必要な💎ジェム数を決めて交換所に並べます。</p>
+            <p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">絵文字またはGoogleドライブ画像を選び、必要な💎ジェム数を決めて交換所に並べます。</p>
             
             <label style="font-size:0.8rem; color:#aaa;">商品名:</label>
             <input type="text" id="admin-shop-item-name" class="admin-input" placeholder="例: スペシャル限定報酬">
@@ -776,7 +776,7 @@
             <label style="font-size:0.8rem; color:#aaa;">画像の種類:</label>
             <select id="admin-shop-img-type" class="admin-input" onchange="toggleShopImgInputType()">
                 <option value="emoji">絵文字 (例: 💎, 🎁, ⭐)</option>
-                <option value="drive">Googleドライブ画像 (選択)</option>
+                <option value="drive">Googleドライブ画像</option>
             </select>
             
             <div id="admin-shop-emoji-box">
@@ -785,7 +785,7 @@
             </div>
             
             <div id="admin-shop-drive-box" style="display:none;">
-                <label style="font-size:0.8rem; color:#aaa;">ドライブ画像選択:</label>
+                <label style="font-size:0.8rem; color:#aaa;">Googleドライブ画像選択:</label>
                 <select id="admin-shop-drive-select" class="admin-input"><option value="">(画像を選択)</option></select>
             </div>
             
@@ -1058,7 +1058,7 @@
                 <p style="margin-bottom:6px;"><b>・High & Low:</b> 1〜16の数字。お題より次が大きいか小さいか当てます。</p>
                 <p style="margin-bottom:6px;"><b>・Blackjack:</b> 21に近づけるゲーム。ドロー（引き分け）時は次回獲得Pが2倍になります。</p>
                 <p style="margin-bottom:6px;"><b>・ボタン連打:</b> ボタンを素早く連打してポイントを稼ぎます。</p>
-                <p style="margin-bottom:6px;"><b>・ストップウォッチ:</b> 表示されている秒数を基準に目標秒数にぴたっと止めると大量P！</p>
+                <p style="margin-bottom:6px;"><b>・ストップウォッチ:</b> 画面に表示されている秒数を基準に目標秒数にぴたっと止めると大量P！</p>
                 <p style="margin-bottom:6px;"><b>・スロット:</b> スタート時は1・2・3の並び。長押し連打対応で大当り＆STを目指せ！</p>
                 <p style="margin-bottom:6px;"><b>・ボタン長押し:</b> 押し続けた秒数に応じてP獲得。離すと0秒にリセットされます。</p>
                 <p><b>・Big or Small:</b> 1〜9の数字。5以上(BIG)か4以下(SMALL)か当てます。</p>
@@ -1264,10 +1264,14 @@
                 if (now >= start && now < end) {
                     if (ev.status === "開催準備中") targetStatus = "開催中";
                 } else if (now >= end) {
-                    if (ev.status === "開催中" || ev.status === "開催準備中" || ev.status === "結果") {
-                        targetStatus = "開催終了";
-                        if (currentEvent && currentEvent.id === ev.id) {
-                            forceStopMinigamesOnEnd();
+                    // 🌟 開催終了後1分経過したかどうかの判定 (end時刻 + 1分 = 60000ms)
+                    const endPlus1Min = new Date(end.getTime() + 60000);
+                    if (now >= endPlus1Min) {
+                        if (ev.status === "開催中" || ev.status === "開催準備中") {
+                            targetStatus = "開催終了";
+                            if (currentEvent && currentEvent.id === ev.id) {
+                                forceStopMinigamesOnEnd();
+                            }
                         }
                     }
                 }
@@ -1285,7 +1289,10 @@
                 if (now >= start && now < end) {
                     if (g.status === "開催準備中") targetStatus = "開催中";
                 } else if (now >= end) {
-                    if (g.status === "開催中" || g.status === "開催準備中") targetStatus = "終了";
+                    const endPlus1Min = new Date(end.getTime() + 60000);
+                    if (now >= endPlus1Min) {
+                        if (g.status === "開催中" || g.status === "開催準備中") targetStatus = "終了";
+                    }
                 }
                 if (targetStatus !== g.status) {
                     g.status = targetStatus;
@@ -1804,7 +1811,7 @@
             renderMashUI(`+${pts}P 獲得中！`);
         }
 
-        // ストップウォッチ (🌟 画面に表示されている秒数を使用して判定するよう修正)
+        // ストップウォッチ (🌟 画面に表示されている秒数を使用して判定)
         let swTarget = 5, swStart = 0, swTimer = null, currentElapsedDisplay = 0;
         function startStopwatchGame() {
             document.getElementById('minigame-game-screen').style.display = 'block';
@@ -1845,7 +1852,6 @@
                 btn.style.background = "#00f5d4";
                 btn.style.color = "#000";
                 
-                // 🌟 表示されている実際の数値 (currentElapsedDisplay) を使って判定
                 let diff = Math.abs(currentElapsedDisplay - swTarget);
                 let pts = 0;
                 if (diff <= 1.0) {
@@ -2282,8 +2288,8 @@
             }
         }
 
-        /* 💖 交換所機能関連ロジック */
-        function toggleShopImgType() {
+        /* 💖 交換所機能関連ロジック (🌟 交換所の画像選択を他の画像挿入と同じ仕様に変更) */
+        function toggleShopImgInputType() {
             const type = document.getElementById('admin-shop-img-type').value;
             document.getElementById('admin-shop-emoji-box').style.display = (type === 'emoji') ? 'block' : 'none';
             document.getElementById('admin-shop-drive-box').style.display = (type === 'drive') ? 'block' : 'none';
@@ -2303,7 +2309,7 @@
             } else {
                 imgVal = document.getElementById('admin-shop-drive-select').value;
                 if (!imgVal) {
-                    alert("画像を選択してください。");
+                    alert("Googleドライブ画像を選択してください。");
                     return;
                 }
             }
@@ -2403,7 +2409,6 @@
                 saveMemberDb();
                 updateUIUserStatus();
                 
-                // プレゼントBOXに自動付与
                 const giftObj = {
                     id: 'shop_reward_' + Date.now(),
                     title: `【交換所】${item.name}`,
@@ -3490,13 +3495,17 @@
                 alert("タイトルと本文を入力してください。");
                 return;
             }
+            // 🌟 お知らせ送信日時（何時何分）を自動記録
+            const now = new Date();
+            const timeFormatted = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
             const noticeObj = {
                 id: 'notice_' + Date.now(),
                 title: title,
                 text: text,
                 imgUrl: imgUrl,
                 active: true,
-                date: new Date().toLocaleDateString()
+                date: timeFormatted // 送信時刻を表示用に使用
             };
             globalNotices.unshift(noticeObj);
             localStorage.setItem(getGlobalNoticesKey(), JSON.stringify(globalNotices));
@@ -3505,7 +3514,7 @@
             updateUIUserStatus();
             renderNotices();
             renderAdminNoticeManageList();
-            alert("📢 お知らせを全体公開しました！");
+            alert(`📢 お知らせを全体公開しました！（送信時刻: ${timeFormatted}）`);
         }
         function toggleNoticeActive(id) {
             const notice = globalNotices.find(n => n.id === id);
@@ -3782,7 +3791,7 @@
                 const box = document.createElement('div');
                 box.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:12px; border-left:3px solid #00f5d4;";
                 box.innerHTML = `
-                    <div style="font-size:0.75rem; color:#888; margin-bottom:4px;">${notice.date}</div>
+                    <div style="font-size:0.75rem; color:#888; margin-bottom:4px;">🕒 送信時刻: ${notice.date}</div>
                     <div style="font-weight:bold; color:#00f5d4; font-size:1rem; margin-bottom:6px;">${notice.title}</div>
                     <div style="font-size:0.9rem; color:#ddd; white-space:pre-wrap; margin-bottom:8px;">${notice.text}</div>
                     ${notice.imgUrl ? `<img src="${notice.imgUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:8px;">` : ''}
@@ -3983,9 +3992,16 @@
             if (name === 'play') markAsViewed('play');
             if (name === 'gacha') markAsViewed('gacha');
 
-            // 🌟 全画面表示時も下のメニュー（bottom-nav）は消さない仕様に変更
+            // 🌟 全画面表示時も下のメニュー（bottom-nav）は反映されない（出さない/非表示のまま）を維持
             const bottomNav = document.getElementById('main-bottom-nav');
-            if (bottomNav) bottomNav.classList.remove('hide-menu');
+            if (bottomNav) {
+                const isFsOn = localStorage.getItem(getFullscreenSettingKey()) === 'true';
+                if (isFsOn && name === 'event') {
+                    bottomNav.classList.add('hide-menu');
+                } else {
+                    bottomNav.classList.remove('hide-menu');
+                }
+            }
 
             if (name === 'event') renderEventScreen();
             if (name === 'present') renderGifts();
