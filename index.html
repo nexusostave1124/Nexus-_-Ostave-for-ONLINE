@@ -755,7 +755,6 @@
             <div id="admin-event-minigames-checkboxes" style="background:#222; padding:10px; border-radius:6px; margin-bottom:10px; font-size:0.85rem;">
                 <!-- 動的生成 -->
             </div>
-
             <label style="font-size: 0.8rem; color: #aaa;">開始日時：</label>
             <input type="datetime-local" id="admin-event-start-input" class="admin-input" value="2026-11-30T18:00">
             <label style="font-size: 0.8rem; color: #aaa;">終了日時：</label>
@@ -1036,7 +1035,6 @@
         ];
         let currentGachaId = localStorage.getItem('nexus_current_gacha_id') || (gachaList[0] ? gachaList[0].id : 'g_1');
         let currentGachaConfig = gachaList.find(g => g.id === currentGachaId) || gachaList[0];
-
         function getUserAlbumKey(userId) { return 'nexus_album_' + (userId || (currentUser ? currentUser.id : 'guest')); }
         function getUserSlideshowKey(userId) { return 'nexus_slideshow_' + (userId || (currentUser ? currentUser.id : 'guest')); }
         function getUserGiftsKey() { return 'nexus_gifts_' + (currentUser ? currentUser.id : 'guest'); }
@@ -1057,7 +1055,6 @@
         let titleBgImages = JSON.parse(localStorage.getItem(getTitleBgKey())) || [
             { id: 'default_title_bg', url: 'https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/2984.png', name: 'デフォルト画像' }
         ];
-
         function toggleTitleMenu(e) {
             e.stopPropagation();
             document.getElementById('title-menu-dropdown').classList.toggle('active');
@@ -1162,7 +1159,6 @@
                 slides[current].classList.add('active');
             }, 4000);
         }
-
         /* ================= 🎪 イベント画面のレンダリング・ロジック ================= */
         function renderEventScreen() {
             const noEventModal = document.getElementById('event-no-event-modal');
@@ -1178,11 +1174,9 @@
             const navLabel = document.getElementById('nav-event-label');
             const actionBtnLabel = document.getElementById('event-action-btn-label');
             const actionBtnIcon = document.getElementById('event-action-btn-icon');
-
             if (navLabel) navLabel.innerText = currentEvent.type === "シーズンイベント" ? "シーズンイベント" : "イベント";
             if (actionBtnLabel) actionBtnLabel.innerText = "ミニゲーム";
             if (actionBtnIcon) actionBtnIcon.innerText = "🎮";
-
             const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
             if (currentEvent.status === "開催準備中" && !isNeo) {
                 if (noEventModal) noEventModal.style.display = "block";
@@ -1265,7 +1259,6 @@
         function handleEventActionButton() {
             openMinigameModal();
         }
-
         /* ================= 🎮 チェックボックス連動ミニゲームモーダル ================= */
         function openMinigameModal() {
             const modalTitle = document.getElementById('minigame-modal-title');
@@ -1282,7 +1275,6 @@
                 if (mg.slot) html += `<button class="game-btn" onclick="startSlotGame()">🎰 スロット (ST搭載)</button>`;
                 if (mg.presshold) html += `<button class="game-btn" onclick="startPressHoldGame()">🔘 ボタン長押しゲーム</button>`;
                 if (mg.bigsmall) html += `<button class="game-btn" onclick="startBigSmallGame()">🎲 Big or Small (1〜9)</button>`;
-
                 if (!html) {
                     html = `<p style="color:#aaa; text-align:center; font-size:0.85rem;">現在選択可能なミニゲームはありません。</p>`;
                 }
@@ -1295,7 +1287,6 @@
             document.getElementById('minigame-modal').classList.remove('active');
             renderEventScreen();
         }
-
         /* ================= 🃏 改良版ミニゲーム実装 ================= */
         // 1. High & Low (左: お題の数字, 右: 隠された数字。選択後右の数字が出てお題になる)
         let hlLeftNum = 8, hlRightNum = 5, hlStreak = 0;
@@ -1347,7 +1338,6 @@
                 renderHighLowUI(`ハズレ... 0P 右の数字は ${revealed} でした。`);
             }
         }
-
         // 2. Blackjack
         let bjPlayer = [], bjDealer = [], bjGameOver = false;
         function startBlackjackGame() {
@@ -1416,7 +1406,6 @@
                 renderBjUI(`敗北... 0P ディーラー: ${dScore}`);
             }
         }
-
         // 3. ボタン連打
         let mashCount = 0, mashTotalEarned = 0;
         function startMashGame() {
@@ -1441,7 +1430,6 @@
             addCurrentPt(pts);
             renderMashUI(`+${pts}P 獲得中！`);
         }
-
         // 4. ストップウォッチ
         let swTarget = 5, swStart = 0, swTimer = null;
         function startStopwatchGame() {
@@ -1494,13 +1482,11 @@
                 if (resEl) resEl.innerHTML = `結果: ${finalElapsed.toFixed(2)}秒 (誤差: ${diff.toFixed(2)}秒)<br><span style="color:${pts >= 0 ? '#00f5d4' : '#ff334b'};">${pts >= 0 ? '+' : ''}${pts}P</span>`;
             }
         }
-
         // 5. スロット (ST搭載・回転中彩色・確率変動対応)
         let slotAnimating = false;
         let slotSpinsSinceLastHit = 0;
         let slotInST = false;
         let slotRemainingSTSpins = 0;
-
         function getColoredDigitHtml(num) {
             let color = "#fff";
             let n = Number(num);
@@ -1509,7 +1495,6 @@
             else if (n === 2 || n === 4 || n === 6 || n === 8) color = "#00bfff"; // 青色
             return `<span style="color: ${color};">${num}</span>`;
         }
-
         function startSlotGame() {
             document.getElementById('minigame-game-screen').style.display = 'block';
             renderSlotUI("7 - 7 - 7", "レバーを押してスピン！");
@@ -1521,7 +1506,6 @@
             } else {
                 subInfoStr = `前回の当りからの回転数: ${slotSpinsSinceLastHit} 回転`;
             }
-
             document.getElementById('minigame-game-screen').innerHTML = `
                 <h4 style="color:#00f5d4; margin-bottom:4px;">🎰 スロット (ST搭載)</h4>
                 <div style="font-size:0.75rem; color:#ffee00; margin-bottom:10px;">${subInfoStr}</div>
@@ -1539,7 +1523,6 @@
             } else {
                 slotSpinsSinceLastHit++;
             }
-
             let counter = 0;
             let animInterval = setInterval(() => {
                 let r1 = Math.floor(Math.random() * 9) + 1;
@@ -1562,7 +1545,6 @@
             let winRate = slotInST ? (1 / 7) : (1 / 34);
             const isWin = Math.random() < winRate;
             let n1, n2, n3;
-
             if (isWin) {
                 let lucky = [1, 3, 5, 7, 9][Math.floor(Math.random() * 5)];
                 n1 = n2 = n3 = lucky;
@@ -1572,7 +1554,6 @@
                 n3 = Math.floor(Math.random() * 9) + 1;
                 if (n1 === n2 && n2 === n3) n3 = (n3 % 9) + 1;
             }
-
             let colorName = "青色";
             let entersST = false;
             if (n1 === n2 && n2 === n3) {
@@ -1586,12 +1567,10 @@
                     colorName = "青色";
                 }
             }
-
             const disp = document.getElementById('slot-disp');
             if (disp) {
                 disp.innerHTML = `${getColoredDigitHtml(n1)} - ${getColoredDigitHtml(n2)} - ${getColoredDigitHtml(n3)}`;
             }
-
             let pts = 0;
             let msg = "";
             if (n1 === n2 && n2 === n3) {
@@ -1623,7 +1602,6 @@
                 if (subEl) subEl.innerText = subInfoStr;
             }, 100);
         }
-
         // 6. ボタン長押しゲーム (離した場合0秒に戻る、獲得P確認)
         let holdTimer = null, holdSec = 0, holdEarned = 0;
         function startPressHoldGame() {
@@ -1704,7 +1682,6 @@
                 }
             }
         }
-
         // 7. Big or Small (1〜9)
         let bsLeftNum = 5, bsRightNum = 3;
         function startBigSmallGame() {
@@ -1750,7 +1727,6 @@
                 renderBigSmallUI(`ハズレ... 0P 右の数字は ${revealed} でした。`);
             }
         }
-
         function addCurrentPt(pts) {
             if (!currentUser) return;
             let userDb = memberDatabase.find(m => m.id === currentUser.id);
@@ -1759,7 +1735,6 @@
                 saveMemberDb();
             }
         }
-
         /* ================= 🎪 イベント・ガチャの複数開催と長押し切替 ================= */
         let eventLongPressTimer = null;
         function initEventLongPress(e) {
@@ -1791,7 +1766,6 @@
             updateUIUserStatus();
             alert(`🎪 イベントを切り替えました:\n${currentEvent.title}`);
         }
-
         let gachaLongPressTimer = null;
         function initGachaLongPress(e) {
             gachaLongPressTimer = setTimeout(() => {
@@ -1822,7 +1796,6 @@
             updateUIUserStatus();
             alert(`🎂 ガチャを切り替えました:\n${currentGachaConfig.title}`);
         }
-
         /* 🏆 イベントランキング専用モーダル (運営者除外対応) */
         function openRankingModal() {
             const sorted = [...memberDatabase].filter(m => m.id !== "A-24-11-9-a").sort((a,b) => (b.pt || 0) - (a.pt || 0));
@@ -1863,7 +1836,6 @@
                 document.getElementById('ranking-modal').classList.remove('active');
             }
         }
-
         /* 🧮 計算機ロジック (小数以下繰上げ) */
         function loadMemberBonusToCalc() {
             const targetId = document.getElementById('calc-target-member').value;
@@ -1937,7 +1909,6 @@
             });
             if (calcSelect) calcSelect.innerHTML = selectHtml;
         }
-
         async function saveAndSyncGasUrl() {
             const urlInput = document.getElementById('admin-gas-url-input').value.trim();
             GAS_WEB_APP_URL = urlInput;
@@ -1967,7 +1938,6 @@
                 alert("⚠️ CORS制限またはURLエラーのため直接同期できませんでした。ローカルストレージで動作継続します。");
             }
         }
-
         /* 🛡️ 管理画面のイベント・ガチャ複数管理 */
         function setupAdminManageScreen() {
             renderAdminNoticeManageList();
@@ -1987,7 +1957,6 @@
             loadCurrentEventToAdminForm();
             loadCurrentGachaToAdminForm();
         }
-
         function populateAdminEventSwitcher() {
             const sel = document.getElementById('admin-event-switcher-select');
             if (!sel) return;
@@ -2061,7 +2030,6 @@
                 presshold: document.getElementById('mg-presshold').checked,
                 bigsmall: document.getElementById('mg-bigsmall').checked
             };
-
             const idx = eventsList.findIndex(e => e.id === currentEvent.id);
             if (idx !== -1) eventsList[idx] = currentEvent;
             localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
@@ -2121,7 +2089,6 @@
                 alert("🗑️ イベントを削除しヒストリーへ移行しました。");
             }
         }
-
         // ガチャ複数開催管理
         function populateAdminGachaSwitcher() {
             const sel = document.getElementById('admin-gacha-switcher-select');
@@ -2262,7 +2229,6 @@
             }
             applyCustomAppIcon();
         }
-
         function renderGachaScreen() {
             const container = document.getElementById('gacha-content-container');
             if (!container) return;
@@ -2308,7 +2274,6 @@
                 </div>
             `;
         }
-
         function handleStatusClick() {
             if (currentUser) {
                 if (confirm("ログアウトしますか？")) {
