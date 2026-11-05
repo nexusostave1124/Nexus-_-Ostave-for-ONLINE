@@ -785,7 +785,16 @@
                 <button class="close-btn" onclick="closeManageScreen()">閉じる</button>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント設定・ボーナス値設定・P算出計算機・Googleドライブ画像適用に対応。</p>
+        <p style="font-size: 0.8rem; color: #00f5d4; margin-bottom: 12px;">※イベント設定・GASスプレッドシート連携・複数人へのプレゼント送信に対応。</p>
+
+        <!-- 🔗 スプレッドシート & GAS 連携設定 -->
+        <div class="admin-section" style="border-color:#3388ff;">
+            <h4 style="color:#3388ff; border-left-color:#3388ff;">🔗 Googleスプレッドシート & GAS 連携</h4>
+            <p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">GASのウェブアプリURLを入力してスプレッドシートとデータを同期できます。</p>
+            <label style="font-size:0.8rem; color:#aaa;">GASウェブアプリ URL:</label>
+            <input type="text" id="admin-gas-url-input" class="admin-input" placeholder="https://script.google.com/macros/s/.../exec">
+            <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="saveAndSyncGasUrl()">🔄 スプレッドシートと同期する</button>
+        </div>
 
         <!-- 🎪 イベント管理＆ボーナス値設定＆P算出計算機 -->
         <div class="admin-section">
@@ -811,7 +820,7 @@
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
                 <option value="終了">終了 (確認可能)</option>
             </select>
-            <label style="font-size: 0.8rem; color: #aaa;">イベントバナー・背景（Googleドライブ選択）：</label>
+            <label style="font-size: 0.8rem; color: #aaa;">イベントバナー・背景（Googleドライブ選択 / Windows対応）：</label>
             <select id="admin-event-img-select" class="admin-input"><option value="">(画像なし)</option></select>
             
             <label style="font-size: 0.8rem; color: #ffee00; margin-top:8px; display:block;">右下の自由配置イベントロゴ（Googleドライブ選択）：</label>
@@ -821,7 +830,7 @@
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteEventToHistory()">🗑️ イベントを終了してヒストリーにまとめる</button>
         </div>
 
-        <!-- 🧮 イベントP算出計算機（ご指定の数式＆切上げ処理） -->
+        <!-- 🧮 イベントP算出計算機 -->
         <div class="admin-section" style="border-color: #00f5d4;">
             <h4 style="color: #00f5d4; border-left-color: #00f5d4;">🧮 イベントP算出・ボーナス手入力エディタ</h4>
             <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 8px;">公式: [ 獲得P + ガチャボーナス(%) + イラストボーナス(%) + ボーナス(%) ] (小数以下繰上げ)</p>
@@ -934,9 +943,12 @@
             <div id="admin-gacha-lineup-by-rarity" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
 
+        <!-- 🎁 プレゼント・個別／複数／全員一斉送信管理 -->
         <div class="admin-section">
-            <h4>🎁 プレゼント・一斉配布管理</h4>
-            <select id="admin-gift-target" class="admin-input"><option value="ALL">🌐 全メンバー一斉送信</option></select>
+            <h4>🎁 プレゼント・一斉または特定メンバー（複数選択可）への送信</h4>
+            <label style="font-size:0.8rem; color:#aaa;">送信先（複数選択チェックボックス）：</label>
+            <div id="admin-gift-target-checkboxes" style="background:#222; padding:8px; border-radius:6px; max-height:120px; overflow-y:auto; margin-bottom:10px; font-size:0.8rem;"></div>
+
             <input type="text" id="admin-gift-title" class="admin-input" placeholder="記念報酬">
             <input type="number" id="admin-gift-gem" class="admin-input" value="1000">
             <input type="number" id="admin-gift-coin" class="admin-input" value="500">
@@ -957,7 +969,7 @@
         </div>
     </div>
 
-    <!-- 🃏 ミニゲームモーダル (シーズンイベント用: High & Low または ボタン連打) -->
+    <!-- 🃏 ミニゲームモーダル -->
     <div id="minigame-modal" class="modal-overlay" onclick="closeMinigameModal(event)">
         <div class="menu-dialog" style="max-width:360px; text-align:center;" onclick="event.stopPropagation()">
             <h3 style="color:#00f5d4; margin-bottom:10px;">🃏 シーズンイベント P稼ぎ</h3>
@@ -983,7 +995,7 @@
         </div>
     </div>
 
-    <!-- 💬 ストーリーイベント協力モーダル (LINE風発言・通話参加など) -->
+    <!-- 💬 ストーリーイベント協力モーダル -->
     <div id="story-event-modal" class="modal-overlay" onclick="closeStoryEventModal(event)">
         <div class="menu-dialog" style="max-width:360px;" onclick="event.stopPropagation()">
             <h3 style="color:#00f5d4; margin-bottom:8px; text-align:center;">💬 ストーリーイベント (協力)</h3>
@@ -998,6 +1010,7 @@
 
     <script>
         const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
+        let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "";
 
         const GACHA_RATES = {
             "ネオフェス限定": { "★6": 0.4, "★5": 6.6, "★4": 23, "★3": 30, "★2": 40 },
@@ -1279,12 +1292,10 @@
             alert(`❓ 【${currentEvent.title} (${currentEvent.type})】ヘルプ\n\n・算出方法: [獲得P + ガチャボーナス(%) + イラストボーナス(%) + ボーナス(%)] (小数以下繰上げ)\n・シーズンイベントはミニゲームでP稼ぎ、ストーリーイベントはLINE発言や通話参加等で協力してPを獲得！\n・期間: ${formatDateStr(currentEvent.startDate)} 〜 ${formatDateStr(currentEvent.endDate)}`);
         }
 
-        // 「イベント」ボタンを押したときの動作（シーズン＝ミニゲーム、ストーリー＝協力案内）
         function handleEventActionButton() {
             if (currentEvent.type === "ストーリーイベント") {
                 document.getElementById('story-event-modal').classList.add('active');
             } else {
-                // シーズンイベント等の場合はHigh&Lowや連打ミニゲームを開く
                 openMinigameModal();
             }
         }
@@ -1293,7 +1304,8 @@
         function openMinigameModal() {
             document.getElementById('minigame-modal').classList.add('active');
             currentCardVal = Math.floor(Math.random() * 12) + 1;
-            document.getElementById('hl-card-display.innerText') = "♠ " + currentCardVal;
+            const cardDisplay = document.getElementById('hl-card-display');
+            if (cardDisplay) cardDisplay.innerText = "♠ " + currentCardVal;
         }
         function closeMinigameModal() {
             document.getElementById('minigame-modal').classList.remove('active');
@@ -1317,14 +1329,16 @@
                 }
             }
             currentCardVal = nextVal;
-            document.getElementById('hl-card-display').innerText = "♠ " + currentCardVal;
+            const cardDisplay = document.getElementById('hl-card-display');
+            if (cardDisplay) cardDisplay.innerText = "♠ " + currentCardVal;
             renderEventScreen();
         }
 
         let mashClicks = 0;
         function mashButton() {
             mashClicks++;
-            document.getElementById('mash-count').innerText = mashClicks + " 回";
+            const mashCount = document.getElementById('mash-count');
+            if (mashCount) mashCount.innerText = mashClicks + " 回";
             if (mashClicks % 10 === 0 && currentUser) {
                 let userDb = memberDatabase.find(m => m.id === currentUser.id);
                 if (userDb) {
@@ -1349,7 +1363,7 @@
             alert(rankText);
         }
 
-        /* 🧮 算出方法計算機ロジック (小数以下繰上げ) */
+        /* 🧮 計算機ロジック (小数以下繰上げ) */
         function loadMemberBonusToCalc() {
             const targetId = document.getElementById('calc-target-member').value;
             const user = memberDatabase.find(m => m.id === targetId);
@@ -1368,8 +1382,6 @@
             const illust = Number(document.getElementById('calc-illust-bonus').value) || 0;
             const extra = Number(document.getElementById('calc-extra-bonus').value) || 0;
 
-            // 計算式: 獲得P + ガチャボーナス(%) + イラストボーナス(%) + ボーナス(%)
-            // ※ここではボーナス％が獲得Pに対して乗算されるか加算されるか、または単純な合計％ボーナスとして計算
             const totalPercent = 1 + ((gacha + illust + extra) / 100);
             const rawTotal = base * totalPercent;
             const finalPt = Math.ceil(rawTotal); // 小数以下全て繰上げ
@@ -1433,6 +1445,39 @@
                 container.appendChild(row);
             });
             if (calcSelect) calcSelect.innerHTML = selectHtml;
+        }
+
+        /* 🔗 GAS連携・スプレッドシート同期 */
+        async function saveAndSyncGasUrl() {
+            const urlInput = document.getElementById('admin-gas-url-input').value.trim();
+            GAS_WEB_APP_URL = urlInput;
+            localStorage.setItem('nexus_gas_url', GAS_WEB_APP_URL);
+
+            if (!GAS_WEB_APP_URL) {
+                alert("GASのウェブアプリURLを入力してください。");
+                return;
+            }
+
+            try {
+                alert("🔄 スプレッドシート（GAS）と通信中...");
+                const res = await fetch(GAS_WEB_APP_URL);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.members) {
+                        memberDatabase = data.members;
+                        saveMemberDb();
+                        renderAdminMemberPointsList();
+                        updateUIUserStatus();
+                        alert("✅ スプレッドシートとのデータ同期に成功しました！");
+                    } else {
+                        alert("✅ GAS接続成功しましたが、データ形式を確認してください。");
+                    }
+                } else {
+                    alert("❌ 接続に失敗しました。URLを確認してください。");
+                }
+            } catch (e) {
+                alert("⚠️ CORS制限またはURLエラーのため直接同期できませんでした（GAS側の doGet/doPost 設定をご確認ください）。ローカルストレージで動作継続します。");
+            }
         }
 
         function adminCreateEvent() {
@@ -1684,9 +1729,12 @@
             renderAdminMemberPointsList();
             renderAdminUserRestrictionList();
             renderAdminReportsList();
+            renderAdminGiftTargetCheckboxes();
             populateAdminAlbumMemberSelect();
             populateAdminSelects();
             document.getElementById('admin-login-lock-toggle').checked = isLoginLocked;
+            const gasUrlInput = document.getElementById('admin-gas-url-input');
+            if (gasUrlInput) gasUrlInput.value = GAS_WEB_APP_URL;
         }
 
         function closeManageScreen() {
@@ -1998,6 +2046,30 @@
             });
         }
 
+        function renderAdminGiftTargetCheckboxes() {
+            const container = document.getElementById('admin-gift-target-checkboxes');
+            if (!container) return;
+            let html = `
+                <label style="display:flex; align-items:center; gap:6px; margin-bottom:4px; cursor:pointer; color:#00f5d4; font-weight:bold;">
+                    <input type="checkbox" id="gift-target-all" onchange="toggleAllGiftTargets(this)"> 🌐 全メンバー一斉送信
+                </label>
+                <hr style="border:0; border-top:1px solid #444; margin:4px 0;">
+            `;
+            memberDatabase.forEach(m => {
+                html += `
+                    <label style="display:flex; align-items:center; gap:6px; margin-bottom:2px; cursor:pointer;">
+                        <input type="checkbox" class="gift-target-chk" value="${m.id}"> ${m.name} (${m.id})
+                    </label>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function toggleAllGiftTargets(masterChk) {
+            const chks = document.querySelectorAll('.gift-target-chk');
+            chks.forEach(chk => chk.checked = masterChk.checked);
+        }
+
         function renderAdminGachaLineupByRarity() {
             const container = document.getElementById('admin-gacha-lineup-by-rarity');
             if (!container) return;
@@ -2024,8 +2096,8 @@
             });
         }
 
+        /* 🎁 複数または全員へのプレゼント送信機能 */
         function adminSendGift() {
-            const targetId = document.getElementById('admin-gift-target').value;
             const title = document.getElementById('admin-gift-title').value;
             const gem = Number(document.getElementById('admin-gift-gem').value) || 0;
             const coin = Number(document.getElementById('admin-gift-coin').value) || 0;
@@ -2046,15 +2118,24 @@
                 date: new Date().toLocaleDateString()
             };
 
-            if (targetId === "ALL") {
+            const allChecked = document.getElementById('gift-target-all').checked;
+            const selectedChks = document.querySelectorAll('.gift-target-chk:checked');
+
+            if (allChecked) {
                 globalGifts.push(giftObj);
                 localStorage.setItem(getGlobalGiftsKey(), JSON.stringify(globalGifts));
                 alert(`📤 全メンバーのプレゼントBOXに一斉配信しました！`);
+            } else if (selectedChks.length > 0) {
+                selectedChks.forEach(chk => {
+                    const targetId = chk.value;
+                    let targetGifts = JSON.parse(localStorage.getItem('nexus_gifts_' + targetId)) || [];
+                    targetGifts.push(giftObj);
+                    localStorage.setItem('nexus_gifts_' + targetId, JSON.stringify(targetGifts));
+                });
+                alert(`📤 選択された ${selectedChks.length} 名のメンバー宛にプレゼントを送信しました！`);
             } else {
-                let targetGifts = JSON.parse(localStorage.getItem('nexus_gifts_' + targetId)) || [];
-                targetGifts.push(giftObj);
-                localStorage.setItem('nexus_gifts_' + targetId, JSON.stringify(targetGifts));
-                alert(`📤 メンバー [${targetId}] 宛にプレゼントを送信しました！`);
+                alert("送信先（全員または特定メンバー）を選択してください。");
+                return;
             }
 
             renderAdminGiftManageList();
@@ -2119,9 +2200,10 @@
             });
         }
 
+        /* 🌐 Windows / スマホ / タブレット全対応のGoogleドライブ＆マスター画像取得 */
         async function fetchDriveMasterData() {
             try {
-                const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime());
+                const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime(), { mode: 'cors' });
                 if (!response.ok) return;
                 const fetchedData = await response.json();
                 
@@ -2148,7 +2230,7 @@
                 renderAlbum();
                 renderHistory();
             } catch (e) {
-                console.log("ドライブマスターデータの取得スキップ");
+                console.log("ドライブマスターデータの取得（Windows/クロスドメイン環境対応フォールバック）");
             }
         }
 
@@ -2159,9 +2241,8 @@
             const noticeSelect = document.getElementById('admin-notice-img-select');
             const eventImgSelect = document.getElementById('admin-event-img-select');
             const eventLogoSelect = document.getElementById('admin-event-logo-select');
-            const targetSelect = document.getElementById('admin-gift-target');
             const titleBgSelect = document.getElementById('admin-title-bg-select');
-            if (!gachaSelect || !giftSelect || !noticeSelect || !targetSelect || !eventImgSelect || !titleBgSelect || !gachaBannerSelect || !eventLogoSelect) return;
+            if (!gachaSelect || !giftSelect || !noticeSelect || !eventImgSelect || !titleBgSelect || !gachaBannerSelect || !eventLogoSelect) return;
 
             let optionsHtml = `<option value="">(選択してください)</option>`;
             masterDriveImages.forEach(img => {
@@ -2176,11 +2257,6 @@
             eventLogoSelect.innerHTML = `<option value="">(ロゴなし)</option>` + optionsHtml;
             titleBgSelect.innerHTML = optionsHtml;
 
-            let targetHtml = `<option value="ALL">🌐 全メンバー一斉送信</option>`;
-            memberDatabase.forEach(m => {
-                targetHtml += `<option value="${m.id}">${m.name} (ID: ${m.id})</option>`;
-            });
-            targetSelect.innerHTML = targetHtml;
             renderAdminTitleBgList();
             renderAdminNoticeManageList();
             renderAdminGiftManageList();
@@ -2188,6 +2264,7 @@
             renderAdminMemberPointsList();
             renderAdminUserRestrictionList();
             renderAdminReportsList();
+            renderAdminGiftTargetCheckboxes();
             populateAdminAlbumMemberSelect();
         }
 
