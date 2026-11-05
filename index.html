@@ -465,7 +465,7 @@
 </head>
 <body>
 
-   <!-- ================= 🌟 タイトル画面 ================= -->
+    <!-- ================= 🌟 タイトル画面 ================= -->
     <div id="title-screen">
         <div class="title-bg-slideshow" id="title-bg-slideshow-container"></div>
         <div class="title-overlay-top"></div>
@@ -1010,16 +1010,30 @@
             <button class="close-btn" onclick="closeEventHelpModal()" style="width:100%;">閉じる</button>
         </div>
     </div>
-<!-- 🃏 ミニゲームモーダル（シーズン / ストーリー対応） -->
+
+    <!-- 🃏 ミニゲームモーダル -->
     <div id="minigame-modal" class="modal-overlay" onclick="closeMinigameModal(event)">
-        <div class="menu-dialog" style="max-width:380px; max-height:85vh; overflow-y:auto;" onclick="event.stopPropagation()">
-            <h3 style="color:#00f5d4; margin-bottom:10px; text-align:center;" id="minigame-modal-title">🎮 ミニゲーム広場</h3>
-            <div id="minigame-menu-container">
-                <p style="font-size:0.85rem; color:#ccc; margin-bottom:12px; text-align:center;">挑戦するミニゲームを選んでね！</p>
-                <div id="minigame-list-buttons" style="display:flex; flex-direction:column; gap:8px;"></div>
+        <div class="menu-dialog" style="max-width:360px; text-align:center;" onclick="event.stopPropagation()">
+            <h3 style="color:#00f5d4; margin-bottom:10px;">🃏 イベント P稼ぎ</h3>
+            <p id="minigame-desc" style="font-size:0.85rem; color:#ccc; margin-bottom:15px;">ミニゲームを遊んでイベントPを稼ごう！</p>
+            
+            <div id="highlow-container" style="background:#222; padding:15px; border-radius:10px; margin-bottom:15px;">
+                <div style="font-size:0.9rem; color:#ffee00; margin-bottom:8px;">トランプ High & Low</div>
+                <div style="font-size:2rem; font-weight:bold; margin-bottom:10px;" id="hl-card-display">♠ 7</div>
+                <p style="font-size:0.75rem; color:#aaa; margin-bottom:10px;">次のカードは今より「高い」か「低い」か？</p>
+                <div style="display:flex; gap:10px; justify-content:center;">
+                    <button onclick="playHighLow('HIGH')" style="background:#00f5d4; color:#000; border:none; padding:8px 20px; font-weight:bold; border-radius:6px; cursor:pointer;">📈 HIGH</button>
+                    <button onclick="playHighLow('LOW')" style="background:#ff334b; color:#fff; border:none; padding:8px 20px; font-weight:bold; border-radius:6px; cursor:pointer;">📉 LOW</button>
+                </div>
             </div>
-            <div id="minigame-game-screen" style="display:none; background:#222; padding:15px; border-radius:10px; margin-top:10px;"></div>
-            <button class="close-btn" onclick="closeMinigameModal()" style="width:100%; margin-top:15px;">閉じる</button>
+
+            <div id="mash-container" style="background:#222; padding:15px; border-radius:10px; margin-bottom:15px;">
+                <div style="font-size:0.9rem; color:#ffee00; margin-bottom:8px;">🔥 5秒間ボタン連打チャレンジ</div>
+                <div style="font-size:1.5rem; font-weight:bold; margin-bottom:8px;" id="mash-count">0 回</div>
+                <button onclick="mashButton()" style="background:#ff9900; color:#000; border:none; padding:12px 30px; font-size:1rem; font-weight:bold; border-radius:8px; cursor:pointer; width:100%;">連打！</button>
+            </div>
+
+            <button class="close-btn" onclick="closeMinigameModal()" style="width:100%;">閉じる (獲得Pを保存)</button>
         </div>
     </div>
 
@@ -1083,7 +1097,7 @@
         function getGlobalReportsKey() { return 'nexus_global_reports'; }
         function getEventHistoryKey() { return 'nexus_event_history'; }
         function getTitleBgKey() { return 'nexus_title_bg_images'; }
-        
+
         let userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
         let userSlideshowIds = JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [];
         let userGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
@@ -1273,7 +1287,7 @@
             if (periodEl) {
                 const sStr = formatDateStr(currentEvent.startDate).replace(/-/g, '.');
                 const eStr = formatDateStr(currentEvent.endDate).replace(/-/g, '.');
-                periodEl.innerText = `sStr〜{eStr}`;
+                periodEl.innerText = `${sStr}〜${eStr}`;
             }
 
             if (bannerBox) {
@@ -1414,7 +1428,7 @@
                 html += `
                     <div style="background:#222; padding:8px 12px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid ${rankColor}; ${isMe ? 'background:rgba(0,245,212,0.15);' : ''}">
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="font-weight:bold; font-size:1rem; color:rankColor;min-width:30px;">#{idx + 1}</span>
+                            <span style="font-weight:bold; font-size:1rem; color:${rankColor}; min-width:30px;">#${idx + 1}</span>
                             <div>
                                 <div style="font-weight:bold; font-size:0.9rem; color:#fff;">${m.name} ${isMe ? '<span style="color:#00f5d4; font-size:0.75rem;">(あなた)</span>' : ''}</div>
                                 <div style="font-size:0.7rem; color:#888;">ID: ${m.id}</div>
@@ -1504,13 +1518,13 @@
 
             memberDatabase.forEach(m => {
                 const isNeo = m.id === "A-24-11-9-a";
-                selectHtml += `<option value="m.id">{m.name} (${m.id})</option>`;
+                selectHtml += `<option value="${m.id}">${m.name} (${m.id})</option>`;
                 const row = document.createElement('div');
                 row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #333;";
                 row.innerHTML = `
                     <span>👤 ${m.name} (ID: ${m.id})</span>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="color:isNeo?'#888':'#ffee00';font-weight:bold;">{m.pt || 0} P</span>
+                        <span style="color:${isNeo ? '#888' : '#ffee00'}; font-weight:bold;">${m.pt || 0} P</span>
                         <button onclick="adminChangeUserPt('${m.id}')" style="background:#00f5d4; color:#000; border:none; padding:2px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem;">直接P変更</button>
                     </div>
                 `;
@@ -1610,7 +1624,7 @@
                     archivedDate: new Date().toLocaleDateString()
                 });
                 localStorage.setItem(getEventHistoryKey(), JSON.stringify(eventHistory));
-                
+
                 currentEvent = {
                     title: "次回のイベント準備中",
                     type: "シーズンイベント",
@@ -1643,10 +1657,12 @@
                 alert("すでに登録されている画像です。");
                 return;
             }
-            titleBgImages.push({ id: 'bg_' + Date.now(), url: url, name: name });
+
+            titleBgImages.push({ id: 'title_bg_' + Date.now(), url: url, name: name });
             localStorage.setItem(getTitleBgKey(), JSON.stringify(titleBgImages));
             renderAdminTitleBgList();
-            alert("🖼️ タイトル画面のスライドショー背景に追加しました！");
+            initTitleSlideshow();
+            alert("🖼️ タイトル背景に追加しました！");
         }
 
         function adminRemoveTitleBg(id) {
@@ -1668,7 +1684,7 @@
             titleBgImages.forEach(img => {
                 const row = document.createElement('div');
                 row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#222; padding:6px; border-radius:6px; margin-bottom:4px;";
-                row.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;">img.name</span><buttononclick="adminRemoveTitleBg('{img.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">削除</button>`;
+                row.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;">${img.name}</span><button onclick="adminRemoveTitleBg('${img.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">削除</button>`;
                 listEl.appendChild(row);
             });
         }
@@ -1701,7 +1717,7 @@
                 ${currentGachaConfig.bannerUrl ? `<img src="${currentGachaConfig.bannerUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:10px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.2);">` : ''}
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
                     <span style="background:#ff9900; color:#000; font-size:0.7rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.type}</span>
-                    <span style="background:statusColor;color:#000;font-size:0.65rem;font-weight:bold;padding:2px8px;border-radius:4px;">{currentGachaConfig.status}</span>
+                    <span style="background:${statusColor}; color:#000; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${currentGachaConfig.status}</span>
                 </div>
                 <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 12px;">期間: ${formatDateStr(currentGachaConfig.startDate)} 〜 ${formatDateStr(currentGachaConfig.endDate)}</div>
                 
@@ -1717,7 +1733,7 @@
                             <tr><th>レア</th><th>★6</th><th>★5</th><th>★4</th><th>★3</th><th>★2</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>currentGachaConfig.type</td><td>{rates["★6"]}%</td><td>rates["★5"]%</td><td>{rates["★4"]}%</td><td>rates["★3"]%</td><td>{rates["★2"]}%</td></tr>
+                            <tr><td>${currentGachaConfig.type}</td><td>${rates["★6"]}%</td><td>${rates["★5"]}%</td><td>${rates["★4"]}%</td><td>${rates["★3"]}%</td><td>${rates["★2"]}%</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -1931,7 +1947,7 @@
             if (!selectEl) return;
             let html = `<option value="">(メンバーを選択してください)</option>`;
             memberDatabase.forEach(m => {
-                html += `<option value="m.id">{m.name} (ID: ${m.id})</option>`;
+                html += `<option value="${m.id}">${m.name} (ID: ${m.id})</option>`;
             });
             selectEl.innerHTML = html;
         }
@@ -1962,7 +1978,7 @@
                     <div style="background:#222; border:1px solid #444; border-radius:8px; overflow:hidden; padding:6px;">
                         <img src="${img.url}" style="width:100%; height:90px; object-fit:cover; border-radius:6px; margin-bottom:4px;">
                         <div style="font-size:0.75rem; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px;">${img.name}</div>
-                        <button onclick="adminDeleteMemberAlbumItem('targetId','{img.id}')" style="width:100%; background:#ff334b; color:#fff; border:none; padding:4px; border-radius:4px; font-weight:bold; font-size:0.7rem; cursor:pointer;">削除する</button>
+                        <button onclick="adminDeleteMemberAlbumItem('${targetId}', '${img.id}')" style="width:100%; background:#ff334b; color:#fff; border:none; padding:4px; border-radius:4px; font-weight:bold; font-size:0.7rem; cursor:pointer;">削除する</button>
                     </div>
                 `;
             });
@@ -1995,7 +2011,7 @@
         function toggleIndividualUserRestriction(userId, checkbox) {
             userRestrictionMap[userId] = checkbox.checked;
             localStorage.setItem('nexus_restricted_users', JSON.stringify(userRestrictionMap));
-            alert(checkbox.checked ? `🚫 [userId]のアクセスを【制限】しました。`:`🔓[{userId}] の制限を【解除】しました。`);
+            alert(checkbox.checked ? `🚫 [${userId}] のアクセスを【制限】しました。` : `🔓 [${userId}] の制限を【解除】しました。`);
         }
 
         function renderAdminUserRestrictionList() {
@@ -2008,9 +2024,9 @@
                 const row = document.createElement('div');
                 row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #333;";
                 row.innerHTML = `
-                    <span>👤 m.name({m.id})</span>
+                    <span>👤 ${m.name} (${m.id})</span>
                     <label style="font-size:0.75rem; color:${isRestricted ? '#ff334b' : '#00f5d4'}; cursor:pointer;">
-                        <input type="checkbox" isRestricted?'checked':''onchange="toggleIndividualUserRestriction('{m.id}', this)"> アクセス制限
+                        <input type="checkbox" ${isRestricted ? 'checked' : ''} onchange="toggleIndividualUserRestriction('${m.id}', this)"> アクセス制限
                     </label>
                 `;
                 container.appendChild(row);
@@ -2141,7 +2157,7 @@
                 row.innerHTML = `
                     <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px;">${gift.title}</span>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <button onclick="toggleGiftActive('gift.id')"style="background:{isActive ? '#00f5d4' : '#555'}; color:isActive?'#000':'#fff';border:none;padding:2px8px;border-radius:4px;cursor:pointer;font-size:0.75rem;">{isActive ? '配布中(ON)' : '一時停止(OFF)'}</button>
+                        <button onclick="toggleGiftActive('${gift.id}')" style="background:${isActive ? '#00f5d4' : '#555'}; color:${isActive ? '#000' : '#fff'}; border:none; padding:2px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;">${isActive ? '配布中(ON)' : '一時停止(OFF)'}</button>
                         <button onclick="adminDeleteGlobalGift('${gift.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;">削除</button>
                     </div>
                 `;
@@ -2161,7 +2177,7 @@
             memberDatabase.forEach(m => {
                 html += `
                     <label style="display:flex; align-items:center; gap:6px; margin-bottom:2px; cursor:pointer;">
-                        <input type="checkbox" class="gift-target-chk" value="${m.id}"> m.name({m.id})
+                        <input type="checkbox" class="gift-target-chk" value="${m.id}"> ${m.name} (${m.id})
                     </label>
                 `;
             });
@@ -2182,7 +2198,7 @@
             rarities.forEach(rar => {
                 const items = masterDriveImages.filter(i => (i.rarity === rar) || (!i.rarity && i.name.includes(rar)));
                 let html = `<div style="background:#222; padding:8px; border-radius:6px; margin-bottom:6px;">`;
-                html += `<div style="color:#ffee00; font-weight:bold; border-bottom:1px solid #444; padding-bottom:2px; margin-bottom:4px;">rar({items.length}件)</div>`;
+                html += `<div style="color:#ffee00; font-weight:bold; border-bottom:1px solid #444; padding-bottom:2px; margin-bottom:4px;">${rar} (${items.length}件)</div>`;
                 
                 if (items.length === 0) {
                     html += `<div style="color:#888; font-size:0.75rem;">アイテムなし</div>`;
@@ -2298,7 +2314,7 @@
             globalNotices.forEach(notice => {
                 const row = document.createElement('div');
                 row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#222; padding:6px 10px; border-radius:6px; margin-bottom:4px;";
-                row.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:210px;">notice.title({notice.date})</span><button onclick="adminDeleteNotice('${notice.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">削除</button>`;
+                row.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:210px;">${notice.title} (${notice.date})</span><button onclick="adminDeleteNotice('${notice.id}')" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">削除</button>`;
                 listEl.appendChild(row);
             });
         }
@@ -2349,7 +2365,7 @@
 
             let optionsHtml = `<option value="">(選択してください)</option>`;
             masterDriveImages.forEach(img => {
-                optionsHtml += `<option value="img.url">{img.name}</option>`;
+                optionsHtml += `<option value="${img.url}">${img.name}</option>`;
             });
 
             gachaSelect.innerHTML = optionsHtml;
@@ -2376,7 +2392,7 @@
             if (!selectEl) return;
             let html = `<option value="">(デフォルト・削除)</option>`;
             userAlbum.forEach(img => {
-                html += `<option value="img.url">{img.name}</option>`;
+                html += `<option value="${img.url}">${img.name}</option>`;
             });
             selectEl.innerHTML = html;
         }
@@ -2467,7 +2483,7 @@
                 box.innerHTML = `
                     <div>
                         <div style="font-weight:bold; color:#00f5d4;">${gift.title}</div>
-                        <div style="font-size:0.8rem; color:#aaa;">💎: +gift.gem||0|🪙:+{gift.coin || 0}</div>
+                        <div style="font-size:0.8rem; color:#aaa;">💎: +${gift.gem || 0} | 🪙: +${gift.coin || 0}</div>
                         ${gift.imgUrl ? `<img src="${gift.imgUrl}" style="width:50px; height:50px; object-fit:cover; border-radius:6px; margin-top:4px;">` : ''}
                     </div>
                     <div style="display:flex; gap:6px;">
@@ -2608,10 +2624,10 @@
                 const card = document.createElement('div');
                 card.className = 'album-card' + (isInSlideshow ? ' in-slideshow' : '');
                 card.innerHTML = `
-                    <div class="album-img-box"><img src="img.url"alt="{img.name}"></div>
+                    <div class="album-img-box"><img src="${img.url}" alt="${img.name}"></div>
                     <div class="album-card-info">
                         <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${img.name}</div>
-                        <div style="font-size:0.7rem; color:isInSlideshow?'#00f5d4':'#888';">{isInSlideshow ? '✓ スライド中' : 'タップしてスライド登録'}</div>
+                        <div style="font-size:0.7rem; color:${isInSlideshow ? '#00f5d4' : '#888'};">${isInSlideshow ? '✓ スライド中' : 'タップしてスライド登録'}</div>
                     </div>
                 `;
                 card.onclick = () => toggleSlideshow(img.id);
@@ -2650,7 +2666,7 @@
             const h = String(now.getHours()).padStart(2, '0');
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
-            const timeStr = `h:{m}:${s}`;
+            const timeStr = `${h}:${m}:${s}`;
             
             const rClock = document.getElementById('real-clock');
             if (rClock) rClock.innerText = timeStr;
@@ -2876,5 +2892,3 @@
     </script>
 </body>
 </html>
-
-
