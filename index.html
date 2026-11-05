@@ -157,6 +157,7 @@
         }
         .title-menu-item:last-child { border-bottom: none; color: #ff334b; }
         .title-menu-item:active { background: rgba(255,255,255,0.15); }
+        
         /* ================= 📱 メイン画面エリア ================= */
         .app-container {
             position: relative;
@@ -164,6 +165,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px)); /* 🌟 下部メニューが隠れないよう余白を確保 */
         }
         .bg-slideshow {
             position: absolute;
@@ -266,13 +268,16 @@
         .music-icon { color: #00f5d4; font-size: 1rem; }
         .song-title-display { font-size: 0.85rem; font-weight: bold; color: #fff; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .song-sub-text { font-size: 0.65rem; color: #aaa; }
+        
+        /* 🌟 下部ナビゲーション: 全画面時も安全余白 (safe-area-inset-bottom) を考慮し、隠れずにタッチ可能に修正 */
         .bottom-nav {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 62px;
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            height: calc(62px + env(safe-area-inset-bottom, 0px));
+            padding-bottom: env(safe-area-inset-bottom, 0px);
             background: rgba(18, 18, 18, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.15);
             display: flex; justify-content: space-around; align-items: center;
             z-index: 500; backdrop-filter: blur(10px);
         }
-        .bottom-nav.hide-menu { display: none !important; }
         .nav-item {
             position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: #888; font-size: 0.75rem; font-weight: bold; width: 20%; height: 100%; cursor: pointer; transition: color 0.2s;
@@ -282,7 +287,7 @@
         
         /* 🎈 複数イベント・ガチャ選択ポップアップ */
         .selector-popup {
-            position: absolute; bottom: 68px; left: 50%; transform: translateX(-50%);
+            position: absolute; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%);
             background: rgba(25, 25, 25, 0.95); border: 1px solid #00f5d4; border-radius: 12px;
             padding: 8px 12px; display: none; flex-direction: column; gap: 6px; z-index: 600;
             backdrop-filter: blur(8px); box-shadow: 0 8px 20px rgba(0,0,0,0.8); min-width: 180px; text-align: center;
@@ -351,6 +356,7 @@
         .rate-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.75rem; background: #222; }
         .rate-table th, .rate-table td { border: 1px solid #444; padding: 4px; text-align: center; }
         .rate-table th { background: #333; color: #00f5d4; }
+        
         /* ================= 🎪 全画面イベント専用スタイル ================= */
         #screen-event {
             padding: 0;
@@ -359,6 +365,7 @@
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100;
+            padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px)); /* 🌟 下部メニュー分の高さを確保し、ボタンが隠れないように修正 */
         }
         .event-full-bg-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -398,7 +405,7 @@
             text-align: right;
         }
         .event-bottom-left {
-            position: absolute; bottom: 85px; left: 15px; z-index: 10;
+            position: absolute; bottom: calc(75px + env(safe-area-inset-bottom, 0px)); left: 15px; z-index: 10;
             max-width: 65%; display: flex; flex-direction: column; gap: 6px;
         }
         .event-period-badge {
@@ -421,7 +428,7 @@
             width: 100%; height: auto; max-height: 140px; object-fit: contain; margin-top: 0; display: block;
         }
         .event-action-column {
-            position: absolute; bottom: 85px; right: 15px; z-index: 10;
+            position: absolute; bottom: calc(75px + env(safe-area-inset-bottom, 0px)); right: 15px; z-index: 10;
             display: flex; flex-direction: column; gap: 12px; align-items: center;
         }
         .event-action-btn {
@@ -466,6 +473,7 @@
             <div class="title-menu-item" onclick="exitApp()">終了</div>
         </div>
     </div>
+    
     <!-- ================= 📱 メインアプリコンテナ ================= -->
     <div class="app-container">
         <div class="bg-slideshow" id="slideshow-container"></div>
@@ -517,33 +525,35 @@
             <div style="font-size:0.7rem; color:#00f5d4; font-weight:bold;">🎂 ガチャ選択</div>
             <div id="gacha-selector-list" style="display:flex; flex-direction:column; gap:4px;"></div>
         </div>
+    </div>
 
-        <div class="bottom-nav" id="main-bottom-nav">
-            <div class="nav-item active" id="nav-home" onclick="switchNav('home')">
-                <span class="nav-icon">🏠</span>
-                <span>ホーム</span>
-            </div>
-            <div class="nav-item" id="nav-event" onclick="handleEventNavClick(event)">
-                <span class="nav-icon">🎪</span>
-                <span class="event-day-bubble" id="badge-event-day-bubble">残り 3 日</span>
-                <span id="nav-event-label">イベント</span>
-            </div>
-            <div class="nav-item" id="nav-gacha" onclick="handleGachaNavClick(event)">
-                <span class="nav-icon">🎂</span>
-                <div class="exclamation-badge" id="exclamation-gacha" style="top:0px; right:4px;">!</div>
-                <span>ガチャ</span>
-            </div>
-            <div class="nav-item" id="nav-play" onclick="openScreen('play')">
-                <span class="nav-icon">🎰</span>
-                <div class="exclamation-badge" id="exclamation-play" style="top:0px; right:4px;">!</div>
-                <span>遊戯</span>
-            </div>
-            <div class="nav-item" id="nav-other" onclick="toggleOtherMenu()">
-                <span class="nav-icon">•••</span>
-                <span>その他</span>
-            </div>
+    <!-- 🌟 下部メニュー: 全画面表示時も常に復元・常時表示され、セーフエリアを考慮してタッチ可能 -->
+    <div class="bottom-nav" id="main-bottom-nav">
+        <div class="nav-item active" id="nav-home" onclick="switchNav('home')">
+            <span class="nav-icon">🏠</span>
+            <span>ホーム</span>
+        </div>
+        <div class="nav-item" id="nav-event" onclick="handleEventNavClick(event)">
+            <span class="nav-icon">🎪</span>
+            <span class="event-day-bubble" id="badge-event-day-bubble">残り 3 日</span>
+            <span id="nav-event-label">イベント</span>
+        </div>
+        <div class="nav-item" id="nav-gacha" onclick="handleGachaNavClick(event)">
+            <span class="nav-icon">🎂</span>
+            <div class="exclamation-badge" id="exclamation-gacha" style="top:0px; right:4px;">!</div>
+            <span>ガチャ</span>
+        </div>
+        <div class="nav-item" id="nav-play" onclick="openScreen('play')">
+            <span class="nav-icon">🎰</span>
+            <div class="exclamation-badge" id="exclamation-play" style="top:0px; right:4px;">!</div>
+            <span>遊戯</span>
+        </div>
+        <div class="nav-item" id="nav-other" onclick="toggleOtherMenu()">
+            <span class="nav-icon">•••</span>
+            <span>その他</span>
         </div>
     </div>
+
     <!-- ================= 🔲 その他メニュー ================= -->
     <div id="other-modal" class="modal-overlay" onclick="closeOtherMenu(event)">
         <div class="menu-dialog" onclick="event.stopPropagation()">
@@ -573,6 +583,7 @@
             </div>
         </div>
     </div>
+    
     <!-- ================= 🎪 全画面イベント専用UI画面 ================= -->
     <div id="screen-event" class="sub-screen">
         <div class="event-full-bg-container" id="event-swipe-bg-container">
@@ -616,6 +627,7 @@
             <p style="font-size:0.9rem; color:#ccc;" id="event-no-event-msg">現在開催中のイベントはありません</p>
         </div>
     </div>
+    
     <!-- 📄 その他の各種サブ画面 -->
     <div id="screen-player" class="sub-screen">
         <div class="sub-header"><span class="sub-title">🎵 楽曲選択</span><button class="close-btn" onclick="closeScreen('player')">閉じる</button></div>
@@ -805,6 +817,7 @@
             <input type="text" id="admin-gas-url-input" class="admin-input" placeholder="https://script.google.com/macros/s/.../exec">
             <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="saveAndSyncGasUrl()">🔄 スプレッドシートと同期する</button>
         </div>
+        
         <!-- 🖼️ アプリ全体のアイコン設定 -->
         <div class="admin-section" style="border-color:#ffee00;">
             <h4 style="color:#ffee00; border-left-color:#ffee00;">🖼️ アプリ（ホーム・タイトル）アイコン設定</h4>
@@ -812,6 +825,7 @@
             <select id="admin-app-icon-select" class="admin-input"><option value="">(デフォルト)</option></select>
             <button class="admin-btn" style="background:#ffee00; color:#000;" onclick="adminSaveAppIcon()">💾 アプリ全体アイコンを適用する</button>
         </div>
+        
         <!-- 🎪 複数イベント管理 -->
         <div class="admin-section">
             <h4>🎪 イベント複数開催管理・切替</h4>
@@ -843,6 +857,8 @@
                     <input type="checkbox" id="admin-event-show-status" style="width:15px; height:15px;" checked> ステータスマークを表示 (ON/OFF)
                 </label>
             </div>
+            
+            <!-- 🌟 開催終了後の自動化後も手動でステータス変更・切り替えが可能にするセレクトボックス -->
             <select id="admin-event-status-select" class="admin-input">
                 <option value="開催中">開催中</option>
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
@@ -862,6 +878,7 @@
             </div>
             <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteCurrentEvent()">🗑️ 現在のイベントを削除・ヒストリーへ</button>
         </div>
+        
         <!-- 🧮 イベントP算出計算機 -->
         <div class="admin-section" style="border-color: #00f5d4;">
             <h4 style="color: #00f5d4; border-left-color: #00f5d4;">🧮 イベントP算出・ボーナス手入力エディタ</h4>
@@ -972,6 +989,8 @@
                     <input type="checkbox" id="admin-gacha-show-status" style="width:15px; height:15px;" checked> ステータスマークを表示 (ON/OFF)
                 </label>
             </div>
+            
+            <!-- 🌟 ガチャのステータスも手動切替対応 -->
             <select id="admin-gacha-status-select" class="admin-input">
                 <option value="開催中">開催中</option>
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
@@ -1038,6 +1057,7 @@
             <div id="admin-notice-manage-list" style="margin-top: 15px; font-size: 0.8rem;"></div>
         </div>
     </div>
+    
     <!-- 🏆 イベントランキング専用モーダル -->
     <div id="ranking-modal" class="modal-overlay" onclick="closeRankingModal(event)">
         <div class="menu-dialog" style="max-width:360px; max-height:80vh; overflow-y:auto;" onclick="event.stopPropagation()">
@@ -1046,6 +1066,7 @@
             <button class="close-btn" onclick="closeRankingModal()" style="width:100%;">閉じる</button>
         </div>
     </div>
+    
     <!-- ❓ イベントヘルプ専用モーダル -->
     <div id="event-help-modal" class="modal-overlay" onclick="closeEventHelpModal(event)">
         <div class="menu-dialog" style="max-width:360px; max-height:85vh; overflow-y:auto;" onclick="event.stopPropagation()">
@@ -1066,6 +1087,7 @@
             <button class="close-btn" onclick="closeEventHelpModal()" style="width:100%;">閉じる</button>
         </div>
     </div>
+    
     <!-- 🃏 ミニゲームモーダル -->
     <div id="minigame-modal" class="modal-overlay" onclick="closeMinigameModal(event)">
         <div class="menu-dialog" style="max-width:380px; max-height:85vh; overflow-y:auto;" onclick="event.stopPropagation()">
@@ -1078,6 +1100,7 @@
             <button class="close-btn" onclick="closeMinigameModal()" style="width:100%; margin-top:15px;">閉じる</button>
         </div>
     </div>
+
     <script>
         const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
         let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "";
@@ -1126,6 +1149,7 @@
                 startDate: "2026-11-30T18:00",
                 endDate: "2026-12-12T20:59",
                 status: "開催中",
+                manualOverride: false, // 🌟 手動切替されたかどうかを保持するフラグ
                 showStatus: true,
                 imgUrl: "",
                 logoUrl: "",
@@ -1138,6 +1162,7 @@
                 startDate: "2026-12-01T00:00",
                 endDate: "2026-12-25T23:59",
                 status: "開催中",
+                manualOverride: false,
                 showStatus: true,
                 imgUrl: "",
                 logoUrl: "",
@@ -1153,6 +1178,7 @@
                 title: "記念ピックアップガチャ",
                 type: "ネオフェス限定",
                 status: "開催中",
+                manualOverride: false,
                 showStatus: true,
                 startDate: "2026-11-01T00:00",
                 endDate: "2026-11-30T00:00",
@@ -1251,12 +1277,16 @@
             return isoStr.replace("T", " ");
         }
 
+        /* 🌟 開催終了後の自動化後も手動切替が優先されるように改修 */
         function checkAndUpdateAutomaticStatus() {
             const now = new Date();
             let changed = false;
 
             eventsList.forEach(ev => {
                 if (!ev.startDate || !ev.endDate) return;
+                // manualOverrideがtrueの場合は自動判定を行わず手動ステータスを維持
+                if (ev.manualOverride) return;
+
                 const start = new Date(ev.startDate);
                 const end = new Date(ev.endDate);
                 let targetStatus = ev.status;
@@ -1264,7 +1294,6 @@
                 if (now >= start && now < end) {
                     if (ev.status === "開催準備中") targetStatus = "開催中";
                 } else if (now >= end) {
-                    // 🌟 開催終了後1分経過したかどうかの判定 (end時刻 + 1分 = 60000ms)
                     const endPlus1Min = new Date(end.getTime() + 60000);
                     if (now >= endPlus1Min) {
                         if (ev.status === "開催中" || ev.status === "開催準備中") {
@@ -1283,6 +1312,8 @@
 
             gachaList.forEach(g => {
                 if (!g.startDate || !g.endDate) return;
+                if (g.manualOverride) return;
+
                 const start = new Date(g.startDate);
                 const end = new Date(g.endDate);
                 let targetStatus = g.status;
@@ -1811,7 +1842,7 @@
             renderMashUI(`+${pts}P 獲得中！`);
         }
 
-        // ストップウォッチ (🌟 画面に表示されている秒数を使用して判定)
+        // ストップウォッチ
         let swTarget = 5, swStart = 0, swTimer = null, currentElapsedDisplay = 0;
         function startStopwatchGame() {
             document.getElementById('minigame-game-screen').style.display = 'block';
@@ -2288,7 +2319,7 @@
             }
         }
 
-        /* 💖 交換所機能関連ロジック (🌟 交換所の画像選択を他の画像挿入と同じ仕様に変更) */
+        /* 💖 交換所機能関連ロジック */
         function toggleShopImgInputType() {
             const type = document.getElementById('admin-shop-img-type').value;
             document.getElementById('admin-shop-emoji-box').style.display = (type === 'emoji') ? 'block' : 'none';
@@ -2598,6 +2629,7 @@
             currentEvent.startDate = document.getElementById('admin-event-start-input').value;
             currentEvent.endDate = document.getElementById('admin-event-end-input').value;
             currentEvent.status = document.getElementById('admin-event-status-select').value;
+            currentEvent.manualOverride = true; // 🌟 管理者が手動保存したため、自動上書きを停止して手動設定を固定
             currentEvent.showStatus = document.getElementById('admin-event-show-status').checked;
             currentEvent.imgUrl = document.getElementById('admin-event-img-select').value;
             currentEvent.logoUrl = document.getElementById('admin-event-logo-select').value;
@@ -2617,7 +2649,7 @@
             localStorage.setItem('nexus_current_event', JSON.stringify(currentEvent));
             populateAdminEventSwitcher();
             updateUIUserStatus();
-            alert("🎪 イベント設定を保存しました！");
+            alert("🎪 イベント設定を保存しました（手動ステータス適用）！");
         }
         function adminAddNewEvent() {
             const newId = 'ev_' + Date.now();
@@ -2633,6 +2665,7 @@
                 startDate: "2026-12-01T00:00",
                 endDate: "2026-12-31T23:59",
                 status: "開催中",
+                manualOverride: false,
                 showStatus: true,
                 imgUrl: "",
                 logoUrl: "",
@@ -2740,6 +2773,7 @@
             currentGachaConfig.title = document.getElementById('admin-gacha-title-input').value;
             currentGachaConfig.type = document.getElementById('admin-gacha-type-select').value;
             currentGachaConfig.status = document.getElementById('admin-gacha-status-select').value;
+            currentGachaConfig.manualOverride = true;
             currentGachaConfig.showStatus = document.getElementById('admin-gacha-show-status').checked;
             currentGachaConfig.bannerUrl = document.getElementById('admin-gacha-banner-select').value;
             currentGachaConfig.startDate = document.getElementById('admin-gacha-start-input').value;
@@ -2752,7 +2786,7 @@
             localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
             populateAdminGachaSwitcher();
             updateUIUserStatus();
-            alert("🎂 ガチャ設定を保存しました！");
+            alert("🎂 ガチャ設定を保存しました（手動ステータス適用）！");
         }
         function adminAddNewGacha() {
             const newId = 'g_' + Date.now();
@@ -2761,6 +2795,7 @@
                 title: "新規ピックアップガチャ",
                 type: "ネオフェス限定",
                 status: "開催中",
+                manualOverride: false,
                 showStatus: true,
                 startDate: "2026-11-01T00:00",
                 endDate: "2026-11-30T00:00",
@@ -3495,7 +3530,6 @@
                 alert("タイトルと本文を入力してください。");
                 return;
             }
-            // 🌟 お知らせ送信日時（何時何分）を自動記録
             const now = new Date();
             const timeFormatted = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
@@ -3505,7 +3539,7 @@
                 text: text,
                 imgUrl: imgUrl,
                 active: true,
-                date: timeFormatted // 送信時刻を表示用に使用
+                date: timeFormatted
             };
             globalNotices.unshift(noticeObj);
             localStorage.setItem(getGlobalNoticesKey(), JSON.stringify(globalNotices));
@@ -3992,15 +4026,10 @@
             if (name === 'play') markAsViewed('play');
             if (name === 'gacha') markAsViewed('gacha');
 
-            // 🌟 全画面表示時も下のメニュー（bottom-nav）は反映されない（出さない/非表示のまま）を維持
+            // 🌟 イベント画面を含め、全画面表示中も下部メニュー (bottom-nav) を常に表示し、隠れないように制御
             const bottomNav = document.getElementById('main-bottom-nav');
             if (bottomNav) {
-                const isFsOn = localStorage.getItem(getFullscreenSettingKey()) === 'true';
-                if (isFsOn && name === 'event') {
-                    bottomNav.classList.add('hide-menu');
-                } else {
-                    bottomNav.classList.remove('hide-menu');
-                }
+                bottomNav.classList.remove('hide-menu');
             }
 
             if (name === 'event') renderEventScreen();
