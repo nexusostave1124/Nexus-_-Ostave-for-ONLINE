@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -165,7 +166,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px)); /* 🌟 下部メニューが隠れないよう余白を確保 */
+            padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
         }
         .bg-slideshow {
             position: absolute;
@@ -268,7 +269,7 @@
         .song-title-display { font-size: 0.85rem; font-weight: bold; color: #fff; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .song-sub-text { font-size: 0.65rem; color: #aaa; }
         
-        /* 🌟 下部ナビゲーション: 全画面時も安全余白 (safe-area-inset-bottom) を考慮し、隠れずにタッチ可能に修正 */
+        /* 🌟 下部ナビゲーション */
         .bottom-nav {
             position: absolute; bottom: 0; left: 0; width: 100%;
             height: calc(62px + env(safe-area-inset-bottom, 0px));
@@ -363,7 +364,7 @@
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100;
-            padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px)); /* 🌟 下部メニュー分の高さを確保し、ボタンが隠れないように修正 */
+            padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
         }
         .event-full-bg-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -447,7 +448,7 @@
     </style>
 </head>
 <body>
-   <!-- ================= 🌟 タイトル画面 ================= -->
+    <!-- ================= 🌟 タイトル画面 ================= -->
     <div id="title-screen">
         <div class="title-bg-slideshow" id="title-bg-slideshow-container"></div>
         <div class="title-overlay-top"></div>
@@ -524,7 +525,7 @@
             <div id="gacha-selector-list" style="display:flex; flex-direction:column; gap:4px;"></div>
         </div>
     </div>
-    <!-- 🌟 下部メニュー: 全画面表示時も常に復元・常時表示され、セーフエリアを考慮してタッチ可能 -->
+    <!-- 🌟 下部メニュー -->
     <div class="bottom-nav" id="main-bottom-nav">
         <div class="nav-item active" id="nav-home" onclick="switchNav('home')">
             <span class="nav-icon">🏠</span>
@@ -773,7 +774,7 @@
             </div>
         </div>
         
-        <!-- 💖 管理者用: 交換所商品追加セクション (最大10個) -->
+        <!-- 💖 管理者用: 交換所商品追加セクション -->
         <div class="admin-section" style="border-color:#00f5d4;">
             <h4 style="color:#00f5d4; border-left-color:#00f5d4;">💖 交換所 商品管理 (最大10個配置)</h4>
             <p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">絵文字またはGoogleドライブ画像を選び、必要な💎ジェム数を決めて交換所に並べます。</p>
@@ -853,7 +854,6 @@
                 </label>
             </div>
             
-            <!-- 🌟 開催終了後の自動化後も手動でステータス変更・切り替えが可能にするセレクトボックス -->
             <select id="admin-event-status-select" class="admin-input">
                 <option value="開催中">開催中</option>
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
@@ -901,7 +901,6 @@
                 </div>
             </div>
             
-            <!-- 🌟 発言回数・通話時間の項目追加 -->
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
                 <div>
                     <label style="font-size:0.75rem; color:#aaa;">💬 発言回数 (1回=4P):</label>
@@ -912,7 +911,6 @@
                     <input type="number" id="calc-call-hours" class="admin-input" value="0" oninput="calcChatAndCallPoints()">
                 </div>
             </div>
-
             <div style="background:#222; padding:10px; border-radius:6px; margin-top:8px; text-align:center;">
                 <span style="font-size:0.8rem; color:#aaa;">計算結果 (合計P): </span>
                 <span id="calc-result-display" style="font-size:1.3rem; font-weight:bold; color:#00f5d4;">0 P</span>
@@ -995,7 +993,6 @@
                 </label>
             </div>
             
-            <!-- 🌟 ガチャのステータスも手動切替対応 -->
             <select id="admin-gacha-status-select" class="admin-input">
                 <option value="開催中">開催中</option>
                 <option value="開催準備中">開催準備中 (一般非表示)</option>
@@ -1139,7 +1136,6 @@
         let globalGifts = JSON.parse(localStorage.getItem('nexus_global_gifts')) || [];
         let globalReports = JSON.parse(localStorage.getItem('nexus_global_reports')) || [];
         
-        // 💖 交換所商品リスト (最大10個)
         let shopItemsList = JSON.parse(localStorage.getItem('nexus_shop_items')) || [
             { id: 'shop_1', name: 'ジェムパック大', imgType: 'emoji', imgVal: '💎', cost: 1000 },
             { id: 'shop_2', name: '記念お祝いギフト', imgType: 'emoji', imgVal: '🎁', cost: 500 }
@@ -1152,7 +1148,7 @@
                 startDate: "2026-11-30T18:00",
                 endDate: "2026-12-12T20:59",
                 status: "開催中",
-                manualOverride: false, // 🌟 手動切替されたかどうかを保持するフラグ
+                manualOverride: false,
                 showStatus: true,
                 imgUrl: "",
                 logoUrl: "",
@@ -1215,7 +1211,7 @@
         let titleBgImages = JSON.parse(localStorage.getItem(getTitleBgKey())) || [
             { id: 'default_title_bg', url: 'https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/2984.png', name: 'デフォルト画像' }
         ];
-        /* 🌟 自動「！」マーク判定機能 */
+        
         const viewedStatusKey = 'nexus_viewed_status_' + (currentUser ? currentUser.id : 'guest');
         let viewedStatusMap = JSON.parse(localStorage.getItem(viewedStatusKey)) || { present: false, notice: false, album: false, history: false, play: false, gacha: false };
         function checkExclamationMarks() {
@@ -1272,13 +1268,12 @@
             if (!isoStr) return "未設定";
             return isoStr.replace("T", " ");
         }
-        /* 🌟 開催終了後の自動化後も手動切替が優先されるように改修 */
+        
         function checkAndUpdateAutomaticStatus() {
             const now = new Date();
             let changed = false;
             eventsList.forEach(ev => {
                 if (!ev.startDate || !ev.endDate) return;
-                // manualOverrideがtrueの場合は自動判定を行えず手動ステータスを維持
                 if (ev.manualOverride) return;
                 const start = new Date(ev.startDate);
                 const end = new Date(ev.endDate);
@@ -1500,7 +1495,7 @@
                 }
                 if (infoLeft) infoLeft.style.display = "none";
                 if (actionBtns) actionBtns.style.display = "none";
-                if (bgImg) bgImg.src = ""; // 🌟 イベント開催してないときは背景を空にする
+                if (bgImg) bgImg.src = "";
                 return;
             }
             const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
@@ -1512,7 +1507,7 @@
                 }
                 if (infoLeft) infoLeft.style.display = "none";
                 if (actionBtns) actionBtns.style.display = "none";
-                if (bgImg) bgImg.src = ""; // 🌟 イベント開催してないときは背景を空にする
+                if (bgImg) bgImg.src = "";
                 return;
             } else if (currentEvent.status === "開催終了" && !isNeo) {
                 if (noEventModal) {
@@ -1521,7 +1516,7 @@
                 }
                 if (infoLeft) infoLeft.style.display = "none";
                 if (actionBtns) actionBtns.style.display = "none";
-                if (bgImg) bgImg.src = ""; // 🌟 イベント開催してないときは背景を空にする
+                if (bgImg) bgImg.src = "";
                 return;
             } else if (currentEvent.status === "結果" && !isNeo) {
                 if (noEventModal) noEventModal.style.display = "none";
@@ -1545,7 +1540,7 @@
                 }
             }
             if (bgImg) {
-                bgImg.src = currentEvent.imgUrl || ""; // 🌟 背景画像がない場合も空にする
+                bgImg.src = currentEvent.imgUrl || "";
             }
             if (currentUser) {
                 userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
@@ -2196,18 +2191,9 @@
             runPtCalculator();
         }
         
-        // 🌟 発言回数と通話時間の計算ロジック追加 (発言1回=4P, 通話1時間=1000P)
         function calcChatAndCallPoints() {
-            const chatCount = Number(document.getElementById('calc-chat-count').value) || 0;
-            const callHours = Number(document.getElementById('calc-call-hours').value) || 0;
-            const chatPt = chatCount * 4;
-            const callPt = callHours * 1000;
-            // 獲得Pに自動反映
-            const currentBase = Number(document.getElementById('calc-base-pt').value) || 0;
-            // 簡易的にベースPにchatPtとcallPtを加算、または合算処理
             runPtCalculator();
         }
-
         function runPtCalculator() {
             const base = Number(document.getElementById('calc-base-pt').value) || 0;
             const chatCount = Number(document.getElementById('calc-chat-count').value) || 0;
@@ -2216,7 +2202,6 @@
             const callPt = callHours * 1000;
             
             const totalBasePt = base + chatPt + callPt;
-
             const gacha = Number(document.getElementById('calc-gacha-bonus').value) || 0;
             const illust = Number(document.getElementById('calc-illust-bonus').value) || 0;
             const extra = Number(document.getElementById('calc-extra-bonus').value) || 0;
@@ -2304,7 +2289,7 @@
                 alert("⚠️ CORS制限またはURLエラーのため直接同期できませんでした。ローカルストレージで動作継続します。");
             }
         }
-        /* 💖 交換所機能関連ロジック */
+        
         function toggleShopImgInputType() {
             const type = document.getElementById('admin-shop-img-type').value;
             document.getElementById('admin-shop-emoji-box').style.display = (type === 'emoji') ? 'block' : 'none';
@@ -2441,7 +2426,7 @@
                 alert(`🎁 交換成功！「${item.name}」をプレゼントBOXに送りました。`);
             }
         }
-        /* 🛡️ 管理画面のセットアップ */
+        
         function setupAdminManageScreen() {
             renderAdminNoticeManageList();
             renderAdminGiftManageList();
@@ -2609,7 +2594,7 @@
             currentEvent.startDate = document.getElementById('admin-event-start-input').value;
             currentEvent.endDate = document.getElementById('admin-event-end-input').value;
             currentEvent.status = document.getElementById('admin-event-status-select').value;
-            currentEvent.manualOverride = true; // 🌟 管理者が手動保存したため、自動上書きを停止して手動設定を固定
+            currentEvent.manualOverride = true;
             currentEvent.showStatus = document.getElementById('admin-event-show-status').checked;
             currentEvent.imgUrl = document.getElementById('admin-event-img-select').value;
             currentEvent.logoUrl = document.getElementById('admin-event-logo-select').value;
@@ -3585,7 +3570,7 @@
                 renderAlbum();
                 renderHistory();
             } catch (e) {
-                console.log("ドライブマスターデータの取得");
+                console.log("ドライブマスターデータの取得エラー:", e);
             }
         }
         function populateAdminSelects() {
@@ -3825,7 +3810,7 @@
             const slides = document.querySelectorAll('.slide-img');
             if (slides.length <= 1) return;
             let current = 0;
-            titleSlideTimer = setInterval(() => {
+            slideTimer = setInterval(() => {
                 slides[current].classList.remove('active');
                 current = (current + 1) % slides.length;
                 slides[current].classList.add('active');
@@ -3984,7 +3969,7 @@
             if (name === 'history') markAsViewed('history');
             if (name === 'play') markAsViewed('play');
             if (name === 'gacha') markAsViewed('gacha');
-            // 🌟 イベント画面を含め、全画面表示中も下部メニュー (bottom-nav) を常に表示し、隠れないように制御
+            
             const bottomNav = document.getElementById('main-bottom-nav');
             if (bottomNav) {
                 bottomNav.classList.remove('hide-menu');
@@ -4118,7 +4103,6 @@
             }
         }
         
-        // 🌟 音源をGAS経由または直接GitHubから取得できるように拡張
         const songs = [
             { title: "SPECIALZ", url: "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec?type=audio&file=SPECIALZ" },
             { title: "ハウトゥー世界征服", url: "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec?type=audio&file=howto" }
@@ -4147,3 +4131,4 @@
     </script>
 </body>
 </html>
+```
