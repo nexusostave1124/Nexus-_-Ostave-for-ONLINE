@@ -12,8 +12,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&display=swap" rel="stylesheet">
-<!-- 🖋️ ここに以下を追加 -->
-<script src="https://www.youtube.com/iframe_api"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 body {
@@ -4697,89 +4695,7 @@ localStorage.clear();
 alert("🗑️ すべてのデータを削除しました。アプリを再起動します。");
 window.location.reload();
 }
-// 🎵 YouTube プレイヤー管理
-let ytPlayer = null;
-let youtubeSongs = [];
-const miniTitle = document.getElementById('mini-song-title');
-const nowPlayingText = document.getElementById('now-playing-text');
-const playlist = document.getElementById('playlist');
-
-// YouTube Iframe API 準備完了時
-function onYouTubeIframeAPIReady() {
-    ytPlayer = new YT.Player('yt-player', {
-        height: '100%',
-        width: '100%',
-        videoId: '',
-        playerVars: {
-            'playsinline': 1,
-            'controls': 1
-        },
-        events: {
-            'onReady': onPlayerReady
-        }
-    });
 }
-
-function onPlayerReady(event) {
-    console.log("YouTube Player Ready");
-    loadYouTubePlaylistFromGas();
-}
-
-// GASからYouTube曲リストを取得
-async function loadYouTubePlaylistFromGas() {
-    try {
-        const res = await fetch(GAS_WEB_APP_URL);
-        const data = await res.json();
-        
-        if (data && data.audio && data.audio.length > 0) {
-            youtubeSongs = data.audio; // [{id, title, youtubeId}, ...]
-            renderYouTubePlaylist();
-            if (youtubeSongs.length > 0 && miniTitle) {
-                miniTitle.innerText = youtubeSongs[0].title;
-            }
-        } else {
-            if (playlist) playlist.innerHTML = '<p style="color:#888; text-align:center;">楽曲データがありません。</p>';
-        }
-    } catch (e) {
-        console.log("YouTubeデータ取得エラー:", e);
-        if (playlist) playlist.innerHTML = '<p style="color:#ff334b; text-align:center;">楽曲の読み込みに失敗しました。</p>';
-    }
-}
-
-// プレイリスト描画
-function renderYouTubePlaylist() {
-    if (!playlist) return;
-    playlist.innerHTML = "";
-    youtubeSongs.forEach((song) => {
-        const item = document.createElement('div');
-        item.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;";
-        item.innerHTML = `<span style="font-size:0.9rem; font-weight:bold; color:#fff;">▶ ${song.title}</span><span style="color:#00f5d4; font-size:0.8rem; font-weight:bold;">再生</span>`;
-        
-        item.onclick = () => {
-            playYouTubeSong(song.youtubeId, song.title);
-        };
-        playlist.appendChild(item);
-    });
-}
-
-// 楽曲再生
-function playYouTubeSong(youtubeId, title) {
-    if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
-        ytPlayer.loadVideoById(youtubeId);
-        if (miniTitle) miniTitle.innerText = title;
-        if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + title;
-    } else {
-        alert("YouTubeプレイヤーの準備中です。数秒後にもう一度タップしてください。");
-    }
-}
-
-// ログイン時の自動再生呼び出し
-function playDefaultSongOnLogin() {
-    if (youtubeSongs.length > 0 && ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
-        ytPlayer.loadVideoById(youtubeSongs[0].youtubeId);
-        if (miniTitle) miniTitle.innerText = youtubeSongs[0].title;
-        if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + youtubeSongs[0].title;
-    }
 }
 function initPlaylist() {
 playlist.innerHTML = "";
@@ -4800,6 +4716,3 @@ initPlaylist();
 </script>
 </body>
 </html>
-
-
-
