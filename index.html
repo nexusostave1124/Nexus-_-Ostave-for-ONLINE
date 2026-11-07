@@ -3936,33 +3936,46 @@ listEl.appendChild(row);
 });
 }
 async function fetchDriveMasterData() {
-try {
-const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime(), { mode: 'cors' });
-if (!response.ok) return;
-const fetchedData = await response.json();
+    try {
+        // GISTではなく、GASのウェブアプリURLから画像・音声データを取得する
+        const targetUrl = (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) ? GAS_WEB_APP_URL : GIST_RAW_URL;
+        const response = await fetch(targetUrl + "?t=" + new Date().getTime(), { mode: 'cors' });
+        if (!response.ok) return;
+        const fetchedData = await response.json();
+        
+        // GASの出力形式（imagesプロパティ）に対応、配列そのものの場合も考慮
+        const imageList = fetchedData.images ? fetchedData.images : (Array.isArray(fetchedData) ? fetchedData : []);
 
-fetchedData.forEach(item => {
-if (item.name.includes() || (item.name.includes() && item.name.includes("★1"))) return;
-if (!masterDriveImages.some(existing => existing.url === item.url)) {
-const rarity = item.name.includes("★6") ? "★6" : item.name.includes("★5") ? "★5" : item.name.includes("★4") ? "★4" : item.name.includes("★3") ? "★3" : "★2";
-masterDriveImages.push({ ...item, rarity: rarity });
-}
-});
-localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+        imageList.forEach(item => {
+            if (!item || !item.name || !item.url) return;
+            if (item.name.includes("★1")) return;
+            
+            // すでに登録されていなければ追加
+            if (!masterDriveImages.some(existing => existing.url === item.url)) {
+                const rarity = item.name.includes("★6") ? "★6" : 
+                               item.name.includes("★5") ? "★5" : 
+                               item.name.includes("★4") ? "★4" : 
+                               item.name.includes("★3") ? "★3" : "★2";
+                masterDriveImages.push({ ...item, rarity: rarity });
+            }
+        });
 
-if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
-userAlbum = masterDriveImages.filter(i => !(i.name.includes("【★2配布】脹相") || (i.name.includes("脹相") && i.name.includes("★1"))));
-userSlideshowIds = userAlbum.map(img => img.id);
-saveUserAlbumData();
-}
-populateAdminSelects();
-populateSettingsAvatarSelect();
-initSlideshow();
-renderAlbum();
-renderHistory();
-} catch (e) {
-console.log("ドライブマスターデータの取得エラー:", e);
-}
+        localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+
+        if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
+            userAlbum = masterDriveImages.filter(i => !(i.name.includes() || (i.name.includes("脹相") && i.name.includes("★1"))));
+            userSlideshowIds = userAlbum.map(img => img.id);
+            saveUserAlbumData();
+        }
+
+        populateAdminSelects();
+        populateSettingsAvatarSelect();
+        initSlideshow();
+        renderAlbum();
+        renderHistory();
+    } catch (e) {
+        console.log("ドライブマスターデータの取得エラー:", e);
+    }
 }
 function populateAdminSelects() {
 const gachaSelect = document.getElementById('admin-gacha-img-select');
@@ -4686,4 +4699,3 @@ initPlaylist();
 </script>
 </body>
 </html>
-
