@@ -1030,17 +1030,25 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
   <label style="font-size:0.8rem; color:#aaa;">ガチャメインバナー（Googleドライブ選択）：</label>
   <select id="admin-gacha-banner-select" class="admin-input"><option value="">(バナーなし)</option></select>
 
-  <!-- 🖼️ 追加：左下枠の個別画像 ＆ 最大7枚スライドショー ＆ 1回/10回オンオフ機能 -->
-  <div style="margin: 10px 0; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid #444;">
-    <label style="font-size:0.8rem; color:#00f5d4; display:block; margin-bottom:4px; font-weight:bold;">🖼️ 左下枠用の画像（個別設定）：</label>
-    <select id="admin-gacha-subbox-select" class="admin-input"><option value="">(メインバナーと共通)</option></select>
+<!-- 左下枠用の画像選択 -->
+<label style="font-size:0.8rem; color:#aaa; margin-top:8px; display:block;">左下枠の個別画像（Googleドライブ選択）：</label>
+<select id="admin-gacha-subbox-select" class="admin-input"><option value="">(バナーと共通)</option></select>
 
-    <label style="font-size:0.8rem; color:#ffee00; display:block; margin-top:10px; margin-bottom:4px; font-weight:bold;">🎞️ バナー背景スライドショー (最大7枚)：</label>
-    <div id="admin-gacha-banners-container" style="font-size:0.8rem; margin-bottom:6px;"></div>
-    <div style="display:flex; gap:6px;">
-      <select id="admin-gacha-add-banner-select" class="admin-input" style="margin:0;"><option value="">(画像を選択して追加)</option></select>
-      <button class="admin-btn" style="background:#ffee00; color:#000; margin:0; white-space:nowrap; width:auto; padding:0 10px;" onclick="adminAddGachaBanner()">➕ 追加</button>
-    </div>
+<!-- 1回・10回引くボタンの有効・無効チェック -->
+<div style="display:flex; gap:15px; margin:8px 0; background:#222; padding:8px; border-radius:6px;">
+    <label style="font-size:0.75rem; color:#00f5d4; cursor:pointer; display:flex; align-items:center; gap:4px;">
+        <input type="checkbox" id="admin-gacha-enable-single" style="width:15px; height:15px;" checked> 1回引くを有効
+    </label>
+    <label style="font-size:0.75rem; color:#ffee00; cursor:pointer; display:flex; align-items:center; gap:4px;">
+        <input type="checkbox" id="admin-gacha-enable-multi" style="width:15px; height:15px;" checked> 10回引くを有効
+    </label>
+</div>
+
+<!-- ★6・★5・★4のスライドショー用チェック選択（最大7枚） -->
+<label style="font-size:0.8rem; color:#ffee00; margin-top:8px; display:block;">🎞️ スライドショー背景画像 (★4〜6チェック式 / 最大7枚):</label>
+<div id="admin-gacha-rarity-banners-list" style="background:#222; padding:8px; border-radius:6px; max-height:160px; overflow-y:auto; margin-bottom:10px; font-size:0.8rem;">
+    <!-- ここにラインナップされた画像とチェックボックスが自動で並びます -->
+</div>
 
     <div style="display:flex; gap:15px; margin-top:12px; border-top:1px dashed #555; padding-top:8px;">
       <label style="font-size:0.8rem; color:#fff; cursor:pointer; display:flex; align-items:center; gap:6px;">
