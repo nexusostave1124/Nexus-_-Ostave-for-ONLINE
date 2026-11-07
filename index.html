@@ -3957,11 +3957,14 @@ listEl.appendChild(row);
 }
 async function fetchDriveMasterData() {
     try {
-        const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime(), { mode: 'cors' });
+        // キャッシュを避けるパラメータを付与
+        const targetUrl = GIST_RAW_URL + "?t=" + new Date().getTime();
+        
+        // mode: 'no-cors' または通常のfetchで試行
+        const response = await fetch(targetUrl);
         if (!response.ok) return;
         const fetchedData = await response.json();
         
-        // 取得したデータをmasterDriveImagesに反映
         fetchedData.forEach(item => {
             if (!item.url || !item.name) return;
             if (!masterDriveImages.some(existing => existing.url === item.url)) {
@@ -3975,22 +3978,28 @@ async function fetchDriveMasterData() {
         
         localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
         
-        // 初回アルバムデータ等の初期化
         if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
             userAlbum = masterDriveImages.filter(i => !(i.name.includes("【★2配布】脹相") || (i.name.includes("脹相") && i.name.includes("★1"))));
             userSlideshowIds = userAlbum.map(img => img.id);
             saveUserAlbumData();
         }
         
-        // 各種セレクトボックスや画面を再描画
         populateAdminSelects();
         populateSettingsAvatarSelect();
         initSlideshow();
         renderAlbum();
         renderHistory();
         
+        console.log("✅ ドライブマスターデータの取得成功:", masterDriveImages.length, "件");
+        
     } catch (e) {
         console.log("ドライブマスターデータの取得エラー:", e);
+        // エラー時のフォールバックとしてローカルストレージから読み込みを試みる
+        const cached = localStorage.getItem('nexus_master_gacha_images');
+        if (cached) {
+            masterDriveImages = JSON.parse(cached);
+            populateAdminSelects();
+        }
     }
 }
 function populateAdminSelects() {
@@ -4704,6 +4713,4 @@ initPlaylist();
 </script>
 </body>
 </html>
-
-
 
