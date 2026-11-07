@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&display=swap" rel="stylesheet">
+<!-- 🖋️ ここにYouTube APIのスクリプトを追加 -->
+<script src="https://www.youtube.com/iframe_api"></script>
+<style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Nexus:_-Ostave for ONLINE</title>
@@ -631,9 +635,12 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 
 <!-- 📄 その他の各種サブ画面 -->
 <div id="screen-player" class="sub-screen">
-<div class="sub-header"><span class="sub-title">🎵 楽曲選択</span><button class="close-btn" onclick="closeScreen('player')">閉じる</button></div>
-<div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: SPECIALZ</div>
-<audio id="audio-player" controls style="width: 100%; margin-bottom: 15px;" preload="auto"></audio>
+<div class="sub-header"><span class="sub-title">🎵 楽曲選択 (YouTube)</span><button class="close-btn" onclick="closeScreen('player')">閉じる</button></div>
+<div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: なし</div>
+<!-- 🎵 YouTubeプレイヤー用埋め込み枠 -->
+<div id="youtube-player-container" style="width: 100%; height: 180px; background: #000; margin-bottom: 15px; border-radius: 8px; overflow: hidden;">
+    <div id="yt-player"></div>
+</div>
 <div id="playlist"></div>
 </div>
 <div id="screen-gacha" class="sub-screen">
@@ -4690,16 +4697,6 @@ window.location.reload();
 }
 }
 }
-
-const songs = [
-{ title: "SPECIALZ", url: "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec?type=audio&file=SPECIALZ" },
-{ title: "ハウトゥー世界征服", url: "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec?type=audio&file=howto" }
-];
-const audioPlayer = document.getElementById('audio-player');
-const playlist = document.getElementById('playlist');
-const miniTitle = document.getElementById('mini-song-title');
-const nowPlayingText = document.getElementById('now-playing-text');
-
 function initPlaylist() {
 playlist.innerHTML = "";
 songs.forEach((song) => {
