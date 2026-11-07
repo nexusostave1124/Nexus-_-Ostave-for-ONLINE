@@ -1283,73 +1283,53 @@ return isoStr.replace("T", " ");
 }
 
 /* 🌟 イベント・ガチャの自動ステータス移動（手動優先＋時間到達での自動開催中・終了化） */
-// --- 変更後の該当部分 ---
 function checkAndUpdateAutomaticStatus() {
-    const now = new Date();
-    let changed = false;
-    
-    eventsList.forEach(ev => {
-        if (!ev.startDate || !ev.endDate) return;
-        
-        const start = new Date(ev.startDate);
-        const end = new Date(ev.endDate);
-        let targetStatus = ev.status;
-        
-        // 🕒 時間到達による強制ステータス移行判定
-        if (now >= start && now < end) {
-            // 開始時間を過ぎていて、まだ準備中などの場合、開催中に強制変更
-            if (ev.status === "開催準備中" || (!ev.manualOverride && ev.status !== "開催中")) {
-                targetStatus = "開催中";
-                ev.manualOverride = false; // 自動移行時は手動フラグを一旦リセット
-            }
-        } else if (now >= end) {
-            // 終了時間を過ぎていたら強制的に開催終了へ
-            if (ev.status === "開催中" || ev.status === "開催準備中") {
-                targetStatus = "開催終了";
-                ev.manualOverride = false;
-                if (currentEvent && currentEvent.id === ev.id) {
-                    forceStopMinigamesOnEnd();
-                }
-            }
-        }
-        
-        if (targetStatus !== ev.status) {
-            ev.status = targetStatus;
-            changed = true;
-        }
-    });
-    
-    gachaList.forEach(g => {
-        if (!g.startDate || !g.endDate) return;
-        
-        const start = new Date(g.startDate);
-        const end = new Date(g.endDate);
-        let targetStatus = g.status;
-        
-        if (now >= start && now < end) {
-            if (g.status === "開催準備中" || (!g.manualOverride && g.status !== "開催中")) {
-                targetStatus = "開催中";
-                g.manualOverride = false;
-            }
-        } else if (now >= end) {
-            if (g.status === "開催中" || g.status === "開催準備中") {
-                targetStatus = "終了";
-                g.manualOverride = false;
-            }
-        }
-        
-        if (targetStatus !== g.status) {
-            g.status = targetStatus;
-            changed = true;
-        }
-    });
-    
-    if (changed) {
-        localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
-        localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
-        renderEventScreen();
-        renderGachaScreen();
-    }
+const now = new Date();
+let changed = false;
+eventsList.forEach(ev => {
+if (!ev.startDate || !ev.endDate) return;
+if (ev.manualOverride) return;
+const start = new Date(ev.startDate);
+const end = new Date(ev.endDate);
+let targetStatus = ev.status;
+if (now >= start && now < end) {
+if (ev.status === "開催準備中") targetStatus = "開催中";
+} else if (now >= end) {
+if (ev.status === "開催中" || ev.status === "開催準備中") {
+targetStatus = "開催終了";
+if (currentEvent && currentEvent.id === ev.id) {
+forceStopMinigamesOnEnd();
+}
+}
+}
+if (targetStatus !== ev.status) {
+ev.status = targetStatus;
+changed = true;
+}
+});
+gachaList.forEach(g => {
+if (!g.startDate || !g.endDate) return;
+if (g.manualOverride) return;
+const start = new Date(g.startDate);
+const end = new Date(g.endDate);
+let targetStatus = g.status;
+if (now >= start && now < end) {
+if (g.status === "開催準備中") targetStatus = "開催中";
+} else if (now >= end) {
+if (g.status === "開催中" || g.status === "開催準備中") {
+targetStatus = "終了";
+}
+}
+if (targetStatus !== g.status) {
+g.status = targetStatus;
+changed = true;
+}
+});
+if (changed) {
+localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
+localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+renderEventScreen();
+renderGachaScreen();
 }
 }
 function forceStopMinigamesOnEnd() {
