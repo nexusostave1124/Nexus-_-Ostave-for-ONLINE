@@ -614,14 +614,14 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 </div>
 </div>
 <div class="event-action-column" id="event-action-btns">
-    <div class="event-action-btn" id="event-action-minigame-btn" onclick="handleEventActionButton()">
-        <span class="event-action-icon" id="event-action-btn-icon">💍</span>
-        <span id="event-action-btn-label">イベント</span>
-    </div>
-    <div class="event-action-btn" id="event-action-ranking-btn" onclick="openRankingModal()">
-        <span class="event-action-icon">🗡</span>
-        <span>ランキング</span>
-    </div>
+<div class="event-action-btn" id="event-action-minigame-btn" onclick="handleEventActionButton()">
+<span class="event-action-icon" id="event-action-btn-icon">💍</span>
+<span id="event-action-btn-label">ミニゲーム</span>
+</div>
+<div class="event-action-btn" id="event-action-ranking-btn" onclick="openRankingModal()">
+<span class="event-action-icon">🗡</span>
+<span>ランキング</span>
+</div>
 </div>
 <div id="event-no-event-modal" class="event-no-event-box" style="display:none;">
 <h3 style="color:#ff334b; font-size:1.1rem; margin-bottom:8px;">🔒 お知らせ</h3>
@@ -644,7 +644,7 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <div class="sub-header"><span class="sub-title">🎰 遊戯</span><button class="close-btn" onclick="closeScreen('play')">閉じる</button></div>
 <div style="background:#1f1f1f; padding:15px; border-radius:10px; text-align:center;">
 <p style="color:#00f5d4; font-weight:bold; font-size:1.1rem; margin-bottom:10px;">🎰 パチンコ・シミュレーション機能</p>
-<p style="font-size:0.85rem; color:#aaa;">準備中(2026.12 実装予定)</p>
+<p style="font-size:0.85rem; color:#aaa;">エヴァンゲリオン 始まりの福音 シミュレーター稼働中</p>
 </div>
 </div>
 <div id="screen-schedule" class="sub-screen">
@@ -918,11 +918,11 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
 <div>
-<label style="font-size:0.75rem; color:#aaa;">💬 発言回数 :</label>
+<label style="font-size:0.75rem; color:#aaa;">💬 発言回数 (1回=4P):</label>
 <input type="number" id="calc-chat-count" class="admin-input" value="0" oninput="calcChatAndCallPoints()">
 </div>
 <div>
-<label style="font-size:0.75rem; color:#aaa;">📞 通話時間 :</label>
+<label style="font-size:0.75rem; color:#aaa;">📞 通話時間 (1時間=1000P):</label>
 <input type="number" id="calc-call-hours" class="admin-input" value="0" oninput="calcChatAndCallPoints()">
 </div>
 </div>
