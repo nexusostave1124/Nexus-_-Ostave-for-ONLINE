@@ -4012,51 +4012,214 @@ html += `<option value="${img.url}">${img.name}</option>`;
 });
 selectEl.innerHTML = html;
 }
-function pullGacha(count = 1) {
-if (!currentGachaConfig || currentGachaConfig.status === "終了") {
-alert("🔒 このガチャは終了しているため引くことができません。");
-return;
+// ガチャ実行と演出コントロール
+async function pullGacha(count) {
+    if (!currentGachaConfig) return;
+
+    const costSingle = currentGachaConfig.costSingle || 300;
+    const costMulti = currentGachaConfig.costMulti || 3000;
+    const totalCost = (count === 10) ? costMulti : costSingle * count;
+
+    // ダイヤ残高チェック
+    if (!currentUser || Number(currentUser.gem || 0) < totalCost) {
+        alert("💎 ダイヤが足りにゃいよ！");
+        return;
+    }
+
+    // ダイヤを消費
+    currentUser.gem = Number(currentUser.gem) - totalCost;
+    if (typeof saveUserData === 'function') saveUserData();
+    renderGachaScreen(); // ダイヤ表示更新
+
+    // 🎲 確率に基づいて結果を事前計算
+    const results = [];
+    let maxRarity = 2; // 今回の最高獲得レアリティ
+
+    for (let i = 0; i < count; i++) {
+        const item = rollSingleGacha(currentGachaConfig.type);
+        results.push(item);
+        if (item.rarityNum > maxRarity) maxRarity = item.rarityNum;
+    }
+
+    // 🌟 昇格フラグ（★5以上がある場合、20%の確率で昇格演出にする）
+    let isUpgrade = false;
+    if (maxRarity >= 5 && Math.random() < 0.2) {
+        isUpgrade = true;
+    }
+
+    // 📳 スマホのバイブレーション実行（端末が対応している場合）
+    triggerGachaVibration(maxRarity, isUpgrade);
+
+    // 🎬 演出画面を表示
+    await playGachaAnimation(results, maxRarity, isUpgrade);
 }
-if (!currentUser) {
-alert("ガチャを引くには、まずログインしてください！");
-promptUserLogin();
-return;
+
+// 🎲 レアリティ抽選ロジック
+function rollSingleGacha(type) {
+    const rates = GACHA_RATES[type] || { "★6": 0.4, "★5": 6.6, "★4": 23, "★3": 30, "★2": 40 };
+    const rand = Math.random() * 100;
+    
+    let cum = 0;
+    let selectedRarity = "★2";
+    let rarityNum = 2;
+
+    const tiers = [
+        { key: "★6", num: 6 },
+        { key: "★5", num: 5 },
+        { key: "★4", num: 4 },
+        { key: "★3", num: 3 },
+        { key: "★2", num: 2 }
+    ];
+
+    for (const t of tiers) {
+        cum += (rates[t.key] || 0);
+        if (rand <= cum) {
+            selectedRarity = t.key;
+            rarityNum = t.num;
+            break;
+        }
+    }
+
+    return { rarity: selectedRarity, rarityNum: rarityNum };
 }
-if (masterDriveImages.length === 0) {
-alert("ガチャのラインナップが存在しません。");
-return;
+
+// 📳 振動パターン
+function triggerGachaVibration(maxRarity, isUpgrade) {
+    if (!("vibrate" in navigator)) return;
+    
+    if (isUpgrade) {
+        // 昇格時：ト・ト・トン！→ブブブブッ！
+        navigator.vibrate([100, 50, 100, 50, 300, 100, 500]);
+    } else if (maxRarity === 6) {
+        // ★6確意：長めの重厚な振動
+        navigator.vibrate([200, 100, 200, 100, 600]);
+    } else if (maxRarity === 5) {
+        // ★5：2回振動
+        navigator.vibrate([150, 80, 150]);
+    } else {
+        // 通常：短く1回
+        navigator.vibrate(80);
+    }
 }
-const cost = count === 10 ? (currentGachaConfig.costMulti || 3000) : (currentGachaConfig.costSingle || 300);
-const userDb = memberDatabase.find(m => m.id === currentUser.id) || currentUser;
-if ((userDb.gem || 0) < cost) {
-alert(`❌ 💎 ジェムが不足しています！\n必要: ${cost} 💎 (所持: ${userDb.gem || 0} 💎)`);
-return;
+// 演出モーダル表示・昇格・結果表示
+function playGachaAnimation(results, maxRarity, isUpgrade) {
+    return new Promise((resolve) => {
+        // 演出用のフルスクリーンモーダル作成
+        let animOverlay = document.getElementById('gacha-anim-overlay');
+        if (!animOverlay) {
+            animOverlay = document.createElement('div');
+            animOverlay.id = 'gacha-anim-overlay';
+            animOverlay.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: #000; z-index: 99999; display: flex;
+                flex-direction: column; justify-content: center; align-items: center;
+                transition: background 0.5s;
+            `;
+            document.body.appendChild(animOverlay);
+        }
+        animOverlay.style.display = 'flex';
+
+        // 初期カラー設定（昇格演出の場合はあえて低レアの色で見せる）
+        const initialRarity = isUpgrade ? (maxRarity - 1) : maxRarity;
+        let colorTheme = "#00f5d4"; // 通常
+        if (initialRarity === 5) colorTheme = "#ff9900"; // 金
+        if (initialRarity === 6) colorTheme = "#ff0077"; // 虹/レインボー
+
+        animOverlay.innerHTML = `
+            <div id="anim-light-sphere" style="
+                width: 150px; height: 150px; border-radius: 50%;
+                background: radial-gradient(circle, ${colorTheme} 0%, rgba(0,0,0,0) 70%);
+                box-shadow: 0 0 50px ${colorTheme};
+                animation: pulseGlow 1.5s infinite alternate;
+                display: flex; justify-content: center; align-items: center;
+            ">
+                <span id="anim-text" style="color: #fff; font-size: 1.5rem; font-weight: bold; text-shadow: 0 0 10px #000;">引き寄せ中...</span>
+            </div>
+            <style>
+                @keyframes pulseGlow {
+                    0% { transform: scale(0.9); opacity: 0.7; }
+                    100% { transform: scale(1.2); opacity: 1; }
+                }
+                @keyframes flashUp {
+                    0% { background: #fff; }
+                    100% { background: #000; }
+                }
+            </style>
+        `;
+
+        // ステップ1：演出待機
+        setTimeout(() => {
+            // 昇格演出が発生する場合
+            if (isUpgrade) {
+                const sphere = document.getElementById('anim-light-sphere');
+                const text = document.getElementById('anim-text');
+                if (sphere && text) {
+                    // 振動追加
+                    if ("vibrate" in navigator) navigator.vibrate([50, 50, 50, 50, 400]);
+                    
+                    // 色がレインボー/ゴールドに変色
+                    const upColor = (maxRarity === 6) ? "#ff0077" : "#ff9900";
+                    sphere.style.background = `radial-gradient(circle, ${upColor} 0%, rgba(0,0,0,0) 70%)`;
+                    sphere.style.boxShadow = `0 0 80px ${upColor}`;
+                    text.innerText = "⚡昇 格 演 出⚡";
+                    text.style.color = "#ffee00";
+                }
+                setTimeout(() => showResultScreen(results), 1500);
+            } else {
+                showResultScreen(results);
+            }
+        }, 1800);
+
+        // ステップ2：結果一覧画面
+        function showResultScreen(resList) {
+            animOverlay.style.animation = "flashUp 0.3s forwards";
+            
+            setTimeout(() => {
+                animOverlay.innerHTML = `
+                    <div style="width: 90%; max-width: 400px; text-align: center;">
+                        <h3 style="color: #00f5d4; font-size: 1.4rem; margin-bottom: 15px; text-shadow: 0 0 8px #00f5d4;">🎉 ガチャ獲得結果</h3>
+                        <div style="display: grid; grid-template-columns: repeat(${resList.length > 1 ? 5 : 1}, 1fr); gap: 8px; margin-bottom: 20px;">
+                            ${resList.map((item, idx) => `
+                                <div style="
+                                    background: rgba(30,30,30,0.9); border: 1px solid ${getRarityBorderColor(item.rarityNum)};
+                                    border-radius: 8px; padding: 10px 4px; text-align: center;
+                                    box-shadow: 0 0 8px ${getRarityBorderColor(item.rarityNum)};
+                                ">
+                                    <div style="font-size: 0.9rem; font-weight: bold; color: ${getRarityTextColor(item.rarityNum)};">${item.rarity}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button id="close-gacha-result-btn" style="
+                            width: 80%; background: linear-gradient(135deg, #00f5d4, #0088cc);
+                            color: #000; border: none; padding: 10px; border-radius: 20px;
+                            font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+                        ">確認</button>
+                    </div>
+                `;
+
+                document.getElementById('close-gacha-result-btn').onclick = () => {
+                    animOverlay.style.display = 'none';
+                    resolve();
+                };
+            }, 300);
+        }
+    });
 }
-userDb.gem = (userDb.gem || 0) - cost;
-saveMemberDb();
-updateUIUserStatus();
-let resultsText = `🎉 ${count}連ガチャ結果！\n--------------------\n`;
-let newRewards = [];
-for (let i = 0; i < count; i++) {
-const randomIndex = Math.floor(Math.random() * masterDriveImages.length);
-const rewardImg = masterDriveImages[randomIndex];
-resultsText += `・${rewardImg.name}\n`;
-const alreadyHas = userAlbum.find(item => item.id === rewardImg.id);
-if (!alreadyHas && !newRewards.some(r => r.id === rewardImg.id)) {
-newRewards.push(rewardImg);
+
+// レアリティに応じた枠線・文字色の取得ヘルパー
+function getRarityBorderColor(num) {
+    if (num === 6) return "#ff0077"; // ★6: 濃いピンク/虹
+    if (num === 5) return "#ffcc00"; // ★5: 金
+    if (num === 4) return "#aa00ff"; // ★4: 紫
+    if (num === 3) return "#00aaff"; // ★3: 青
+    return "#888888"; // ★2: 灰
 }
-}
-if (newRewards.length > 0) {
-newRewards.forEach(r => {
-userAlbum.push(r);
-if (!userSlideshowIds.includes(r.id)) userSlideshowIds.push(r.id);
-});
-saveUserAlbumData();
-initSlideshow();
-renderAlbum();
-populateSettingsAvatarSelect();
-}
-alert(resultsText);
+function getRarityTextColor(num) {
+    if (num === 6) return "#ff66cc";
+    if (num === 5) return "#ffee00";
+    if (num === 4) return "#d8b4fe";
+    if (num === 3) return "#7dd3fc";
+    return "#ccc";
 }
 function getCombinedUserGifts() {
 const personalGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
