@@ -614,14 +614,14 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 </div>
 </div>
 <div class="event-action-column" id="event-action-btns">
-<div class="event-action-btn" id="event-action-minigame-btn" onclick="handleEventActionButton()">
-<span class="event-action-icon" id="event-action-btn-icon">🎮</span>
-<span id="event-action-btn-label">ミニゲーム</span>
-</div>
-<div class="event-action-btn" id="event-action-ranking-btn" onclick="openRankingModal()">
-<span class="event-action-icon">⚔️</span>
-<span>ランキング</span>
-</div>
+    <div class="event-action-btn" id="event-action-minigame-btn" onclick="handleEventActionButton()">
+        <span class="event-action-icon" id="event-action-btn-icon">💍</span>
+        <span id="event-action-btn-label">イベント</span>
+    </div>
+    <div class="event-action-btn" id="event-action-ranking-btn" onclick="openRankingModal()">
+        <span class="event-action-icon">🗡</span>
+        <span>ランキング</span>
+    </div>
 </div>
 <div id="event-no-event-modal" class="event-no-event-box" style="display:none;">
 <h3 style="color:#ff334b; font-size:1.1rem; margin-bottom:8px;">🔒 お知らせ</h3>
@@ -644,7 +644,7 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <div class="sub-header"><span class="sub-title">🎰 遊戯</span><button class="close-btn" onclick="closeScreen('play')">閉じる</button></div>
 <div style="background:#1f1f1f; padding:15px; border-radius:10px; text-align:center;">
 <p style="color:#00f5d4; font-weight:bold; font-size:1.1rem; margin-bottom:10px;">🎰 パチンコ・シミュレーション機能</p>
-<p style="font-size:0.85rem; color:#aaa;">エヴァンゲリオン 始まりの福音 シミュレーター稼働中</p>
+<p style="font-size:0.85rem; color:#aaa;">準備中(2026.12 実装予定)</p>
 </div>
 </div>
 <div id="screen-schedule" class="sub-screen">
@@ -918,11 +918,11 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
 <div>
-<label style="font-size:0.75rem; color:#aaa;">💬 発言回数 (1回=4P):</label>
+<label style="font-size:0.75rem; color:#aaa;">💬 発言回数 :</label>
 <input type="number" id="calc-chat-count" class="admin-input" value="0" oninput="calcChatAndCallPoints()">
 </div>
 <div>
-<label style="font-size:0.75rem; color:#aaa;">📞 通話時間 (1時間=1000P):</label>
+<label style="font-size:0.75rem; color:#aaa;">📞 通話時間 :</label>
 <input type="number" id="calc-call-hours" class="admin-input" value="0" oninput="calcChatAndCallPoints()">
 </div>
 </div>
@@ -1170,9 +1170,9 @@ minigamePts: { highlow: 300, blackjack: 350, mash: 2, stopwatch: 600, slot: 3500
 },
 {
 id: 'ev_2',
-title: "ストーリー第1章イベント",
+title:,
 type: "ストーリーイベント",
-startDate: "2026-12-01T00:00",
+startDate: "2026-12-14T00:00",
 endDate: "2026-12-25T23:59",
 status: "開催中",
 manualOverride: false,
@@ -1283,60 +1283,80 @@ return isoStr.replace("T", " ");
 }
 
 /* 🌟 イベント・ガチャの自動ステータス移動（手動優先＋時間到達での自動開催中・終了化） */
+// --- 変更後の該当部分 ---
 function checkAndUpdateAutomaticStatus() {
-const now = new Date();
-let changed = false;
-eventsList.forEach(ev => {
-if (!ev.startDate || !ev.endDate) return;
-if (ev.manualOverride) return;
-const start = new Date(ev.startDate);
-const end = new Date(ev.endDate);
-let targetStatus = ev.status;
-if (now >= start && now < end) {
-if (ev.status === "開催準備中") targetStatus = "開催中";
-} else if (now >= end) {
-if (ev.status === "開催中" || ev.status === "開催準備中") {
-targetStatus = "開催終了";
-if (currentEvent && currentEvent.id === ev.id) {
-forceStopMinigamesOnEnd();
-}
-}
-}
-if (targetStatus !== ev.status) {
-ev.status = targetStatus;
-changed = true;
-}
-});
-gachaList.forEach(g => {
-if (!g.startDate || !g.endDate) return;
-if (g.manualOverride) return;
-const start = new Date(g.startDate);
-const end = new Date(g.endDate);
-let targetStatus = g.status;
-if (now >= start && now < end) {
-if (g.status === "開催準備中") targetStatus = "開催中";
-} else if (now >= end) {
-if (g.status === "開催中" || g.status === "開催準備中") {
-targetStatus = "終了";
-}
-}
-if (targetStatus !== g.status) {
-g.status = targetStatus;
-changed = true;
-}
-});
-if (changed) {
-localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
-localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
-renderEventScreen();
-renderGachaScreen();
+    const now = new Date();
+    let changed = false;
+    
+    eventsList.forEach(ev => {
+        if (!ev.startDate || !ev.endDate) return;
+        
+        const start = new Date(ev.startDate);
+        const end = new Date(ev.endDate);
+        let targetStatus = ev.status;
+        
+        // 🕒 時間到達による強制ステータス移行判定
+        if (now >= start && now < end) {
+            // 開始時間を過ぎていて、まだ準備中などの場合、開催中に強制変更
+            if (ev.status === "開催準備中" || (!ev.manualOverride && ev.status !== "開催中")) {
+                targetStatus = "開催中";
+                ev.manualOverride = false; // 自動移行時は手動フラグを一旦リセット
+            }
+        } else if (now >= end) {
+            // 終了時間を過ぎていたら強制的に開催終了へ
+            if (ev.status === "開催中" || ev.status === "開催準備中") {
+                targetStatus = "開催終了";
+                ev.manualOverride = false;
+                if (currentEvent && currentEvent.id === ev.id) {
+                    forceStopMinigamesOnEnd();
+                }
+            }
+        }
+        
+        if (targetStatus !== ev.status) {
+            ev.status = targetStatus;
+            changed = true;
+        }
+    });
+    
+    gachaList.forEach(g => {
+        if (!g.startDate || !g.endDate) return;
+        
+        const start = new Date(g.startDate);
+        const end = new Date(g.endDate);
+        let targetStatus = g.status;
+        
+        if (now >= start && now < end) {
+            if (g.status === "開催準備中" || (!g.manualOverride && g.status !== "開催中")) {
+                targetStatus = "開催中";
+                g.manualOverride = false;
+            }
+        } else if (now >= end) {
+            if (g.status === "開催中" || g.status === "開催準備中") {
+                targetStatus = "終了";
+                g.manualOverride = false;
+            }
+        }
+        
+        if (targetStatus !== g.status) {
+            g.status = targetStatus;
+            changed = true;
+        }
+    });
+    
+    if (changed) {
+        localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
+        localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+        renderEventScreen();
+        renderGachaScreen();
+    }
 }
 }
 function forceStopMinigamesOnEnd() {
 const mgModal = document.getElementById('minigame-modal');
 if (mgModal && mgModal.classList.contains('active')) {
 closeMinigameModal();
-alert("⚠️ イベントが終了したため、ミニゲームは強制終了されました。");
+alert("⚠️ イベントが終了したため、イベントは強制終了されました。");
 }
 }
 function updateUIUserStatus() {
