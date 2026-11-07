@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&display=swap" rel="stylesheet">
-<!-- 🖋️ ここにYouTube APIのスクリプトを追加 -->
+<link <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&display=swap" rel="stylesheet">
+<!-- 🖋️ YouTube APIの読み込みを追加 -->
 <script src="https://www.youtube.com/iframe_api"></script>
 <style>
 <meta charset="UTF-8">
@@ -453,6 +453,57 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 }
 .game-btn { background: #00f5d4; color: #000; font-weight: bold; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-family: inherit; width: 100%; margin-top: 6px; font-size: 0.9rem; }
 .game-btn:active { opacity: 0.8; }
+
+/* ================= 📱レスポンシブ・端末別UI調整 ================= */
+
+@media (max-width: 480px) {
+  .title-login-btn {
+    font-size: 1.4rem;
+    padding: 16px 40px;
+    width: 80%;
+    min-height: 54px;
+  }
+  .nav-item {
+    font-size: 0.8rem;
+  }
+  .nav-icon {
+    font-size: 1.5rem;
+  }
+  .game-btn, .admin-btn {
+    padding: 14px 16px !important;
+    font-size: 1rem !important;
+    min-height: 48px;
+  }
+  .event-action-btn {
+    min-width: 90px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+  .event-action-icon {
+    font-size: 2rem;
+  }
+  .other-menu-card {
+    padding: 16px 10px;
+    font-size: 1rem;
+  }
+  .other-icon-circle {
+    width: 50px;
+    height: 50px;
+    font-size: 1.6rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .menu-dialog {
+    max-width: 450px;
+  }
+  .other-menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .album-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 </style>
 </head>
 <body>
@@ -4695,24 +4746,93 @@ localStorage.clear();
 alert("🗑️ すべてのデータを削除しました。アプリを再起動します。");
 window.location.reload();
 }
+// 🎵 YouTubeプレイヤー管理用
+let ytPlayer = null;
+let youtubeSongs = [];
+const miniTitle = document.getElementById('mini-song-title');
+const nowPlayingText = document.getElementById('now-playing-text');
+const playlist = document.getElementById('playlist');
+
+// YouTube API 読み込み完了時の自動初期化
+function onYouTubeIframeAPIReady() {
+    ytPlayer = new YT.Player('audio-player', {
+        height: '200',
+        width: '100%',
+        videoId: '',
+        playerVars: {
+            'playsinline': 1,
+            'controls': 1
+        },
+        events: {
+            'onReady': onPlayerReady
+        }
+    });
 }
+
+function onPlayerReady(event) {
+    console.log("YouTube Player 準備完了");
+    loadYouTubePlaylistFromGas();
 }
-function initPlaylist() {
-playlist.innerHTML = "";
-songs.forEach((song) => {
-const item = document.createElement('div');
-item.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; cursor:pointer;";
-item.innerHTML = `<span>▶ ${song.title}</span><span style="color:#888;">再生</span>`;
-item.onclick = () => {
-audioPlayer.src = song.url;
-audioPlayer.play();
-miniTitle.innerText = song.title;
-if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + song.title;
-};
-playlist.appendChild(item);
-});
+
+// 🌐 GASからYouTube楽曲リストを取得
+async function loadYouTubePlaylistFromGas() {
+    try {
+        const res = await fetch(GAS_WEB_APP_URL);
+        const data = await res.json();
+        
+        if (data && data.audio && data.audio.length > 0) {
+            youtubeSongs = data.audio; // [{id, title, youtubeId}, ...]
+            renderYouTubePlaylist();
+            
+            if (youtubeSongs.length > 0) {
+                miniTitle.innerText = youtubeSongs[0].title;
+            }
+        } else {
+            playlist.innerHTML = '<p style="color:#888; text-align:center; padding:10px;">楽曲データが見つかりませんでした。</p>';
+        }
+    } catch (e) {
+        console.log("YouTube楽曲の取得エラー:", e);
+        playlist.innerHTML = '<p style="color:#ff334b; text-align:center; padding:10px;">楽曲の読み込みに失敗しました。</p>';
+    }
 }
-initPlaylist();
+
+// 📜 プレイリストの描画
+function renderYouTubePlaylist() {
+    playlist.innerHTML = "";
+    youtubeSongs.forEach((song) => {
+        const item = document.createElement('div');
+        item.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;";
+        item.innerHTML = `<span style="font-size:0.95rem; font-weight:bold; color:#fff;">▶ ${song.title}</span><span style="color:#00f5d4; font-size:0.85rem; font-weight:bold;">再生</span>`;
+        
+        item.onclick = () => {
+            playYouTubeSong(song.youtubeId, song.title);
+        };
+        playlist.appendChild(item);
+    });
+}
+
+// 🎶 曲の再生
+function playYouTubeSong(youtubeId, title) {
+    if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+        ytPlayer.loadVideoById(youtubeId);
+        miniTitle.innerText = title;
+        if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + title;
+    } else {
+        alert("YouTubeプレイヤーの準備中です。少し待ってからお試しください。");
+    }
+}
+
+// ログイン時の再生
+function playDefaultSongOnLogin() {
+    if (youtubeSongs.length > 0 && ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+        ytPlayer.loadVideoById(youtubeSongs[0].youtubeId);
+        miniTitle.innerText = youtubeSongs[0].title;
+        if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + youtubeSongs[0].title;
+    }
+}
 </script>
 </body>
 </html>
+
+
+
