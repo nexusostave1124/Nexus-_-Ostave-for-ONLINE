@@ -3082,11 +3082,14 @@ applyCustomAppIcon();
 function renderGachaScreen() {
     const container = document.getElementById('gacha-content-container');
     if (!container) return;
-    const titleEl = document.getElementById('gacha-screen-title');
-   
-    // ガチャデータがない場合や終了している場合の処理
+    
+    // 一番上の標準ヘッダーを非表示
+    const subHeader = container.parentElement ? container.parentElement.querySelector('.sub-header') : null;
+    if (subHeader) {
+        subHeader.style.display = 'none';
+    }
+
     if (gachaList.length === 0 || !currentGachaConfig) {
-        if (titleEl) titleEl.innerText = "🎂 ガチャ";
         container.innerHTML = `
         <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #ff334b; text-align: center; margin-top:20px;">
             <h3 style="color: #ff334b; margin-bottom: 10px;">🔒 現在開催しているガチャはありません</h3>
@@ -3094,9 +3097,9 @@ function renderGachaScreen() {
         </div>`;
         return;
     }
+
     const isNeo = currentUser && (currentUser.id === "A-24-11-9-a");
     if (currentGachaConfig.status === "終了" && !isNeo) {
-        if (titleEl) titleEl.innerText = "🎂 ガチャ (終了)";
         container.innerHTML = `
         <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #ff334b; text-align: center; margin-top:20px;">
             <h3 style="color: #ff334b; margin-bottom: 10px;">🔒 このガチャは終了しました</h3>
@@ -3104,82 +3107,142 @@ function renderGachaScreen() {
         </div>`;
         return;
     }
-    if (titleEl) titleEl.innerText = "🎂 " + currentGachaConfig.title;
+
     const rates = GACHA_RATES[currentGachaConfig.type] || { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 100 };
     const costSingle = currentGachaConfig.costSingle || 300;
     const costMulti = currentGachaConfig.costMulti || 3000;
     
-    // 💎 現在のユーザーのダイヤ残高とアイコンを取得
     const userGem = currentUser ? Number(currentUser.gem || 0).toLocaleString() : "0";
     const userIconSrc = userAvatarUrl || "https://picsum.photos/id/1069/100/100";
-    // バナー画像があれば背景や左下枠に使う
-    const bannerUrl = currentGachaConfig.bannerUrl || (masterDriveImages[0] ? masterDriveImages[0].url : "https://picsum.photos/id/1025/600/1000");
+    
+    // 🖼️ 背景バナー（スライドショー対応）
+    let banners = [];
+    if (Array.isArray(currentGachaConfig.banners) && currentGachaConfig.banners.length > 0) {
+        banners = currentGachaConfig.banners;
+    } else if (currentGachaConfig.bannerUrl) {
+        banners = [currentGachaConfig.bannerUrl];
+    } else {
+        banners = masterDriveImages.slice(0, 8).map(img => img.url);
+        if (banners.length === 0) banners = ["https://picsum.photos/id/1025/600/1000"];
+    }
 
-    // 🌟 画像のようなおしゃれなレイアウトUIを構築
+    // 🖼️ 左下枠用の個別画像
+    const subBoxImgUrl = currentGachaConfig.subBoxImage || banners[0];
+
+    // 🕒 時計設定（ホーム画面等と共通の設定値を参照）
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    
+    // ホーム画面等の時計カラー設定を取得（複数の変数名パターンに対応、なければデフォルト色）
+    const clockColor = (typeof clockFontColor !== 'undefined' && clockFontColor) ? clockFontColor : 
+                       ((typeof homeClockColor !== 'undefined' && homeClockColor) ? homeClockColor : '#00aaff');
+    
+    const clockFont = (typeof currentClockFont !== 'undefined' && currentClockFont) ? currentClockFont : "'Shippori Mincho', serif";
+
     container.innerHTML = `
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;">
-        <!-- 背景にバナーやイラストを綺麗に配置 -->
-        <img src="${bannerUrl}" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8);">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%);"></div>
-    </div>
-
-    <!-- 上部エリア (左上: アイコン・ダイヤ / 右上: 時計・︙メニュー) -->
-    <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-start; width: 100%; padding-top: 5px;">
-        <!-- 左上: アイコンとダイヤ -->
-        <div style="display: flex; align-items: center; background: rgba(0,0,0,0.6); padding: 4px 12px; border-radius: 20px; backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.2);">
-            <img src="${userIconSrc}" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; margin-right: 6px; border: 1px solid #00f5d4;">
-            <span style="color: #00f5d4; font-size: 0.9rem; font-weight: bold; text-shadow: 0 0 6px rgba(0,245,212,0.5);">💎 ${userGem}</span>
-        </div>
-        <!-- 右上: 時計＆排出率メニューボタン -->
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <div id="gacha-live-clock" style="background: rgba(0,0,0,0.6); color: #ff334b; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; border: 1px solid rgba(255,255,255,0.2);">00:00:00</div>
-            <button onclick="toggleGachaRateModal()" style="background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 1.2rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">︙</button>
-        </div>
-    </div>
-    <!-- 下部エリア (左下: バナー枠 ＆ 右下: 1回・10回ボタン) -->
-    <div style="position: absolute; bottom: 20px; left: 15px; right: 15px; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end;">
+    <!-- 全体コンテナ -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding: 12px 12px 75px 12px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
         
-        <!-- 左下: バナー・タイトル枠 -->
-        <div style="display: flex; flex-direction: column; gap: 4px; max-width: 58%;">
-            <span style="background: #28a745; color: #fff; font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 4px; width: fit-content;">${currentGachaConfig.type}</span>
-            <div style="font-size: 0.65rem; color: #ccc; text-shadow: 1px 1px 2px #000;">${formatDateStr(currentGachaConfig.startDate)}〜${formatDateStr(currentGachaConfig.endDate)}</div>
-            <div style="background: rgba(30,30,30,0.85); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; padding: 8px; backdrop-filter: blur(6px); box-shadow: 0 4px 10px rgba(0,0,0,0.6);">
-                <div style="font-size: 0.9rem; font-weight: bold; color: #fff; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${currentGachaConfig.title}</div>
-                <div style="width: 100%; height: 75px; background-image: url('${bannerUrl}'); background-size: cover; background-position: center; border-radius: 6px;"></div>
+        <!-- 背景バナー スライドショー表示用コンテナ -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden;">
+            ${banners.map((url, idx) => `
+                <div class="gacha-slide-banner" data-index="${idx}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('${url}'); background-size: cover; background-position: center; opacity: ${idx === 0 ? '1' : '0'}; transition: opacity 1s ease-in-out; filter: brightness(0.85);"></div>
+            `).join('')}
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%); z-index: 1;"></div>
+        </div>
+
+        <!-- 上部エリア -->
+        <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+            <!-- 左上: アイコンとダイヤ -->
+            <div style="display: flex; align-items: center; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 20px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
+                <img src="${userIconSrc}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 6px; border: 1px solid #00f5d4;">
+                <span style="color: #00f5d4; font-size: 0.85rem; font-weight: bold; text-shadow: 0 0 6px rgba(0,245,212,0.5);">💎 ${userGem}</span>
+            </div>
+            
+            <!-- 右上: 時計（大きく強調・ホーム設定カラー連動） ＆ 下に ︙ ボタン -->
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
+                <span style="font-size: 0.7rem; color: #ccc; text-shadow: 1px 1px 2px #000; font-family: ${clockFont};">現在時刻</span>
+                <div id="gacha-live-clock" style="color: ${clockColor}; font-size: 1.6rem; font-weight: bold; font-family: ${clockFont}; text-shadow: 0 0 10px ${clockColor}; font-variant-numeric: tabular-nums; line-height: 1.1;">${timeStr}</div>
+                <button onclick="toggleGachaRateModal()" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: #fff; font-size: 1.1rem; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 4px;">︙</button>
             </div>
         </div>
-        <!-- 右下: 1回・10回引くボタン -->
-        <div style="display: flex; flex-direction: column; gap: 8px; width: 38%;">
-            <button onclick="pullGacha(1)" style="background: linear-gradient(135deg, #00f5d4, #0088cc); color: #000; border: none; border-radius: 10px; padding: 10px 8px; text-align: right; cursor: pointer; font-family:inherit; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
-                <div style="font-size: 0.85rem; font-weight: 800;">1回引く</div>
-                <div style="font-size: 0.75rem; color: #111; font-weight: bold;">💎 ${costSingle.toLocaleString()}</div>
-            </button>
-            <button onclick="pullGacha(10)" style="background: linear-gradient(135deg, #ffee00, #ff9900); color: #000; border: none; border-radius: 10px; padding: 10px 8px; text-align: right; cursor: pointer; font-family:inherit; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
-                <div style="font-size: 0.85rem; font-weight: 800;">10回引く</div>
-                <div style="font-size: 0.75rem; color: #111; font-weight: bold;">💎 ${costMulti.toLocaleString()}</div>
-            </button>
+
+        <!-- 下部エリア (左下: 独立した小枠バナー ＆ 右下: ボタン) -->
+        <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">
+            
+            <!-- 左下: 期間 ＆ 独立した小枠画像 -->
+            <div style="display: flex; flex-direction: column; gap: 4px; width: 55%;">
+                <span style="background: #28a745; color: #fff; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; width: fit-content;">${currentGachaConfig.type}</span>
+                <div style="font-size: 0.65rem; color: #eee; text-shadow: 1px 1px 2px #000;">${formatDateStr(currentGachaConfig.startDate)}〜${formatDateStr(currentGachaConfig.endDate)}</div>
+                
+                <div style="background: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 6px; backdrop-filter: blur(4px);">
+                    <div style="font-size: 0.8rem; font-weight: bold; color: #fff; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${currentGachaConfig.title}</div>
+                    <div style="width: 100%; height: 55px; background-image: url('${subBoxImgUrl}'); background-size: cover; background-position: center; border-radius: 4px;"></div>
+                </div>
+            </div>
+
+            <!-- 右下: 引くボタン -->
+            <div style="display: flex; flex-direction: column; gap: 6px; width: 40%;">
+                <button onclick="pullGacha(1)" style="background: linear-gradient(135deg, #00f5d4, #0088cc); color: #000; border: none; border-radius: 8px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 3px 8px rgba(0,0,0,0.4);">
+                    <div style="font-size: 0.8rem; font-weight: 800;">1回引く</div>
+                    <div style="font-size: 0.7rem; color: #111; font-weight: bold;">💎 ${costSingle.toLocaleString()}</div>
+                </button>
+                <button onclick="pullGacha(10)" style="background: linear-gradient(135deg, #ffee00, #ff9900); color: #000; border: none; border-radius: 8px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 3px 8px rgba(0,0,0,0.4);">
+                    <div style="font-size: 0.8rem; font-weight: 800;">10回引く</div>
+                    <div style="font-size: 0.7rem; color: #111; font-weight: bold;">💎 ${costMulti.toLocaleString()}</div>
+                </button>
+            </div>
+
         </div>
-    </div>
-    <!-- ︙メニューを押したときに排出率やラインナップを確認できる簡易ポップアップ（モーダル） -->
-    <div id="gacha-rate-popup-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; justify-content: center; align-items: center;" onclick="toggleGachaRateModal()">
-        <div style="background: #222; border: 2px solid #00f5d4; border-radius: 12px; padding: 15px; width: 85%; max-width: 320px;" onclick="event.stopPropagation()">
-            <h4 style="color: #00f5d4; margin-bottom: 8px; text-align: center;">📊 ガチャ詳細・排出率</h4>
-            <table class="rate-table" style="margin-bottom: 12px;">
-                <thead><tr><th>レア</th><th>★6</th><th>★5</th><th>★4</th><th>★3</th><th>★2</th></tr></thead>
-                <tbody><tr><td>${currentGachaConfig.type}</td><td>${rates["★6"]}%</td><td>${rates["★5"]}%</td><td>${rates["★4"]}%</td><td>${rates["★3"]}%</td><td>${rates["★2"]}%</td></tr></tbody>
-            </table>
-            <button onclick="toggleGachaRateModal()" style="width: 100%; background: #00f5d4; color: #000; border: none; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer;">閉じる</button>
+
+        <!-- 排出率モーダル -->
+        <div id="gacha-rate-popup-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; justify-content: center; align-items: center;" onclick="toggleGachaRateModal()">
+            <div style="background: #222; border: 2px solid #00f5d4; border-radius: 12px; padding: 15px; width: 85%; max-width: 320px;" onclick="event.stopPropagation()">
+                <h4 style="color: #00f5d4; margin-bottom: 8px; text-align: center;">📊 ガチャ詳細・排出率</h4>
+                <table class="rate-table" style="margin-bottom: 12px; width:100%;">
+                    <thead><tr><th>★6</th><th>★5</th><th>★4</th><th>★3</th><th>★2</th></tr></thead>
+                    <tbody><tr><td>${rates["★6"]}%</td><td>${rates["★5"]}%</td><td>${rates["★4"]}%</td><td>${rates["★3"]}%</td><td>${rates["★2"]}%</td></tr></tbody>
+                </table>
+                <button onclick="toggleGachaRateModal()" style="width: 100%; background: #00f5d4; color: #000; border: none; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer;">閉じる</button>
+            </div>
         </div>
+
     </div>
     `;
-}
-// ︙メニューの開閉用ヘルパー関数
-function toggleGachaRateModal() {
-    const modal = document.getElementById('gacha-rate-popup-modal');
-    if (modal) {
-        modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+
+    // 背景スライドショー処理
+    if (banners.length > 1) {
+        if (window.gachaSlideInterval) clearInterval(window.gachaSlideInterval);
+        let currentSlide = 0;
+        window.gachaSlideInterval = setInterval(() => {
+            const slides = container.querySelectorAll('.gacha-slide-banner');
+            if (!slides || slides.length === 0) {
+                clearInterval(window.gachaSlideInterval);
+                return;
+            }
+            slides[currentSlide].style.opacity = '0';
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].style.opacity = '1';
+        }, 4000);
     }
 }
+
+// リアルタイム時計更新（カラー設定も同期）
+if (window.gachaClockInterval) clearInterval(window.gachaClockInterval);
+window.gachaClockInterval = setInterval(() => {
+    const clockEl = document.getElementById('gacha-live-clock');
+    if (clockEl) {
+        const now = new Date();
+        clockEl.innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+        // 動的変更時にもカラー設定を反映
+        const activeColor = (typeof clockFontColor !== 'undefined' && clockFontColor) ? clockFontColor : 
+                            ((typeof homeClockColor !== 'undefined' && homeClockColor) ? homeClockColor : null);
+        if (activeColor) {
+            clockEl.style.color = activeColor;
+            clockEl.style.textShadow = `0 0 10px ${activeColor}`;
+        }
+    }
+}, 1000);
 function handleStatusClick() {
 if (currentUser) {
 if (confirm("ログアウトしますか？")) {
