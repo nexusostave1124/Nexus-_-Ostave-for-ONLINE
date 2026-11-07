@@ -1170,9 +1170,9 @@ minigamePts: { highlow: 300, blackjack: 350, mash: 2, stopwatch: 600, slot: 3500
 },
 {
 id: 'ev_2',
-title:,
+title: "ストーリー第1章イベント",
 type: "ストーリーイベント",
-startDate: "2026-12-14T00:00",
+startDate: "2026-12-01T00:00",
 endDate: "2026-12-25T23:59",
 status: "開催中",
 manualOverride: false,
@@ -1336,7 +1336,7 @@ function forceStopMinigamesOnEnd() {
 const mgModal = document.getElementById('minigame-modal');
 if (mgModal && mgModal.classList.contains('active')) {
 closeMinigameModal();
-alert("⚠️ イベントが終了したため、イベントは強制終了されました。");
+alert("⚠️ イベントが終了したため、ミニゲームは強制終了されました。");
 }
 }
 function updateUIUserStatus() {
