@@ -1967,15 +1967,15 @@ return `<span style="color: ${color};">${num}</span>`;
 function startSlotGame() {
 document.getElementById('minigame-game-screen').style.display = 'block';
 let initDisplay = `${getColoredDigitHtml(1)} - ${getColoredDigitHtml(2)} - ${getColoredDigitHtml(3)}`;
-renderSlotUI(initDisplay, "レバーを押すか長押ししてスピン！");
+renderSlotUI(initDisplay, "ボタンを押すか長押ししてスピン！");
 }
 function renderSlotUI(displayHtml, msg) {
 let sData = loadSlotUserData();
-let modeStatusStr = "【通常モード】 (大当り確率 1/74)";
+let modeStatusStr = "【通常】 (大当り確率 1/74)";
 if (sData.inST) {
-modeStatusStr = `🔥 【ST高確率モード】 (1/49) 残りST: ${sData.stCount}回転 / 時短: ${sData.jitanCount}回転`;
+modeStatusStr = `🔥 【SPECIAL TIME】 (1/19) 残りST: ${sData.stCount}回転 / 時短: ${sData.jitanCount}回転`;
 } else if (sData.inJitan) {
-modeStatusStr = `⚡ 【時短モード】 残り: ${sData.jitanCount}回転 (確率 1/74)`;
+modeStatusStr = `⚡ 【CHANCE TIME】 残り: ${sData.jitanCount}回転 (確率 1/54)`;
 }
 let subInfoStr = `${modeStatusStr} | 当り間: ${sData.spinsSinceLastHit}回転`;
 document.getElementById('minigame-game-screen').innerHTML = `
@@ -2045,81 +2045,74 @@ finalizeSlotResult();
 function finalizeSlotResult() {
 slotAnimating = false;
 let sData = loadSlotUserData();
-// 大当り確率: 通常 1/74、ST中 1/49
-let winProbability = sData.inST ? (1 / 49) : (1 / 74);
+let winProbability = sData.inST ? (1 / 19) : (1 / 54);
 const isWin = Math.random() < winProbability;
-
 let n1, n2, n3;
 if (isWin) {
-let lucky = Math.floor(Math.random() * 9) + 1;
-n1 = n2 = n3 = lucky;
+    let lucky = Math.floor(Math.random() * 9) + 1;
+    n1 = n2 = n3 = lucky;
 } else {
-n1 = Math.floor(Math.random() * 9) + 1;
-n2 = Math.floor(Math.random() * 9) + 1;
-n3 = Math.floor(Math.random() * 9) + 1;
-if (n1 === n2 && n2 === n3) n3 = (n3 % 9) + 1;
+    n1 = Math.floor(Math.random() * 9) + 1;
+    n2 = Math.floor(Math.random() * 9) + 1;
+    n3 = Math.floor(Math.random() * 9) + 1;
+    if (n1 === n2 && n2 === n3) n3 = (n3 % 9) + 1;
 }
-
 const disp = document.getElementById('slot-disp');
 if (disp) {
-disp.innerHTML = `${getColoredDigitHtml(n1)} - ${getColoredDigitHtml(n2)} - ${getColoredDigitHtml(n3)}`;
+    disp.innerHTML = `${getColoredDigitHtml(n1)} - ${getColoredDigitHtml(n2)} - ${getColoredDigitHtml(n3)}`;
 }
 let msg = "";
 if (n1 === n2 && n2 === n3) {
-sData.spinsSinceLastHit = 0;
-let basePt = getEventMinigameBasePt('slot', 3500);
-let hitColor = "BLUE";
-let colorLabel = "青図柄";
-
-if (n1 === 3 || n1 === 7) {
-hitColor = "GOLD";
-colorLabel = "金図柄";
-} else if (n1 === 1 || n1 === 5 || n1 === 9) {
-hitColor = "RED";
-colorLabel = "赤図柄";
+    sData.spinsSinceLastHit = 0;
+    let basePt = getEventMinigameBasePt('slot', 3500);
+    let hitColor = "BLUE";
+    let colorLabel = "青図柄";
+    if (n1 === 3 || n1 === 7) {
+        hitColor = "GOLD";
+        colorLabel = "金図柄";
+    } else if (n1 === 1 || n1 === 5 || n1 === 9) {
+        hitColor = "RED";
+        colorLabel = "赤図柄";
+    }
+    
+    let earnedPt = basePt;
+    // 赤図柄は獲得P+50%（1.5倍）、金図柄は獲得P+90%（1.9倍）
+    if (hitColor === "RED") {
+        earnedPt = Math.round(basePt * 1.5);
+    } else if (hitColor === "GOLD") {
+        earnedPt = Math.round(basePt * 1.9);
+    }
+    
+    let isDuringST = sData.inST;
+    // ※赤図柄以上のST中で青図柄揃いの場合は、獲得PはそのままでST回数のみ赤図柄揃いと同じにする昇格処理
+    if (hitColor === "BLUE" && isDuringST && (sData.highestMode === "RED" || sData.highestMode === "GOLD")) {
+        hitColor = "RED"; // 内部的にST回数を赤と同じにするためのフラグ転換
+    } else {
+        if (hitColor === "GOLD") sData.highestMode = "GOLD";
+        else if (hitColor === "RED" && sData.highestMode !== "GOLD") sData.highestMode = "RED";
+        else if (sData.highestMode === "NONE") sData.highestMode = "BLUE";
+    }
+    
+    sData.inST = true;
+    sData.inJitan = false;
+    
+    // 指定されたST・時短回数の設定
+    if (hitColor === "GOLD") {
+        sData.stCount = 50;
+        sData.jitanCount = 80;
+    } else if (hitColor === "RED") {
+        sData.stCount = 30;
+        sData.jitanCount = 50;
+    } else {
+        sData.stCount = 15;
+        sData.jitanCount = 30;
+    }
+    
+    saveSlotUserData(sData);
+    addCurrentPt(earnedPt);
+    msg = `🎉 【大当り (${colorLabel}・${n1}揃い)】 +${earnedPt}P！ ST${sData.stCount}回+時短${sData.jitanCount}回 突入！`;
 }
-let earnedPt = basePt;
-if (hitColor === "RED") {
-earnedPt = Math.round(basePt * 1.4);
-} else if (hitColor === "GOLD") {
-earnedPt = Math.round(basePt * 1.9);
-}
-
-/* 🌟 特別ルール適用:
-   - 赤・金図柄揃いでST突入後、ST中のみ青図柄揃いは獲得P以外は赤図柄と同じST回数+時短回数となる。
-   - 時短中の青図柄揃いは通常と同じになる。
-*/
-let isDuringST = sData.inST;
-if (hitColor === "BLUE" && isDuringST && (sData.highestMode === "RED" || sData.highestMode === "GOLD")) {
-hitColor = "RED"; // 昇格適用
-} else {
-if (hitColor === "GOLD") sData.highestMode = "GOLD";
-else if (hitColor === "RED" && sData.highestMode !== "GOLD") sData.highestMode = "RED";
-else if (sData.highestMode === "NONE") sData.highestMode = "BLUE";
-}
-
-sData.inST = true;
-sData.inJitan = false;
-if (hitColor === "GOLD") {
-sData.stCount = 80;
-sData.jitanCount = 40;
-} else if (hitColor === "RED") {
-sData.stCount = 50;
-sData.jitanCount = 30;
-} else {
-// 通常時の青 or 時短中の青（時短中なら通常と同じ: ST30回+時短10回）
-if (sData.inJitan) {
-sData.stCount = 30;
-sData.jitanCount = 10;
-} else {
-sData.stCount = 30;
-sData.jitanCount = 10;
-}
-}
-saveSlotUserData(sData);
-addCurrentPt(earnedPt);
-msg = `🎉 【大当り (${colorLabel}・${n1}揃い)】 +${earnedPt}P！ ST${sData.stCount}回+時短${sData.jitanCount}回 突入！`;
-} else {
+ else {
 if (!sData.inST && !sData.inJitan) {
 sData.highestMode = "NONE";
 msg = `ハズレ 0P`;
@@ -2131,11 +2124,11 @@ saveSlotUserData(sData);
 const resEl = document.getElementById('slot-res');
 if (resEl) resEl.innerText = msg;
 setTimeout(() => {
-let modeStatusStr = "【通常モード】 (大当り確率 1/74)";
+let modeStatusStr = "【通常】 (大当り確率 1/54)";
 if (sData.inST) {
-modeStatusStr = `🔥 【ST高確率モード】 (1/49) 残りST: ${sData.stCount}回転 / 時短: ${sData.jitanCount}回転`;
+modeStatusStr = `🔥 【SPECIAL TIME】 (1/19) 残りST: ${sData.stCount}回転 / 時短: ${sData.jitanCount}回転`;
 } else if (sData.inJitan) {
-modeStatusStr = `⚡ 【時短モード】 残り: ${sData.jitanCount}回転 (確率 1/74)`;
+modeStatusStr = `⚡ 【CHANCE TIME】 残り: ${sData.jitanCount}回転 (確率 1/54)`;
 }
 let subInfoStr = `${modeStatusStr} | 当り間: ${sData.spinsSinceLastHit}回転`;
 const subEl = document.querySelector('#minigame-game-screen div:nth-child(2)');
