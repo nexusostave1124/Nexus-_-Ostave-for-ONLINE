@@ -278,8 +278,7 @@ box-shadow: 0 4px 12px rgba(0,0,0,0.6); transition: transform 0.1s, border-color
 .song-sub-text { font-size: 0.6rem; color: #00f5d4; font-weight: bold; }
 
 /* 🌟 下部ナビゲーション */
-.bottom-nav {
-position: fixed; bottom: 0; left: 0; width: 100%;
+.bottom-nav {position: fixed; bottom: 0; left: 0; width: 100%;
 height: calc(62px + env(safe-area-inset-bottom, 0px));
 padding-bottom: env(safe-area-inset-bottom, 0px);
 background: rgba(18, 18, 18, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.15);
@@ -4746,6 +4745,8 @@ localStorage.clear();
 alert("🗑️ すべてのデータを削除しました。アプリを再起動します。");
 window.location.reload();
 }
+}
+}
 // 🎵 YouTubeプレイヤー管理用
 let ytPlayer = null;
 let youtubeSongs = [];
@@ -4833,6 +4834,3 @@ function playDefaultSongOnLogin() {
 </script>
 </body>
 </html>
-
-
-
