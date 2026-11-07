@@ -636,63 +636,8 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <audio id="audio-player" controls style="width: 100%; margin-bottom: 15px;" preload="auto"></audio>
 <div id="playlist"></div>
 </div>
-
-<!-- 変更後のガチャ画面 (screen-gacha) -->
-<div id="screen-gacha" class="screen" style="position: relative; overflow: hidden; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 15px; box-sizing: border-box;">
-    
-    <!-- 背景バナー画像を表示するエリア（左下の枠に相当 / もしくは全体背景） -->
-    <div id="gacha-bg-banner-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-size: cover; background-position: center; opacity: 0.85;"></div>
-    <!-- 暗転用オーバーレイ（文字を読みやすくするため） -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1;"></div>
-
-    <!-- 上部エリア (左上: アイコンとダイヤ / 右上: 時計・︙メニュー) -->
-    <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-        
-        <!-- 左上: アイコンとダイヤ残高のみ -->
-        <div style="display: flex; align-items: center; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 20px; backdrop-filter: blur(4px);">
-            <img id="gacha-user-icon" src="" alt="アイコン" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; margin-right: 6px; border: 1px solid #fff;">
-            <span style="color: #fff; font-size: 0.9rem; font-weight: bold;">💎 <span id="gacha-user-diamonds">486,300</span></span>
-        </div>
-
-        <!-- 右上: 時計表記 ＆ ︙メニュー -->
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <div id="gacha-clock-display" style="background: rgba(0,0,0,0.5); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-family: monospace;">16:38:45</div>
-            <!-- ︙メニューボタン（排出率・ラインナップ表示用） -->
-            <button onclick="openGachaInfoModal()" style="background: rgba(0,0,0,0.5); border: none; color: #fff; font-size: 1.2rem; padding: 2px 8px; border-radius: 4px; cursor: pointer;">︙</button>
-        </div>
-    </div>
-
-    <!-- 中央～下部エリア (左下: ガチャタイトル＆バナー枠 / 右下: 1回・10回引くボタン) -->
-    <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-bottom: 20px;">
-        
-        <!-- 左下: ガチャタイトル ＆ バナー挿入枠 -->
-        <div style="display: flex; flex-direction: column; gap: 6px; max-width: 55%;">
-            <div id="gacha-badge-label" style="background: #28a745; color: #fff; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; width: fit-content; font-weight: bold;">ネオフェス限定</div>
-            <div id="gacha-period-label" style="color: #fff; font-size: 0.7rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">2026.11.30 18:00～2026.12.5 20:59</div>
-            
-            <!-- バナー画像・タイトル枠 -->
-            <div style="background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; padding: 8px; text-align: center; backdrop-filter: blur(4px);">
-                <div style="color: #fff; font-size: 0.95rem; font-weight: bold; margin-bottom: 4px;" id="gacha-title-text">ガチャタイトル</div>
-                <div id="gacha-banner-img-box" style="width: 100%; height: 90px; background-size: cover; background-position: center; border-radius: 4px; background-color: #222;"></div>
-            </div>
-        </div>
-        <!-- 右下: 引くボタン群 (1回 / 10回・💎消費数記載) -->
-        <div style="display: flex; flex-direction: column; gap: 10px; width: 40%;">
-            <!-- 1回引くボタン -->
-            <button onclick="pullGacha(1)" style="background: linear-gradient(135deg, #007bff, #0056b3); color: #fff; border: none; border-radius: 8px; padding: 10px; text-align: right; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-                <div style="font-size: 0.9rem; font-weight: bold;">1回引く</div>
-                <div style="font-size: 0.8rem; color: #e0e0e0;">💎: <span id="gacha-cost-1">1,50</span></div>
-            </button>
-
-            <!-- 10回引くボタン -->
-            <button onclick="pullGacha(10)" style="background: linear-gradient(135deg, #ffc107, #d39e00); color: #000; border: none; border-radius: 8px; padding: 10px; text-align: right; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); font-weight: bold;">
-                <div style="font-size: 0.9rem; font-weight: bold;">10回引く</div>
-                <div style="font-size: 0.8rem; color: #333;">💎: <span id="gacha-cost-10">1,500</span></div>
-            </button>
-        </div>
-
-    </div>
-</div>
+<div id="screen-gacha" class="sub-screen">
+<div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
 <div id="gacha-content-container"></div>
 </div>
 <div id="screen-play" class="sub-screen">
