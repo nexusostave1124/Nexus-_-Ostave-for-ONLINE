@@ -1662,10 +1662,10 @@ contentBox.innerHTML = `
 
 <div style="margin-bottom:8px; border-bottom:1px solid #333; padding-bottom:4px;">
 <span style="color:#00f5d4; font-weight:bold;">・スロット (ST/時短搭載):</span><br>
-大当り確率: 通常 1/74、ST中 1/49<br>
-🔵 <b>青図柄揃い</b>: 基本獲得P (${pts.slot} P) + ST30回 + 時短10回<br>
-🔴 <b>赤図柄揃い</b>: 基本獲得P + 40% (${Math.round(pts.slot * 1.4)} P) + ST50回 + 時短30回<br>
-🟡 <b>金図柄揃い</b>: 基本獲得P + 90% (${Math.round(pts.slot * 1.9)} P) + ST80回 + 時短40回<br>
+大当り確率: 通常 1/54、ST中 1/19<br>
+🔵 <b>青図柄揃い</b>: 基本獲得P (${pts.slot} P) + ST15回 + 時短30回<br>
+🔴 <b>赤図柄揃い</b>: 基本獲得P + 50% (${Math.round(pts.slot * 1.4)} P) + ST30回 + 時短50回<br>
+🟡 <b>金図柄揃い</b>: 基本獲得P + 90% (${Math.round(pts.slot * 1.9)} P) + ST80回 + 時短50回<br>
 <span style="font-size:0.75rem; color:#aaa;">※赤・金図柄揃いでST突入後、ST中の青図柄揃いは獲得P以外は赤図柄と同じST回数+時短回数になります。</span>
 </div>
 
@@ -1710,7 +1710,8 @@ if (mg.highlow) html += `<button class="game-btn" onclick="startHighLowGame()">�
 if (mg.blackjack) html += `<button class="game-btn" onclick="startBlackjackGame()">♠️ Blackjack (21を作る / ドロー時倍化)</button>`;
 if (mg.mash) html += `<button class="game-btn" onclick="startMashGame()">👆 ボタン連打</button>`;
 if (mg.stopwatch) html += `<button class="game-btn" onclick="startStopwatchGame()">⏱️ ストップウォッチ</button>`;
-if (mg.slot) html += `<button class="game-btn" onclick="startSlotGame()">🎰 スロット (ST・時短搭載)</button>`;
+if (mg.slot) html += `<button class="game-btn" onclick="startSlotGame()">🎰 スロット (ST搭載)
+</button>`;
 if (mg.presshold) html += `<button class="game-btn" onclick="startPressHoldGame()">🔘 ボタン長押しゲーム</button>`;
 if (mg.bigsmall) html += `<button class="game-btn" onclick="startBigSmallGame()">🎲 Big or Small (1〜9)</button>`;
 if (!html) {
@@ -1778,7 +1779,7 @@ let revealed = hlRightNum;
 hlStreak = 0;
 hlLeftNum = hlRightNum;
 hlRightNum = Math.floor(Math.random() * 16) + 1;
-renderHighLowUI(`ハズレ... 0P 右の数字は ${revealed} でした。`);
+renderHighLowUI(`ハズレ... 右の数字は ${revealed} でした。`);
 }
 }
 // Blackjack
@@ -1808,11 +1809,11 @@ const actionButtonsHtml = bjGameOver ?
 document.getElementById('minigame-game-screen').innerHTML = `
 <h4 style="color:#00f5d4; margin-bottom:8px;">♠️ Blackjack ${bjMultiplier > 1 ? `<span style="color:#ffee00;">(次回P ${bjMultiplier}倍中!)</span>` : ''}</h4>
 <div style="background:#181818; padding:10px; border-radius:8px; margin-bottom:8px; text-align:left;">
-<div style="font-size:0.75rem; color:#aaa;">ディーラー (上)</div>
+<div style="font-size:0.75rem; color:#aaa;">ディーラー </div>
 <div style="font-size:1.1rem; font-weight:bold; color:#ff334b;">${dealerDisplay}</div>
 </div>
 <div style="background:#181818; padding:10px; border-radius:8px; margin-bottom:12px; text-align:left;">
-<div style="font-size:0.75rem; color:#aaa;">プレイヤー (あなた)</div>
+<div style="font-size:0.75rem; color:#aaa;">プレイヤー </div>
 <div style="font-size:1.1rem; font-weight:bold; color:#00f5d4;">[${bjPlayer.join(', ')}] (合計: ${calcBjScore(bjPlayer)})</div>
 </div>
 ${actionButtonsHtml}
@@ -1841,7 +1842,7 @@ let pScore = calcBjScore(bjPlayer);
 let dScore = calcBjScore(bjDealer);
 if (pScore > 21) {
 bjMultiplier = 1;
-renderBjUI(`敗北 (バースト) 0P`);
+renderBjUI(`敗北 (バースト) `);
 return;
 }
 if (pScore === dScore) {
@@ -1854,7 +1855,7 @@ addCurrentPt(pts);
 renderBjUI(`勝利！ (+${pts}P / ${bjMultiplier}倍ボーナス適用) ディーラー: ${dScore}`);
 bjMultiplier = 1;
 } else {
-renderBjUI(`敗北... 0P ディーラー: ${dScore}`);
+renderBjUI(`敗北...  ディーラー: ${dScore}`);
 bjMultiplier = 1;
 }
 }
@@ -1971,7 +1972,7 @@ renderSlotUI(initDisplay, "ボタンを押すか長押ししてスピン！");
 }
 function renderSlotUI(displayHtml, msg) {
 let sData = loadSlotUserData();
-let modeStatusStr = "【通常】 (大当り確率 1/74)";
+let modeStatusStr = "【通常】 (大当り確率 1/54)";
 if (sData.inST) {
 modeStatusStr = `🔥 【SPECIAL TIME】 (1/19) 残りST: ${sData.stCount}回転 / 時短: ${sData.jitanCount}回転`;
 } else if (sData.inJitan) {
@@ -1979,7 +1980,7 @@ modeStatusStr = `⚡ 【CHANCE TIME】 残り: ${sData.jitanCount}回転 (確率
 }
 let subInfoStr = `${modeStatusStr} | 当り間: ${sData.spinsSinceLastHit}回転`;
 document.getElementById('minigame-game-screen').innerHTML = `
-<h4 style="color:#00f5d4; margin-bottom:4px;">🎰 スロット (ST・時短搭載 / ユーザー別連動)</h4>
+<h4 style="color:#00f5d4; margin-bottom:4px;">🎰 スロット (NEO スロット)</h4>
 <div style="font-size:0.75rem; color:#ffee00; margin-bottom:10px;">${subInfoStr}</div>
 <div style="font-size:2.5rem; letter-spacing:10px; margin:15px 0; font-weight:bold;" id="slot-disp">${displayHtml}</div>
 <button class="game-btn" id="slot-spin-btn" style="background:#ffee00; color:#000; padding:12px;">スピン！ (長押し連打対応)</button>
@@ -2017,11 +2018,19 @@ slotAnimating = true;
 
 let sData = loadSlotUserData();
 if (sData.inST) {
-sData.stCount--;
-if (sData.stCount <= 0) sData.inST = false;
+    sData.stCount--;
+    // STが終了したら、持っていた時短回数を使って時短モードへ移行する
+    if (sData.stCount <= 0) {
+        sData.inST = false;
+        if (sData.jitanCount > 0) {
+            sData.inJitan = true;
+        }
+    }
 } else if (sData.inJitan) {
-sData.jitanCount--;
-if (sData.jitanCount <= 0) sData.inJitan = false;
+    sData.jitanCount--;
+    if (sData.jitanCount <= 0) {
+        sData.inJitan = false;
+    }
 }
 sData.spinsSinceLastHit++;
 saveSlotUserData(sData);
@@ -2096,6 +2105,9 @@ if (n1 === n2 && n2 === n3) {
     sData.inST = true;
     sData.inJitan = false;
     
+       sData.inST = true;
+    sData.inJitan = false; // 大当り直後はSTからスタート
+    
     // 指定されたST・時短回数の設定
     if (hitColor === "GOLD") {
         sData.stCount = 50;
@@ -2164,7 +2176,7 @@ clearInterval(holdTimer);
 holdTimer = null;
 }
 holdSec = 0;
-renderPressHoldUI("離したため 0 秒にリセットされました。");
+renderPressHoldUI("離したため リセットされました。");
 };
 btn.onmousedown = startHold;
 btn.onmouseup = endHold;
@@ -2250,7 +2262,7 @@ renderBigSmallUI(`正解！(+${pts}P) 右の数字は ${revealed} でした！`)
 } else {
 bsLeftNum = bsRightNum;
 bsRightNum = Math.floor(Math.random() * 9) + 1;
-renderBigSmallUI(`ハズレ... 0P 右の数字は ${revealed} でした。`);
+renderBigSmallUI(`ハズレ...  右の数字は ${revealed} でした。`);
 }
 }
 function addCurrentPt(pts) {
