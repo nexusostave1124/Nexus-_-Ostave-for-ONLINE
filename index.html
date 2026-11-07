@@ -987,51 +987,79 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <div id="admin-title-bg-list" style="margin-top: 10px; font-size: 0.8rem;"></div>
 </div>
 <div class="admin-section">
-<h4>🎂 ガチャ複数開催・ラインナップ・★2イラスト・💎消費設定</h4>
-<select id="admin-gacha-switcher-select" class="admin-input" onchange="adminSelectGachaToEdit(this.value)"></select>
-<input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
-<select id="admin-gacha-type-select" class="admin-input">
-<option value="ネオフェス限定">ネオフェス限定</option>
-<option value="タイアップ限定">タイアップ限定</option>
-<option value="限定">限定</option>
-<option value="復刻・バースデー">復刻・バースデー</option>
-<option value="イベント">イベント</option>
-<option value="限定復刻">限定復刻</option>
-<option value="限定/恒常">限定/恒常</option>
-</select>
+  <h4>🎂 ガチャ複数開催・ラインナップ・★2イラスト・💎消費設定</h4>
+  
+  <select id="admin-gacha-switcher-select" class="admin-input" onchange="adminSelectGachaToEdit(this.value)"></select>
+  <input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
+  
+  <select id="admin-gacha-type-select" class="admin-input">
+    <option value="ネオフェス限定">ネオフェス限定</option>
+    <option value="タイアップ限定">タイアップ限定</option>
+    <option value="限定">限定</option>
+    <option value="復刻・バースデー">復刻・バースデー</option>
+    <option value="イベント">イベント</option>
+    <option value="限定復刻">限定復刻</option>
+    <option value="限定/恒常">限定/恒常</option>
+  </select>
 
-<div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; margin-bottom:6px;">
-<label style="font-size: 0.8rem; color: #aaa;">ステータス：</label>
-<label style="font-size: 0.75rem; color: #00f5d4; cursor:pointer; display:flex; align-items:center; gap:4px;">
-<input type="checkbox" id="admin-gacha-show-status" style="width:15px; height:15px;" checked> ステータスマークを表示 (ON/OFF)
-</label>
-</div>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; margin-bottom:6px;">
+    <label style="font-size: 0.8rem; color: #aaa;">ステータス：</label>
+    <label style="font-size: 0.75rem; color: #00f5d4; cursor:pointer; display:flex; align-items:center; gap:4px;">
+      <input type="checkbox" id="admin-gacha-show-status" style="width:15px; height:15px;" checked> ステータスマークを表示 (ON/OFF)
+    </label>
+  </div>
 
-<select id="admin-gacha-status-select" class="admin-input">
-<option value="開催中">開催中</option>
-<option value="開催準備中">開催準備中 (一般非表示)</option>
-<option value="終了">終了 (引くのをロック)</option>
-</select>
+  <select id="admin-gacha-status-select" class="admin-input">
+    <option value="開催中">開催中</option>
+    <option value="開催準備中">開催準備中 (一般非表示)</option>
+    <option value="終了">終了 (引くのをロック)</option>
+  </select>
 
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-<div>
-<label style="font-size:0.75rem; color:#aaa;">1連 💎消費数:</label>
-<input type="number" id="admin-gacha-cost-single" class="admin-input" value="300">
-</div>
-<div>
-<label style="font-size:0.75rem; color:#aaa;">10連 💎消費数:</label>
-<input type="number" id="admin-gacha-cost-multi" class="admin-input" value="3000">
-</div>
-</div>
-<label style="font-size:0.8rem; color:#aaa;">ガチャバナー（Googleドライブ選択）：</label>
-<select id="admin-gacha-banner-select" class="admin-input"><option value="">(バナーなし)</option></select>
-<input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
-<input type="datetime-local" id="admin-gacha-end-input" class="admin-input" value="2026-11-30T00:00">
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-<button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ設定保存</button>
-<button class="admin-btn" style="background:#00f5d4; color:#000;" onclick="adminAddNewGacha()">➕ 新規ガチャ追加</button>
-</div>
-<button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteCurrentGacha()">🗑️ 現在のガチャを削除・ヒストリーへ</button>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+    <div>
+      <label style="font-size:0.75rem; color:#aaa;">1連 💎消費数:</label>
+      <input type="number" id="admin-gacha-cost-single" class="admin-input" value="300">
+    </div>
+    <div>
+      <label style="font-size:0.75rem; color:#aaa;">10連 💎消費数:</label>
+      <input type="number" id="admin-gacha-cost-multi" class="admin-input" value="3000">
+    </div>
+  </div>
+
+  <!-- 🖼️ メインバナー選択 -->
+  <label style="font-size:0.8rem; color:#aaa;">ガチャメインバナー（Googleドライブ選択）：</label>
+  <select id="admin-gacha-banner-select" class="admin-input"><option value="">(バナーなし)</option></select>
+
+  <!-- 🖼️ 追加：左下枠の個別画像 ＆ 最大7枚スライドショー ＆ 1回/10回オンオフ機能 -->
+  <div style="margin: 10px 0; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid #444;">
+    <label style="font-size:0.8rem; color:#00f5d4; display:block; margin-bottom:4px; font-weight:bold;">🖼️ 左下枠用の画像（個別設定）：</label>
+    <select id="admin-gacha-subbox-select" class="admin-input"><option value="">(メインバナーと共通)</option></select>
+
+    <label style="font-size:0.8rem; color:#ffee00; display:block; margin-top:10px; margin-bottom:4px; font-weight:bold;">🎞️ バナー背景スライドショー (最大7枚)：</label>
+    <div id="admin-gacha-banners-container" style="font-size:0.8rem; margin-bottom:6px;"></div>
+    <div style="display:flex; gap:6px;">
+      <select id="admin-gacha-add-banner-select" class="admin-input" style="margin:0;"><option value="">(画像を選択して追加)</option></select>
+      <button class="admin-btn" style="background:#ffee00; color:#000; margin:0; white-space:nowrap; width:auto; padding:0 10px;" onclick="adminAddGachaBanner()">➕ 追加</button>
+    </div>
+
+    <div style="display:flex; gap:15px; margin-top:12px; border-top:1px dashed #555; padding-top:8px;">
+      <label style="font-size:0.8rem; color:#fff; cursor:pointer; display:flex; align-items:center; gap:6px;">
+        <input type="checkbox" id="admin-gacha-enable-single" style="width:16px; height:16px;" checked> 1回引くボタンを表示
+      </label>
+      <label style="font-size:0.8rem; color:#fff; cursor:pointer; display:flex; align-items:center; gap:6px;">
+        <input type="checkbox" id="admin-gacha-enable-multi" style="width:16px; height:16px;" checked> 10回引くボタンを表示
+      </label>
+    </div>
+  </div>
+
+  <input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
+  <input type="datetime-local" id="admin-gacha-end-input" class="admin-input" value="2026-11-30T00:00">
+  
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+    <button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ設定保存</button>
+    <button class="admin-btn" style="background:#00f5d4; color:#000;" onclick="adminAddNewGacha()">➕ 新規ガチャ追加</button>
+  </div>
+  <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteCurrentGacha()">🗑️ 現在のガチャを削除・ヒストリーへ</button>
 <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
 <h5 style="color:#ffee00; margin-bottom:8px;">🎯 レアリティ別アイテム追加 (★2自動プレゼント配布対応)</h5>
 <label style="font-size:0.8rem; color:#aaa;">イラスト（Googleドライブ選択）：</label>
@@ -1046,7 +1074,7 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 </select>
 <label style="font-size:0.8rem; color:#ffee00; display:flex; align-items:center; gap:6px; margin:8px 0; cursor:pointer;">
 <input type="checkbox" id="admin-gacha-star2-auto-gift" style="width:16px; height:16px;" checked>
-★2時、全ユーザーのプレゼントに自動配布する
+★2、全ユーザーのプレゼントに自動配布する
 </label>
 <button class="admin-btn" onclick="adminAddGachaIllustration()">➕ ガチャラインナップに追加する</button>
 <div id="admin-gacha-lineup-by-rarity" style="margin-top: 15px; font-size: 0.8rem;"></div>
@@ -2908,29 +2936,115 @@ loadCurrentGachaToAdminForm();
 updateUIUserStatus();
 }
 }
+
+// 🎞️ ガチャ管理：最大7枚のバナー背景を追加する
+function adminAddGachaBanner() {
+    if (!currentGachaConfig) return;
+    const selectEl = document.getElementById('admin-gacha-add-banner-select');
+    const url = selectEl.value;
+    if (!url) {
+        alert("追加する画像を選択してください。");
+        return;
+    }
+    if (!Array.isArray(currentGachaConfig.banners)) {
+        currentGachaConfig.banners = currentGachaConfig.bannerUrl ? [currentGachaConfig.bannerUrl] : [];
+    }
+    if (currentGachaConfig.banners.length >= 7) {
+        alert("⚠️ バナー背景スライドショーは最大7枚までです。");
+        return;
+    }
+    if (currentGachaConfig.banners.includes(url)) {
+        alert("すでに登録されている画像です。");
+        return;
+    }
+    currentGachaConfig.banners.push(url);
+    renderAdminGachaBannersList();
+    selectEl.value = "";
+}
+
+// 🎞️ ガチャ管理：バナーを削除する
+function adminRemoveGachaBanner(index) {
+    if (!currentGachaConfig || !Array.isArray(currentGachaConfig.banners)) return;
+    currentGachaConfig.banners.splice(index, 1);
+    renderAdminGachaBannersList();
+}
+
+// 🎞️ ガチャ管理：登録中バナーの一覧表示レンダリング
+function renderAdminGachaBannersList() {
+    const container = document.getElementById('admin-gacha-banners-container');
+    if (!container || !currentGachaConfig) return;
+    const banners = Array.isArray(currentGachaConfig.banners) ? currentGachaConfig.banners : (currentGachaConfig.bannerUrl ? [currentGachaConfig.bannerUrl] : []);
+    
+    if (banners.length === 0) {
+        container.innerHTML = `<div style="color:#888; font-size:0.75rem;">登録中のバナーはありません（メインバナーを使用）</div>`;
+        return;
+    }
+    let html = `<div style="color:#00f5d4; margin-bottom:4px; font-weight:bold;">登録中 (${banners.length}/7枚):</div>`;
+    banners.forEach((url, idx) => {
+        html += `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#222; padding:4px 8px; border-radius:4px; margin-bottom:3px;">
+            <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; font-size:0.75rem;">${url}</span>
+            <button onclick="adminRemoveGachaBanner(${idx})" style="background:#ff334b; color:#fff; border:none; padding:2px 6px; border-radius:3px; cursor:pointer; font-size:0.7rem;">削除</button>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+// 💾 既存の adminSaveGachaConfig をアップデート
+function adminSaveGachaConfig() {
+    if (!currentGachaConfig) {
+        alert("保存するガチャが存在しません。新規追加してください。");
+        return;
+    }
+    currentGachaConfig.title = document.getElementById('admin-gacha-title-input').value;
+    currentGachaConfig.type = document.getElementById('admin-gacha-type-select').value;
+    currentGachaConfig.status = document.getElementById('admin-gacha-status-select').value;
+    currentGachaConfig.manualOverride = true;
+    currentGachaConfig.showStatus = document.getElementById('admin-gacha-show-status').checked;
+    
+    // 新規追加項目の保存
+    currentGachaConfig.bannerUrl = document.getElementById('admin-gacha-banner-select').value;
+    currentGachaConfig.subBoxImage = document.getElementById('admin-gacha-subbox-select').value;
+    currentGachaConfig.enableSingle = document.getElementById('admin-gacha-enable-single').checked;
+    currentGachaConfig.enableMulti = document.getElementById('admin-gacha-enable-multi').checked;
+    
+    currentGachaConfig.startDate = document.getElementById('admin-gacha-start-input').value;
+    currentGachaConfig.endDate = document.getElementById('admin-gacha-end-input').value;
+    currentGachaConfig.costSingle = Number(document.getElementById('admin-gacha-cost-single').value) || 300;
+    currentGachaConfig.costMulti = Number(document.getElementById('admin-gacha-cost-multi').value) || 3000;
+
+    const idx = gachaList.findIndex(g => g.id === currentGachaConfig.id);
+    if (idx !== -1) gachaList[idx] = currentGachaConfig;
+    localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+    localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
+    populateAdminGachaSwitcher();
+    updateUIUserStatus();
+    alert("🎂 ガチャ設定を保存しました！");
+}
+
+// 📂 既存の loadCurrentGachaToAdminForm をアップデート
 function loadCurrentGachaToAdminForm() {
-if (!currentGachaConfig) {
-document.getElementById('admin-gacha-title-input').value = "";
-document.getElementById('admin-gacha-type-select').value = "ネオフェス限定";
-document.getElementById('admin-gacha-status-select').value = "開催中";
-document.getElementById('admin-gacha-show-status').checked = true;
-document.getElementById('admin-gacha-banner-select').value = "";
-document.getElementById('admin-gacha-start-input').value = "";
-document.getElementById('admin-gacha-end-input').value = "";
-document.getElementById('admin-gacha-cost-single').value = 300;
-document.getElementById('admin-gacha-cost-multi').value = 3000;
-return;
+    if (!currentGachaConfig) return;
+    document.getElementById('admin-gacha-title-input').value = currentGachaConfig.title || "";
+    document.getElementById('admin-gacha-type-select').value = currentGachaConfig.type || "ネオフェス限定";
+    document.getElementById('admin-gacha-status-select').value = currentGachaConfig.status || "開催中";
+    document.getElementById('admin-gacha-show-status').checked = currentGachaConfig.showStatus !== false;
+    document.getElementById('admin-gacha-banner-select').value = currentGachaConfig.bannerUrl || "";
+    
+    // 新規追加項目の読み込み反映
+    document.getElementById('admin-gacha-subbox-select').value = currentGachaConfig.subBoxImage || "";
+    document.getElementById('admin-gacha-enable-single').checked = currentGachaConfig.enableSingle !== false;
+    document.getElementById('admin-gacha-enable-multi').checked = currentGachaConfig.enableMulti !== false;
+    
+    document.getElementById('admin-gacha-start-input').value = currentGachaConfig.startDate || "";
+    document.getElementById('admin-gacha-end-input').value = currentGachaConfig.endDate || "";
+    document.getElementById('admin-gacha-cost-single').value = currentGachaConfig.costSingle || 300;
+    document.getElementById('admin-gacha-cost-multi').value = currentGachaConfig.costMulti || 3000;
+    
+    renderAdminGachaBannersList();
 }
-document.getElementById('admin-gacha-title-input').value = currentGachaConfig.title || "";
-document.getElementById('admin-gacha-type-select').value = currentGachaConfig.type || "ネオフェス限定";
-document.getElementById('admin-gacha-status-select').value = currentGachaConfig.status || "開催中";
-document.getElementById('admin-gacha-show-status').checked = currentGachaConfig.showStatus !== false;
-document.getElementById('admin-gacha-banner-select').value = currentGachaConfig.bannerUrl || "";
-document.getElementById('admin-gacha-start-input').value = currentGachaConfig.startDate || "";
-document.getElementById('admin-gacha-end-input').value = currentGachaConfig.endDate || "";
-document.getElementById('admin-gacha-cost-single').value = currentGachaConfig.costSingle || 300;
-document.getElementById('admin-gacha-cost-multi').value = currentGachaConfig.costMulti || 3000;
-}
+
+
 function adminSaveGachaConfig() {
 if (!currentGachaConfig) {
 alert("保存するガチャが存在しません。新規追加してください。");
@@ -2954,6 +3068,7 @@ populateAdminGachaSwitcher();
 updateUIUserStatus();
 alert("🎂 ガチャ設定を保存しました！");
 }
+
 function adminAddNewGacha() {
 const newId = 'g_' + Date.now();
 const newG = {
