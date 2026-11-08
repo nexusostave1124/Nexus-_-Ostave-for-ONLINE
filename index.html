@@ -161,37 +161,29 @@ text-align: left;
 }
 .title-menu-item:last-child { border-bottom: none; color: #ff334b; }
 .title-menu-item:active { background: rgba(255,255,255,0.15); }
-/* ================= 📱 メイン画面エリア ================= */
-.app-container {
-position: relative;
-flex: 1;
-width: 100%;
-height: 100%;
-overflow: hidden;
-padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
-}
+/* ================= 📱 メイン画面・全画面共通のレイアウト修正 ================= */
 .app-container {
   position: relative;
   flex: 1;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  /* 下部ナビゲーションの高さ分だけ上に押し上げる */
   padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
 }
 
-.bg-slideshow {
+/* 背景スライドショーが勝手に引き伸ばされないように高さを固定・制限 */
+.bg-slideshow, .title-bg-slideshow, .event-full-bg-container {
   position: absolute;
   top: 0; 
   left: 0;
   width: 100%; 
-  /* 下部のナビバーや上部ステータスと被らないように高さを調整 */
-  height: calc(100% - 62px); 
+  height: 100%;
   z-index: 1;
   overflow: hidden;
 }
 
-.slide-img {
+/* 背景画像がアスペクト比を保ったまま綺麗に収まるようにする */
+.slide-img, .title-slide-img, .event-bg-slide {
   position: absolute;
   top: 0; 
   left: 0;
@@ -202,7 +194,10 @@ padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
   opacity: 0;
   transition: opacity 0.8s ease-in-out;
 }
-.slide-img.active { opacity: 1; }
+
+.slide-img.active, .title-slide-img.active, .event-bg-slide.active { 
+  opacity: 1; 
+}
 .overlay-top {
 position: absolute; top: 0; left: 0; right: 0; height: 160px;
 background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
@@ -350,8 +345,19 @@ width: 44px; height: 44px; background: #fff; border-radius: 50%;
 display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 5px; box-shadow: 0 3px 6px rgba(0,0,0,0.3);
 }
 .sub-screen {
-position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-background: #121212; z-index: 100; display: none; flex-direction: column; padding: 15px; box-sizing: border-box; overflow-y: auto;
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  background: #121212; 
+  z-index: 100; 
+  display: none; 
+  flex-direction: column; 
+  padding: 15px; 
+  box-sizing: border-box; 
+  overflow-y: auto;
+}
 }
 .sub-screen.active { display: flex; }
 .sub-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #333; margin-bottom: 15px; flex-shrink: 0; }
