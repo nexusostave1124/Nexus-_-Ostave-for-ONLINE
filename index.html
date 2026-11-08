@@ -4795,13 +4795,9 @@ function playYouTubeSongByIndex(index) {
     }
 }
 
-// 🔓 ログイン時の自動再生
+// 🎵 ログイン直後などに最初の曲をスタンバイする関数
 function playDefaultSongOnLogin() {
-    if (dynamicSongsList.length > 0) {
-        playYouTubeSong(dynamicSongsList[0]);
-    } else if (typeof dynamicSongsList !== 'undefined') {
-        playYouTubeSong({ title: "SPECIALZ", youtubeId: "8weM3t_zehw" });
-    }
+    initDynamicPlaylist();
 }
 
 // 起動時にプレイリストを作成しておく
