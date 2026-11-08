@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&display=swap" rel="stylesheet">
-<!-- 🖋️ ここにYouTube APIのスクリプトを追加 -->
-<script src="https://www.youtube.com/iframe_api"></script>
-<style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Nexus:_-Ostave for ONLINE</title>
@@ -161,43 +157,32 @@ text-align: left;
 }
 .title-menu-item:last-child { border-bottom: none; color: #ff334b; }
 .title-menu-item:active { background: rgba(255,255,255,0.15); }
-/* ================= 📱 メイン画面・全画面共通のレイアウト修正 ================= */
+
+/* ================= 📱 メイン画面エリア ================= */
 .app-container {
-  position: relative;
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+position: relative;
+flex: 1;
+width: 100%;
+height: 100%;
+overflow: hidden;
+padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
 }
-
-/* 背景スライドショーが勝手に引き伸ばされないように高さを固定・制限 */
-.bg-slideshow, .title-bg-slideshow, .event-full-bg-container {
-  position: absolute;
-  top: 0; 
-  left: 0;
-  width: 100%; 
-  height: 100%;
-  z-index: 1;
-  overflow: hidden;
+.bg-slideshow {
+position: absolute;
+top: 0; left: 0;
+width: 100%; height: 100%;
+z-index: 1;
 }
-
-/* 背景画像がアスペクト比を保ったまま綺麗に収まるようにする */
-.slide-img, .title-slide-img, .event-bg-slide {
-  position: absolute;
-  top: 0; 
-  left: 0;
-  width: 100%; 
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  opacity: 0;
-  transition: opacity 0.8s ease-in-out;
+.slide-img {
+position: absolute;
+top: 0; left: 0;
+width: 100%; height: 100%;
+object-fit: cover;
+object-position: center;
+opacity: 0;
+transition: opacity 0.8s ease-in-out;
 }
-
-.slide-img.active, .title-slide-img.active, .event-bg-slide.active { 
-  opacity: 1; 
-}
+.slide-img.active { opacity: 1; }
 .overlay-top {
 position: absolute; top: 0; left: 0; right: 0; height: 160px;
 background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
@@ -345,19 +330,8 @@ width: 44px; height: 44px; background: #fff; border-radius: 50%;
 display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 5px; box-shadow: 0 3px 6px rgba(0,0,0,0.3);
 }
 .sub-screen {
-  position: absolute; 
-  top: 0; 
-  left: 0; 
-  width: 100%; 
-  height: 100%;
-  background: #121212; 
-  z-index: 100; 
-  display: none; 
-  flex-direction: column; 
-  padding: 15px; 
-  box-sizing: border-box; 
-  overflow-y: auto;
-}
+position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+background: #121212; z-index: 100; display: none; flex-direction: column; padding: 15px; box-sizing: border-box; overflow-y: auto;
 }
 .sub-screen.active { display: flex; }
 .sub-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #333; margin-bottom: 15px; flex-shrink: 0; }
@@ -475,40 +449,6 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 }
 .game-btn { background: #00f5d4; color: #000; font-weight: bold; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-family: inherit; width: 100%; margin-top: 6px; font-size: 0.9rem; }
 .game-btn:active { opacity: 0.8; }
-/* ================= 📱 レスポンシブ対応（デバイス別最適化） ================= */
-
-/* --- ① スマートフォン向け (画面幅 480px 以下) --- */
-@media screen and (max-width: 480px) {
-  .title-main-text { font-size: 1.8rem !important; }
-  .title-sub-text { font-size: 0.95rem !important; }
-  .menu-dialog { width: 92% !important; padding: 15px 10px !important; }
-  .user-status { min-width: 160px !important; padding: 8px 10px !important; }
-  .album-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
-}
-
-/* --- ② タブレット向け (画面幅 481px 〜 1024px) --- */
-@media screen and (min-width: 481px) and (max-width: 1024px) {
-  .title-main-text { font-size: 2.5rem !important; }
-  .menu-dialog { max-width: 450px !important; }
-  .app-container, #title-screen { max-width: 100% !important; }
-}
-
-/* --- ③ パソコン (デスクトップ) 向け (画面幅 1025px 以上) --- */
-@media screen and (min-width: 1025px) {
-  /* PCではスマホ風の縦長アプリUIとして中央に美しく収まるように制限 */
-  body {
-    max-width: 480px;
-    margin: 0 auto;
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
-    border-left: 1px solid #333;
-    border-right: 1px solid #333;
-  }
-  #title-screen, .app-container, .bottom-nav, .sub-screen, .modal-overlay {
-    max-width: 480px !important;
-    left: 50% !important;
-    transform: translateX(-50%);
-  }
-}
 </style>
 </head>
 <body>
@@ -691,12 +631,14 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 
 <!-- 📄 その他の各種サブ画面 -->
 <div id="screen-player" class="sub-screen">
-<div class="sub-header"><span class="sub-title">🎵 楽曲選択 (YouTube)</span><button class="close-btn" onclick="closeScreen('player')">閉じる</button></div>
+<div class="sub-header"><span class="sub-title">🎵 楽曲選択</span><button class="close-btn" onclick="closeScreen('player')">閉じる</button></div>
 <div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: なし</div>
-<!-- 🎵 YouTubeプレイヤー用埋め込み枠 -->
-<div id="youtube-player-container" style="width: 100%; height: 180px; background: #000; margin-bottom: 15px; border-radius: 8px; overflow: hidden;">
-    <div id="yt-player"></div>
+
+<!-- 🎬 YouTube音声をバッチリ再生するための埋め込みフレーム枠 -->
+<div id="youtube-player-box" style="width: 100%; height: 120px; background: #000; margin-bottom: 15px; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+    <div id="yt-player-iframe-wrap" style="width:100%; height:100%;"></div>
 </div>
+
 <div id="playlist"></div>
 </div>
 <div id="screen-gacha" class="sub-screen">
@@ -1050,81 +992,51 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <div id="admin-title-bg-list" style="margin-top: 10px; font-size: 0.8rem;"></div>
 </div>
 <div class="admin-section">
-  <h4>🎂 ガチャ複数開催・ラインナップ・★2イラスト・💎消費設定</h4>
-  
-  <select id="admin-gacha-switcher-select" class="admin-input" onchange="adminSelectGachaToEdit(this.value)"></select>
-  <input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
-  
-  <select id="admin-gacha-type-select" class="admin-input">
-    <option value="ネオフェス限定">ネオフェス限定</option>
-    <option value="タイアップ限定">タイアップ限定</option>
-    <option value="限定">限定</option>
-    <option value="復刻・バースデー">復刻・バースデー</option>
-    <option value="イベント">イベント</option>
-    <option value="限定復刻">限定復刻</option>
-    <option value="限定/恒常">限定/恒常</option>
-  </select>
+<h4>🎂 ガチャ複数開催・ラインナップ・★2イラスト・💎消費設定</h4>
+<select id="admin-gacha-switcher-select" class="admin-input" onchange="adminSelectGachaToEdit(this.value)"></select>
+<input type="text" id="admin-gacha-title-input" class="admin-input" value="記念ピックアップガチャ">
+<select id="admin-gacha-type-select" class="admin-input">
+<option value="ネオフェス限定">ネオフェス限定</option>
+<option value="タイアップ限定">タイアップ限定</option>
+<option value="限定">限定</option>
+<option value="復刻・バースデー">復刻・バースデー</option>
+<option value="イベント">イベント</option>
+<option value="限定復刻">限定復刻</option>
+<option value="限定/恒常">限定/恒常</option>
+</select>
 
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; margin-bottom:6px;">
-    <label style="font-size: 0.8rem; color: #aaa;">ステータス：</label>
-    <label style="font-size: 0.75rem; color: #00f5d4; cursor:pointer; display:flex; align-items:center; gap:4px;">
-      <input type="checkbox" id="admin-gacha-show-status" style="width:15px; height:15px;" checked> ステータスマークを表示 (ON/OFF)
-    </label>
-  </div>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; margin-bottom:6px;">
+<label style="font-size: 0.8rem; color: #aaa;">ステータス：</label>
+<label style="font-size: 0.75rem; color: #00f5d4; cursor:pointer; display:flex; align-items:center; gap:4px;">
+<input type="checkbox" id="admin-gacha-show-status" style="width:15px; height:15px;" checked> ステータスマークを表示 (ON/OFF)
+</label>
+</div>
 
-  <select id="admin-gacha-status-select" class="admin-input">
-    <option value="開催中">開催中</option>
-    <option value="開催準備中">開催準備中 (一般非表示)</option>
-    <option value="終了">終了 (引くのをロック)</option>
-  </select>
+<select id="admin-gacha-status-select" class="admin-input">
+<option value="開催中">開催中</option>
+<option value="開催準備中">開催準備中 (一般非表示)</option>
+<option value="終了">終了 (引くのをロック)</option>
+</select>
 
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-    <div>
-      <label style="font-size:0.75rem; color:#aaa;">1連 💎消費数:</label>
-      <input type="number" id="admin-gacha-cost-single" class="admin-input" value="300">
-    </div>
-    <div>
-      <label style="font-size:0.75rem; color:#aaa;">10連 💎消費数:</label>
-      <input type="number" id="admin-gacha-cost-multi" class="admin-input" value="3000">
-    </div>
-  </div>
-
-  <!-- 🖼️ メインバナー選択 -->
-  <label style="font-size:0.8rem; color:#aaa;">ガチャメインバナー（Googleドライブ選択）：</label>
-  <select id="admin-gacha-banner-select" class="admin-input"><option value="">(バナーなし)</option></select>
-
-  <!-- 🖼️ 追加：左下枠の個別画像 ＆ 最大7枚スライドショー ＆ 1回/10回オンオフ機能 -->
-  <div style="margin: 10px 0; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid #444;">
-    <label style="font-size:0.8rem; color:#00f5d4; display:block; margin-bottom:4px; font-weight:bold;">🖼️ 左下枠用の画像（個別設定）：</label>
-    <select id="admin-gacha-subbox-select" class="admin-input"><option value="">(メインバナーと共通)</option></select>
-
-    <label style="font-size:0.8rem; color:#ffee00; display:block; margin-top:10px; margin-bottom:4px; font-weight:bold;">🎞️ バナー背景スライドショー (最大7枚)：</label>
-    <div id="admin-gacha-banners-container" style="font-size:0.8rem; margin-bottom:6px;"></div>
-    <div style="display:flex; gap:6px;">
-      <select id="admin-gacha-add-banner-select" class="admin-input" style="margin:0;"><option value="">(画像を選択して追加)</option></select>
-      <button class="admin-btn" style="background:#ffee00; color:#000; margin:0; white-space:nowrap; width:auto; padding:0 10px;" onclick="adminAddGachaBanner()">➕ 追加</button>
-    </div>
-
-    <div style="display:flex; gap:15px; margin-top:12px; border-top:1px dashed #555; padding-top:8px;">
-      <label style="font-size:0.8rem; color:#fff; cursor:pointer; display:flex; align-items:center; gap:6px;">
-        <input type="checkbox" id="admin-gacha-enable-single" style="width:16px; height:16px;" checked> 1回引くボタンを表示
-      </label>
-      <label style="font-size:0.8rem; color:#fff; cursor:pointer; display:flex; align-items:center; gap:6px;">
-        <input type="checkbox" id="admin-gacha-enable-multi" style="width:16px; height:16px;" checked> 10回引くボタンを表示
-      </label>
-    </div>
-  </div>
-
-  <input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
-  <input type="datetime-local" id="admin-gacha-end-input" class="admin-input" value="2026-11-30T00:00">
-  
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-    <button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ設定保存</button>
-    <button class="admin-btn" style="background:#00f5d4; color:#000;" onclick="adminAddNewGacha()">➕ 新規ガチャ追加</button>
-  </div>
-  <button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteCurrentGacha()">🗑️ 現在のガチャを削除・ヒストリーへ</button>
-
-
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+<div>
+<label style="font-size:0.75rem; color:#aaa;">1連 💎消費数:</label>
+<input type="number" id="admin-gacha-cost-single" class="admin-input" value="300">
+</div>
+<div>
+<label style="font-size:0.75rem; color:#aaa;">10連 💎消費数:</label>
+<input type="number" id="admin-gacha-cost-multi" class="admin-input" value="3000">
+</div>
+</div>
+<label style="font-size:0.8rem; color:#aaa;">ガチャバナー（Googleドライブ選択）：</label>
+<select id="admin-gacha-banner-select" class="admin-input"><option value="">(バナーなし)</option></select>
+<input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
+<input type="datetime-local" id="admin-gacha-end-input" class="admin-input" value="2026-11-30T00:00">
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+<button class="admin-btn" onclick="adminSaveGachaConfig()">💾 ガチャ設定保存</button>
+<button class="admin-btn" style="background:#00f5d4; color:#000;" onclick="adminAddNewGacha()">➕ 新規ガチャ追加</button>
+</div>
+<button class="admin-btn" style="background:#ff334b; color:#fff;" onclick="adminDeleteCurrentGacha()">🗑️ 現在のガチャを削除・ヒストリーへ</button>
 <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
 <h5 style="color:#ffee00; margin-bottom:8px;">🎯 レアリティ別アイテム追加 (★2自動プレゼント配布対応)</h5>
 <label style="font-size:0.8rem; color:#aaa;">イラスト（Googleドライブ選択）：</label>
@@ -1211,6 +1123,9 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <script>
 const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
 let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
+// 🎵 動的取得する楽曲・画像リストの格納用変数
+let dynamicSongsList = [];
+let dynamicImagesList = [];
 const GACHA_RATES = {
 "ネオフェス限定": { "★6": 0.4, "★5": 6.6, "★4": 23, "★3": 30, "★2": 40 },
 "タイアップ限定": { "★6": 0.3, "★5": 1.7, "★4": 30, "★3": 30, "★2": 38 },
@@ -3172,11 +3087,11 @@ alert("🖼️ アプリ全体のアイコンを変更しました！");
 }
 applyCustomAppIcon();
 }
-
 function renderGachaScreen() {
     const container = document.getElementById('gacha-content-container');
     if (!container) return;
     
+    // 標準ヘッダーを非表示
     const subHeader = container.parentElement ? container.parentElement.querySelector('.sub-header') : null;
     if (subHeader) {
         subHeader.style.display = 'none';
@@ -3208,17 +3123,18 @@ function renderGachaScreen() {
     const userGem = currentUser ? Number(currentUser.gem || 0).toLocaleString() : "0";
     const userIconSrc = userAvatarUrl || "https://picsum.photos/id/1069/100/100";
     
-    // 🎞️ チェックが入った★4〜★6画像から最大7枚のスライドショー対象を抽出
+    // 🎞️ ★6・★5・★4のチェックが入った画像のみを抽出してスライドショー対象にする
     let slideBanners = [];
     if (Array.isArray(currentGachaConfig.rarityBanners)) {
+        // 設定されたレアリティチェック（★6, ★5, ★4）に合致する画像を抽出
         slideBanners = currentGachaConfig.rarityBanners
             .filter(item => item.checked && item.url)
-            .slice(0, 7)
             .map(item => item.url);
     }
     if (slideBanners.length === 0) {
+        // フォールバック（従来の配列または単体URL）
         if (Array.isArray(currentGachaConfig.banners) && currentGachaConfig.banners.length > 0) {
-            slideBanners = currentGachaConfig.banners.slice(0, 7);
+            slideBanners = currentGachaConfig.banners;
         } else if (currentGachaConfig.bannerUrl) {
             slideBanners = [currentGachaConfig.bannerUrl];
         } else {
@@ -3226,19 +3142,23 @@ function renderGachaScreen() {
         }
     }
 
-    // 🖼️ 左下枠用の個別選択画像（バナーとは別管理）
+    // 🖼️ 左下枠用の個別設定画像（バナーとは別管理）
     const subBoxImgUrl = currentGachaConfig.subBoxImage || slideBanners[0];
 
-    // 🕒 ホーム・イベント画面と完全に共通化された時計の取得
+    // 🕒 ホーム・イベント画面と完全に共通化された時計の取得ロジック
     const now = new Date();
     const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
     
-    const clockColorClass = localStorage.getItem('nexus_clock_color') || 'c-red';
+    // ホームやイベント画面で使用されている共通の時計設定変数・フォント・カラーをそのまま適用
+    const clockColor = (typeof clockFontColor !== 'undefined' && clockFontColor) ? clockFontColor : 
+                       ((typeof homeClockColor !== 'undefined' && homeClockColor) ? homeClockColor : '#00aaff');
+    const clockFont = (typeof currentClockFont !== 'undefined' && currentClockFont) ? currentClockFont : "'Shippori Mincho', serif";
 
     container.innerHTML = `
+    <!-- 全体コンテナ (下部メニューに被らないよう余白を確保) -->
     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding: 10px 10px 95px 10px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
         
-        <!-- 背景スライドショー -->
+        <!-- 背景バナー スライドショーコンテナ -->
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden;">
             ${slideBanners.map((url, idx) => `
                 <div class="gacha-slide-banner" data-index="${idx}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('${url}'); background-size: cover; background-position: center; opacity: ${idx === 0 ? '1' : '0'}; transition: opacity 1s ease-in-out; filter: brightness(0.85);"></div>
@@ -3248,44 +3168,45 @@ function renderGachaScreen() {
 
         <!-- 上部エリア -->
         <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+            <!-- 左上: アイコンとダイヤ -->
             <div style="display: flex; align-items: center; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 20px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
                 <img src="${userIconSrc}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 6px; border: 1px solid #00f5d4;">
                 <span style="color: #00f5d4; font-size: 0.85rem; font-weight: bold; text-shadow: 0 0 6px rgba(0,245,212,0.5);">💎 ${userGem}</span>
             </div>
             
-            <!-- 時計 (ホーム画面と完全リンク) & ︙ -->
+            <!-- 右上: ホーム・イベント画面完全共通の時計 ＆ 下に ︙ ボタン -->
             <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
-                <span style="font-size: 0.7rem; color: #ccc; text-shadow: 1px 1px 2px #000; font-family: 'Shippori Mincho', serif;">現在時刻</span>
-                <div id="gacha-live-clock" class="clock-time ${clockColorClass}" style="font-size: 1.6rem; font-weight: bold; line-height: 1.1; font-variant-numeric: tabular-nums;">${timeStr}</div>
+                <span style="font-size: 0.7rem; color: #ccc; text-shadow: 1px 1px 2px #000; font-family: ${clockFont};">現在時刻</span>
+                <div id="gacha-live-clock" style="color: ${clockColor}; font-size: 1.6rem; font-weight: bold; font-family: ${clockFont}; text-shadow: 0 0 10px ${clockColor}; font-variant-numeric: tabular-nums; line-height: 1.1;">${timeStr}</div>
                 <button onclick="toggleGachaRateModal()" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: #fff; font-size: 1.1rem; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 4px;">︙</button>
             </div>
         </div>
 
-        <!-- 下部エリア -->
+        <!-- 下部エリア (左下: タイトルなし独立小枠 ＆ 右下: ボタン) -->
         <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-bottom: 5px;">
+            
+            <!-- 左下: 期間 ＆ 管理画面で独立設定した小枠画像（タイトル表記なし） -->
             <div style="display: flex; flex-direction: column; gap: 4px; width: 52%;">
                 <span style="background: #28a745; color: #fff; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; width: fit-content;">${currentGachaConfig.type}</span>
                 <div style="font-size: 0.65rem; color: #eee; text-shadow: 1px 1px 2px #000;">${formatDateStr(currentGachaConfig.startDate)}〜${formatDateStr(currentGachaConfig.endDate)}</div>
                 
-                <!-- 左下枠 (タイトルなし・別設定の小枠画像) -->
                 <div style="background: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 4px; backdrop-filter: blur(4px);">
                     <div style="width: 100%; height: 60px; background-image: url('${subBoxImgUrl}'); background-size: cover; background-position: center; border-radius: 6px;"></div>
                 </div>
             </div>
 
-            <!-- 引くボタン (管理画面の有効/無効チェックに連動) -->
+            <!-- 右下: 引くボタン -->
             <div style="display: flex; flex-direction: column; gap: 6px; width: 42%;">
-                ${currentGachaConfig.enableSingle !== false ? `
                 <button onclick="pullGacha(1)" style="background: linear-gradient(135deg, #00f5d4, #0088cc); color: #000; border: none; border-radius: 8px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 3px 8px rgba(0,0,0,0.4);">
                     <div style="font-size: 0.8rem; font-weight: 800;">1回引く</div>
                     <div style="font-size: 0.7rem; color: #111; font-weight: bold;">💎 ${costSingle.toLocaleString()}</div>
-                </button>` : ''}
-                ${currentGachaConfig.enableMulti !== false ? `
+                </button>
                 <button onclick="pullGacha(10)" style="background: linear-gradient(135deg, #ffee00, #ff9900); color: #000; border: none; border-radius: 8px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 3px 8px rgba(0,0,0,0.4);">
                     <div style="font-size: 0.8rem; font-weight: 800;">10回引く</div>
                     <div style="font-size: 0.7rem; color: #111; font-weight: bold;">💎 ${costMulti.toLocaleString()}</div>
-                </button>` : ''}
+                </button>
             </div>
+
         </div>
 
         <!-- ︙メニューモーダル (排出率 ＋ チェックされた★4〜6スライドショー対象一覧) -->
@@ -3293,11 +3214,13 @@ function renderGachaScreen() {
             <div style="background: #222; border: 2px solid #00f5d4; border-radius: 12px; padding: 15px; width: 90%; max-width: 350px; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
                 <h4 style="color: #00f5d4; margin-bottom: 10px; text-align: center;">📊 ガチャ詳細・排出率 & ラインナップ</h4>
                 
+                <!-- 排出率テーブル -->
                 <table class="rate-table" style="margin-bottom: 15px; width:100%;">
                     <thead><tr><th>★6</th><th>★5</th><th>★4</th><th>★3</th><th>★2</th></tr></thead>
                     <tbody><tr><td>${rates["★6"]}%</td><td>${rates["★5"]}%</td><td>${rates["★4"]}%</td><td>${rates["★3"]}%</td><td>${rates["★2"]}%</td></tr></tbody>
                 </table>
 
+                <!-- チェックが入った★4〜6スライドショー対象アイテムの表示エリア -->
                 <div style="font-size: 0.8rem; font-weight: bold; color: #ffcc00; margin-bottom: 6px;">✨ ピックアップ対象一覧 (★4〜★6)</div>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 15px;">
                     ${Array.isArray(currentGachaConfig.rarityBanners) ? currentGachaConfig.rarityBanners.filter(item => item.checked && item.url).map(item => `
@@ -3307,6 +3230,7 @@ function renderGachaScreen() {
                         </div>
                     `).join('') : '<p style="font-size: 0.75rem; color: #aaa; text-align: center; grid-column: span 3;">対象アイテムがありません</p>'}
                 </div>
+
                 <button onclick="toggleGachaRateModal()" style="width: 100%; background: #00f5d4; color: #000; border: none; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer;">閉じる</button>
             </div>
         </div>
@@ -3314,6 +3238,7 @@ function renderGachaScreen() {
     </div>
     `;
 
+    // 背景スライドショーのタイマー処理（チェックされた画像のみでループ）
     if (slideBanners.length > 1) {
         if (window.gachaSlideInterval) clearInterval(window.gachaSlideInterval);
         let currentSlide = 0;
@@ -3384,6 +3309,42 @@ localStorage.setItem('nexus_is_admin', 'false');
 currentUser = found;
 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
 reloadUserData();
+
+// 🔄 GASのAPI（画像 ＋ YouTubeプレイリスト曲）を非同期で一括取得する関数（CORS対応）
+async function fetchGasAppContent() {
+    try {
+        const res = await fetch(GAS_WEB_APP_URL, { mode: 'cors' });
+        if (!res.ok) throw new Error("API通信エラー");
+        const data = await res.json();
+        
+        // 1. 画像リストの反映（Googleドライブ画像）
+        if (data.images && Array.isArray(data.images)) {
+            dynamicImagesList = data.images;
+            // マスターデータに統合してアルバム等に反映
+            data.images.forEach(img => {
+                if (!masterDriveImages.some(existing => existing.url === img.url)) {
+                    masterDriveImages.push(img);
+                }
+            });
+            localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+            populateAdminSelects();
+        }
+        
+        // 2. YouTube音声リストの反映
+        if (data.audio && Array.isArray(data.audio) && data.audio.length > 0) {
+            dynamicSongsList = data.audio.map(item => ({
+                title: item.title,
+                // YouTubeの動画IDから埋め込み音声/ストリーミング形式に変換
+                url: `https://www.youtube.com/watch?v=${item.youtubeId}`,
+                youtubeId: item.youtubeId,
+                id: item.id
+            }));
+            initDynamicPlaylist();
+        }
+    } catch (e) {
+        console.log("GAS APIからのデータ取得に失敗しました（フォールバック使用）:", e);
+    }
+}
 
 alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
 playDefaultSongOnLogin();
@@ -4019,57 +3980,33 @@ listEl.appendChild(row);
 });
 }
 async function fetchDriveMasterData() {
-    try {
-        const targetUrl = GAS_WEB_APP_URL + "?t=" + new Date().getTime();
-        const response = await fetch(targetUrl);
-        if (!response.ok) return;
-        const fetchedData = await response.json();
-        
-        // 1. 画像データの処理（ガチャ・アルバム・背景用）
-        const imagesArray = fetchedData.images || (Array.isArray(fetchedData) ? fetchedData : []);
-        if (Array.isArray(imagesArray)) {
-            imagesArray.forEach(item => {
-                if (!item.url || !item.name) return;
-                if (!masterDriveImages.some(existing => existing.url === item.url)) {
-                    const rarity = item.name.includes("★6") ? "★6" : 
-                                   item.name.includes("★5") ? "★5" : 
-                                   item.name.includes("★4") ? "★4" : 
-                                   item.name.includes("★3") ? "★3" : "★2";
-                    masterDriveImages.push({ ...item, rarity: rarity });
-                }
-            });
-            localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
-        }
+try {
+const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime(), { mode: 'cors' });
+if (!response.ok) return;
+const fetchedData = await response.json();
 
-        // 2. BGM（音声）データの処理（プレイヤー用）
-        if (fetchedData.audio && Array.isArray(fetchedData.audio) && fetchedData.audio.length > 0) {
-            songs = fetchedData.audio.map(audioItem => ({
-                title: audioItem.name.replace(/\.[^/.]+$/, ""), // 拡張子を除いた曲名
-                url: audioItem.url // CORS制限なしの直リンク
-            }));
-            if (typeof initPlaylist === 'function') {
-                initPlaylist();
-            }
-        }
-        
-        // 初回アルバムデータ等の初期化
-        if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
-            userAlbum = masterDriveImages.filter(i => !(i.name.includes("【★2配布】脹相") || (i.name.includes("脹相") && i.name.includes("★1"))));
-            userSlideshowIds = userAlbum.map(img => img.id);
-            saveUserAlbumData();
-        }
-        
-        // 各種セレクトボックスや画面を再描画
-        populateAdminSelects();
-        populateSettingsAvatarSelect();
-        initSlideshow();
-        renderAlbum();
-        renderHistory();
-        
-        console.log("✅ ドライブマスターデータの取得成功");
-    } catch (e) {
-        console.log("ドライブマスターデータの取得エラー:", e);
-    }
+fetchedData.forEach(item => {
+if (item.name.includes() || (item.name.includes() && item.name.includes("★1"))) return;
+if (!masterDriveImages.some(existing => existing.url === item.url)) {
+const rarity = item.name.includes("★6") ? "★6" : item.name.includes("★5") ? "★5" : item.name.includes("★4") ? "★4" : item.name.includes("★3") ? "★3" : "★2";
+masterDriveImages.push({ ...item, rarity: rarity });
+}
+});
+localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+
+if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
+userAlbum = masterDriveImages.filter(i => !(i.name.includes("【★2配布】脹相") || (i.name.includes("脹相") && i.name.includes("★1"))));
+userSlideshowIds = userAlbum.map(img => img.id);
+saveUserAlbumData();
+}
+populateAdminSelects();
+populateSettingsAvatarSelect();
+initSlideshow();
+renderAlbum();
+renderHistory();
+} catch (e) {
+console.log("ドライブマスターデータの取得エラー:", e);
+}
 }
 function populateAdminSelects() {
 const gachaSelect = document.getElementById('admin-gacha-img-select');
@@ -4119,103 +4056,99 @@ html += `<option value="${img.url}">${img.name}</option>`;
 });
 selectEl.innerHTML = html;
 }
-
-//// ガチャ実行
+// ガチャ実行と演出コントロール
 async function pullGacha(count) {
     if (!currentGachaConfig) return;
+
     const costSingle = currentGachaConfig.costSingle || 300;
     const costMulti = currentGachaConfig.costMulti || 3000;
     const totalCost = (count === 10) ? costMulti : costSingle * count;
 
+    // ダイヤ残高チェック
     if (!currentUser || Number(currentUser.gem || 0) < totalCost) {
         alert("💎 ダイヤが足りにゃいよ！");
         return;
     }
 
+    // ダイヤを消費
     currentUser.gem = Number(currentUser.gem) - totalCost;
     if (typeof saveUserData === 'function') saveUserData();
-    renderGachaScreen();
+    renderGachaScreen(); // ダイヤ表示更新
 
-    // 🎲 抽選（ラインナップに存在するレアリティのみ対象とする）
+    // 🎲 確率に基づいて結果を事前計算
     const results = [];
-    let maxRarityNum = 2;
+    let maxRarity = 2; // 今回の最高獲得レアリティ
 
     for (let i = 0; i < count; i++) {
-        const item = rollSingleGachaWithLineup(currentGachaConfig.type);
+        const item = rollSingleGacha(currentGachaConfig.type);
         results.push(item);
-        if (item.rarityNum > maxRarityNum) maxRarityNum = item.rarityNum;
+        if (item.rarityNum > maxRarity) maxRarity = item.rarityNum;
     }
 
-    // 10回引いたときは「その10回で出る最大のレアリティ」を演出の基準にする
+    // 🌟 昇格フラグ（★5以上がある場合、20%の確率で昇格演出にする）
     let isUpgrade = false;
-    if (maxRarityNum >= 5 && Math.random() < 0.2) {
+    if (maxRarity >= 5 && Math.random() < 0.2) {
         isUpgrade = true;
     }
 
-    triggerGachaVibration(maxRarityNum, isUpgrade);
-    await playGachaAnimation(results, maxRarityNum, isUpgrade);
+    // 📳 スマホのバイブレーション実行（端末が対応している場合）
+    triggerGachaVibration(maxRarity, isUpgrade);
+
+    // 🎬 演出画面を表示
+    await playGachaAnimation(results, maxRarity, isUpgrade);
 }
 
-// レアリティ抽選ロジック（未設定レアは排出しない）
-function rollSingleGachaWithLineup(type) {
+// 🎲 レアリティ抽選ロジック
+function rollSingleGacha(type) {
     const rates = GACHA_RATES[type] || { "★6": 0.4, "★5": 6.6, "★4": 23, "★3": 30, "★2": 40 };
+    const rand = Math.random() * 100;
     
-    // 管理画面のラインナップに登録されているレアリティをチェック
-    const lineup = masterDriveImages; 
-    const availableTiers = [
+    let cum = 0;
+    let selectedRarity = "★2";
+    let rarityNum = 2;
+
+    const tiers = [
         { key: "★6", num: 6 },
         { key: "★5", num: 5 },
         { key: "★4", num: 4 },
         { key: "★3", num: 3 },
         { key: "★2", num: 2 }
-    ].filter(tier => {
-        // 確率が0より大きく、かつマスターラインナップに該当レアが存在する場合のみ有効
-        const hasItem = lineup.some(img => img.rarity === tier.key || img.name.includes(tier.key));
-        return (rates[tier.key] || 0) > 0 && hasItem;
-    });
+    ];
 
-    if (availableTiers.length === 0) {
-        return { rarity: "★2", rarityNum: 2, url: "https://picsum.photos/id/1025/200/300", name: "デフォルト" };
-    }
-
-    // 有効なレアリティだけで再計算
-    let totalRate = availableTiers.reduce((sum, t) => sum + (rates[t.key] || 0), 0);
-    let rand = Math.random() * totalRate;
-    let cum = 0;
-    let selectedTier = availableTiers[availableTiers.length - 1];
-
-    for (const t of availableTiers) {
+    for (const t of tiers) {
         cum += (rates[t.key] || 0);
         if (rand <= cum) {
-            selectedTier = t;
+            selectedRarity = t.key;
+            rarityNum = t.num;
             break;
         }
     }
 
-    // 該当レアリティの画像リストからランダムに1枚選ぶ
-    const targetImages = lineup.filter(img => img.rarity === selectedTier.key || img.name.includes(selectedTier.key));
-    const selectedImg = targetImages.length > 0 ? targetImages[Math.floor(Math.random() * targetImages.length)] : { url: "https://picsum.photos/id/1025/200/300", name: selectedTier.key };
-
-    return { rarity: selectedTier.key, rarityNum: selectedTier.num, url: selectedImg.url, name: selectedImg.name };
+    return { rarity: selectedRarity, rarityNum: rarityNum };
 }
 
 // 📳 振動パターン
 function triggerGachaVibration(maxRarity, isUpgrade) {
     if (!("vibrate" in navigator)) return;
+    
     if (isUpgrade) {
+        // 昇格時：ト・ト・トン！→ブブブブッ！
         navigator.vibrate([100, 50, 100, 50, 300, 100, 500]);
     } else if (maxRarity === 6) {
+        // ★6確意：長めの重厚な振動
         navigator.vibrate([200, 100, 200, 100, 600]);
     } else if (maxRarity === 5) {
+        // ★5：2回振動
         navigator.vibrate([150, 80, 150]);
     } else {
+        // 通常：短く1回
         navigator.vibrate(80);
     }
 }
-
-// 🎬 演出アニメーション（引き寄せ中なし・色対応・昇格時はバイブの瞬間に変化・キラキラ）
+// 演出モーダル表示・昇格・結果表示
 function playGachaAnimation(results, maxRarity, isUpgrade) {
     return new Promise((resolve) => {
+        // 演出用のフルスクリーンモーダル作成
         let animOverlay = document.getElementById('gacha-anim-overlay');
         if (!animOverlay) {
             animOverlay = document.createElement('div');
@@ -4230,93 +4163,108 @@ function playGachaAnimation(results, maxRarity, isUpgrade) {
         }
         animOverlay.style.display = 'flex';
 
-        // レアリティ別の色定義
-        const getRarityColor = (num) => {
-            if (num === 6) return "#ff0077"; // 虹色
-            if (num === 5) return "#ffcc00"; // 金
-            if (num === 4) return "#ff334b"; // 赤
-            if (num === 3) return "#00ff66"; // 緑
-            return "#ffffff"; // 白
-        };
-
-        const initialRarity = isUpgrade ? 4 : maxRarity; // 昇格前の最初は★4（赤）からスタート
-        let colorTheme = getRarityColor(initialRarity);
+        // 初期カラー設定（昇格演出の場合はあえて低レアの色で見せる）
+        const initialRarity = isUpgrade ? (maxRarity - 1) : maxRarity;
+        let colorTheme = "#00f5d4"; // 通常
+        if (initialRarity === 5) colorTheme = "#ff9900"; // 金
+        if (initialRarity === 6) colorTheme = "#ff0077"; // 虹/レインボー
 
         animOverlay.innerHTML = `
             <div id="anim-light-sphere" style="
-                width: 160px; height: 160px; border-radius: 50%;
+                width: 150px; height: 150px; border-radius: 50%;
                 background: radial-gradient(circle, ${colorTheme} 0%, rgba(0,0,0,0) 70%);
-                box-shadow: 0 0 ${initialRarity >= 5 ? '80px' : '40px'} ${colorTheme};
-                animation: pulseGlow 1.2s infinite alternate;
+                box-shadow: 0 0 50px ${colorTheme};
+                animation: pulseGlow 1.5s infinite alternate;
                 display: flex; justify-content: center; align-items: center;
-            "></div>
+            ">
+                <span id="anim-text" style="color: #fff; font-size: 1.5rem; font-weight: bold; text-shadow: 0 0 10px #000;">引き寄せ中...</span>
+            </div>
             <style>
                 @keyframes pulseGlow {
-                    0% { transform: scale(0.9); opacity: 0.8; }
-                    100% { transform: scale(1.15); opacity: 1; }
+                    0% { transform: scale(0.9); opacity: 0.7; }
+                    100% { transform: scale(1.2); opacity: 1; }
                 }
-                @keyframes sparkleAnim {
-                    0% { transform: scale(1) rotate(0deg); filter: brightness(1); }
-                    50% { transform: scale(1.05) rotate(3deg); filter: brightness(1.3); drop-shadow: 0 0 12px #fff; }
-                    100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
-                }
-                .rarity-sparkle {
-                    animation: sparkleAnim 1.5s infinite ease-in-out;
+                @keyframes flashUp {
+                    0% { background: #fff; }
+                    100% { background: #000; }
                 }
             </style>
         `;
 
+        // ステップ1：演出待機
         setTimeout(() => {
+            // 昇格演出が発生する場合
             if (isUpgrade) {
-                // バイブが鳴った瞬間（タイミング一致）に色が変化！
                 const sphere = document.getElementById('anim-light-sphere');
-                if (sphere) {
-                    const upColor = getRarityColor(maxRarity);
+                const text = document.getElementById('anim-text');
+                if (sphere && text) {
+                    // 振動追加
+                    if ("vibrate" in navigator) navigator.vibrate([50, 50, 50, 50, 400]);
+                    
+                    // 色がレインボー/ゴールドに変色
+                    const upColor = (maxRarity === 6) ? "#ff0077" : "#ff9900";
                     sphere.style.background = `radial-gradient(circle, ${upColor} 0%, rgba(0,0,0,0) 70%)`;
-                    sphere.style.boxShadow = `0 0 90px ${upColor}`;
+                    sphere.style.boxShadow = `0 0 80px ${upColor}`;
+                    text.innerText = "⚡昇 格 演 出⚡";
+                    text.style.color = "#ffee00";
                 }
-                setTimeout(() => showResultScreen(results), 1200);
+                setTimeout(() => showResultScreen(results), 1500);
             } else {
                 showResultScreen(results);
             }
-        }, 1500);
+        }, 1800);
 
+        // ステップ2：結果一覧画面
         function showResultScreen(resList) {
-            animOverlay.innerHTML = `
-                <div style="width: 92%; max-width: 420px; text-align: center;">
-                    <h3 style="color: #00f5d4; font-size: 1.3rem; margin-bottom: 12px; text-shadow: 0 0 8px #00f5d4;">🎉 ガチャ獲得結果</h3>
-                    <div style="display: grid; grid-template-columns: repeat(${resList.length > 1 ? 5 : 1}, 1fr); gap: 6px; margin-bottom: 20px;">
-                        ${resList.map((item) => {
-                            const isHighRare = item.rarityNum >= 5;
-                            const borderColor = getRarityColor(item.rarityNum);
-                            return `
-                                <div class="${isHighRare ? 'rarity-sparkle' : ''}" style="
-                                    background: rgba(20,20,20,0.95); border: 2px solid ${borderColor};
-                                    border-radius: 8px; padding: 4px; text-align: center;
-                                    box-shadow: 0 0 ${isHighRare ? '12px' : '4px'} ${borderColor};
+            animOverlay.style.animation = "flashUp 0.3s forwards";
+            
+            setTimeout(() => {
+                animOverlay.innerHTML = `
+                    <div style="width: 90%; max-width: 400px; text-align: center;">
+                        <h3 style="color: #00f5d4; font-size: 1.4rem; margin-bottom: 15px; text-shadow: 0 0 8px #00f5d4;">🎉 ガチャ獲得結果</h3>
+                        <div style="display: grid; grid-template-columns: repeat(${resList.length > 1 ? 5 : 1}, 1fr); gap: 8px; margin-bottom: 20px;">
+                            ${resList.map((item, idx) => `
+                                <div style="
+                                    background: rgba(30,30,30,0.9); border: 1px solid ${getRarityBorderColor(item.rarityNum)};
+                                    border-radius: 8px; padding: 10px 4px; text-align: center;
+                                    box-shadow: 0 0 8px ${getRarityBorderColor(item.rarityNum)};
                                 ">
-                                    <div style="width: 100%; height: 60px; background-image: url('${item.url}'); background-size: cover; background-position: center; border-radius: 4px; margin-bottom: 4px;"></div>
-                                    <div style="font-size: 0.7rem; font-weight: bold; color: ${borderColor};">${item.rarity}</div>
+                                    <div style="font-size: 0.9rem; font-weight: bold; color: ${getRarityTextColor(item.rarityNum)};">${item.rarity}</div>
                                 </div>
-                            `;
-                        }).join('')}
+                            `).join('')}
+                        </div>
+                        <button id="close-gacha-result-btn" style="
+                            width: 80%; background: linear-gradient(135deg, #00f5d4, #0088cc);
+                            color: #000; border: none; padding: 10px; border-radius: 20px;
+                            font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+                        ">確認</button>
                     </div>
-                    <button id="close-gacha-result-btn" style="
-                        width: 80%; background: linear-gradient(135deg, #00f5d4, #0088cc);
-                        color: #000; border: none; padding: 10px; border-radius: 20px;
-                        font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-                    ">確認</button>
-                </div>
-            `;
+                `;
 
-            document.getElementById('close-gacha-result-btn').onclick = () => {
-                animOverlay.style.display = 'none';
-                resolve();
-            };
+                document.getElementById('close-gacha-result-btn').onclick = () => {
+                    animOverlay.style.display = 'none';
+                    resolve();
+                };
+            }, 300);
         }
     });
 }
 
+// レアリティに応じた枠線・文字色の取得ヘルパー
+function getRarityBorderColor(num) {
+    if (num === 6) return "#ff0077"; // ★6: 濃いピンク/虹
+    if (num === 5) return "#ffcc00"; // ★5: 金
+    if (num === 4) return "#aa00ff"; // ★4: 紫
+    if (num === 3) return "#00aaff"; // ★3: 青
+    return "#888888"; // ★2: 灰
+}
+function getRarityTextColor(num) {
+    if (num === 6) return "#ff66cc";
+    if (num === 5) return "#ffee00";
+    if (num === 4) return "#d8b4fe";
+    if (num === 3) return "#7dd3fc";
+    return "#ccc";
+}
 function getCombinedUserGifts() {
 const personalGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
 const activeGlobalGifts = globalGifts.filter(g => g.active !== false);
@@ -4753,22 +4701,123 @@ window.location.reload();
 }
 }
 }
-function initPlaylist() {
-playlist.innerHTML = "";
-songs.forEach((song) => {
-const item = document.createElement('div');
-item.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; cursor:pointer;";
-item.innerHTML = `<span>▶ ${song.title}</span><span style="color:#888;">再生</span>`;
-item.onclick = () => {
-audioPlayer.src = song.url;
-audioPlayer.play();
-miniTitle.innerText = song.title;
-if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + song.title;
-};
-playlist.appendChild(item);
-});
+
+const songs = [
+{ title: "SPECIALZ", url: "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec?type=audio&file=SPECIALZ" },
+{ title: "ハウトゥー世界征服", url: "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec?type=audio&file=howto" }
+];
+// 🎵 楽曲リストの初期化と再生処理
+function initDynamicPlaylist() {
+    const playlist = document.getElementById('playlist');
+    const miniTitle = document.getElementById('mini-song-title');
+    const nowPlayingText = document.getElementById('now-playing-text');
+    const audioPlayer = document.getElementById('audio-player');
+    
+    if (!playlist) return;
+    playlist.innerHTML = "";
+    
+    const targetSongs = dynamicSongsList.length > 0 ? dynamicSongsList : [
+        { title: "SPECIALZ", youtubeId: "8weM3t_zehw" }
+    ];
+    
+    targetSongs.forEach((song) => {
+        const item = document.createElement('div');
+        item.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; cursor:pointer; align-items:center;";
+        item.innerHTML = `<span>▶ ${song.title}</span><span style="color:#00f5d4; font-size:0.8rem;">再生する</span>`;
+        
+        item.onclick = () => {
+            if (miniTitle) miniTitle.innerText = song.title;
+            if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + song.title;
+            if (audioPlayer) {
+                // YouTubeの音声ソースまたはストリーミングを指定
+                audioPlayer.src = `https://www.youtube.com/watch?v=${song.youtubeId}`;
+                audioPlayer.play().catch(e => console.log("再生ブロック:", e));
+            }
+        };
+        playlist.appendChild(item);
+    });
+    
+    if (targetSongs.length > 0 && miniTitle) {
+        miniTitle.innerText = targetSongs[0].title;
+    }
 }
-initPlaylist();
+
+function playDefaultSongOnLogin() {
+    if (dynamicSongsList.length > 0) {
+        initDynamicPlaylist();
+    }
+}
+// 起動時にプレイリストの枠組みを作っておく
+// 🎵 GASから取得した7曲をプレイリストに反映する関数
+function initDynamicPlaylist() {
+    const playlist = document.getElementById('playlist');
+    const miniTitle = document.getElementById('mini-song-title');
+    const nowPlayingText = document.getElementById('now-playing-text');
+    
+    if (!playlist) return;
+    playlist.innerHTML = "";
+    
+    // データがまだ読み込めていない場合の予備
+    const targetSongs = dynamicSongsList.length > 0 ? dynamicSongsList : [
+        { title: "SPECIALZ", youtubeId: "8weM3t_zehw" },
+        { title: "Chained Chase", youtubeId: "ZhMNZiQcU3I" },
+        { title: "どろん", youtubeId: "5kf0f31XUm0" },
+        { title: "千両役者", youtubeId: "T45MMgYtZaQ" },
+        { title: "VIVID VICE", youtubeId: "9aCtVjFfb-U" },
+        { title: "魂のルフラン", youtubeId: "wL7IW7OiaHc" },
+        { title: "心よ原始に戻れ～2012Version～", youtubeId: "dnDCF4cb1qU" }
+    ];
+    
+    targetSongs.forEach((song) => {
+        const item = document.createElement('div');
+        item.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; cursor:pointer; align-items:center;";
+        item.innerHTML = `<span>▶ ${song.title}</span><span style="color:#00f5d4; font-size:0.8rem;">再生</span>`;
+        
+        // 曲をタップしたときの再生処理
+        item.onclick = () => {
+            playYouTubeSong(song);
+        };
+        playlist.appendChild(item);
+    });
+    
+    if (targetSongs.length > 0 && miniTitle) {
+        miniTitle.innerText = targetSongs[0].title;
+    }
+}
+
+// 🎧 選択したYouTubeの曲を再生するメイン関数
+// 🎵 YouTubeの音声ストリームを直接オーディオプレイヤーで再生する関数
+function playYouTubeSong(song) {
+    const miniTitle = document.getElementById('mini-song-title');
+    const nowPlayingText = document.getElementById('now-playing-text');
+    const wrap = document.getElementById('yt-player-iframe-wrap');
+    
+    if (miniTitle) miniTitle.innerText = song.title;
+    if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + song.title;
+    
+    // 画面内の埋め込み枠を、通常のオーディオコントロールプレイヤーに切り替える
+    if (wrap) {
+        wrap.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:6px; background:#111; padding:10px; border-radius:8px;">
+                <div style="font-size:0.8rem; color:#00f5d4; font-weight:bold; width:100%; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">🎵 ${song.title}</div>
+                <audio id="direct-audio-player" controls autoplay style="width:100%; height:36px;" src="https://www.youtube.com/watch?v=${song.youtubeId}"></audio>
+            </div>
+        `;
+    }
+}
+
+// 🔓 ログイン時の自動再生
+function playDefaultSongOnLogin() {
+    if (dynamicSongsList.length > 0) {
+        playYouTubeSong(dynamicSongsList[0]);
+    } else if (typeof dynamicSongsList !== 'undefined') {
+        playYouTubeSong({ title: "SPECIALZ", youtubeId: "8weM3t_zehw" });
+    }
+}
+
+// 起動時にプレイリストを作成しておく
+setTimeout(initDynamicPlaylist, 500);
 </script>
 </body>
 </html>
+
