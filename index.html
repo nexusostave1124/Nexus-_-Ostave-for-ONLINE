@@ -629,17 +629,26 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 </div>
 </div>
 
-<!-- 📄 その他の各種サブ画面 -->
+<!-- 📄 その他の各種サブ画面 →
+<!-- 🎵 楽曲選択画面（またはプレイヤー画面）のパーツ -->
 <div id="screen-player" class="sub-screen">
-<div class="sub-header"><span class="sub-title">🎵 楽曲選択</span><button class="close-btn" onclick="closeScreen('player')">閉じる</button></div>
-<div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: なし</div>
+    <div class="sub-header">
+        <span class="sub-title">🎵 楽曲選択</span>
+        <button class="close-btn" onclick="closeScreen('player')">閉じる</button>
+    </div>
+    
+    <!-- 📌 「再生中の曲」が表示されているテキストのあたり -->
+    <div id="now-playing-text" style="color: #00f5d4; margin-bottom: 10px; font-weight: bold;">再生中の曲: なし</div>
 
-<!-- 🎬 YouTube音声をバッチリ再生するための埋め込みフレーム枠 -->
-<div id="youtube-player-box" style="width: 100%; height: 120px; background: #000; margin-bottom: 15px; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-    <div id="yt-player-iframe-wrap" style="width:100%; height:100%;"></div>
-</div>
+    <!-- 🌟 【ここに先ほどのプレイヤー表示枠（container）を挟み込む！】 -->
+    <div id="youtube-player-container" style="width: 100%; aspect-ratio: 16/9; background: #000; margin-bottom: 15px; border-radius: 8px; overflow: hidden; border: 1px solid #00f5d4;">
+        <div id="yt-player-iframe-wrap" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#888; font-size:0.8rem;">
+            曲を選ぶとここにプレイヤーが表示されます
+        </div>
+    </div>
 
-<div id="playlist"></div>
+    <!-- 曲の一覧リスト -->
+    <div id="playlist"></div>
 </div>
 <div id="screen-gacha" class="sub-screen">
 <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
@@ -3980,33 +3989,34 @@ listEl.appendChild(row);
 });
 }
 async function fetchDriveMasterData() {
-try {
-const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime(), { mode: 'cors' });
-if (!response.ok) return;
-const fetchedData = await response.json();
-
-fetchedData.forEach(item => {
-if (item.name.includes() || (item.name.includes() && item.name.includes("★1"))) return;
-if (!masterDriveImages.some(existing => existing.url === item.url)) {
-const rarity = item.name.includes("★6") ? "★6" : item.name.includes("★5") ? "★5" : item.name.includes("★4") ? "★4" : item.name.includes("★3") ? "★3" : "★2";
-masterDriveImages.push({ ...item, rarity: rarity });
-}
-});
-localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
-
-if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
-userAlbum = masterDriveImages.filter(i => !(i.name.includes("【★2配布】脹相") || (i.name.includes("脹相") && i.name.includes("★1"))));
-userSlideshowIds = userAlbum.map(img => img.id);
-saveUserAlbumData();
-}
-populateAdminSelects();
-populateSettingsAvatarSelect();
-initSlideshow();
-renderAlbum();
-renderHistory();
-} catch (e) {
-console.log("ドライブマスターデータの取得エラー:", e);
-}
+    try {
+        const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime(), { mode: 'cors' });
+        if (!response.ok) return;
+        const fetchedData = await response.json();
+        
+        // 🌟 配列かどうかを安全にチェックして処理する
+        const imageItems = Array.isArray(fetchedData) ? fetchedData : (fetchedData.images || []);
+        
+        imageItems.forEach(item => {
+            if (!masterDriveImages.some(existing => existing.url === item.url)) {
+                const rarity = item.name && item.name.includes("★6") ? "★6" : item.name && item.name.includes("★5") ? "★5" : item.name && item.name.includes("★4") ? "★4" : item.name && item.name.includes("★3") ? "★3" : "★2";
+                masterDriveImages.push({ ...item, rarity: rarity });
+            }
+        });
+        
+        localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+        if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
+            userAlbum = masterDriveImages.filter(i => !(i.name && i.name.includes("") && i.name.includes("")));
+            userSlideshowIds = userAlbum.map(img => img.id);
+            saveUserAlbumData();
+            renderAlbum();
+            initSlideshow();
+        }
+        populateAdminSelects();
+        populateSettingsAvatarSelect();
+    } catch (e) {
+        console.log("ドライブマスターデータの取得エラー:", e);
+    }
 }
 function populateAdminSelects() {
 const gachaSelect = document.getElementById('admin-gacha-img-select');
@@ -4701,53 +4711,11 @@ window.location.reload();
 }
 }
 }
-
 const songs = [
-{ title: "SPECIALZ", url: "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec?type=audio&file=SPECIALZ" },
-{ title: "ハウトゥー世界征服", url: "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec?type=audio&file=howto" }
+  { title: "SPECIALZ", url: "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec?type=audio&file=SPECIALZ" },
+  { title: "ハウトゥー世界征服", url: "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec?type=audio&file=howto" }
 ];
-// 🎵 楽曲リストの初期化と再生処理
-function initDynamicPlaylist() {
-    const playlist = document.getElementById('playlist');
-    const miniTitle = document.getElementById('mini-song-title');
-    const nowPlayingText = document.getElementById('now-playing-text');
-    const audioPlayer = document.getElementById('audio-player');
-    
-    if (!playlist) return;
-    playlist.innerHTML = "";
-    
-    const targetSongs = dynamicSongsList.length > 0 ? dynamicSongsList : [
-        { title: "SPECIALZ", youtubeId: "8weM3t_zehw" }
-    ];
-    
-    targetSongs.forEach((song) => {
-        const item = document.createElement('div');
-        item.style.cssText = "background:#1f1f1f; padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; cursor:pointer; align-items:center;";
-        item.innerHTML = `<span>▶ ${song.title}</span><span style="color:#00f5d4; font-size:0.8rem;">再生する</span>`;
-        
-        item.onclick = () => {
-            if (miniTitle) miniTitle.innerText = song.title;
-            if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + song.title;
-            if (audioPlayer) {
-                // YouTubeの音声ソースまたはストリーミングを指定
-                audioPlayer.src = `https://www.youtube.com/watch?v=${song.youtubeId}`;
-                audioPlayer.play().catch(e => console.log("再生ブロック:", e));
-            }
-        };
-        playlist.appendChild(item);
-    });
-    
-    if (targetSongs.length > 0 && miniTitle) {
-        miniTitle.innerText = targetSongs[0].title;
-    }
-}
 
-function playDefaultSongOnLogin() {
-    if (dynamicSongsList.length > 0) {
-        initDynamicPlaylist();
-    }
-}
-// 起動時にプレイリストの枠組みを作っておく
 // 🎵 GASから取得した7曲をプレイリストに反映する関数
 function initDynamicPlaylist() {
     const playlist = document.getElementById('playlist');
@@ -4757,14 +4725,14 @@ function initDynamicPlaylist() {
     if (!playlist) return;
     playlist.innerHTML = "";
     
-    // データがまだ読み込めていない場合の予備
-    const targetSongs = dynamicSongsList.length > 0 ? dynamicSongsList : [
+    // ⚠️ 大文字小文字を正しく修正した予備データ
+    const targetSongs = (typeof dynamicSongsList !== 'undefined' && dynamicSongsList.length > 0) ? dynamicSongsList : [
         { title: "SPECIALZ", youtubeId: "8weM3t_zehw" },
-        { title: "Chained Chase", youtubeId: "ZhMNZiQcU3I" },
-        { title: "どろん", youtubeId: "5kf0f31XUm0" },
+        { title: "Chained Chase", youtubeId: "ZHmNZiQcU3I" }, // Hを大文字に修正
+        { title: "どろん", youtubeId: "5kf0f31xUm0" },       // xを小文字に修正
         { title: "千両役者", youtubeId: "T45MMgYtZaQ" },
         { title: "VIVID VICE", youtubeId: "9aCtVjFfb-U" },
-        { title: "魂のルフラン", youtubeId: "wL7IW7OiaHc" },
+        { title: "魂のルフラン", youtubeId: "Wl7IW7OiaHc" }, // Wを大文字に修正
         { title: "心よ原始に戻れ～2012Version～", youtubeId: "dnDCF4cb1qU" }
     ];
     
@@ -4785,8 +4753,14 @@ function initDynamicPlaylist() {
     }
 }
 
-// 🎧 選択したYouTubeの曲を再生するメイン関数
-// 🎵 YouTubeの音声ストリームを直接オーディオプレイヤーで再生する関数
+function playDefaultSongOnLogin() {
+    if (typeof dynamicSongsList !== 'undefined' && dynamicSongsList.length > 0) {
+        initDynamicPlaylist();
+    }
+}
+
+// 🎵 曲を選んだときに再生ボタンのリンクを連動させる関数
+// 🎵 曲を選んだときに再生ボタンのリンクを連動させる関数
 function playYouTubeSong(song) {
     const miniTitle = document.getElementById('mini-song-title');
     const nowPlayingText = document.getElementById('now-playing-text');
@@ -4795,13 +4769,17 @@ function playYouTubeSong(song) {
     if (miniTitle) miniTitle.innerText = song.title;
     if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + song.title;
     
-    // 画面内の埋め込み枠を、通常のオーディオコントロールプレイヤーに切り替える
     if (wrap) {
+        // 🌟 正しいURL構造（embed/ と ${song.youtubeId}）に修正
         wrap.innerHTML = `
-            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:6px; background:#111; padding:10px; border-radius:8px;">
-                <div style="font-size:0.8rem; color:#00f5d4; font-weight:bold; width:100%; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">🎵 ${song.title}</div>
-                <audio id="direct-audio-player" controls autoplay style="width:100%; height:36px;" src="https://www.youtube.com/watch?v=${song.youtubeId}"></audio>
-            </div>
+            <iframe width="100%" height="100%" 
+                src="https://www.youtube-nocookie.com/embed/${song.youtubeId}?autoplay=1&playsinline=1" 
+                title="${song.title}" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                referrerpolicy="strict-origin-when-cross-origin" 
+                allowfullscreen>
+            </iframe>
         `;
     }
 }
