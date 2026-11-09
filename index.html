@@ -3340,51 +3340,49 @@ localStorage.setItem('nexus_is_admin', 'true');
 isAdmin = false;
 localStorage.setItem('nexus_is_admin', 'false');
 }
-currentUser = found;
-localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-reloadUserData();
+       currentUser = found;
+        localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+        reloadUserData();
 
-// 🔄 GASのAPI（画像 ＋ YouTubeプレイリスト曲）を非同期で一括取得する関数（CORS対応）
-async function fetchGasAppContent() {
-    try {
-        const res = await fetch(GAS_WEB_APP_URL, { mode: 'cors' });
-        if (!res.ok) throw new Error("API通信エラー");
-        const data = await res.json();
-        
-        // 1. 画像リストの反映（Googleドライブ画像）
-        if (data.images && Array.isArray(data.images)) {
-            dynamicImagesList = data.images;
-            // マスターデータに統合してアルバム等に反映
-            data.images.forEach(img => {
-                if (!masterDriveImages.some(existing => existing.url === img.url)) {
-                    masterDriveImages.push(img);
+        // 🔄 GASのAPI（画像 ＋ YouTubeプレイリスト曲）を非同期で一括取得する関数
+        async function fetchGasAppContent() {
+            try {
+                const res = await fetch(GAS_WEB_APP_URL, { mode: 'cors' });
+                if (!res.ok) throw new Error("API通信エラー");
+                const data = await res.json();
+                
+                if (data.images && Array.isArray(data.images)) {
+                    dynamicImagesList = data.images;
+                    data.images.forEach(img => {
+                        if (!masterDriveImages.some(existing => existing.url === img.url)) {
+                            masterDriveImages.push(img);
+                        }
+                    });
+                    localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+                    populateAdminSelects();
                 }
-            });
-            localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
-            populateAdminSelects();
+                
+                if (data.audio && Array.isArray(data.audio) && data.audio.length > 0) {
+                    dynamicSongsList = data.audio.map(item => ({
+                        title: item.title,
+                        url: `https://www.youtube.com/watch?v=${item.youtubeId}`,
+                        youtubeId: item.youtubeId,
+                        id: item.id
+                    }));
+                    initDynamicPlaylist();
+                }
+            } catch (e) {
+                console.log("GAS APIからのデータ取得に失敗:", e);
+            }
         }
-        
-        // 2. YouTube音声リストの反映
-        if (data.audio && Array.isArray(data.audio) && data.audio.length > 0) {
-            dynamicSongsList = data.audio.map(item => ({
-                title: item.title,
-                // YouTubeの動画IDから埋め込み音声/ストリーミング形式に変換
-                url: `https://www.youtube.com/watch?v=${item.youtubeId}`,
-                youtubeId: item.youtubeId,
-                id: item.id
-            }));
-            initDynamicPlaylist();
-        }
-    } catch (e) {
-        console.log("GAS APIからのデータ取得に失敗しました（フォールバック使用）:", e);
-    }
-}
 
-alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
-playDefaultSongOnLogin();
-playBgmByIndex(currentBgmIndex); // ◀ ここを追加！
-checkAndTriggerFullscreenOnLogin();
-if (isAdmin) openScreen('manage');
+        // 🌟 ここで必ず関数を呼び出す！
+        fetchGasAppContent();
+
+        alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
+        playDefaultSongOnLogin();
+        checkAndTriggerFullscreenOnLogin();
+        if (isAdmin) openScreen('manage');
 } else {
 alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
 }
@@ -4890,6 +4888,7 @@ function playYouTubeSongByIndex(index) {
         `;
     }
 }
+// 🎵 ログイン成功時の統合処理（YouTube初期化 ＋ 裏BGM再生の確実な同期）
 function playDefaultSongOnLogin() {
     initDynamicPlaylist();
     if (currentTargetSongs.length > 0) {
@@ -4897,7 +4896,10 @@ function playDefaultSongOnLogin() {
         const miniTitle = document.getElementById('mini-song-title');
         if (miniTitle) miniTitle.innerText = currentTargetSongs[0].title;
     }
+    // 🎵 裏BGMの再生も一緒にしっかりとスタート
+    playBgmByIndex(currentBgmIndex);
 }
+
 setTimeout(initDynamicPlaylist, 500);
 </script>
 </body>
