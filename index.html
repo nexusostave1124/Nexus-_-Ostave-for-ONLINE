@@ -4721,49 +4721,79 @@ window.location.reload();
 }
 }
 }
-// 🎵 ユーザーが設定・管理する9曲のBGMリスト
+// 🎵 9曲のBGMリスト（一番上の1箇所だけに絞る）
 let customBgmList = JSON.parse(localStorage.getItem('nexus_custom_bgm_list')) || [
-    { title: "BGM-1", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/BGM-1.mp3" },
-    { title: "BGM-2", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/BGM-2.mp3" },
-    { title: "BGM-3", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/BGM-3.mp3" },
-    { title: "BGM-4", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/BGM-4.mp3" },
-    { title: "BGM-5", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/BGM-5.mp3" },
-    { title: "BGM-6", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/Bgm-6.mp3" }, // ⚠️大文字小文字に注意
-    { title: "BGM-7", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/BGM-7.mp3" },
-    { title: "BGM-8", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/BGM-8.mp3" },
-    { title: "BGM-9", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/BGM-9.mp3" }
+    { title: "BGM-1", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus_-Ostave-for-ONLINE/main/BGM-1.mp3" },
+    { title: "BGM-2", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus_-Ostave-for-ONLINE/main/BGM-2.mp3" },
+    { title: "BGM-3", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus_-Ostave-for-ONLINE/main/BGM-3.mp3" },
+    { title: "BGM-4", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus_-Ostave-for-ONLINE/main/Bgm-4.mp3" },
+    { title: "BGM-5", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus_-Ostave-for-ONLINE/main/Bgm-5.mp3" },
+    { title: "BGM-6", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus_-Ostave-for-ONLINE/main/Bgm-6.mp3" },
+    { title: "BGM-7", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus_-Ostave-for-ONLINE/main/Bgm-7.mp3" },
+    { title: "BGM-8", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus_-Ostave-for-ONLINE/main/Bgm-8.mp3" },
+    { title: "BGM-9", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus_-Ostave-for-ONLINE/main/Bgm-9.mp3" }
 ];
 
-// 🎵 指定した番号のBGMを再生する関数
-function playBgmByIndex(index) {
-    if (customBgmList.length === 0) return;
-    if (index >= customBgmList.length) index = 0;
+currentBgmIndex = Number(localStorage.getItem('nexus_bgm_index')) || 0;
+let isBgmUserPaused = false; 
+
+// 🎵 指定した番号のBGMを再生するメイン関数
+function playBgmByIndex(index, forceRestart = false) {
+    if (!currentUser) return; // 未ログイン時は流さない
+    const audioEl = document.getElementById('bgm-audio');
+    if (!audioEl) return;
+    if (index >= customBgmList.length) index = 0; // BGM-9の次はBGM-1へループ
     if (index < 0) index = customBgmList.length - 1;
-    
     currentBgmIndex = index;
+    localStorage.setItem('nexus_bgm_index', currentBgmIndex);
     const song = customBgmList[currentBgmIndex];
-    
-    bgmPlayer.src = song.url;
-    bgmPlayer.play().then(() => {
-        const miniTitle = document.getElementById('mini-song-title');
-        const nowPlayingText = document.getElementById('now-playing-text');
-        if (miniTitle) miniTitle.innerText = song.title;
-        if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + song.title;
-    }).catch(e => {
-        console.log("自動再生ガード:", e);
-    });
+    if (audioEl.src !== song.url || forceRestart) {
+        audioEl.src = song.url;
+    }
+    // 遊戯画面（screen-play）が開いている時は再生しない
+    const playScreen = document.getElementById('screen-play');
+    const isPlayScreenOpen = playScreen && playScreen.classList.contains('active');
+    if (!isPlayScreenOpen && !isBgmUserPaused) {
+        audioEl.play().then(() => {
+            updateBgmDisplayUI(song.title);
+        }).catch(e => {
+            console.log("自動再生ガード（画面タップで再生されます）");
+        });
+    }
 }
 
-// 🎵 1曲終わったら自動的に次の曲へ進む仕組み
-bgmPlayer.onended = () => {
-    playBgmByIndex(currentBgmIndex + 1);
-};
+// 🎵 1曲終わったら自動的に次の曲へ（BGM-9 ➔ BGM-1）
+const audioElCheck = document.getElementById('bgm-audio');
+if (audioElCheck) {
+    audioElCheck.onended = () => {
+        playBgmByIndex(currentBgmIndex + 1, true);
+    };
+}
 
-// 🎵 楽曲リスト & 再生インデックス管理
+// 🎵 画面上のタイトル表示を更新
+function updateBgmDisplayUI(title) {
+    const miniTitle = document.getElementById('mini-song-title');
+    if (miniTitle) miniTitle.innerText = title;
+}
+
+// 🎵 画面のどこかをタップした時に「続きから」再生を復旧
+window.addEventListener('click', () => {
+    const audioEl = document.getElementById('bgm-audio');
+    if (currentUser && audioEl && audioEl.paused && !isBgmUserPaused) {
+        const playScreen = document.getElementById('screen-play');
+        const isPlayScreenOpen = playScreen && playScreen.classList.contains('active');
+        if (!isPlayScreenOpen) {
+            audioEl.play().catch(e => {});
+        }
+    }
+});
+
+// ==========================================
+// 🎵 楽曲リスト & 再生インデックス管理（YouTube）
+// ==========================================
 let currentSongIndex = 0;
 let currentTargetSongs = []; 
 
-// 🎵 楽曲選択画面にプレイリストを反映する関数
 function initDynamicPlaylist() {
     const playlist = document.getElementById('playlist');
     const miniTitle = document.getElementById('mini-song-title');
@@ -4784,9 +4814,8 @@ function initDynamicPlaylist() {
     currentTargetSongs.forEach((song, index) => {
         const item = document.createElement('div');
         item.style.cssText = "background:#1f1f1f; padding:12px 14px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; cursor:pointer; align-items:center;";
-        item.innerHTML = `<span style="font-size:0.85rem;">▶ ${song.title}</span><span style="color:#00f5d4; font-size:0.8rem;">再生</span>`;
+        item.innerHTML = `<span style="font-size:0.85rem;">▶ ${song.title}</span><span style="color:#00f5d4; font-size:0.80rem;">再生</span>`;
         
-        // 曲をタップしたとき、その番号（index）を覚えて再生する
         item.onclick = () => {
             currentSongIndex = index;
             playYouTubeSongByIndex(currentSongIndex);
@@ -4799,17 +4828,10 @@ function initDynamicPlaylist() {
     }
 }
 
-// 🎵 指定した番号の曲を再生するメイン関数
 function playYouTubeSongByIndex(index) {
     if (currentTargetSongs.length === 0) return;
-    
-    // 範囲を超えたら最初/最後にループさせる
-    if (index >= currentTargetSongs.length) {
-        index = 0;
-    }
-    if (index < 0) {
-        index = currentTargetSongs.length - 1;
-    }
+    if (index >= currentTargetSongs.length) index = 0;
+    if (index < 0) index = currentTargetSongs.length - 1;
     
     currentSongIndex = index;
     const song = currentTargetSongs[currentSongIndex];
@@ -4835,17 +4857,15 @@ function playYouTubeSongByIndex(index) {
     }
 }
 
-// 🎵 ログイン直後に最初の曲をスタンバイ & 自動再生のトリガーを作る関数
 function playDefaultSongOnLogin() {
     initDynamicPlaylist();
-    // ログイン直後のユーザー操作（ログインボタンタップ）をきっかけに1曲目を自動再生スタンバイ
     if (currentTargetSongs.length > 0) {
         currentSongIndex = 0;
         const miniTitle = document.getElementById('mini-song-title');
         if (miniTitle) miniTitle.innerText = currentTargetSongs[0].title;
     }
 }
-// 起動時にプレイリストを作成しておく
+
 setTimeout(initDynamicPlaylist, 500);
 </script>
 </body>
