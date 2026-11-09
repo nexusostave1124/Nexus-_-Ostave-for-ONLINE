@@ -3348,8 +3348,8 @@ function promptUserLogin() {
         const res = await fetch(GAS_WEB_APP_URL, { redirect: "follow", mode: "cors" });
         if (!res.ok) throw new Error("API通信エラー");
         const data = await res.json();
-
-        // 1. 画像リストの反映（安全な配列チェック）
+        
+        // 1. 画像リストの反映（従来通り）
         const fetchedImages = Array.isArray(data) ? data : (data.images || []);
         if (fetchedImages.length > 0) {
             dynamicImagesList = fetchedImages;
@@ -3363,16 +3363,29 @@ function promptUserLogin() {
             populateSettingsAvatarSelect();
         }
 
-        // 2. YouTube音声・動画リストの反映（安全な配列チェック）
-        const fetchedAudio = Array.isArray(data.audio) ? data.audio : (Array.isArray(data) ? data.filter(i => i.youtubeId) : []);
-        if (fetchedAudio.length > 0) {
-            dynamicSongsList = fetchedAudio.map(item => ({
+        // 2. YouTube音声・動画リストの反映（キー名が "audio", "youtube", またはオブジェクト内の配列から自動検出）
+        let rawAudioList = [];
+        if (Array.isArray(data)) {
+            rawAudioList = data.filter(i => i && i.youtubeId);
+        } else if (data.audio && Array.isArray(data.audio)) {
+            rawAudioList = data.audio;
+        } else if (data.youtube && Array.isArray(data.youtube)) {
+            rawAudioList = data.youtube;
+        } else {
+            // オブジェクトのプロパティの中から youtubeId を持つ配列を自動探索
+            const foundKey = Object.keys(data).find(k => Array.isArray(data[k]) && data[k].some(i => i && i.youtubeId));
+            if (foundKey) rawAudioList = data[foundKey];
+        }
+
+        if (rawAudioList.length > 0) {
+            dynamicSongsList = rawAudioList.map(item => ({
                 title: item.title || "無題の楽曲",
                 url: `https://www.youtube.com/watch?v=${item.youtubeId}`,
                 youtubeId: item.youtubeId,
                 id: item.id || ('yt_' + Math.random())
             }));
             initDynamicPlaylist();
+            console.log("🎵 YouTubeプレイリストの反映成功:", dynamicSongsList.length, "曲");
         }
     } catch (e) {
         console.log("GAS APIからのデータ取得に失敗（フォールバック使用）:", e);
