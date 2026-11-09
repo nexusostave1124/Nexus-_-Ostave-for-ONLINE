@@ -3413,11 +3413,14 @@ if (isFsOn) {
 requestFullscreenMode();
 }
 }
-// 🎵 ログイン直後にBGM-1を自動再生スタートする関数
+// 下の方にあるYouTube用の定義（これが上書きしてしまっています）
 function playDefaultSongOnLogin() {
     initDynamicPlaylist();
-    // ログインボタンを押した瞬間のユーザー操作の勢いを利用して、BGM-1の再生をキック！
-    playBgmByIndex(0);
+    if (currentTargetSongs.length > 0) {
+        currentSongIndex = 0;
+        const miniTitle = document.getElementById('mini-song-title');
+        if (miniTitle) miniTitle.innerText = currentTargetSongs[0].title;
+    }
 }
 
 function adminLogout() {
@@ -4741,7 +4744,7 @@ let isBgmUserPaused = false;
 function playBgmByIndex(index, forceRestart = false) {
     if (!currentUser) return; // 未ログイン時は流さない
     const audioEl = document.getElementById('bgm-audio');
-    if (!audioEl) return;
+if (audioEl) audioEl.pause();
     if (index >= customBgmList.length) index = 0; // BGM-9の次はBGM-1へループ
     if (index < 0) index = customBgmList.length - 1;
     currentBgmIndex = index;
