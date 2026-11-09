@@ -1138,6 +1138,48 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <audio id="bgm-audio" preload="auto" loop></audio>
 
 <script>
+// 🎵 9曲のBGMリスト（Raw URL）とプレイヤーの初期化
+const customBgmList = [
+    { title: "BGM-1", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-1.mp3" },
+    { title: "BGM-2", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-2.mp3" },
+    { title: "BGM-3", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-3.mp3" },
+    { title: "BGM-4", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-4.mp3" },
+    { title: "BGM-5", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-5.mp3" },
+    { title: "BGM-6", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-6.mp3" },
+    { title: "BGM-7", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-7.mp3" },
+    { title: "BGM-8", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-8.mp3" },
+    { title: "BGM-9", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-9.mp3" }
+];
+
+const bgmPlayer = new Audio();
+let currentBgmIndex = 0;
+let isYoutubePlaying = false; // YouTube再生中のフラグ
+
+// 🎵 指定したインデックスのBGMを再生（9曲目の次は1曲目へ自動ループ）
+function playBgmByIndex(index) {
+    if (isYoutubePlaying) return; // YouTube再生中はBGMを鳴らさない
+
+    if (customBgmList.length === 0) return;
+    if (index >= customBgmList.length) index = 0;
+    if (index < 0) index = customBgmList.length - 1;
+
+    currentBgmIndex = index;
+    const song = customBgmList[currentBgmIndex];
+
+    bgmPlayer.src = song.url;
+    bgmPlayer.play().then(() => {
+        const miniTitle = document.getElementById('mini-song-title');
+        if (miniTitle) miniTitle.innerText = song.title;
+    }).catch(e => {
+        console.log("自動再生ガード:", e);
+    });
+}
+
+// 🎵 1曲終わったら自動で次の曲へ（ループ）
+bgmPlayer.onended = () => {
+    playBgmByIndex(currentBgmIndex + 1);
+};
+
 const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
 let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
 // 🎵 動的取得する楽曲・画像リストの格納用変数
@@ -4086,7 +4128,7 @@ async function pullGacha(count) {
 
     // ダイヤ残高チェック
     if (!currentUser || Number(currentUser.gem || 0) < totalCost) {
-        alert("💎 ダイヤが足りないよ！");
+        alert("💎 ダイヤが足りにゃいよ！");
         return;
     }
 
