@@ -3339,17 +3339,15 @@ function promptUserLogin() {
             localStorage.setItem('nexus_is_admin', 'false');
         }
         currentUser = found;
-        localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-        reloadUserData();
-
-        // 🔄 確実にGASからデータを取得して反映させる非同期関数
-        async function fetchGasAppContent() {
+localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+reloadUserData();
+// 🔄 確実にGASからデータを取得して反映させる非同期関数
+async function fetchGasAppContent() {
     try {
         const res = await fetch(GAS_WEB_APP_URL, { redirect: "follow", mode: "cors" });
         if (!res.ok) throw new Error("API通信エラー");
         const data = await res.json();
-        
-        // 1. 画像リストの反映（従来通り）
+
         const fetchedImages = Array.isArray(data) ? data : (data.images || []);
         if (fetchedImages.length > 0) {
             dynamicImagesList = fetchedImages;
@@ -3362,8 +3360,6 @@ function promptUserLogin() {
             populateAdminSelects();
             populateSettingsAvatarSelect();
         }
-
-        // 2. YouTube音声・動画リストの反映（キー名が "audio", "youtube", またはオブジェクト内の配列から自動検出）
         let rawAudioList = [];
         if (Array.isArray(data)) {
             rawAudioList = data.filter(i => i && i.youtubeId);
@@ -3372,11 +3368,9 @@ function promptUserLogin() {
         } else if (data.youtube && Array.isArray(data.youtube)) {
             rawAudioList = data.youtube;
         } else {
-            // オブジェクトのプロパティの中から youtubeId を持つ配列を自動探索
             const foundKey = Object.keys(data).find(k => Array.isArray(data[k]) && data[k].some(i => i && i.youtubeId));
             if (foundKey) rawAudioList = data[foundKey];
         }
-
         if (rawAudioList.length > 0) {
             dynamicSongsList = rawAudioList.map(item => ({
                 title: item.title || "無題の楽曲",
@@ -3385,14 +3379,14 @@ function promptUserLogin() {
                 id: item.id || ('yt_' + Math.random())
             }));
             initDynamicPlaylist();
-            console.log("🎵 YouTubeプレイリストの反映成功:", dynamicSongsList.length, "曲");
         }
     } catch (e) {
-        console.log("GAS APIからのデータ取得に失敗（フォールバック使用）:", e);
+        console.log("GAS APIからのデータ取得に失敗:", e);
         initDynamicPlaylist();
     }
 }
 fetchGasAppContent();
+
 
 
         alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
@@ -4601,59 +4595,63 @@ function closeOtherMenu() { document.getElementById('other-modal').classList.rem
 
 let openedFromTitle = false;
 function openScreen(name, fromTitle = false) {
-closeOtherMenu();
-closeAllSelectors();
-openedFromTitle = fromTitle;
+  closeOtherMenu();
+  closeAllSelectors();
+  openedFromTitle = fromTitle;
+  if (name === 'present') markAsViewed('present');
+  if (name === 'notice') markAsViewed('notice');
+  if (name === 'album') markAsViewed('album');
+  if (name === 'history') markAsViewed('history');
+  if (name === 'play') markAsViewed('play');
+  if (name === 'gacha') markAsViewed('gacha');
 
-if (name === 'present') markAsViewed('present');
-if (name === 'notice') markAsViewed('notice');
-if (name === 'album') markAsViewed('album');
-if (name === 'history') markAsViewed('history');
-if (name === 'play') markAsViewed('play');
-if (name === 'gacha') markAsViewed('gacha');
+  // 🎵 遊戯画面を開いたときはBGMを一時停止
+  const audioEl = document.getElementById('bgm-audio');
+  if (audioEl) {
+      if (name === 'play') {
+          audioEl.pause();
+      } else if (!audioEl.paused === false && !isBgmUserPaused && currentUser) {
+          audioEl.play().catch(() => {});
+      }
+  }
 
-const bottomNav = document.getElementById('main-bottom-nav');
-if (bottomNav) {
-bottomNav.classList.remove('hide-menu');
+  const bottomNav = document.getElementById('main-bottom-nav');
+  if (bottomNav) {
+    bottomNav.classList.remove('hide-menu');
+  }
+  if (name === 'event') renderEventScreen();
+  if (name === 'present') renderGifts();
+  if (name === 'notice') renderNotices();
+  if (name === 'history') renderHistory();
+  if (name === 'album') renderAlbum();
+  if (name === 'shop') renderShopScreen();
+  if (name === 'settings') {
+    const clockSection = document.getElementById('settings-clock-section');
+    const homeEx = document.getElementById('settings-home-exclusive');
+    const titleEx = document.getElementById('settings-title-exclusive');
+    if (fromTitle) {
+      if (titleEx) titleEx.style.display = 'block';
+      if (homeEx) homeEx.style.display = 'none';
+      if (clockSection) clockSection.style.display = 'none';
+    } else {
+      if (titleEx) titleEx.style.display = 'none';
+      if (homeEx) homeEx.style.display = currentUser ? 'block' : 'none';
+      if (clockSection) clockSection.style.display = currentUser ? 'block' : 'none';
+      populateSettingsAvatarSelect();
+      const nameInput = document.getElementById('settings-name-input');
+      if (nameInput && currentUser) nameInput.value = currentUser.name;
+      const fsCheckbox = document.getElementById('settings-fullscreen-toggle');
+      if (fsCheckbox) fsCheckbox.checked = localStorage.getItem(getFullscreenSettingKey()) === 'true';
+    }
+  }
+  document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (name !== 'home' && document.getElementById('nav-' + name)) {
+    document.getElementById('nav-' + name).classList.add('active');
+  }
+  const target = document.getElementById('screen-' + name);
+  if (target) target.classList.add('active');
 }
-if (name === 'event') renderEventScreen();
-if (name === 'present') renderGifts();
-if (name === 'notice') renderNotices();
-if (name === 'history') renderHistory();
-if (name === 'album') renderAlbum();
-if (name === 'shop') renderShopScreen();
-if (name === 'settings') {
-const clockSection = document.getElementById('settings-clock-section');
-const homeEx = document.getElementById('settings-home-exclusive');
-const titleEx = document.getElementById('settings-title-exclusive');
-if (fromTitle) {
-if (titleEx) titleEx.style.display = 'block';
-if (homeEx) homeEx.style.display = 'none';
-if (clockSection) clockSection.style.display = 'none';
-} else {
-if (titleEx) titleEx.style.display = 'none';
-if (homeEx) homeEx.style.display = currentUser ? 'block' : 'none';
-if (clockSection) clockSection.style.display = currentUser ? 'block' : 'none';
-populateSettingsAvatarSelect();
-const nameInput = document.getElementById('settings-name-input');
-if (nameInput && currentUser) nameInput.value = currentUser.name;
-
-const fsCheckbox = document.getElementById('settings-fullscreen-toggle');
-if (fsCheckbox) fsCheckbox.checked = localStorage.getItem(getFullscreenSettingKey()) === 'true';
-}
-}
-document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
-document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-if (name !== 'home' && document.getElementById('nav-' + name)) {
-document.getElementById('nav-' + name).classList.add('active');
-}
-const target = document.getElementById('screen-' + name);
-if (target) target.classList.add('active');
-}
-function closeScreen(name) { 
-const screen = document.getElementById('screen-' + name);
-if (screen) screen.classList.remove('active'); 
 
 const bottomNav = document.getElementById('main-bottom-nav');
 if (bottomNav) bottomNav.classList.remove('hide-menu');
@@ -4663,7 +4661,6 @@ updateUIUserStatus();
 if (!currentUser || openedFromTitle) {
 document.getElementById('title-screen').classList.remove('hidden');
 openedFromTitle = false;
-}
 }
 function switchNav(name) {
 closeOtherMenu();
@@ -4675,8 +4672,11 @@ document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')
 if (name === 'home') document.getElementById('nav-home').classList.add('active');
 }
 function adjustVolume(val) {
-const vol = val / 100;
-if (audioPlayer) audioPlayer.volume = vol;
+    const vol = val / 100;
+    const audioEl = document.getElementById('bgm-audio');
+    if (audioEl) {
+        audioEl.volume = vol;
+    }
 }
 function adjustBrightness(val) {
 document.body.style.filter = `brightness(${val / 100})`;
@@ -4785,6 +4785,9 @@ function playBgmByIndex(index, forceRestart = false) {
             console.log("自動再生ガード（画面タップで再生されます）");
         });
     }
+    // 🎵 再生していなくてもタイトル表示は即座に合わせる
+    updateBgmDisplayUI(song.title);
+    updateSettingsBgmSelect();
 }
 
 // 🎵 1曲終わったら自動的に次の曲へ
@@ -4869,17 +4872,18 @@ function playYouTubeSongByIndex(index) {
     if (currentTargetSongs.length === 0) return;
     if (index >= currentTargetSongs.length) index = 0;
     if (index < 0) index = currentTargetSongs.length - 1;
-
     currentSongIndex = index;
-    const song = currentTargetSongs[currentSongIndex];
 
+    // 🎵 YouTube再生時は裏BGMを一時停止
+    const bgmAudio = document.getElementById('bgm-audio');
+    if (bgmAudio) bgmAudio.pause();
+
+    const song = currentTargetSongs[currentSongIndex];
     const miniTitle = document.getElementById('mini-song-title');
     const nowPlayingText = document.getElementById('now-playing-text');
     const wrap = document.getElementById('yt-player-iframe-wrap');
-
     if (miniTitle) miniTitle.innerText = song.title;
     if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + song.title;
-
     if (wrap && song && song.youtubeId) {
         wrap.innerHTML = `
             <iframe width="100%" height="100%" 
@@ -4894,6 +4898,7 @@ function playYouTubeSongByIndex(index) {
     }
 }
 
+
 // 🎵 ログイン成功時の統合処理（YouTube初期化 ＋ 裏BGM再生の確実な同期）
 function playDefaultSongOnLogin() {
     initDynamicPlaylist();
@@ -4902,12 +4907,39 @@ function playDefaultSongOnLogin() {
         const miniTitle = document.getElementById('mini-song-title');
         if (miniTitle) miniTitle.innerText = currentTargetSongs[0].title;
     }
-    // 🎵 ログイン成功時に裏のBGMも再生を開始する
-    playBgmByIndex(currentBgmIndex);
+    // 🎵 ログイン時は必ずBGM-1から再生を開始する
+    currentBgmIndex = 0;
+    localStorage.setItem('nexus_bgm_index', 0);
+    playBgmByIndex(0, true);
+}
+
+// ==========================================================
+// 🛠️ 修正・追加分: 全画面の閉じる処理 & 管理画面の保存処理
+// ==========================================================
+
+function closeScreen(name) { 
+    const screen = document.getElementById('screen-' + name);
+    if (screen) screen.classList.remove('active'); 
+    const bottomNav = document.getElementById('main-bottom-nav');
+    if (bottomNav) bottomNav.classList.remove('hide-menu');
+    if (name === 'settings') {
+        updateUIUserStatus();
+    }
+    if (!currentUser || openedFromTitle) {
+        const titleScreen = document.getElementById('title-screen');
+        if (titleScreen) titleScreen.classList.remove('hidden');
+        openedFromTitle = false;
+    }
+}
+
+function saveManageSettings() {
+    adminSaveEventConfig();
+    adminSaveGachaConfig();
+    closeScreen('manage');
+    alert("💾 管理画面のすべての設定を保存しました！");
 }
 
 setTimeout(initDynamicPlaylist, 500);
 </script>
 </body>
 </html>
-
