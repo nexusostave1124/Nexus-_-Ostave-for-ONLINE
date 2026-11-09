@@ -1134,6 +1134,8 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <button class="close-btn" onclick="closeMinigameModal()" style="width:100%; margin-top:15px;">閉じる</button>
 </div>
 </div>
+<!-- 🎵 背景BGM用オーディオプレイヤー (画面には表示されません) -->
+<audio id="bgm-audio" preload="auto" loop></audio>
 
 <script>
 const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
@@ -1141,6 +1143,9 @@ let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "https://script.g
 // 🎵 動的取得する楽曲・画像リストの格納用変数
 let dynamicSongsList = [];
 let dynamicImagesList = [];
+// 🎵 HTML5の音声プレイヤーを安全に準備
+const bgmPlayer = new Audio();
+let currentBgmIndex = 0;
 const GACHA_RATES = {
 "ネオフェス限定": { "★6": 0.4, "★5": 6.6, "★4": 23, "★3": 30, "★2": 40 },
 "タイアップ限定": { "★6": 0.3, "★5": 1.7, "★4": 30, "★3": 30, "★2": 38 },
@@ -3301,73 +3306,40 @@ promptUserLogin();
 }
 }
 function promptUserLogin() {
-closeOtherMenu();
-const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
-if (!inputId) return;
-if (userRestrictionMap[inputId] === true) {
-alert("❌ このアカウントは管理者によりアクセス制限（凍結）されています。");
-return;
-}
-if (isLoginLocked && inputId !== "A-24-11-9-a") {
-alert("❌ 現在ログイン制限（メンテナンス中）につき、一般メンバーのログインはできません。");
-return;
-}
-const found = memberDatabase.find(m => m.id === inputId);
-if (found) {
-if (found.id === "A-24-11-9-a") {
-isAdmin = true;
-localStorage.setItem('nexus_is_admin', 'true');
-} else {
-isAdmin = false;
-localStorage.setItem('nexus_is_admin', 'false');
-}
-currentUser = found;
-localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-reloadUserData();
-
-// 🔄 GASのAPI（画像 ＋ YouTubeプレイリスト曲）を非同期で一括取得する関数（CORS対応）
-async function fetchGasAppContent() {
-    try {
-        const res = await fetch(GAS_WEB_APP_URL, { mode: 'cors' });
-        if (!res.ok) throw new Error("API通信エラー");
-        const data = await res.json();
-        
-        // 1. 画像リストの反映（Googleドライブ画像）
-        if (data.images && Array.isArray(data.images)) {
-            dynamicImagesList = data.images;
-            // マスターデータに統合してアルバム等に反映
-            data.images.forEach(img => {
-                if (!masterDriveImages.some(existing => existing.url === img.url)) {
-                    masterDriveImages.push(img);
-                }
-            });
-            localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
-            populateAdminSelects();
-        }
-        
-        // 2. YouTube音声リストの反映
-        if (data.audio && Array.isArray(data.audio) && data.audio.length > 0) {
-            dynamicSongsList = data.audio.map(item => ({
-                title: item.title,
-                // YouTubeの動画IDから埋め込み音声/ストリーミング形式に変換
-                url: `https://www.youtube.com/watch?v=${item.youtubeId}`,
-                youtubeId: item.youtubeId,
-                id: item.id
-            }));
-            initDynamicPlaylist();
-        }
-    } catch (e) {
-        console.log("GAS APIからのデータ取得に失敗しました（フォールバック使用）:", e);
+    closeOtherMenu();
+    const inputId = prompt("USER ID を入力してください：");
+    if (!inputId) return;
+    if (userRestrictionMap[inputId] === true) {
+        alert("❌ このアカウントは管理者によりアクセス制限されています。報告よりお問い合わせください");
+        return;
     }
-}
+    if (isLoginLocked && inputId !== "A-24-11-9-a") {
+        alert("❌ 現在（メンテナンス中）につき、ログインはできません。");
+        return;
+    }
+    const found = memberDatabase.find(m => m.id === inputId);
+    if (found) {
+        if (found.id === "A-24-11-9-a") {
+            isAdmin = true;
+            localStorage.setItem('nexus_is_admin', 'true');
+        } else {
+            isAdmin = false;
+            localStorage.setItem('nexus_is_admin', 'false');
+        }
+        currentUser = found;
+        localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+        reloadUserData();
 
-alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
-playDefaultSongOnLogin();
-checkAndTriggerFullscreenOnLogin();
-if (isAdmin) openScreen('manage');
-} else {
-alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
-}
+        // 🎵 ログイン成功＆ボタン押下をトリガーにBGM1の再生をスタート
+        playBgmByIndex(0);
+
+        alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
+        playDefaultSongOnLogin();
+        checkAndTriggerFullscreenOnLogin();
+        if (isAdmin) openScreen('manage');
+    } else {
+        alert("❌ エラー\n登録メンバーリストに存在しないIDです。");
+    }
 }
 
 function saveFullscreenSetting(checkbox) {
@@ -3408,14 +3380,13 @@ if (isFsOn) {
 requestFullscreenMode();
 }
 }
+// 🎵 ログイン直後にBGM-1を自動再生スタートする関数
 function playDefaultSongOnLogin() {
-if (songs.length > 0) {
-audioPlayer.src = songs[0].url;
-audioPlayer.play().catch(e => console.log("自動再生保護:", e));
-miniTitle.innerText = songs[0].title;
-if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + songs[0].title;
+    initDynamicPlaylist();
+    // ログインボタンを押した瞬間のユーザー操作の勢いを利用して、BGM-1の再生をキック！
+    playBgmByIndex(0);
 }
-}
+
 function adminLogout() {
 isAdmin = false;
 localStorage.setItem('nexus_is_admin', 'false');
@@ -3448,7 +3419,7 @@ setupAdminManageScreen();
 openScreen('manage');
 return;
 }
-const inputPass = prompt("管理画面のパスワードを入力してください：");
+const inputPass = prompt("パスワードを入力してください：");
 if (inputPass === "2024061124") {
 isAdmin = true;
 localStorage.setItem('nexus_is_admin', 'true');
@@ -4717,10 +4688,49 @@ window.location.reload();
 }
 }
 }
-const songs = [
-  { title: "SPECIALZ", url: "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec?type=audio&file=SPECIALZ" },
-  { title: "ハウトゥー世界征服", url: "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec?type=audio&file=howto" }
+// 🎵 9曲のBGMリスト（正確なRaw URL）
+let customBgmList = [
+    { title: "BGM-1", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-1.mp3" },
+    { title: "BGM-2", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-2.mp3" },
+    { title: "BGM-3", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-3.mp3" },
+    { title: "BGM-4", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-4.mp3" },
+    { title: "BGM-5", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-5.mp3" },
+    { title: "BGM-6", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-6.mp3" },
+    { title: "BGM-7", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-7.mp3" },
+    { title: "BGM-8", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-8.mp3" },
+    { title: "BGM-9", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/c085f880fb15ebe40b6fc8d97da7dfc3c6cd060c/BGM-9.mp3" }
 ];
+
+const bgmPlayer = new Audio();
+let currentBgmIndex = 0;
+let isYoutubePlaying = false; // YouTubeサウンド再生中のフラグ
+
+// 🎵 指定したインデックスのBGMを再生（BGM9の次は1に戻るループ）
+function playBgmByIndex(index) {
+    if (isYoutubePlaying) return; // YouTube再生中はBGMを鳴らさない
+
+    if (customBgmList.length === 0) return;
+    if (index >= customBgmList.length) index = 0; // BGM9が終わったらBGM1へループ
+    if (index < 0) index = customBgmList.length - 1;
+
+    currentBgmIndex = index;
+    const song = customBgmList[currentBgmIndex];
+
+    bgmPlayer.src = song.url;
+    bgmPlayer.play().then(() => {
+        const miniTitle = document.getElementById('mini-song-title');
+        if (miniTitle) miniTitle.innerText = song.title;
+    }).catch(e => {
+        console.log("自動再生ガード:", e);
+    });
+}
+
+// 1曲終わったら自動で次の曲へ（ループ）
+bgmPlayer.onended = () => {
+    playBgmByIndex(currentBgmIndex + 1);
+};
+
+};
 
 // 🎵 楽曲リスト & 再生インデックス管理
 let currentSongIndex = 0;
@@ -4762,17 +4772,60 @@ function initDynamicPlaylist() {
     }
 }
 
-// 🎵 指定した番号の曲を再生するメイン関数
+// 🎵 YouTube楽曲を再生した瞬間、BGMを一時停止する
 function playYouTubeSongByIndex(index) {
+    isYoutubePlaying = true;
+    if (bgmPlayer) {
+        bgmPlayer.pause(); // BGMを止める
+    }
+
+    // ... (既存のYouTube再生コード) ...
     if (currentTargetSongs.length === 0) return;
+    if (index >= currentTargetSongs.length) index = 0;
+    if (index < 0) index = currentTargetSongs.length - 1;
     
-    // 範囲を超えたら最初/最後にループさせる
-    if (index >= currentTargetSongs.length) {
-        index = 0;
+    currentSongIndex = index;
+    const song = currentTargetSongs[currentSongIndex];
+    
+    const miniTitle = document.getElementById('mini-song-title');
+    const nowPlayingText = document.getElementById('now-playing-text');
+    const wrap = document.getElementById('yt-player-iframe-wrap');
+    
+    if (miniTitle) miniTitle.innerText = song.title;
+    if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + song.title;
+    
+    if (wrap) {
+        wrap.innerHTML = `
+            <iframe width="100%" height="100%" 
+                src="https://www.youtube-nocookie.com/embed/${song.youtubeId}?autoplay=1&playsinline=1" 
+                title="${song.title}" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+        `;
     }
-    if (index < 0) {
-        index = currentTargetSongs.length - 1;
+}
+
+// 🎵 プレイヤー画面を「閉じる」ときにYouTubeを止めてBGMを再開する
+function closeScreen(name) { 
+    const screen = document.getElementById('screen-' + name);
+    if (screen) screen.classList.remove('active'); 
+    
+    if (name === 'player') {
+        isYoutubePlaying = false;
+        const wrap = document.getElementById('yt-player-iframe-wrap');
+        if (wrap) wrap.innerHTML = '<div style="color:#888; font-size:0.8rem;">曲を選ぶとここにプレイヤーが表示されます</div>';
+        
+        // BGMを再開
+        bgmPlayer.play().catch(e => console.log("BGM再開:", e));
     }
+
+    const bottomNav = document.getElementById('main-bottom-nav');
+    if (bottomNav) bottomNav.classList.remove('hide-menu');
+    // ...
+}
+
     
     currentSongIndex = index;
     const song = currentTargetSongs[currentSongIndex];
