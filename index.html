@@ -3431,7 +3431,8 @@ currentUser = null;
 localStorage.removeItem('nexus_current_user');
 reloadUserData();
 closeOtherMenu();
-if (audioPlayer) audioPlayer.pause();
+const audioEl = document.getElementById('bgm-audio');
+if (audioEl) audioEl.pause();
 alert("🔒 ログアウトしました。");
 }
 function reloadUserData() {
