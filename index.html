@@ -630,31 +630,32 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 </div>
 
             <!-- 🎵 楽曲選択画面（プレイヤー画面） -->
-    <div id="screen-player" class="sub-screen">
-        <div class="sub-header">
-            <span class="sub-title">🎵 楽曲選択 & プレイヤー</span>
-            <button class="close-btn" onclick="closeScreen('player')">閉じる</button>
-        </div>
-        
-        <!-- 📌 再生中の曲名表示 -->
-        <div id="now-playing-text" style="color: #00f5d4; margin-bottom: 8px; font-weight: bold; text-align: center; flex-shrink: 0;">再生中の曲: なし</div>
-        
-        <!-- ⏭️ 前へ・次へ操作ボタン -->
-        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 12px; flex-shrink: 0;">
-            <button onclick="playYouTubeSongByIndex(currentSongIndex - 1)" style="background: #222; color: #00f5d4; border: 1px solid #00f5d4; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.8rem;">◀ 前の曲</button>
-            <button onclick="playYouTubeSongByIndex(currentSongIndex + 1)" style="background: #00f5d4; color: #000; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: inherit; font-size: 0.8rem;">次の曲へ ▶</button>
-        </div>
-
-        <!-- 🌟 YouTubeプレイヤー表示枠（1つだけに整理） -->
-        <div id="youtube-player-container" style="width: 100%; min-height: 180px; aspect-ratio: 16/9; background: #000; margin-bottom: 15px; border-radius: 8px; overflow: hidden; border: 1px solid #00f5d4; flex-shrink: 0;">
-            <div id="yt-player-iframe-wrap" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#888; font-size:0.8rem;">
-                曲を選ぶとここにプレイヤーが表示されます
-            </div>
-        </div>
-        
-        <!-- 曲の一覧リスト（スクロールエリア） -->
-        <div id="playlist" style="flex: 1; overflow-y: auto; padding-bottom: 20px;"></div>
+<div id="screen-player" class="sub-screen">
+    <div class="sub-header">
+        <span class="sub-title">🎵 楽曲選択 & プレイヤー</span>
+        <button class="close-btn" onclick="closeScreen('player')">閉じる</button>
     </div>
+    
+    <!-- 📌 再生中の曲名表示（固定） -->
+    <div id="now-playing-text" style="color: #00f5d4; margin-bottom: 8px; font-weight: bold; text-align: center; flex-shrink: 0;">再生中の曲: なし</div>
+    
+    <!-- ⏭️ 前へ・次へ操作ボタン（固定） -->
+    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 12px; flex-shrink: 0;">
+        <button onclick="playYouTubeSongByIndex(currentSongIndex - 1)" style="background: #222; color: #00f5d4; border: 1px solid #00f5d4; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.8rem;">◀ 前の曲</button>
+        <button onclick="playYouTubeSongByIndex(currentSongIndex + 1)" style="background: #00f5d4; color: #000; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: inherit; font-size: 0.8rem;">次の曲へ ▶</button>
+    </div>
+
+    <!-- 🌟 YouTubeプレイヤー表示枠（液晶部分：消えずに完全固定） -->
+    <div id="youtube-player-container" style="width: 100%; min-height: 180px; aspect-ratio: 16/9; background: #000; margin-bottom: 15px; border-radius: 8px; overflow: hidden; border: 1px solid #00f5d4; flex-shrink: 0;">
+        <div id="yt-player-iframe-wrap" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#888; font-size:0.8rem;">
+            曲を選ぶとここにプレイヤーが表示されます
+        </div>
+    </div>
+    
+    <!-- 🎵 曲の一覧リスト（このエリア内だけがスクロールするように修正） -->
+    <div id="playlist" style="flex: 1; overflow-y: auto; padding-bottom: 20px; min-height: 0;"></div>
+</div>
+
 
 <div id="screen-gacha" class="sub-screen">
 <div class="sub-header"><span class="sub-title" id="gacha-screen-title">🎂 ガチャ</span><button class="close-btn" onclick="closeScreen('gacha')">閉じる</button></div>
@@ -2143,10 +2144,7 @@ if (n1 === n2 && n2 === n3) {
         else if (hitColor === "RED" && sData.highestMode !== "GOLD") sData.highestMode = "RED";
         else if (sData.highestMode === "NONE") sData.highestMode = "BLUE";
     }
-    
-    sData.inST = true;
-    sData.inJitan = false;
-    
+        
        sData.inST = true;
     sData.inJitan = false; // 大当り直後はSTからスタート
     
@@ -3428,18 +3426,6 @@ if (isFsOn) {
 requestFullscreenMode();
 }
 }
-// 下の方にあるYouTube用の定義（これが上書きしてしまっています）
-function playDefaultSongOnLogin() {
-    initDynamicPlaylist();
-    if (currentTargetSongs.length > 0) {
-        currentSongIndex = 0;
-        const miniTitle = document.getElementById('mini-song-title');
-        if (miniTitle) miniTitle.innerText = currentTargetSongs[0].title;
-    }
-    // 🎵 ログイン成功時に裏のBGMも再生を開始する
-    playBgmByIndex(currentBgmIndex);
-}
-
 function adminLogout() {
 isAdmin = false;
 localStorage.setItem('nexus_is_admin', 'false');
@@ -4848,7 +4834,7 @@ function initDynamicPlaylist() {
     
     currentTargetSongs.forEach((song, index) => {
         const item = document.createElement('div');
-        item.style.cssText = "background:#1f1f1f; padding:12px 14px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; cursor:pointer; align-items:center;";
+        item.style.cssText = "background:#1f1f1f; padding:12px 14px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; cursor:pointer; align-items:center; flex-shrink:0;";
         item.innerHTML = `<span style="font-size:0.85rem;">▶ ${song.title}</span><span style="color:#00f5d4; font-size:0.80rem;">再生</span>`;
         
         item.onclick = () => {
@@ -4862,6 +4848,7 @@ function initDynamicPlaylist() {
         miniTitle.innerText = currentTargetSongs[0].title;
     }
 }
+
 function playYouTubeSongByIndex(index) {
     if (currentTargetSongs.length === 0) return;
     if (index >= currentTargetSongs.length) index = 0;
@@ -4898,7 +4885,7 @@ function playDefaultSongOnLogin() {
         const miniTitle = document.getElementById('mini-song-title');
         if (miniTitle) miniTitle.innerText = currentTargetSongs[0].title;
     }
-    // 🎵 裏BGMの再生も一緒にしっかりとスタート
+    // 🎵 ログイン成功時に裏のBGMも再生を開始する
     playBgmByIndex(currentBgmIndex);
 }
 
