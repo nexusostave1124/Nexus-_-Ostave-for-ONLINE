@@ -3368,6 +3368,7 @@ async function fetchGasAppContent() {
 
 alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
 playDefaultSongOnLogin();
+playBgmByIndex(currentBgmIndex); // ◀ ここを追加！
 checkAndTriggerFullscreenOnLogin();
 if (isAdmin) openScreen('manage');
 } else {
@@ -4782,11 +4783,13 @@ function updateBgmDisplayUI(title) {
 // 🎵 画面のどこかをタップした時に「続きから」再生を復旧
 window.addEventListener('click', () => {
     const audioEl = document.getElementById('bgm-audio');
-    if (currentUser && audioEl && audioEl.paused && !isBgmUserPaused) {
+    if (currentUser && audioEl && !isBgmUserPaused) {
         const playScreen = document.getElementById('screen-play');
         const isPlayScreenOpen = playScreen && playScreen.classList.contains('active');
         if (!isPlayScreenOpen) {
-            audioEl.play().catch(e => {});
+            if (!audioEl.src || audioEl.paused) {
+                playBgmByIndex(currentBgmIndex); // ◀ 音源が未設定または停止中の場合は確実に再生
+            }
         }
     }
 });
