@@ -3436,6 +3436,8 @@ function playDefaultSongOnLogin() {
         const miniTitle = document.getElementById('mini-song-title');
         if (miniTitle) miniTitle.innerText = currentTargetSongs[0].title;
     }
+    // 🎵 ログイン成功時に裏のBGMも再生を開始する
+    playBgmByIndex(currentBgmIndex);
 }
 
 function adminLogout() {
