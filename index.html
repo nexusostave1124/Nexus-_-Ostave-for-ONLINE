@@ -3320,37 +3320,38 @@ promptUserLogin();
 }
 }
 function promptUserLogin() {
-closeOtherMenu();
-const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
-if (!inputId) return;
-if (userRestrictionMap[inputId] === true) {
-alert("❌ このアカウントは管理者によりアクセス制限（凍結）されています。");
-return;
-}
-if (isLoginLocked && inputId !== "A-24-11-9-a") {
-alert("❌ 現在ログイン制限（メンテナンス中）につき、一般メンバーのログインはできません。");
-return;
-}
-const found = memberDatabase.find(m => m.id === inputId);
-if (found) {
-if (found.id === "A-24-11-9-a") {
-isAdmin = true;
-localStorage.setItem('nexus_is_admin', 'true');
-} else {
-isAdmin = false;
-localStorage.setItem('nexus_is_admin', 'false');
-}
-       currentUser = found;
+    closeOtherMenu();
+    const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
+    if (!inputId) return;
+    if (userRestrictionMap[inputId] === true) {
+        alert("❌ このアカウントは管理者によりアクセス制限（凍結）されています。");
+        return;
+    }
+    if (isLoginLocked && inputId !== "A-24-11-9-a") {
+        alert("❌ 現在ログイン制限（メンテナンス中）につき、一般メンバーのログインはできません。");
+        return;
+    }
+    const found = memberDatabase.find(m => m.id === inputId);
+    if (found) {
+        if (found.id === "A-24-11-9-a") {
+            isAdmin = true;
+            localStorage.setItem('nexus_is_admin', 'true');
+        } else {
+            isAdmin = false;
+            localStorage.setItem('nexus_is_admin', 'false');
+        }
+        currentUser = found;
         localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
         reloadUserData();
 
-        // 🔄 GASのAPI（画像 ＋ YouTubeプレイリスト曲）を非同期で一括取得する関数
+        // 🔄 確実にGASからデータを取得して反映させる非同期関数
         async function fetchGasAppContent() {
             try {
-                const res = await fetch(GAS_WEB_APP_URL, { mode: 'cors' });
+                const res = await fetch(GAS_WEB_APP_URL);
                 if (!res.ok) throw new Error("API通信エラー");
                 const data = await res.json();
                 
+                // 1. 画像リストの反映
                 if (data.images && Array.isArray(data.images)) {
                     dynamicImagesList = data.images;
                     data.images.forEach(img => {
@@ -3362,6 +3363,7 @@ localStorage.setItem('nexus_is_admin', 'false');
                     populateAdminSelects();
                 }
                 
+                // 2. YouTube音声リストの反映
                 if (data.audio && Array.isArray(data.audio) && data.audio.length > 0) {
                     dynamicSongsList = data.audio.map(item => ({
                         title: item.title,
@@ -3372,20 +3374,20 @@ localStorage.setItem('nexus_is_admin', 'false');
                     initDynamicPlaylist();
                 }
             } catch (e) {
-                console.log("GAS APIからのデータ取得に失敗:", e);
+                console.log("GAS APIからのデータ取得に失敗（フォールバック使用）:", e);
             }
         }
 
-        // 🌟 ここで必ず関数を呼び出す！
+        // 🌟 ここで必ず関数を「実行」する！
         fetchGasAppContent();
 
         alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
         playDefaultSongOnLogin();
         checkAndTriggerFullscreenOnLogin();
         if (isAdmin) openScreen('manage');
-} else {
-alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
-}
+    } else {
+        alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
+    }
 }
 
 function saveFullscreenSetting(checkbox) {
