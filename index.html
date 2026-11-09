@@ -3306,40 +3306,73 @@ promptUserLogin();
 }
 }
 function promptUserLogin() {
-    closeOtherMenu();
-    const inputId = prompt("USER ID を入力してください：");
-    if (!inputId) return;
-    if (userRestrictionMap[inputId] === true) {
-        alert("❌ このアカウントは管理者によりアクセス制限されています。報告よりお問い合わせください");
-        return;
-    }
-    if (isLoginLocked && inputId !== "A-24-11-9-a") {
-        alert("❌ 現在（メンテナンス中）につき、ログインはできません。");
-        return;
-    }
-    const found = memberDatabase.find(m => m.id === inputId);
-    if (found) {
-        if (found.id === "A-24-11-9-a") {
-            isAdmin = true;
-            localStorage.setItem('nexus_is_admin', 'true');
-        } else {
-            isAdmin = false;
-            localStorage.setItem('nexus_is_admin', 'false');
+closeOtherMenu();
+const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
+if (!inputId) return;
+if (userRestrictionMap[inputId] === true) {
+alert("❌ このアカウントは管理者によりアクセス制限（凍結）されています。");
+return;
+}
+if (isLoginLocked && inputId !== "A-24-11-9-a") {
+alert("❌ 現在ログイン制限（メンテナンス中）につき、一般メンバーのログインはできません。");
+return;
+}
+const found = memberDatabase.find(m => m.id === inputId);
+if (found) {
+if (found.id === "A-24-11-9-a") {
+isAdmin = true;
+localStorage.setItem('nexus_is_admin', 'true');
+} else {
+isAdmin = false;
+localStorage.setItem('nexus_is_admin', 'false');
+}
+currentUser = found;
+localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+reloadUserData();
+
+// 🔄 GASのAPI（画像 ＋ YouTubeプレイリスト曲）を非同期で一括取得する関数（CORS対応）
+async function fetchGasAppContent() {
+    try {
+        const res = await fetch(GAS_WEB_APP_URL, { mode: 'cors' });
+        if (!res.ok) throw new Error("API通信エラー");
+        const data = await res.json();
+        
+        // 1. 画像リストの反映（Googleドライブ画像）
+        if (data.images && Array.isArray(data.images)) {
+            dynamicImagesList = data.images;
+            // マスターデータに統合してアルバム等に反映
+            data.images.forEach(img => {
+                if (!masterDriveImages.some(existing => existing.url === img.url)) {
+                    masterDriveImages.push(img);
+                }
+            });
+            localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+            populateAdminSelects();
         }
-        currentUser = found;
-        localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-        reloadUserData();
-
-        // 🎵 ログイン成功＆ボタン押下をトリガーにBGM1の再生をスタート
-        playBgmByIndex(0);
-
-        alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
-        playDefaultSongOnLogin();
-        checkAndTriggerFullscreenOnLogin();
-        if (isAdmin) openScreen('manage');
-    } else {
-        alert("❌ エラー\n登録メンバーリストに存在しないIDです。");
+        
+        // 2. YouTube音声リストの反映
+        if (data.audio && Array.isArray(data.audio) && data.audio.length > 0) {
+            dynamicSongsList = data.audio.map(item => ({
+                title: item.title,
+                // YouTubeの動画IDから埋め込み音声/ストリーミング形式に変換
+                url: `https://www.youtube.com/watch?v=${item.youtubeId}`,
+                youtubeId: item.youtubeId,
+                id: item.id
+            }));
+            initDynamicPlaylist();
+        }
+    } catch (e) {
+        console.log("GAS APIからのデータ取得に失敗しました（フォールバック使用）:", e);
     }
+}
+
+alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
+playDefaultSongOnLogin();
+checkAndTriggerFullscreenOnLogin();
+if (isAdmin) openScreen('manage');
+} else {
+alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
+}
 }
 
 function saveFullscreenSetting(checkbox) {
@@ -3419,7 +3452,7 @@ setupAdminManageScreen();
 openScreen('manage');
 return;
 }
-const inputPass = prompt("パスワードを入力してください：");
+const inputPass = prompt("管理画面のパスワードを入力してください：");
 if (inputPass === "2024061124") {
 isAdmin = true;
 localStorage.setItem('nexus_is_admin', 'true');
@@ -4707,11 +4740,16 @@ let isYoutubePlaying = false; // YouTubeサウンド再生中のフラグ
 
 // 🎵 指定したインデックスのBGMを再生（BGM9の次は1に戻るループ）
 function playBgmByIndex(index) {
-    if (isYoutubePlaying) return; // YouTube再生中はBGMを鳴らさない
+    // YouTubeサウンド再生中ならBGMは再生しない
+    if (isYoutubePlaying) return;
 
     if (customBgmList.length === 0) return;
-    if (index >= customBgmList.length) index = 0; // BGM9が終わったらBGM1へループ
-    if (index < 0) index = customBgmList.length - 1;
+    if (index >= customBgmList.length) {
+        index = 0; // BGM9が終わったらBGM1へループ
+    }
+    if (index < 0) {
+        index = customBgmList.length - 1;
+    }
 
     currentBgmIndex = index;
     const song = customBgmList[currentBgmIndex];
@@ -4721,7 +4759,7 @@ function playBgmByIndex(index) {
         const miniTitle = document.getElementById('mini-song-title');
         if (miniTitle) miniTitle.innerText = song.title;
     }).catch(e => {
-        console.log("自動再生ガード:", e);
+        console.log("自動再生ガードまたはロード待ち:", e);
     });
 }
 
@@ -4772,60 +4810,17 @@ function initDynamicPlaylist() {
     }
 }
 
-// 🎵 YouTube楽曲を再生した瞬間、BGMを一時停止する
+// 🎵 指定した番号の曲を再生するメイン関数
 function playYouTubeSongByIndex(index) {
-    isYoutubePlaying = true;
-    if (bgmPlayer) {
-        bgmPlayer.pause(); // BGMを止める
-    }
-
-    // ... (既存のYouTube再生コード) ...
     if (currentTargetSongs.length === 0) return;
-    if (index >= currentTargetSongs.length) index = 0;
-    if (index < 0) index = currentTargetSongs.length - 1;
     
-    currentSongIndex = index;
-    const song = currentTargetSongs[currentSongIndex];
-    
-    const miniTitle = document.getElementById('mini-song-title');
-    const nowPlayingText = document.getElementById('now-playing-text');
-    const wrap = document.getElementById('yt-player-iframe-wrap');
-    
-    if (miniTitle) miniTitle.innerText = song.title;
-    if (nowPlayingText) nowPlayingText.innerText = "再生中の曲: " + song.title;
-    
-    if (wrap) {
-        wrap.innerHTML = `
-            <iframe width="100%" height="100%" 
-                src="https://www.youtube-nocookie.com/embed/${song.youtubeId}?autoplay=1&playsinline=1" 
-                title="${song.title}" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen>
-            </iframe>
-        `;
+    // 範囲を超えたら最初/最後にループさせる
+    if (index >= currentTargetSongs.length) {
+        index = 0;
     }
-}
-
-// 🎵 プレイヤー画面を「閉じる」ときにYouTubeを止めてBGMを再開する
-function closeScreen(name) { 
-    const screen = document.getElementById('screen-' + name);
-    if (screen) screen.classList.remove('active'); 
-    
-    if (name === 'player') {
-        isYoutubePlaying = false;
-        const wrap = document.getElementById('yt-player-iframe-wrap');
-        if (wrap) wrap.innerHTML = '<div style="color:#888; font-size:0.8rem;">曲を選ぶとここにプレイヤーが表示されます</div>';
-        
-        // BGMを再開
-        bgmPlayer.play().catch(e => console.log("BGM再開:", e));
+    if (index < 0) {
+        index = currentTargetSongs.length - 1;
     }
-
-    const bottomNav = document.getElementById('main-bottom-nav');
-    if (bottomNav) bottomNav.classList.remove('hide-menu');
-    // ...
-}
-
     
     currentSongIndex = index;
     const song = currentTargetSongs[currentSongIndex];
