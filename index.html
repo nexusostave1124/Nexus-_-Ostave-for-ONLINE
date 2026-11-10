@@ -3362,13 +3362,14 @@ async function promptUserLogin() {
         // 🔄 ログイン時にスプレッドシート（GAS）から最新データ（設定・メンバー）をクラウド同期する
         if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
             try {
-                const res = await fetch(GAS_WEB_APP_URL, { redirect: "follow" });
+                const res = await fetch(GAS_WEB_APP_URL);
                 const data = await res.json();
                 if (data) {
                     if (data.members) {
                         memberDatabase = data.members;
                         saveMemberDb();
                     }
+                    // スプレッドシート側のクラウド設定（appSettings）があれば反映
                     if (data.appSettings && Object.keys(data.appSettings).length > 0) {
                         if (data.appSettings.eventsList) {
                             eventsList = data.appSettings.eventsList;
@@ -3397,6 +3398,7 @@ async function promptUserLogin() {
         
         reloadUserData();
 
+        // 🔄 確実にGASからデータを取得して反映させる非同期関数
         async function fetchGasAppContent() {
             try {
                 const res = await fetch(GAS_WEB_APP_URL, { redirect: "follow", mode: "cors" });
@@ -3442,24 +3444,14 @@ async function promptUserLogin() {
         fetchGasAppContent();
         
         alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
-        
-        // 🎵 ロードが完全に終わってホーム画面に入った後にBGMを初期化・再生する
-        initDynamicPlaylist();
-        if (currentTargetSongs.length > 0) {
-            currentSongIndex = 0;
-            const miniTitle = document.getElementById('mini-song-title');
-            if (miniTitle) miniTitle.innerText = currentTargetSongs[0].title;
-        }
-        currentBgmIndex = 0;
-        localStorage.setItem('nexus_bgm_index', 0);
-        playBgmByIndex(0, true);
-
+        playDefaultSongOnLogin();
         checkAndTriggerFullscreenOnLogin();
         if (isAdmin) openScreen('manage');
     } else {
         alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
     }
 }
+
 
 function saveFullscreenSetting(checkbox) {
 localStorage.setItem(getFullscreenSettingKey(), checkbox.checked ? 'true' : 'false');
@@ -4962,8 +4954,12 @@ function playYouTubeSongByIndex(index) {
 
 // 🎵 ログイン成功時の統合処理（YouTube初期化 ＋ 裏BGM再生の確実な同期）
 function playDefaultSongOnLogin() {
-    // 処理は promptUserLogin 内で実行されます
-}
+    initDynamicPlaylist();
+    if (currentTargetSongs.length > 0) {
+        currentSongIndex = 0;
+        const miniTitle = document.getElementById('mini-song-title');
+        if (miniTitle) miniTitle.innerText = currentTargetSongs[0].title;
+    }
     // 🎵 ログイン時は必ずBGM-1から再生を開始する
     currentBgmIndex = 0;
     localStorage.setItem('nexus_bgm_index', 0);
@@ -4993,12 +4989,11 @@ async function saveManageSettings() {
     adminSaveEventConfig();
     adminSaveGachaConfig();
     
-    // ローカルにも確実に最新状態を保持
+    // ローカルストレージにも最新状態を保存
     localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
     localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
     localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
-    localStorage.setItem('nexus_member_db', JSON.stringify(memberDatabase));
-
+    
     const settingsPayload = {
         eventsList: eventsList,
         gachaList: gachaList,
@@ -5008,23 +5003,20 @@ async function saveManageSettings() {
     
     if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
-            // リダイレクトを追跡できるように設定
+            alert("🔄 クラウド（スプレッドシート）へデータを同期中...");
             await fetch(GAS_WEB_APP_URL, {
                 method: "POST",
-                redirect: "follow",
-                headers: { "Content-Type": "text/plain;charset=utf-8" }, // GASでのCORSプリフライト回避の定石
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     logType: "saveSettings",
                     settings: settingsPayload
                 })
             });
-            alert("💾 管理画面の設定を保存し、スプレッドシートへ同期しました！");
+            alert("💾 すべての設定・データをクラウド上で完全に同期・保存しました！");
         } catch (e) {
-            console.log("⚠️ クラウド保存エラー（ローカルには保存されました）:", e);
-            alert("⚠️ ネットワークまたはGAS側の通信エラーが発生しましたが、ローカルデータは保存されました。");
+            console.log("⚠️ クラウド保存エラー:", e);
+            alert("⚠️ ネットワークエラーのため、ローカルのみ保存しました。");
         }
-    } else {
-        alert("💾 管理画面の設定を保存しました！");
     }
     closeScreen('manage');
 }
