@@ -1180,8 +1180,25 @@ let memberDatabase = JSON.parse(localStorage.getItem('nexus_member_db')) || [
 { id: "N-24-11-7-o", name: "Ayu", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
 { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 }
 ];
-function saveMemberDb() {
-localStorage.setItem('nexus_member_db', JSON.stringify(memberDatabase));
+// 🔄 メンバーデータの保存 ＆ スプレッドシート（GAS）へのクラウド同期
+async function saveMemberDb() {
+    localStorage.setItem('nexus_member_db', JSON.stringify(memberDatabase));
+    
+    // GASのURLが設定されている場合はクラウド側にも即時同期
+    if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
+        try {
+            await fetch(GAS_WEB_APP_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    logType: "saveMembers",
+                    members: memberDatabase
+                })
+            });
+        } catch (e) {
+            console.log("⚠️ メンバーデータのクラウド同期エラー:", e);
+        }
+    }
 }
 let currentUser = JSON.parse(localStorage.getItem('nexus_current_user')) || null;
 let isAdmin = localStorage.getItem('nexus_is_admin') === 'true';
@@ -1260,8 +1277,9 @@ function getTitleBgKey() { return 'nexus_title_bg_images'; }
 function getAppIconKey() { return 'nexus_custom_app_icon'; }
 function getFullscreenSettingKey() { return 'nexus_fullscreen_setting'; }
 
-let userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
+let userAlbum = (JSON.parse(localStorage.getItem(getUserAlbumKey())) || []).filter(item => item && item.url);
 let userSlideshowIds = JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [];
+userSlideshowIds = userSlideshowIds.filter(id => userAlbum.some(img => img.id === id));
 let userGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
 let userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
 let globalNotices = JSON.parse(localStorage.getItem(getGlobalNoticesKey())) || [];
@@ -3317,7 +3335,7 @@ adminLogout();
 promptUserLogin();
 }
 }
-function promptUserLogin() {
+async function promptUserLogin() {
     closeOtherMenu();
     const inputId = prompt("スプレッドシート登録の USER ID を入力してください：");
     if (!inputId) return;
@@ -3339,56 +3357,92 @@ function promptUserLogin() {
             localStorage.setItem('nexus_is_admin', 'false');
         }
         currentUser = found;
-localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-reloadUserData();
-// 🔄 確実にGASからデータを取得して反映させる非同期関数
-async function fetchGasAppContent() {
-    try {
-        const res = await fetch(GAS_WEB_APP_URL, { redirect: "follow", mode: "cors" });
-        if (!res.ok) throw new Error("API通信エラー");
-        const data = await res.json();
-
-        const fetchedImages = Array.isArray(data) ? data : (data.images || []);
-        if (fetchedImages.length > 0) {
-            dynamicImagesList = fetchedImages;
-            fetchedImages.forEach(img => {
-                if (img && img.url && !masterDriveImages.some(existing => existing.url === img.url)) {
-                    masterDriveImages.push(img);
+        localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+        
+        // 🔄 ログイン時にスプレッドシート（GAS）から最新データ（設定・メンバー）をクラウド同期する
+        if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
+            try {
+                const res = await fetch(GAS_WEB_APP_URL);
+                const data = await res.json();
+                if (data) {
+                    if (data.members) {
+                        memberDatabase = data.members;
+                        saveMemberDb();
+                    }
+                    // スプレッドシート側のクラウド設定（appSettings）があれば反映
+                    if (data.appSettings && Object.keys(data.appSettings).length > 0) {
+                        if (data.appSettings.eventsList) {
+                            eventsList = data.appSettings.eventsList;
+                            localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
+                        }
+                        if (data.appSettings.gachaList) {
+                            gachaList = data.appSettings.gachaList;
+                            localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+                        }
+                        if (data.appSettings.shopItemsList) {
+                            shopItemsList = data.appSettings.shopItemsList;
+                            localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
+                        }
+                    }
+                    const freshUser = memberDatabase.find(m => m.id === currentUser.id);
+                    if (freshUser) {
+                        currentUser = freshUser;
+                        localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+                    }
+                    updateUIUserStatus();
                 }
-            });
-            localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
-            populateAdminSelects();
-            populateSettingsAvatarSelect();
+            } catch (e) {
+                console.log("クラウド同期スキップ:", e);
+            }
         }
-        let rawAudioList = [];
-        if (Array.isArray(data)) {
-            rawAudioList = data.filter(i => i && i.youtubeId);
-        } else if (data.audio && Array.isArray(data.audio)) {
-            rawAudioList = data.audio;
-        } else if (data.youtube && Array.isArray(data.youtube)) {
-            rawAudioList = data.youtube;
-        } else {
-            const foundKey = Object.keys(data).find(k => Array.isArray(data[k]) && data[k].some(i => i && i.youtubeId));
-            if (foundKey) rawAudioList = data[foundKey];
+        
+        reloadUserData();
+
+        // 🔄 確実にGASからデータを取得して反映させる非同期関数
+        async function fetchGasAppContent() {
+            try {
+                const res = await fetch(GAS_WEB_APP_URL, { redirect: "follow", mode: "cors" });
+                if (!res.ok) throw new Error("API通信エラー");
+                const data = await res.json();
+                const fetchedImages = Array.isArray(data) ? data : (data.images || []);
+                if (fetchedImages.length > 0) {
+                    dynamicImagesList = fetchedImages;
+                    fetchedImages.forEach(img => {
+                        if (img && img.url && !masterDriveImages.some(existing => existing.url === img.url)) {
+                            masterDriveImages.push(img);
+                        }
+                    });
+                    localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+                    populateAdminSelects();
+                    populateSettingsAvatarSelect();
+                }
+                let rawAudioList = [];
+                if (Array.isArray(data)) {
+                    rawAudioList = data.filter(i => i && i.youtubeId);
+                } else if (data.audio && Array.isArray(data.audio)) {
+                    rawAudioList = data.audio;
+                } else if (data.youtube && Array.isArray(data.youtube)) {
+                    rawAudioList = data.youtube;
+                } else {
+                    const foundKey = Object.keys(data).find(k => Array.isArray(data[k]) && data[k].some(i => i && i.youtubeId));
+                    if (foundKey) rawAudioList = data[foundKey];
+                }
+                if (rawAudioList.length > 0) {
+                    dynamicSongsList = rawAudioList.map(item => ({
+                        title: item.title || "無題の楽曲",
+                        url: `https://www.youtube.com/watch?v=${item.youtubeId}`,
+                        youtubeId: item.youtubeId,
+                        id: item.id || ('yt_' + Math.random())
+                    }));
+                    initDynamicPlaylist();
+                }
+            } catch (e) {
+                console.log("GAS APIからのデータ取得に失敗:", e);
+                initDynamicPlaylist();
+            }
         }
-        if (rawAudioList.length > 0) {
-            dynamicSongsList = rawAudioList.map(item => ({
-                title: item.title || "無題の楽曲",
-                url: `https://www.youtube.com/watch?v=${item.youtubeId}`,
-                youtubeId: item.youtubeId,
-                id: item.id || ('yt_' + Math.random())
-            }));
-            initDynamicPlaylist();
-        }
-    } catch (e) {
-        console.log("GAS APIからのデータ取得に失敗:", e);
-        initDynamicPlaylist();
-    }
-}
-fetchGasAppContent();
-
-
-
+        fetchGasAppContent();
+        
         alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
         playDefaultSongOnLogin();
         checkAndTriggerFullscreenOnLogin();
@@ -3397,6 +3451,7 @@ fetchGasAppContent();
         alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
     }
 }
+
 
 function saveFullscreenSetting(checkbox) {
 localStorage.setItem(getFullscreenSettingKey(), checkbox.checked ? 'true' : 'false');
@@ -4103,14 +4158,12 @@ async function pullGacha(count) {
 
     // ダイヤ残高チェック
     if (!currentUser || Number(currentUser.gem || 0) < totalCost) {
-        alert("💎 ダイヤが足りにゃいよ！");
+        alert("💎 ダイヤが足りないよ！");
         return;
     }
 
     // ダイヤを消費
-    currentUser.gem = Number(currentUser.gem) - totalCost;
-    if (typeof saveUserData === 'function') saveUserData();
-    renderGachaScreen(); // ダイヤ表示更新
+    currentUser.gem = Number(currentUser.gem) - totalCost; saveMemberDb(); // メンバーデータベースとローカルストレージに保存 renderGachaScreen(); // ダイヤ表示更新 
 
     // 🎲 確率に基づいて結果を事前計算
     const results = [];
@@ -4932,12 +4985,42 @@ function closeScreen(name) {
     }
 }
 
-function saveManageSettings() {
+async function saveManageSettings() {
     adminSaveEventConfig();
     adminSaveGachaConfig();
+    
+    // ローカルストレージにも最新状態を保存
+    localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
+    localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+    localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
+    
+    const settingsPayload = {
+        eventsList: eventsList,
+        gachaList: gachaList,
+        shopItemsList: shopItemsList,
+        members: memberDatabase
+    };
+    
+    if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
+        try {
+            alert("🔄 クラウド（スプレッドシート）へデータを同期中...");
+            await fetch(GAS_WEB_APP_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    logType: "saveSettings",
+                    settings: settingsPayload
+                })
+            });
+            alert("💾 すべての設定・データをクラウド上で完全に同期・保存しました！");
+        } catch (e) {
+            console.log("⚠️ クラウド保存エラー:", e);
+            alert("⚠️ ネットワークエラーのため、ローカルのみ保存しました。");
+        }
+    }
     closeScreen('manage');
-    alert("💾 管理画面のすべての設定を保存しました！");
 }
+
 
 setTimeout(initDynamicPlaylist, 500);
 </script>
