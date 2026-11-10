@@ -1180,24 +1180,23 @@ let memberDatabase = JSON.parse(localStorage.getItem('nexus_member_db')) || [
 { id: "N-24-11-7-o", name: "Ayu", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
 { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 }
 ];
-// 🔄 メンバーデータの保存 ＆ スプレッドシート（GAS）へのクラウド同期
+// 🔄 メンバーデータの保存 ＆ スプレッドシート（GAS）へのクラウド同期（ログなし）
 async function saveMemberDb() {
     localStorage.setItem('nexus_member_db', JSON.stringify(memberDatabase));
     
-    // GASのURLが設定されている場合はクラウド側にも同期
     if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
             await fetch(GAS_WEB_APP_URL, {
                 method: "POST",
-                mode: "no-cors", // ⬅️ CORSエラー回避のため追加
-                headers: { "Content-Type": "text/plain;charset=utf-8" }, // ⬅️ text/plainに変更
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({
                     logType: "saveMembers",
                     members: memberDatabase
                 })
             });
         } catch (e) {
-            console.log("⚠️ メンバーデータのクラウド同期スキップ（ローカルで動作継続）:", e);
+            console.log("⚠️ メンバーデータのクラウド同期スキップ（ローカル動作継続）:", e);
         }
     }
 }
@@ -3359,8 +3358,8 @@ async function promptUserLogin() {
         }
         currentUser = found;
         localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-        
-        // 🔄 ログイン時にスプレッドシートから自動受信して最新データを反映
+
+               // 🔄 ログイン時にスプレッドシートから自動受信して最新データを反映
         if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
             try {
                 const res = await fetch(GAS_WEB_APP_URL);
@@ -3396,7 +3395,7 @@ async function promptUserLogin() {
                 console.log("ログイン時の自動受信スキップ:", e);
             }
         }
-        
+
         reloadUserData();
         
         async function fetchGasAppContent() {
@@ -3493,12 +3492,13 @@ requestFullscreenMode();
 }
 }
 async function adminLogout() {
-    // 🔄 ログアウト時にアプリからスプレッドシートへデータを自動送信
+    // 🔄 ログアウト時にログなしでアプリからスプレッドシートへデータを自動送信
     if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
             await fetch(GAS_WEB_APP_URL, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({
                     logType: "autoSyncLogout",
                     members: memberDatabase,
@@ -3509,7 +3509,6 @@ async function adminLogout() {
             console.log("ログアウト時の自動送信スキップ:", e);
         }
     }
-
     isAdmin = false;
     localStorage.setItem('nexus_is_admin', 'false');
     currentUser = null;
@@ -4665,9 +4664,8 @@ if (el2) { el2.className = "battery-status c-green"; el2.innerText = "100%"; }
 function toggleOtherMenu() { document.getElementById('other-modal').classList.add('active'); }
 function closeOtherMenu() { document.getElementById('other-modal').classList.remove('active'); }
 
-let openedFromTitle = false;
-// 🔲 指定したサブ画面を閉じる関数
-function closeScreen(name) {
+// 🔲 指定したサブ画面を閉じる関数（ログなしで裏で同期）
+async function closeScreen(name) {
     const target = document.getElementById('screen-' + name);
     if (target) target.classList.remove('active');
     
@@ -4686,8 +4684,25 @@ function closeScreen(name) {
         if (titleScreen) titleScreen.classList.remove('hidden');
         openedFromTitle = false;
     }
-}
 
+    // 🔄 画面を閉じたタイミングでログなし（通知なし）でスプレッドシートと同期
+    if (currentUser && typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
+        try {
+            await fetch(GAS_WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({
+                    logType: "saveData",
+                    members: memberDatabase,
+                    settings: { eventsList, gachaList, shopItemsList }
+                })
+            });
+        } catch (e) {
+            console.log("⚠️ 画面閉じる時の同期スキップ:", e);
+        }
+    }
+}
 
 function openScreen(name, fromTitle = false) {
   closeOtherMenu();
@@ -5020,35 +5035,25 @@ async function switchNav(name) {
     document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     if (name === 'home') document.getElementById('nav-home').classList.add('active');
-
-    // 🔄 下メニュー切り替え時にログなしで自動送受信（同期）を行う
+    
+    // 🔄 下メニュー切り替え時にログなし（通知なし）で自動送受信（同期）を行う
     if (currentUser && typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
             await fetch(GAS_WEB_APP_URL, {
-    method: "POST",
-    mode: "no-cors", // 
-    headers: { "Content-Type": "text/plain;charset=utf-8" }, // ← application/json ではなく text/plain にする
-    body: JSON.stringify({
-        logType: "saveData",
-        members: memberDatabase,
-        settings: { eventsList, gachaList }
-    })
-});
-            const res = await fetch(GAS_WEB_APP_URL);
-            if (res.ok) {
-                const data = await res.json();
-                if (data && data.members) {
-                    memberDatabase = data.members;
-                    saveMemberDb();
-                }
-            }
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({
+                    logType: "saveData",
+                    members: memberDatabase,
+                    settings: { eventsList, gachaList, shopItemsList }
+                })
+            });
         } catch (e) {
-            console.log("⚠️ メニュー切替時の中継同期スキップ:", e);
+            console.log("⚠️ メニュー切替時の同期スキップ:", e);
         }
     }
 }
-
-
 
 async function saveManageSettings() {
     adminSaveEventConfig();
