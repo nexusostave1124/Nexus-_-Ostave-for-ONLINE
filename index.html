@@ -1184,19 +1184,20 @@ let memberDatabase = JSON.parse(localStorage.getItem('nexus_member_db')) || [
 async function saveMemberDb() {
     localStorage.setItem('nexus_member_db', JSON.stringify(memberDatabase));
     
-    // GASのURLが設定されている場合はクラウド側にも即時同期
+    // GASのURLが設定されている場合はクラウド側にも同期
     if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
             await fetch(GAS_WEB_APP_URL, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                mode: "no-cors", // ⬅️ CORSエラー回避のため追加
+                headers: { "Content-Type": "text/plain;charset=utf-8" }, // ⬅️ text/plainに変更
                 body: JSON.stringify({
                     logType: "saveMembers",
                     members: memberDatabase
                 })
             });
         } catch (e) {
-            console.log("⚠️ メンバーデータのクラウド同期エラー:", e);
+            console.log("⚠️ メンバーデータのクラウド同期スキップ（ローカルで動作継続）:", e);
         }
     }
 }
@@ -4665,6 +4666,29 @@ function toggleOtherMenu() { document.getElementById('other-modal').classList.ad
 function closeOtherMenu() { document.getElementById('other-modal').classList.remove('active'); }
 
 let openedFromTitle = false;
+// 🔲 指定したサブ画面を閉じる関数
+function closeScreen(name) {
+    const target = document.getElementById('screen-' + name);
+    if (target) target.classList.remove('active');
+    
+    // 下部メニューの表示を復元
+    const bottomNav = document.getElementById('main-bottom-nav');
+    if (bottomNav) bottomNav.classList.remove('hide-menu');
+    
+    // ホームタブをアクティブに戻す
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const homeNav = document.getElementById('nav-home');
+    if (homeNav) homeNav.classList.add('active');
+    
+    // タイトル画面から開いていた場合はタイトル画面に戻す
+    if (typeof openedFromTitle !== 'undefined' && openedFromTitle) {
+        const titleScreen = document.getElementById('title-screen');
+        if (titleScreen) titleScreen.classList.remove('hidden');
+        openedFromTitle = false;
+    }
+}
+
+
 function openScreen(name, fromTitle = false) {
   closeOtherMenu();
   closeAllSelectors();
@@ -5001,14 +5025,15 @@ async function switchNav(name) {
     if (currentUser && typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
             await fetch(GAS_WEB_APP_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    logType: "autoSyncNav",
-                    members: memberDatabase,
-                    settings: { eventsList, gachaList, shopItemsList }
-                })
-            });
+    method: "POST",
+    mode: "no-cors", // 
+    headers: { "Content-Type": "text/plain;charset=utf-8" }, // ← application/json ではなく text/plain にする
+    body: JSON.stringify({
+        logType: "saveData",
+        members: memberDatabase,
+        settings: { eventsList, gachaList }
+    })
+});
             const res = await fetch(GAS_WEB_APP_URL);
             if (res.ok) {
                 const data = await res.json();
@@ -5022,6 +5047,8 @@ async function switchNav(name) {
         }
     }
 }
+
+
 
 async function saveManageSettings() {
     adminSaveEventConfig();
