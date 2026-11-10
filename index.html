@@ -4986,6 +4986,7 @@ function closeScreen(name) {
 }
 
 async function saveManageSettings() {
+    // 1. 各設定をオブジェクトに反映
     adminSaveEventConfig();
     adminSaveGachaConfig();
     
@@ -4995,31 +4996,34 @@ async function saveManageSettings() {
         shopItemsList: shopItemsList
     };
     
+    // 2. ローカルストレージに確実に保存（アプリの動作を担保）
+    localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
+    localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+    localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
+
+    // 3. クラウド（GAS）への同期（CORSエラーで止まらないよう安全に送信）
     if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
-            // 🔄 mode: "no-cors" を外し、通常のPOST通信にする
-            const res = await fetch(GAS_WEB_APP_URL, {
+            await fetch(GAS_WEB_APP_URL, {
                 method: "POST",
+                mode: "no-cors", // CORS制限による停止を防ぐため
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     logType: "saveSettings",
                     settings: settingsPayload
                 })
             });
-            
-            const result = await res.json();
-            if (result.status === "success") {
-                alert("💾 管理画面の設定を保存し、スプレッドシートへ同期しました！");
-            } else {
-                alert("⚠️ 保存処理でエラーが発生しました。");
-            }
+            console.log("☁️ GASへ設定データを送信しました");
         } catch (e) {
-            console.log("⚠️ クラウド保存エラー:", e);
-            alert("⚠️ クラウドへの保存に失敗しました（CORS制限の可能性があります）。");
+            console.log("⚠️ クラウド同期スキップ（ローカル保存優先）:", e);
         }
     }
+    
+    // 4. 画面を閉じて完了通知
     closeScreen('manage');
+    alert("💾 管理画面の設定を保存しました！");
 }
+
 
 setTimeout(initDynamicPlaylist, 500);
 </script>
