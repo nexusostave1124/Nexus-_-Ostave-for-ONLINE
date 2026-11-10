@@ -1181,14 +1181,12 @@ let memberDatabase = JSON.parse(localStorage.getItem('nexus_member_db')) || [
 { id: "N-24-11-7-o", name: "Ayu", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
 { id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 }
 ];
-// 🔄 メンバーデータの保存 ＆ スプレッドシート（GAS）へのクラウド同期
+// 🔄 メンバーデータの保存 ＆ スプレッドシート（GAS）へのクラウド同期（ログなし）
 async function saveMemberDb() {
     localStorage.setItem('nexus_member_db', JSON.stringify(memberDatabase));
     
-    // GASのURLが設定されている場合はクラウド側にも同期
     if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
-            // mode: 'cors' を使いつつ、GAS側がテキストやJSONを返す前提で安全に送信
             await fetch(GAS_WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
@@ -1199,7 +1197,7 @@ async function saveMemberDb() {
                 })
             });
         } catch (e) {
-            console.log("⚠️ メンバーデータのクラウド同期スキップ（ローカルで動作継続）:", e);
+            console.log("⚠️ メンバーデータのクラウド同期スキップ（ローカル動作継続）:", e);
         }
     }
 }
@@ -3401,15 +3399,12 @@ async function promptUserLogin() {
 
         reloadUserData();
         
-              async function fetchGasAppContent() {
+        async function fetchGasAppContent() {
             try {
-                // mode: 'no-cors' または corsのフォールバック対応
-                const res = await fetch(GAS_WEB_APP_URL + "?action=getData&t=" + new Date().getTime());
+                const res = await fetch(GAS_WEB_APP_URL, { redirect: "follow", mode: "cors" });
                 if (!res.ok) throw new Error("API通信エラー");
                 const data = await res.json();
-                
-                // 1. 画像データの抽出
-                const fetchedImages = Array.isArray(data) ? data : (data.images || data.driveImages || []);
+                const fetchedImages = Array.isArray(data) ? data : (data.images || []);
                 if (fetchedImages.length > 0) {
                     dynamicImagesList = fetchedImages;
                     fetchedImages.forEach(img => {
@@ -3421,8 +3416,6 @@ async function promptUserLogin() {
                     populateAdminSelects();
                     populateSettingsAvatarSelect();
                 }
-                
-                // 2. YouTube（楽曲）データの抽出
                 let rawAudioList = [];
                 if (Array.isArray(data)) {
                     rawAudioList = data.filter(i => i && i.youtubeId);
@@ -3430,13 +3423,10 @@ async function promptUserLogin() {
                     rawAudioList = data.audio;
                 } else if (data.youtube && Array.isArray(data.youtube)) {
                     rawAudioList = data.youtube;
-                } else if (data.songs && Array.isArray(data.songs)) {
-                    rawAudioList = data.songs;
                 } else {
                     const foundKey = Object.keys(data).find(k => Array.isArray(data[k]) && data[k].some(i => i && i.youtubeId));
                     if (foundKey) rawAudioList = data[foundKey];
                 }
-                
                 if (rawAudioList.length > 0) {
                     dynamicSongsList = rawAudioList.map(item => ({
                         title: item.title || "無題の楽曲",
@@ -3447,11 +3437,11 @@ async function promptUserLogin() {
                     initDynamicPlaylist();
                 }
             } catch (e) {
-                console.log("GAS APIからのデータ取得に失敗（デフォルトプレイリストを使用）:", e);
+                console.log("GAS APIからのデータ取得に失敗:", e);
                 initDynamicPlaylist();
             }
         }
-         fetchGasAppContent();
+        fetchGasAppContent();
         
         playDefaultSongOnLogin();
         checkAndTriggerFullscreenOnLogin();
@@ -4101,15 +4091,15 @@ listEl.appendChild(row);
 }
 async function fetchDriveMasterData() {
     try {
-        const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime());
+        const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime(), { mode: 'cors' });
         if (!response.ok) return;
         const fetchedData = await response.json();
         
-        // 🌟 配列またはオブジェクトのどちらでも安全に画像リストを抽出
-        const imageItems = Array.isArray(fetchedData) ? fetchedData : (fetchedData.images || fetchedData.driveImages || []);
+        // 🌟 配列かどうかを安全にチェックして処理する
+        const imageItems = Array.isArray(fetchedData) ? fetchedData : (fetchedData.images || []);
         
         imageItems.forEach(item => {
-            if (item && item.url && !masterDriveImages.some(existing => existing.url === item.url)) {
+            if (!masterDriveImages.some(existing => existing.url === item.url)) {
                 const rarity = item.name && item.name.includes("★6") ? "★6" : item.name && item.name.includes("★5") ? "★5" : item.name && item.name.includes("★4") ? "★4" : item.name && item.name.includes("★3") ? "★3" : "★2";
                 masterDriveImages.push({ ...item, rarity: rarity });
             }
@@ -4117,7 +4107,7 @@ async function fetchDriveMasterData() {
         
         localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
         if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
-            userAlbum = masterDriveImages;
+            userAlbum = masterDriveImages.filter(i => !(i.name && i.name.includes("") && i.name.includes("")));
             userSlideshowIds = userAlbum.map(img => img.id);
             saveUserAlbumData();
             renderAlbum();
@@ -5036,6 +5026,7 @@ function playDefaultSongOnLogin() {
 // ==========================================================
 // 🛠️ 修正・追加分: 全画面の閉じる処理 & 管理画面の保存処理
 // ==========================================================
+
 async function switchNav(name) {
     closeOtherMenu();
     closeAllSelectors();
@@ -5045,30 +5036,19 @@ async function switchNav(name) {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     if (name === 'home') document.getElementById('nav-home').classList.add('active');
     
-    // 🔄 メニュー切替時にクラウドから最新データを自動受信（他端末との同期）
+    // 🔄 下メニュー切り替え時にログなし（通知なし）で自動送受信（同期）を行う
     if (currentUser && typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
-            const res = await fetch(GAS_WEB_APP_URL + "?action=getData&t=" + new Date().getTime());
-            if (res.ok) {
-                const data = await res.json();
-                if (data) {
-                    if (data.members) {
-                        memberDatabase = data.members;
-                        saveMemberDb();
-                    }
-                    if (data.appSettings) {
-                        if (data.appSettings.eventsList) {
-                            eventsList = data.appSettings.eventsList;
-                            localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
-                        }
-                        if (data.appSettings.gachaList) {
-                            gachaList = data.appSettings.gachaList;
-                            localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
-                        }
-                    }
-                    updateUIUserStatus();
-                }
-            }
+            await fetch(GAS_WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({
+                    logType: "saveData",
+                    members: memberDatabase,
+                    settings: { eventsList, gachaList, shopItemsList }
+                })
+            });
         } catch (e) {
             console.log("⚠️ メニュー切替時の同期スキップ:", e);
         }
@@ -5079,6 +5059,7 @@ async function saveManageSettings() {
     adminSaveEventConfig();
     adminSaveGachaConfig();
     
+    // 送信するデータパッケージの作成
     const settingsPayload = {
         eventsList: eventsList,
         gachaList: gachaList,
@@ -5088,6 +5069,7 @@ async function saveManageSettings() {
     
     if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
+            // 🌐 CORS制限（プリフライトエラー）を回避して確実にスプレッドシートへ送信する設定
             await fetch(GAS_WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
@@ -5098,10 +5080,11 @@ async function saveManageSettings() {
                     members: memberDatabase
                 })
             });
-            alert("💾 管理画面の設定を保存し、スプレッドシートへ送信しました！");
+            
+            alert("💾 管理画面の設定を保存し、スプレッドシートへデータを送信しました！");
         } catch (e) {
             console.log("⚠️ クラウド送信エラー:", e);
-            alert("⚠️ クラウドへの送信に失敗しました（ローカルに保存されました）。");
+            alert("⚠️ クラウドへの送信に失敗しました。");
         }
     } else {
         alert("💾 管理画面の設定を保存しました！");
