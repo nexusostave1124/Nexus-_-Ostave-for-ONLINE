@@ -4997,26 +4997,29 @@ async function saveManageSettings() {
     
     if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
-            // 🌐 CORSエラーを防ぐために mode: "no-cors" を追加
-            await fetch(GAS_WEB_APP_URL, {
+            // 🔄 mode: "no-cors" を外し、通常のPOST通信にする
+            const res = await fetch(GAS_WEB_APP_URL, {
                 method: "POST",
-                mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     logType: "saveSettings",
                     settings: settingsPayload
                 })
             });
-            alert("💾 管理画面の設定を保存し、スプレッドシートへ同期しました！");
+            
+            const result = await res.json();
+            if (result.status === "success") {
+                alert("💾 管理画面の設定を保存し、スプレッドシートへ同期しました！");
+            } else {
+                alert("⚠️ 保存処理でエラーが発生しました。");
+            }
         } catch (e) {
             console.log("⚠️ クラウド保存エラー:", e);
-            alert("⚠️ クラウドへの保存に失敗しました。");
+            alert("⚠️ クラウドへの保存に失敗しました（CORS制限の可能性があります）。");
         }
     }
     closeScreen('manage');
 }
-
-
 
 setTimeout(initDynamicPlaylist, 500);
 </script>
