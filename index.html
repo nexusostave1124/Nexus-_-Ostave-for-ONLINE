@@ -3359,45 +3359,45 @@ async function promptUserLogin() {
         currentUser = found;
         localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
         
-        // 🔄 ログイン時にスプレッドシート（GAS）から最新データ（設定・メンバー）をクラウド同期する
+        // 🔄 ログイン時にスプレッドシートから自動受信して最新データを反映
         if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
             try {
                 const res = await fetch(GAS_WEB_APP_URL);
-                const data = await res.json();
-                if (data) {
-                    if (data.members) {
-                        memberDatabase = data.members;
-                        saveMemberDb();
-                    }
-                    if (data.appSettings && Object.keys(data.appSettings).length > 0) {
-                        if (data.appSettings.eventsList) {
-                            eventsList = data.appSettings.eventsList;
-                            localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data) {
+                        if (data.members) {
+                            memberDatabase = data.members;
+                            saveMemberDb();
                         }
-                        if (data.appSettings.gachaList) {
-                            gachaList = data.appSettings.gachaList;
-                            localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+                        if (data.appSettings && Object.keys(data.appSettings).length > 0) {
+                            if (data.appSettings.eventsList) {
+                                eventsList = data.appSettings.eventsList;
+                                localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
+                            }
+                            if (data.appSettings.gachaList) {
+                                gachaList = data.appSettings.gachaList;
+                                localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+                            }
+                            if (data.appSettings.shopItemsList) {
+                                shopItemsList = data.appSettings.shopItemsList;
+                                localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
+                            }
                         }
-                        if (data.appSettings.shopItemsList) {
-                            shopItemsList = data.appSettings.shopItemsList;
-                            localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
+                        const freshUser = memberDatabase.find(m => m.id === currentUser.id);
+                        if (freshUser) {
+                            currentUser = freshUser;
+                            localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                         }
                     }
-                    const freshUser = memberDatabase.find(m => m.id === currentUser.id);
-                    if (freshUser) {
-                        currentUser = freshUser;
-                        localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-                    }
-                    updateUIUserStatus();
                 }
             } catch (e) {
-                console.log("クラウド同期スキップ:", e);
+                console.log("ログイン時の自動受信スキップ:", e);
             }
         }
         
         reloadUserData();
-
-        // 🔄 確実にGASからデータを取得して反映させる非同期関数
+        
         async function fetchGasAppContent() {
             try {
                 const res = await fetch(GAS_WEB_APP_URL, { redirect: "follow", mode: "cors" });
@@ -3442,7 +3442,6 @@ async function promptUserLogin() {
         }
         fetchGasAppContent();
         
-        // 🎵 すべてのロード処理が完了した後にBGMを再生＆全画面化する
         playDefaultSongOnLogin();
         checkAndTriggerFullscreenOnLogin();
         
@@ -3452,6 +3451,7 @@ async function promptUserLogin() {
         alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
     }
 }
+
 
 function saveFullscreenSetting(checkbox) {
 localStorage.setItem(getFullscreenSettingKey(), checkbox.checked ? 'true' : 'false');
@@ -3491,17 +3491,35 @@ if (isFsOn) {
 requestFullscreenMode();
 }
 }
-function adminLogout() {
-isAdmin = false;
-localStorage.setItem('nexus_is_admin', 'false');
-currentUser = null;
-localStorage.removeItem('nexus_current_user');
-reloadUserData();
-closeOtherMenu();
-const audioEl = document.getElementById('bgm-audio');
-if (audioEl) audioEl.pause();
-alert("🔒 ログアウトしました。");
+async function adminLogout() {
+    // 🔄 ログアウト時にアプリからスプレッドシートへデータを自動送信
+    if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
+        try {
+            await fetch(GAS_WEB_APP_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    logType: "autoSyncLogout",
+                    members: memberDatabase,
+                    settings: { eventsList, gachaList, shopItemsList }
+                })
+            });
+        } catch (e) {
+            console.log("ログアウト時の自動送信スキップ:", e);
+        }
+    }
+
+    isAdmin = false;
+    localStorage.setItem('nexus_is_admin', 'false');
+    currentUser = null;
+    localStorage.removeItem('nexus_current_user');
+    reloadUserData();
+    closeOtherMenu();
+    const audioEl = document.getElementById('bgm-audio');
+    if (audioEl) audioEl.pause();
+    alert("🔒 ログアウトしました。");
 }
+
 function reloadUserData() {
 userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
 userSlideshowIds = JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [];
