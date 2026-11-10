@@ -1161,6 +1161,7 @@ let dynamicImagesList = [];
 // 🎵 HTML5の音声プレイヤーを安全に準備
 const bgmPlayer = new Audio();
 let currentBgmIndex = 0;
+let isBgmUserPaused = false; // ← ここに正しく配置されているか確認
 const GACHA_RATES = {
 "ネオフェス限定": { "★6": 0.4, "★5": 6.6, "★4": 23, "★3": 30, "★2": 40 },
 "タイアップ限定": { "★6": 0.3, "★5": 1.7, "★4": 30, "★3": 30, "★2": 38 },
@@ -4869,7 +4870,6 @@ let customBgmList = JSON.parse(localStorage.getItem('nexus_custom_bgm_list')) ||
     { title: "BGM-9", url: "https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/BGM-9.mp3" }
 ];
 currentBgmIndex = Number(localStorage.getItem('nexus_bgm_index')) || 0;
-let isBgmUserPaused = false; 
 
 // 🎵 指定した番号のBGMを再生するメイン関数
 function playBgmByIndex(index, forceRestart = false) {
