@@ -5037,10 +5037,11 @@ async function saveManageSettings() {
     
     if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
-            // 1. アプリからスプレッドシートへデータを送信（POST）
-            const res = await fetch(GAS_WEB_APP_URL, {
+            // 🌐 CORS制限（プリフライトエラー）を回避して確実にスプレッドシートへ送信する設定
+            await fetch(GAS_WEB_APP_URL, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({
                     logType: "saveSettings",
                     settings: settingsPayload,
@@ -5048,22 +5049,10 @@ async function saveManageSettings() {
                 })
             });
             
-            const result = await res.json();
-            
-            // 2. スプレッドシートから最新データを受信して反映
-            const getRes = await fetch(GAS_WEB_APP_URL);
-            if (getRes.ok) {
-                const getData = await getRes.json();
-                if (getData && getData.members) {
-                    memberDatabase = getData.members;
-                    saveMemberDb();
-                }
-            }
-            
-            alert("💾 管理画面の設定を保存し、スプレッドシートとの双方向送受信（同期）が完了しました！");
+            alert("💾 管理画面の設定を保存し、スプレッドシートへデータを送信しました！");
         } catch (e) {
-            console.log("⚠️ クラウド送受信エラー:", e);
-            alert("⚠️ クラウドへの送受信に失敗しました。ローカルに保存します。");
+            console.log("⚠️ クラウド送信エラー:", e);
+            alert("⚠️ クラウドへの送信に失敗しました。");
         }
     } else {
         alert("💾 管理画面の設定を保存しました！");
@@ -5071,6 +5060,7 @@ async function saveManageSettings() {
     
     closeScreen('manage');
 }
+
 
 setTimeout(initDynamicPlaylist, 500);
 </script>
