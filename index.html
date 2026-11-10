@@ -4970,18 +4970,38 @@ function playDefaultSongOnLogin() {
 // 🛠️ 修正・追加分: 全画面の閉じる処理 & 管理画面の保存処理
 // ==========================================================
 
-function closeScreen(name) { 
-    const screen = document.getElementById('screen-' + name);
-    if (screen) screen.classList.remove('active'); 
+async function switchNav(name) {
+    closeOtherMenu();
+    closeAllSelectors();
     const bottomNav = document.getElementById('main-bottom-nav');
     if (bottomNav) bottomNav.classList.remove('hide-menu');
-    if (name === 'settings') {
-        updateUIUserStatus();
-    }
-    if (!currentUser || openedFromTitle) {
-        const titleScreen = document.getElementById('title-screen');
-        if (titleScreen) titleScreen.classList.remove('hidden');
-        openedFromTitle = false;
+    document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (name === 'home') document.getElementById('nav-home').classList.add('active');
+
+    // 🔄 下メニュー切り替え時にログなしで自動送受信（同期）を行う
+    if (currentUser && typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
+        try {
+            await fetch(GAS_WEB_APP_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    logType: "autoSyncNav",
+                    members: memberDatabase,
+                    settings: { eventsList, gachaList, shopItemsList }
+                })
+            });
+            const res = await fetch(GAS_WEB_APP_URL);
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.members) {
+                    memberDatabase = data.members;
+                    saveMemberDb();
+                }
+            }
+        } catch (e) {
+            console.log("⚠️ メニュー切替時の中継同期スキップ:", e);
+        }
     }
 }
 
