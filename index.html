@@ -1153,8 +1153,8 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <audio id="bgm-audio" preload="auto"></audio>
 
 <script>
-const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
-let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "https://script.google.com/macros/s/AKfycbxDSwxshu8u9CfbuTilmSZ76OE1IlpHOhphdMppD2EavA5rOK-QgegljTQWEMNbvuI1fw/exec";
+const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbyleyZdOB94uXIVpwh-DTu2-iYH72B-RzPgtFuvmtemE_Y7pMsurTrKsgdhb5gUpXIi-A/exec";
+let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "https://script.google.com/macros/s/AKfycbyleyZdOB94uXIVpwh-DTu2-iYH72B-RzPgtFuvmtemE_Y7pMsurTrKsgdhb5gUpXIi-A/exec";
 // 🎵 動的取得する楽曲・画像リストの格納用変数
 let dynamicSongsList = [];
 let dynamicImagesList = [];
@@ -4986,44 +4986,53 @@ function closeScreen(name) {
 }
 
 async function saveManageSettings() {
-    // 1. 各設定をオブジェクトに反映
     adminSaveEventConfig();
     adminSaveGachaConfig();
     
+    // 送信するデータパッケージの作成
     const settingsPayload = {
         eventsList: eventsList,
         gachaList: gachaList,
-        shopItemsList: shopItemsList
+        shopItemsList: shopItemsList,
+        members: memberDatabase
     };
     
-    // 2. ローカルストレージに確実に保存（アプリの動作を担保）
-    localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
-    localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
-    localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
-
-    // 3. クラウド（GAS）への同期（CORSエラーで止まらないよう安全に送信）
     if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
-            await fetch(GAS_WEB_APP_URL, {
+            // 1. アプリからスプレッドシートへデータを送信（POST）
+            const res = await fetch(GAS_WEB_APP_URL, {
                 method: "POST",
-                mode: "no-cors", // CORS制限による停止を防ぐため
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     logType: "saveSettings",
-                    settings: settingsPayload
+                    settings: settingsPayload,
+                    members: memberDatabase
                 })
             });
-            console.log("☁️ GASへ設定データを送信しました");
+            
+            const result = await res.json();
+            
+            // 2. スプレッドシートから最新データを受信して反映
+            const getRes = await fetch(GAS_WEB_APP_URL);
+            if (getRes.ok) {
+                const getData = await getRes.json();
+                if (getData && getData.members) {
+                    memberDatabase = getData.members;
+                    saveMemberDb();
+                }
+            }
+            
+            alert("💾 管理画面の設定を保存し、スプレッドシートとの双方向送受信（同期）が完了しました！");
         } catch (e) {
-            console.log("⚠️ クラウド同期スキップ（ローカル保存優先）:", e);
+            console.log("⚠️ クラウド送受信エラー:", e);
+            alert("⚠️ クラウドへの送受信に失敗しました。ローカルに保存します。");
         }
+    } else {
+        alert("💾 管理画面の設定を保存しました！");
     }
     
-    // 4. 画面を閉じて完了通知
     closeScreen('manage');
-    alert("💾 管理画面の設定を保存しました！");
 }
-
 
 setTimeout(initDynamicPlaylist, 500);
 </script>
