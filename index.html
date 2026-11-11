@@ -3373,43 +3373,71 @@ async function promptUserLogin() {
         currentUser = found;
         localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
         
-        // 🔄 ログイン時にスプレッドシートから自動受信して最新データを反映
-        if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
-            try {
-                const res = await fetch(GAS_WEB_APP_URL);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data) {
-                        if (data.members) {
-                            memberDatabase = data.members;
-                            saveMemberDb();
+                   // 🌐 ログイン時にスプレッドシートからすべての最新データ・設定を受信（GET）
+    if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
+        try {
+            const res = await fetch(GAS_WEB_APP_URL, { method: "GET", mode: "cors" });
+            if (res.ok) {
+                const data = await res.json();
+                if (data) {
+                    // メンバーデータの反映
+                    if (data.members) {
+                        memberDatabase = data.members;
+                        saveMemberDb();
+                    }
+                    
+                    // 🎵 YouTube楽曲リストの反映
+                    if (data.songs && Array.isArray(data.songs)) {
+                        dynamicSongsList = data.songs;
+                        localStorage.setItem('nexus_dynamic_songs', JSON.stringify(dynamicSongsList));
+                        initDynamicPlaylist();
+                    }
+
+                    // 🖼️ 画像マスターデータの反映
+                    if (data.images && Array.isArray(data.images)) {
+                        masterDriveImages = data.images;
+                        localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+                    }
+
+                    // ⚙️ 各種全設定の反映（イベント、ガチャ、ショップ、お知らせ等）
+                    const settings = data.settings || data.appSettings;
+                    if (settings) {
+                        if (settings.eventsList) {
+                            eventsList = settings.eventsList;
+                            localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
                         }
-                        if (data.appSettings && Object.keys(data.appSettings).length > 0) {
-                            if (data.appSettings.eventsList) {
-                                eventsList = data.appSettings.eventsList;
-                                localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
-                            }
-                            if (data.appSettings.gachaList) {
-                                gachaList = data.appSettings.gachaList;
-                                localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
-                            }
-                            if (data.appSettings.shopItemsList) {
-                                shopItemsList = data.appSettings.shopItemsList;
-                                localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
-                            }
+                        if (settings.gachaList) {
+                            gachaList = settings.gachaList;
+                            localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
                         }
-                        const freshUser = memberDatabase.find(m => m.id === currentUser.id);
-                        if (freshUser) {
-                            currentUser = freshUser;
-                            localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+                        if (settings.shopItemsList) {
+                            shopItemsList = settings.shopItemsList;
+                            localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
+                        }
+                        if (settings.masterDriveImages) {
+                            masterDriveImages = settings.masterDriveImages;
+                            localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+                        }
+                        if (settings.globalNotices) {
+                            globalNotices = settings.globalNotices;
+                            localStorage.setItem(getGlobalNoticesKey(), JSON.stringify(globalNotices));
+                        }
+                        if (settings.globalGifts) {
+                            globalGifts = settings.globalGifts;
+                            localStorage.setItem(getGlobalGiftsKey(), JSON.stringify(globalGifts));
+                        }
+                        if (settings.titleBgImages) {
+                            titleBgImages = settings.titleBgImages;
+                            localStorage.setItem(getTitleBgKey(), JSON.stringify(titleBgImages));
                         }
                     }
                 }
-            } catch (e) {
-                console.log("ログイン時の自動受信スキップ:", e);
             }
+        } catch (e) {
+            console.log("⚠️ ログイン時の受信スキップ（ローカルデータで継続）:", e);
         }
-        
+    }
+
         reloadUserData();
         
 // ==========================================
@@ -3418,12 +3446,12 @@ async function promptUserLogin() {
 async function fetchGasAppContent() {
     if (!GIST_RAW_URL) return;
     try {
-        console.log("🔄 画像用GASからデータを取得中...", GIST_RAW_URL);
+        console.log("🔄 画像・楽曲用GASからデータを取得中...", GIST_RAW_URL);
         const res = await fetch(GIST_RAW_URL, { redirect: "follow", mode: "cors" });
         if (!res.ok) throw new Error("API通信エラー: " + res.status);
         
         const data = await res.json();
-        console.log("📥 画像用GASから受信した生データ:", data);
+        console.log("📥 画像・楽曲用GASから受信した生データ:", data);
 
         // 1. 画像データの処理
         const fetchedImages = Array.isArray(data) ? data : (data.images || data.driveImages || []);
@@ -3449,8 +3477,8 @@ async function fetchGasAppContent() {
                 }
             });
             localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
-            populateAdminSelects();
-            populateSettingsAvatarSelect();
+            if (typeof populateAdminSelects === 'function') populateAdminSelects();
+            if (typeof populateSettingsAvatarSelect === 'function') populateSettingsAvatarSelect();
             console.log("✅ ドライブ画像を反映しました:", masterDriveImages.length);
         }
 
@@ -3473,8 +3501,10 @@ async function fetchGasAppContent() {
             dynamicSongsList = rawAudioList.map(item => {
                 let ytId = item.youtubeId;
                 if (!ytId && item.url && item.url.includes('youtube.com')) {
-                    const urlParams = new URLSearchParams(new URL(item.url).search);
-                    ytId = urlParams.get('v');
+                    try {
+                        const urlParams = new URLSearchParams(new URL(item.url).search);
+                        ytId = urlParams.get('v');
+                    } catch (err) {}
                 } else if (!ytId && item.url && item.url.includes('youtu.be/')) {
                     ytId = item.url.split('youtu.be/')[1]?.split('?')[0];
                 }
@@ -3487,13 +3517,13 @@ async function fetchGasAppContent() {
             }).filter(song => song.youtubeId);
 
             if (dynamicSongsList.length > 0) {
-                initDynamicPlaylist();
+                if (typeof initDynamicPlaylist === 'function') initDynamicPlaylist();
                 console.log("✅ YouTube楽曲プレイリストを反映しました:", dynamicSongsList.length);
             }
         }
     } catch (e) {
-        console.error("⚠️ 画像用GAS APIからのデータ取得・解析エラー:", e);
-        initDynamicPlaylist(); // フォールバック
+        console.error("⚠️ 画像・楽曲用GAS APIからのデータ取得・解析エラー:", e);
+        if (typeof initDynamicPlaylist === 'function') initDynamicPlaylist(); // フォールバック
     }
 }
         fetchGasAppContent();
@@ -3548,23 +3578,33 @@ requestFullscreenMode();
 }
 }
 async function adminLogout() {
-    // 🔄 ログアウト時にアプリからスプレッドシートへデータを自動送信
+    // 🔄 ログアウト時にローカルの全データ・楽曲・画像・全設定をスプレッドシートへ送信（CORS回避）
     if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
             await fetch(GAS_WEB_APP_URL, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({
-                    logType: "autoSyncLogout",
+                    logType: "fullSync",
                     members: memberDatabase,
-                    settings: { eventsList, gachaList, shopItemsList }
+                    songs: dynamicSongsList,
+                    images: masterDriveImages,
+                    settings: {
+                        eventsList: eventsList,
+                        gachaList: gachaList,
+                        shopItemsList: shopItemsList,
+                        masterDriveImages: masterDriveImages,
+                        globalNotices: globalNotices,
+                        globalGifts: globalGifts,
+                        titleBgImages: titleBgImages
+                    }
                 })
             });
         } catch (e) {
-            console.log("ログアウト時の自動送信スキップ:", e);
+            console.log("⚠️ ログアウト時の送信スキップ:", e);
         }
     }
-
     isAdmin = false;
     localStorage.setItem('nexus_is_admin', 'false');
     currentUser = null;
@@ -3575,6 +3615,7 @@ async function adminLogout() {
     if (audioEl) audioEl.pause();
     alert("🔒 ログアウトしました。");
 }
+
 
 function reloadUserData() {
 userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
@@ -4633,7 +4674,10 @@ saveUserAlbumData();
 renderAlbum();
 initSlideshow();
 }
-window.addEventListener('DOMContentLoaded', () => { reloadUserData(); fetchDriveMasterData(); fetchGasAppContent(); // ← ここで起動時に自動取得するように追加 initTitleSlideshow(); 
+window.addEventListener('DOMContentLoaded', () => { 
+    reloadUserData(); 
+    fetchDriveMasterData(); 
+    initTitleSlideshow(); // ← 削除または行ごと消
 const savedColor = localStorage.getItem('nexus_clock_color');
 if (savedColor) {
 applyClockColorToAll(savedColor);
@@ -4677,29 +4721,44 @@ document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('sel
 btnElement.classList.add('selected');
 localStorage.setItem('nexus_clock_color', colorClass);
 }
+// 🔋 バッテリー情報の初期化 ＆ 全端末へのクラウド同期
 async function initBattery() {
-const bEl = document.getElementById('battery-info');
-const titleBEl = document.getElementById('title-battery-info');
+    const bEl = document.getElementById('battery-info');
+    const titleBEl = document.getElementById('title-battery-info');
+    
+    if ('getBattery' in navigator) {
+        try {
+            const battery = await navigator.getBattery();
+            function updateBattery() {
+                const level = Math.floor(battery.level * 100);
+                const charging = battery.charging;
+                
+                applyBatteryStyle(level, charging, bEl);
+                applyBatteryStyle(level, charging, titleBEl);
+                
+                // 🔄 ログイン中のユーザーがいれば、バッテリー状態をデータに含めてGASへ同期
+                if (currentUser) {
+                    currentUser.batteryLevel = level;
+                    currentUser.isCharging = charging;
+                    const userDb = memberDatabase.find(m => m.id === currentUser.id);
+                    if (userDb) {
+                        userDb.batteryLevel = level;
+                        userDb.isCharging = charging;
+                        saveMemberDb(); // GASへPOST同期
+                    }
+                }
+            }
+            updateBattery();
+            battery.addEventListener('levelchange', updateBattery);
+            battery.addEventListener('chargingchange', updateBattery);
+        } catch (e) {
+            fallbackBatteryMock(bEl, titleBEl);
+        }
+    } else {
+        fallbackBatteryMock(bEl, titleBEl);
+    }
+}
 
-if ('getBattery' in navigator) {
-try {
-const battery = await navigator.getBattery();
-function updateBattery() {
-const level = Math.floor(battery.level * 100);
-const charging = battery.charging;
-applyBatteryStyle(level, charging, bEl);
-applyBatteryStyle(level, charging, titleBEl);
-}
-updateBattery();
-battery.addEventListener('levelchange', updateBattery);
-battery.addEventListener('chargingchange', updateBattery);
-} catch (e) {
-fallbackBatteryMock(bEl, titleBEl);
-}
-} else {
-fallbackBatteryMock(bEl, titleBEl);
-}
-}
 function applyBatteryStyle(level, charging, element) {
 if (!element) return;
 element.className = "battery-status";
@@ -5085,21 +5144,32 @@ async function switchNav(name) {
     document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     if (name === 'home') document.getElementById('nav-home').classList.add('active');
-
-    // 🔄 下メニュー切り替え時にログなしで自動送受信（同期）を行う
+    
+    // 🔄 下メニュー切替時に自動でサーバーと全データ（充電情報・楽曲・設定含む）を送受信（CORS回避）
     if (currentUser && typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
         try {
             await fetch(GAS_WEB_APP_URL, {
-    method: "POST",
-    mode: "no-cors", // 
-    headers: { "Content-Type": "text/plain;charset=utf-8" }, // ← application/json ではなく text/plain にする
-    body: JSON.stringify({
-        logType: "saveData",
-        members: memberDatabase,
-        settings: { eventsList, gachaList }
-    })
-});
-            const res = await fetch(GAS_WEB_APP_URL);
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({
+                    logType: "fullSync",
+                    members: memberDatabase,
+                    songs: dynamicSongsList,
+                    images: masterDriveImages,
+                    settings: {
+                        eventsList: eventsList,
+                        gachaList: gachaList,
+                        shopItemsList: shopItemsList,
+                        masterDriveImages: masterDriveImages,
+                        globalNotices: globalNotices,
+                        globalGifts: globalGifts,
+                        titleBgImages: titleBgImages
+                    }
+                })
+            });
+            
+            const res = await fetch(GAS_WEB_APP_URL, { method: "GET", mode: "cors" });
             if (res.ok) {
                 const data = await res.json();
                 if (data && data.members) {
@@ -5108,12 +5178,10 @@ async function switchNav(name) {
                 }
             }
         } catch (e) {
-            console.log("⚠️ メニュー切替時の中継同期スキップ:", e);
+            console.log("⚠️ メニュー切替時の同期スキップ:", e);
         }
     }
 }
-
-
 
 async function saveManageSettings() {
     adminSaveEventConfig();
@@ -5158,5 +5226,3 @@ setTimeout(initDynamicPlaylist, 500);
 </script>
 </body>
 </html>
-
-
