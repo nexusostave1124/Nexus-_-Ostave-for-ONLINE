@@ -1153,6 +1153,7 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <audio id="bgm-audio" preload="auto"></audio>
 
 <script>
+(function() {
 const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbyleyZdOB94uXIVpwh-DTu2-iYH72B-RzPgtFuvmtemE_Y7pMsurTrKsgdhb5gUpXIi-A/exec";
 let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "https://script.google.com/macros/s/AKfycbyleyZdOB94uXIVpwh-DTu2-iYH72B-RzPgtFuvmtemE_Y7pMsurTrKsgdhb5gUpXIi-A/exec";
 // 🎵 動的取得する楽曲・画像リストの格納用変数
@@ -5097,10 +5098,110 @@ async function saveManageSettings() {
     closeScreen('manage');
 }
 
+   // 🌐 HTMLの onclick 等から呼ばれる主要関数をグローバル(window)に安全に公開
+    window.promptUserLogin = promptUserLogin;
+    window.toggleTitleMenu = toggleTitleMenu;
+    window.openTitleSubScreen = openTitleSubScreen;
+    window.exitApp = exitApp;
+    window.handleStatusClick = handleStatusClick;
+    window.openScreen = openScreen;
+    window.switchNav = switchNav;
+    window.handleEventNavClick = handleEventNavClick;
+    window.handleGachaNavClick = handleGachaNavClick;
+    window.toggleOtherMenu = toggleOtherMenu;
+    window.closeOtherMenu = closeOtherMenu;
+    window.openEventHelpModal = openEventHelpModal;
+    window.closeEventHelpModal = closeEventHelpModal;
+    window.handleEventActionButton = openMinigameModal;
+    window.closeMinigameModal = closeMinigameModal;
+    window.startHighLowGame = startHighLowGame;
+    window.playHighLowChoice = playHighLowChoice;
+    window.startBlackjackGame = startBlackjackGame;
+    window.bjHit = bjHit;
+    window.bjStand = bjStand;
+    window.resetBlackjackRound = resetBlackjackRound;
+    window.startMashGame = startMashGame;
+    window.tapMashButton = tapMashButton;
+    window.startStopwatchGame = startStopwatchGame;
+    window.toggleStopwatch = toggleStopwatch;
+    window.changeStopwatchTarget = changeStopwatchTarget;
+    window.startSlotGame = startSlotGame;
+    window.spinSlot = spinSlot;
+    window.startPressHoldGame = startPressHoldGame;
+    window.startBigSmallGame = startBigSmallGame;
+    window.playBigSmall = playBigSmall;
+    window.openRankingModal = openRankingModal;
+    window.closeRankingModal = closeRankingModal;
+    window.saveCalculatedPtToMember = saveCalculatedPtToMember;
+    window.adminChangeUserPt = adminChangeUserPt;
+    window.saveAndSyncGasUrl = saveAndSyncGasUrl;
+    window.toggleShopImgInputType = toggleShopImgInputType;
+    window.adminAddShopItem = adminAddShopItem;
+    window.adminDeleteShopItem = adminDeleteShopItem;
+    window.buyShopItem = buyShopItem;
+    window.adminDeleteHistoryItem = adminDeleteHistoryItem;
+    window.adminClearAllHistory = adminClearAllHistory;
+    window.openHistoryDeleteMode = openHistoryDeleteMode;
+    window.adminSelectEventToEdit = adminSelectEventToEdit;
+    window.adminSaveEventConfig = adminSaveEventConfig;
+    window.adminAddNewEvent = adminAddNewEvent;
+    window.adminDeleteCurrentEvent = adminDeleteCurrentEvent;
+    window.adminSelectGachaToEdit = adminSelectGachaToEdit;
+    window.adminSaveGachaConfig = adminSaveGachaConfig;
+    window.adminAddNewGacha = adminAddNewGacha;
+    window.adminDeleteCurrentGacha = adminDeleteCurrentGacha;
+    window.saveManageSettings = saveManageSettings;
+    window.resetManageSettings = resetManageSettings;
+    window.adminAddTitleBg = adminAddTitleBg;
+    window.adminRemoveTitleBg = adminRemoveTitleBg;
+    window.adminSaveAppIcon = adminSaveAppIcon;
+    window.pullGacha = pullGacha;
+    window.claimGift = claimGift;
+    window.deleteGift = deleteGift;
+    window.toggleNoticeActive = toggleNoticeActive;
+    window.adminDeleteNotice = adminDeleteNotice;
+    window.adminAddGachaIllustration = adminAddGachaIllustration;
+    window.adminRemoveGachaIllustration = adminRemoveGachaIllustration;
+    window.toggleGiftActive = toggleGiftActive;
+    window.adminDeleteGlobalGift = adminDeleteGlobalGift;
+    window.adminSendGift = adminSendGift;
+    window.adminPublishNotice = adminPublishNotice;
+    window.adminResetEventPoints = adminResetEventPoints;
+    window.toggleLoginLock = toggleLoginLock;
+    window.toggleRankingLock = toggleRankingLock;
+    window.toggleIndividualUserRestriction = toggleIndividualUserRestriction;
+    window.openHistoryDetailModal = openHistoryDetailModal;
+    window.closeHistoryDetailModal = closeHistoryDetailModal;
+    window.renderAdminMemberPresentView = renderAdminMemberPresentView;
+    window.adminDeleteMemberPresentItem = adminDeleteMemberPresentItem;
+    window.renderAdminMemberAlbumView = renderAdminMemberAlbumView;
+    window.adminDeleteMemberAlbumItem = adminDeleteMemberAlbumItem;
+    window.submitUserReport = submitUserReport;
+    window.adminDeleteReport = adminDeleteReport;
+    window.saveFullscreenSetting = saveFullscreenSetting;
+    window.adminLogout = adminLogout;
+    window.checkManagePassword = checkManagePassword;
+    window.closeManageScreen = closeManageScreen;
+    window.adjustVolume = adjustVolume;
+    window.adjustBrightness = adjustBrightness;
+    window.changeBgmFromSettings = changeBgmFromSettings;
+    window.refreshAppData = refreshAppData;
+    window.restartApp = restartApp;
+    window.saveUserNameChange = saveUserNameChange;
+    window.saveUserAvatarChange = saveUserAvatarChange;
+    window.executeForkReset = executeForkReset;
+    window.playYouTubeSongByIndex = playYouTubeSongByIndex;
+
+    setTimeout(initDynamicPlaylist, 500);
+})();
+</script>
+
 
 setTimeout(initDynamicPlaylist, 500);
 </script>
 </body>
 </html>
+
+
 
 
