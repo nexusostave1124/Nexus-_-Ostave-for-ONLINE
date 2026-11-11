@@ -843,7 +843,7 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <button class="admin-btn" style="background:#00f5d4; color:#000;" onclick="adminAddShopItem()">➕ 交換所に商品を並べる (MAX10個)</button>
 <div id="admin-shop-manage-list" style="margin-top:12px; font-size:0.8rem;"></div>
 </div>
-<!-- 🔗 スプレッドシート & GAS 連携設定 -->
+<!-- 🔗 スプレッドシート & GAS 連携 -->
 <div class="admin-section" style="border-color:#3388ff;">
 <h4 style="color:#3388ff; border-left-color:#3388ff;">🔗 Googleスプレッドシート & GAS 連携</h4>
 <p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">GASのウェブアプリURLを入力してスプレッドシートとデータを同期できます。</p>
@@ -851,6 +851,16 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <input type="text" id="admin-gas-url-input" class="admin-input" placeholder="https://script.google.com/macros/s/.../exec">
 <button class="admin-btn" style="background:#3388ff; color:#fff;" onclick="saveAndSyncGasUrl()">🔄 スプレッドシートと同期する</button>
 </div>
+<!-- 🌐 GASから取得したデータの分かりやすい確認・管理セクション -->
+<div class="admin-section" style="border-color:#00f5d4;">
+<h4 style="color:#00f5d4; border-left-color:#00f5d4;">🌐 GAS同期データ確認 (画像・楽曲)</h4>
+<p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">GASから自動取得されたドライブ画像やYouTube楽曲の一覧をここで確認できます。</p>
+<button class="admin-btn" style="background:#00f5d4; color:#000;" onclick="renderAdminGasDataView()">📥 取得データを再読込・表示</button>
+<div id="admin-gas-fetched-data-container" style="margin-top:10px; font-size:0.8rem; background:#222; padding:8px; border-radius:6px; max-height:200px; overflow-y:auto;">
+<span style="color:#888;">「取得データを再読込・表示」を押すと中身が表示されます。</span>
+</div>
+</div>
+
 
 <!-- 🖼️ アプリ全体のアイコン設定 -->
 <div class="admin-section" style="border-color:#ffee00;">
@@ -1153,7 +1163,10 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <audio id="bgm-audio" preload="auto"></audio>
 
 <script>
-const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbyleyZdOB94uXIVpwh-DTu2-iYH72B-RzPgtFuvmtemE_Y7pMsurTrKsgdhb5gUpXIi-A/exec";
+// 🖼️ 画像・YouTube楽曲の取得用URL
+const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbyXVX9lZoX_cLPmi6tVNbKi54xq4SsMF1LBa5LnvCa13PzyQzfu0mjZhIRgDCmeAc76ww/exec";
+
+// 📊 スプレッドシート送受信・データ保存用URL
 let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "https://script.google.com/macros/s/AKfycbyleyZdOB94uXIVpwh-DTu2-iYH72B-RzPgtFuvmtemE_Y7pMsurTrKsgdhb5gUpXIi-A/exec";
 // 🎵 動的取得する楽曲・画像リストの格納用変数
 let dynamicSongsList = [];
@@ -3403,14 +3416,14 @@ async function promptUserLogin() {
 // 🌐 GASから画像・YouTube楽曲データを取得するグローバル関数
 // ==========================================
 async function fetchGasAppContent() {
-    if (!GAS_WEB_APP_URL) return;
+    if (!GIST_RAW_URL) return;
     try {
-        console.log("🔄 GASからデータを取得中...", GAS_WEB_APP_URL);
-        const res = await fetch(GAS_WEB_APP_URL, { redirect: "follow", mode: "cors" });
+        console.log("🔄 画像用GASからデータを取得中...", GIST_RAW_URL);
+        const res = await fetch(GIST_RAW_URL, { redirect: "follow", mode: "cors" });
         if (!res.ok) throw new Error("API通信エラー: " + res.status);
         
         const data = await res.json();
-        console.log("📥 GASから受信した生データ:", data); // ← F12のコンソールでここを展開して中身を確認できます！
+        console.log("📥 画像用GASから受信した生データ:", data);
 
         // 1. 画像データの処理
         const fetchedImages = Array.isArray(data) ? data : (data.images || data.driveImages || []);
@@ -3478,9 +3491,8 @@ async function fetchGasAppContent() {
                 console.log("✅ YouTube楽曲プレイリストを反映しました:", dynamicSongsList.length);
             }
         }
-
     } catch (e) {
-        console.error("⚠️ GAS APIからのデータ取得・解析エラー:", e);
+        console.error("⚠️ 画像用GAS APIからのデータ取得・解析エラー:", e);
         initDynamicPlaylist(); // フォールバック
     }
 }
