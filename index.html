@@ -4089,17 +4089,15 @@ row.innerHTML = `
 listEl.appendChild(row);
 });
 }
-// 🖼️ 修正版: CORS制限を回避して画像・YouTubeデータを取得するJSONP方式
-function fetchDriveMasterData() {
-    const callbackName = 'driveDataCallback_' + Date.now();
-    
-    // コールバック関数の定義
-    window[callbackName] = function(fetchedData) {
-        delete window[callbackName];
-        const scriptEl = document.getElementById(callbackName);
-        if (scriptEl) scriptEl.remove();
-
+async function fetchDriveMasterData() {
+    try {
+        const response = await fetch(GIST_RAW_URL + "?t=" + new Date().getTime(), { mode: 'cors' });
+        if (!response.ok) return;
+        const fetchedData = await response.json();
+        
+        // 🌟 配列かどうかを安全にチェックして処理する
         const imageItems = Array.isArray(fetchedData) ? fetchedData : (fetchedData.images || []);
+        
         imageItems.forEach(item => {
             if (!masterDriveImages.some(existing => existing.url === item.url)) {
                 const rarity = item.name && item.name.includes("★6") ? "★6" : item.name && item.name.includes("★5") ? "★5" : item.name && item.name.includes("★4") ? "★4" : item.name && item.name.includes("★3") ? "★3" : "★2";
@@ -4109,24 +4107,17 @@ function fetchDriveMasterData() {
         
         localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
         if (currentUser && userAlbum.length === 0 && masterDriveImages.length > 0) {
-            userAlbum = [...masterDriveImages];
+            userAlbum = masterDriveImages.filter(i => !(i.name && i.name.includes("") && i.name.includes("")));
             userSlideshowIds = userAlbum.map(img => img.id);
             saveUserAlbumData();
             renderAlbum();
             initSlideshow();
-            populateSettingsAvatarSelect();
         }
         populateAdminSelects();
-    };
-
-    // JSONPとして script タグを動的生成して安全にデータ取得
-    const script = document.createElement('script');
-    script.id = callbackName;
-    script.src = GIST_RAW_URL + "?callback=" + callbackName + "&t=" + new Date().getTime();
-    script.onerror = function() {
-        console.log("ドライブマスターデータのJSONP取得エラー");
-    };
-    document.body.appendChild(script);
+        populateSettingsAvatarSelect();
+    } catch (e) {
+        console.log("ドライブマスターデータの取得エラー:", e);
+    }
 }
 function populateAdminSelects() {
 const gachaSelect = document.getElementById('admin-gacha-img-select');
