@@ -588,7 +588,7 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <!-- ================= 🎪 全画面イベント専用UI画面 ================= -->
 <div id="screen-event" class="sub-screen">
 <div class="event-full-bg-container" id="event-swipe-bg-container">
-<img src="https://picsum.photos/id/1025/600/1000" class="event-bg-slide active" id="event-bg-img">
+<img src="https://lh3.googleusercontent.com/d/1YtGWHatFhksmeWvKYTPAwClMaGQdrZlm" class="event-bg-slide active" id="event-bg-img">
 </div>
 <div class="overlay-top"></div>
 <div class="overlay-bottom"></div>
@@ -1291,7 +1291,11 @@ function getTitleBgKey() { return 'nexus_title_bg_images'; }
 function getAppIconKey() { return 'nexus_custom_app_icon'; }
 function getFullscreenSettingKey() { return 'nexus_fullscreen_setting'; }
 
-let userAlbum = (JSON.parse(localStorage.getItem(getUserAlbumKey())) || []).filter(item => item && item.url);
+let userAlbum = (JSON.parse(localStorage.getItem(getUserAlbumKey())) || []).filter(item => {
+    return item && item.url && item.url !== "undefined" && item.url !== "" && item.url !== null;
+});
+// 読み込み時にクレンジングしたデータを即座にストレージへ上書き保存
+localStorage.setItem(getUserAlbumKey(), JSON.stringify(userAlbum));
 let userSlideshowIds = JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [];
 userSlideshowIds = userSlideshowIds.filter(id => userAlbum.some(img => img.id === id));
 let userGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
@@ -1299,7 +1303,9 @@ let userAvatarUrl = localStorage.getItem(getUserAvatarKey()) || "";
 let globalNotices = JSON.parse(localStorage.getItem(getGlobalNoticesKey())) || [];
 let eventHistory = JSON.parse(localStorage.getItem(getEventHistoryKey())) || [];
 let titleBgImages = JSON.parse(localStorage.getItem(getTitleBgKey())) || [
-{ id: 'default_title_bg', url: 'https://raw.githubusercontent.com/nexusostave1124/Nexus-_-Ostave-for-ONLINE/main/2984.png', name: 'デフォルト画像' }
+{ id: 'default_title_bg_1', url: 'https://lh3.googleusercontent.com/d/1YtGWHatFhksmeWvKYTPAwClMaGQdrZlm', name: '変更後画像 1' },
+{ id: 'default_title_bg_2', url: 'https://lh3.googleusercontent.com/d/1PeaXi2AVLyDod2yq2vay5LEDPHjung90', name: '変更後画像 2' },
+{ id: 'default_title_bg_3', url: 'https://lh3.googleusercontent.com/d/1KatqMrNEFxAenNz9hJHww-rTNYKQeZc3', name: '変更後画像 3' }
 ];
 const viewedStatusKey = 'nexus_viewed_status_' + (currentUser ? currentUser.id : 'guest');
 let viewedStatusMap = JSON.parse(localStorage.getItem(viewedStatusKey)) || { present: false, notice: false, album: false, history: false, play: false, gacha: false };
