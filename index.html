@@ -449,6 +449,114 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 }
 .game-btn { background: #00f5d4; color: #000; font-weight: bold; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-family: inherit; width: 100%; margin-top: 6px; font-size: 0.9rem; }
 .game-btn:active { opacity: 0.8; }
+/* ================= 🔮 ガチャ演出アニメーション ================= */
+.gacha-orb {
+    border-radius: 50%;
+    transition: all 0.4s ease;
+    position: relative;
+}
+/* ★2: 白 */
+.orb-r2 {
+    background: radial-gradient(circle at 30% 30%, #ffffff, #cccccc 60%, #777777 100%);
+    box-shadow: 0 0 30px #ffffff, 0 0 60px rgba(255, 255, 255, 0.8);
+}
+/* ★3: 緑 */
+.orb-r3 {
+    background: radial-gradient(circle at 30% 30%, #aaffcc, #00ff66 60%, #007733 100%);
+    box-shadow: 0 0 30px #00ff66, 0 0 65px rgba(0, 255, 102, 0.85);
+}
+/* ★4: 赤 */
+.orb-r4 {
+    background: radial-gradient(circle at 30% 30%, #ffaaaa, #ff2233 60%, #880011 100%);
+    box-shadow: 0 0 35px #ff2233, 0 0 75px rgba(255, 34, 51, 0.9);
+}
+/* ★5: 金 */
+.orb-r5 {
+    background: radial-gradient(circle at 30% 30%, #ffffcc, #ffd700 55%, #b8860b 100%);
+    box-shadow: 0 0 45px #ffd700, 0 0 90px rgba(255, 215, 0, 0.95);
+}
+/* ★6: 虹 */
+@keyframes rainbowOrbSpin {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+.orb-r6 {
+    background: conic-gradient(from 0deg, #ff0044, #ff9900, #ffee00, #00ff66, #00ccff, #9933ff, #ff0044);
+    box-shadow: 0 0 50px #ff00cc, 0 0 100px #00f5d4, inset 0 0 25px #ffffff;
+    animation: rainbowOrbSpin 1.5s linear infinite;
+}
+
+/* 10連用：周囲から中央へ集まる小玉 */
+.mini-gacha-orb {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    margin-top: -17px;
+    margin-left: -17px;
+    transition: transform 0.85s cubic-bezier(0.55, 0.055, 0.675, 0.19), opacity 0.3s ease;
+}
+
+/* 昇格時の炎エフェクト */
+@keyframes fireBurn {
+    0% { transform: scale(1) rotate(0deg); opacity: 0.95; }
+    50% { transform: scale(1.25) rotate(180deg); opacity: 1; }
+    100% { transform: scale(1.05) rotate(360deg); opacity: 0.95; }
+}
+.orb-fire-aura {
+    position: absolute;
+    top: -35px; left: -35px; right: -35px; bottom: -35px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,230,0,0.9) 10%, rgba(255,80,0,0.85) 45%, rgba(255,0,0,0) 72%);
+    box-shadow: 0 0 50px #ff4500, 0 0 90px #ff8c00;
+    animation: fireBurn 0.35s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ================= 🔄 右下通信ロードスピナー ================= */
+#sync-loading-spinner {
+    position: fixed;
+    bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+    right: 15px;
+    width: 34px;
+    height: 34px;
+    background: rgba(15, 15, 15, 0.85);
+    border: 1px solid rgba(0, 245, 212, 0.5);
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    pointer-events: none;
+}
+#sync-loading-spinner.active {
+    display: flex;
+}
+.spinner-circle {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0, 245, 212, 0.25);
+    border-top-color: #00f5d4;
+    border-radius: 50%;
+    animation: spinSyncLoader 0.8s linear infinite;
+}
+/* 👇 ここから追加 */
+@keyframes orbShake {
+    0%, 100% { transform: translate(0, 0) scale(1.15); }
+    20% { transform: translate(-6px, 4px) scale(1.15); }
+    40% { transform: translate(6px, -4px) scale(1.15); }
+    60% { transform: translate(-5px, -5px) scale(1.15); }
+    80% { transform: translate(5px, 5px) scale(1.15); }
+}
+.orb-shaking {
+    animation: orbShake 0.12s infinite linear;
+}
+/* 👆 ここまで追加 */
 </style>
 </head>
 <body>
@@ -484,8 +592,7 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <div class="overlay-bottom"></div>
 <div class="user-status" onclick="handleStatusClick()" title="ステータス / ログアウト">
 <div class="avatar-box" id="main-avatar-box">
-<img src="https://lh3.googleusercontent.com/d/1YtGWHatFhksmeWvKYTPAwClMaGQdrZlm
-" alt="アイコン" id="main-avatar-img">
+<img src="https://lh3.googleusercontent.com/d/1YtGWHatFhksmeWvKYTPAwClMaGQdrZlm" alt="アイコン" id="main-avatar-img">
 </div>
 <div class="status-info">
 <div class="status-row"><span class="status-label">ID</span> <span id="display-id" class="status-val">未ログイン</span></div>
@@ -595,8 +702,7 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <div class="overlay-bottom"></div>
 <div class="event-user-status">
 <div class="event-avatar-box">
-<img src="https://lh3.googleusercontent.com/d/1YtGWHatFhksmeWvKYTPAwClMaGQdrZlm
-" id="event-avatar-img">
+<img src="https://lh3.googleusercontent.com/d/1YtGWHatFhksmeWvKYTPAwClMaGQdrZlm" id="event-avatar-img">
 </div>
 <div class="event-status-info">
 <div class="event-status-row"><span style="color:#aaa; font-size:0.75rem;">獲得P</span> <span id="event-user-pt" class="event-pt-val">0</span></div>
@@ -1070,8 +1176,14 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <input type="number" id="admin-gacha-cost-multi" class="admin-input" value="3000">
 </div>
 </div>
-<label style="font-size:0.8rem; color:#aaa;">ガチャバナー（Googleドライブ選択）：</label>
-<select id="admin-gacha-banner-select" class="admin-input"><option value="">(バナーなし)</option></select>
+<label style="font-size:0.8rem; color:#ffee00;">🖼️ ガチャ左下枠画像（Googleドライブ選択）：</label>
+<select id="admin-gacha-subbox-select" class="admin-input"><option value="">(左下画像なし)</option></select>
+<label style="font-size:0.8rem; color:#00f5d4;">🎞️ ガチャ背景スライドショー (最大7枚):</label>
+<div style="display:flex; gap:6px; margin-bottom:6px;">
+    <select id="admin-gacha-bg-select" class="admin-input" style="margin:0; flex:1;"><option value="">(背景画像を選択)</option></select>
+    <button type="button" class="admin-btn" style="width:auto; margin:0; padding:0 12px;" onclick="adminAddGachaBg()">➕ 追加</button>
+</div>
+<div id="admin-gacha-bg-list" style="margin-bottom:10px; font-size:0.8rem;"></div>
 <input type="datetime-local" id="admin-gacha-start-input" class="admin-input" value="2026-11-01T00:00">
 <input type="datetime-local" id="admin-gacha-end-input" class="admin-input" value="2026-11-30T00:00">
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
@@ -1161,9 +1273,12 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <button class="close-btn" onclick="closeMinigameModal()" style="width:100%; margin-top:15px;">閉じる</button>
 </div>
 </div>
+<!-- 🔄 右下通信中グルグルマーク -->
+<div id="sync-loading-spinner">
+    <div class="spinner-circle"></div>
+</div>
 <!-- 🎵 背景BGM用オーディオプレイヤー (画面には表示されません) -->
 <audio id="bgm-audio" preload="auto"></audio>
-
 <script>
 // 🖼️ 画像・YouTube楽曲の取得用URL
 const GIST_RAW_URL = "https://script.google.com/macros/s/AKfycbyXVX9lZoX_cLPmi6tVNbKi54xq4SsMF1LBa5LnvCa13PzyQzfu0mjZhIRgDCmeAc76ww/exec";
@@ -1173,6 +1288,86 @@ let GAS_WEB_APP_URL = localStorage.getItem('nexus_gas_url') || "https://script.g
 // 🎵 動的取得する楽曲・画像リストの格納用変数
 let dynamicSongsList = [];
 let dynamicImagesList = [];
+
+// 🔄 右下グルグルマーク（ロードスピナー）の表示・非表示制御
+let activeSyncCount = 0;
+function showSyncLoader() {
+    activeSyncCount++;
+    const loader = document.getElementById('sync-loading-spinner');
+    if (loader) loader.classList.add('active');
+}
+function hideSyncLoader() {
+    activeSyncCount = Math.max(0, activeSyncCount - 1);
+    if (activeSyncCount === 0) {
+        const loader = document.getElementById('sync-loading-spinner');
+        if (loader) loader.classList.remove('active');
+    }
+}
+
+// 📦 GASへ送信する最新データ一式（全体設定 ＋ 個人データ ＋ メンバー情報）を組み立てる関数
+function buildSyncPayload(logTypeName) {
+    const memberStats = {};
+    memberDatabase.forEach(m => {
+        memberStats[m.id] = {
+            pt: Number(m.pt) || 0,
+            gachaBonus: Number(m.gachaBonus) || 0,
+            illustBonus: Number(m.illustBonus) || 0,
+            extraBonus: Number(m.extraBonus) || 0
+        };
+    });
+
+    const payload = {
+        logType: logTypeName,
+        members: memberDatabase,
+        settings: {
+            eventsList: eventsList,
+            gachaList: gachaList,
+            shopItemsList: shopItemsList,
+            masterDriveImages: masterDriveImages,
+            globalNotices: globalNotices,
+            globalGifts: globalGifts,
+            titleBgImages: titleBgImages,
+            appIcon: localStorage.getItem(getAppIconKey()) || "",
+            isLoginLocked: isLoginLocked,
+            rankingLocked: rankingLocked,
+            memberStats: memberStats
+        }
+    };
+
+    if (currentUser) {
+        payload.personalData = {
+            userId: currentUser.id,
+            userAlbum: JSON.parse(localStorage.getItem(getUserAlbumKey())) || [],
+            userSlideshowIds: JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [],
+            userAvatarUrl: localStorage.getItem(getUserAvatarKey()) || "",
+            userGifts: JSON.parse(localStorage.getItem(getUserGiftsKey())) || [],
+            clockColor: localStorage.getItem('nexus_clock_color') || "c-red"
+        };
+    }
+
+    return payload;
+}
+
+// 🌐 GASへデータを送信する共通関数（グルグルマーク連動）
+async function syncDataToGas(logTypeName) {
+    if (typeof GAS_WEB_APP_URL === 'undefined' || !GAS_WEB_APP_URL) return;
+    showSyncLoader();
+    try {
+        await fetch(GAS_WEB_APP_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(buildSyncPayload(logTypeName))
+        });
+    } catch (e) {
+        console.log("⚠️ クラウド送信スキップ（ローカル動作継続）:", e);
+    } finally {
+        setTimeout(() => {
+            hideSyncLoader();
+        }, 400);
+    }
+}
+
 // 🎵 HTML5の音声プレイヤーを安全に準備
 const bgmPlayer = new Audio();
 let currentBgmIndex = 0;
@@ -1259,6 +1454,8 @@ minigames: { highlow: false, blackjack: false, mash: false, stopwatch: false, sl
 minigamePts: { highlow: 300, blackjack: 350, mash: 2, stopwatch: 600, slot: 3500, presshold: 5, bigsmall: 250 }
 }
 ];
+eventsList = eventsList.filter(e => e.id !== 'ev_2' && e.title !== 'ストーリー第1章イベント');
+localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
 let currentEventId = localStorage.getItem('nexus_current_event_id') || (eventsList[0] ? eventsList[0].id : 'ev_1');
 let currentEvent = eventsList.find(e => e.id === currentEventId) || eventsList[0];
 
@@ -1415,6 +1612,16 @@ renderEventScreen();
 renderGachaScreen();
 }
 }
+function toggleGachaRateModal() {
+    const modal = document.getElementById('gacha-rate-popup-modal');
+    if (!modal) return;
+    if (modal.style.display === 'flex') {
+        modal.style.display = 'none';
+    } else {
+        modal.style.display = 'flex';
+    }
+}
+
 function forceStopMinigamesOnEnd() {
 const mgModal = document.getElementById('minigame-modal');
 if (mgModal && mgModal.classList.contains('active')) {
@@ -2550,6 +2757,37 @@ alert("❌ 接続に失敗しました。URLを確認してください。");
 alert("⚠️ CORS制限またはURLエラーのため直接同期できませんでした。ローカルストレージで動作継続します。");
 }
 }
+async function renderAdminGasDataView() {
+    const container = document.getElementById('admin-gas-fetched-data-container');
+    if (!container) return;
+    container.innerHTML = `<span style="color:#00f5d4;">🔄 GASから最新データを取得中...</span>`;
+    
+    await fetchGasAppContent();
+    
+    let html = `<div style="margin-bottom:8px; color:#ffee00; font-weight:bold;">🖼️ 取得済みドライブ画像 (${masterDriveImages.length}件)</div>`;
+    if (masterDriveImages.length === 0) {
+        html += `<div style="color:#888; margin-bottom:10px;">画像データがありません</div>`;
+    } else {
+        html += `<div style="display:flex; flex-direction:column; gap:4px; margin-bottom:12px;">`;
+        masterDriveImages.forEach(img => {
+            html += `<div style="background:#181818; padding:4px 8px; border-radius:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">・${img.name}</div>`;
+        });
+        html += `</div>`;
+    }
+    
+    html += `<div style="margin-bottom:8px; color:#00f5d4; font-weight:bold;">🎵 取得済みYouTube楽曲 (${dynamicSongsList.length}件)</div>`;
+    if (dynamicSongsList.length === 0) {
+        html += `<div style="color:#888;">楽曲データがありません（デフォルトリスト使用中）</div>`;
+    } else {
+        html += `<div style="display:flex; flex-direction:column; gap:4px;">`;
+        dynamicSongsList.forEach(song => {
+            html += `<div style="background:#181818; padding:4px 8px; border-radius:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">・song.title({song.youtubeId})</div>`;
+        });
+        html += `</div>`;
+    }
+    
+    container.innerHTML = html;
+}
 
 function toggleShopImgInputType() {
 const type = document.getElementById('admin-shop-img-type').value;
@@ -2989,76 +3227,146 @@ updateUIUserStatus();
 }
 }
 function loadCurrentGachaToAdminForm() {
-if (!currentGachaConfig) {
-document.getElementById('admin-gacha-title-input').value = "";
-document.getElementById('admin-gacha-type-select').value = "ネオフェス限定";
-document.getElementById('admin-gacha-status-select').value = "開催中";
-document.getElementById('admin-gacha-show-status').checked = true;
-document.getElementById('admin-gacha-banner-select').value = "";
-document.getElementById('admin-gacha-start-input').value = "";
-document.getElementById('admin-gacha-end-input').value = "";
-document.getElementById('admin-gacha-cost-single').value = 300;
-document.getElementById('admin-gacha-cost-multi').value = 3000;
-return;
+    if (!currentGachaConfig) {
+        document.getElementById('admin-gacha-title-input').value = "";
+        document.getElementById('admin-gacha-type-select').value = "ネオフェス限定";
+        document.getElementById('admin-gacha-status-select').value = "開催中";
+        document.getElementById('admin-gacha-show-status').checked = true;
+        if (document.getElementById('admin-gacha-subbox-select')) document.getElementById('admin-gacha-subbox-select').value = "";
+        document.getElementById('admin-gacha-start-input').value = "";
+        document.getElementById('admin-gacha-end-input').value = "";
+        document.getElementById('admin-gacha-cost-single').value = 300;
+        document.getElementById('admin-gacha-cost-multi').value = 3000;
+        renderAdminGachaBgList();
+        return;
+    }
+    document.getElementById('admin-gacha-title-input').value = currentGachaConfig.title || "";
+    document.getElementById('admin-gacha-type-select').value = currentGachaConfig.type || "ネオフェス限定";
+    document.getElementById('admin-gacha-status-select').value = currentGachaConfig.status || "開催中";
+    document.getElementById('admin-gacha-show-status').checked = currentGachaConfig.showStatus !== false;
+    if (document.getElementById('admin-gacha-subbox-select')) {
+        document.getElementById('admin-gacha-subbox-select').value = currentGachaConfig.subBoxImage || currentGachaConfig.bannerUrl || "";
+    }
+    document.getElementById('admin-gacha-start-input').value = currentGachaConfig.startDate || "";
+    document.getElementById('admin-gacha-end-input').value = currentGachaConfig.endDate || "";
+    document.getElementById('admin-gacha-cost-single').value = currentGachaConfig.costSingle || 300;
+    document.getElementById('admin-gacha-cost-multi').value = currentGachaConfig.costMulti || 3000;
+    renderAdminGachaBgList();
 }
-document.getElementById('admin-gacha-title-input').value = currentGachaConfig.title || "";
-document.getElementById('admin-gacha-type-select').value = currentGachaConfig.type || "ネオフェス限定";
-document.getElementById('admin-gacha-status-select').value = currentGachaConfig.status || "開催中";
-document.getElementById('admin-gacha-show-status').checked = currentGachaConfig.showStatus !== false;
-document.getElementById('admin-gacha-banner-select').value = currentGachaConfig.bannerUrl || "";
-document.getElementById('admin-gacha-start-input').value = currentGachaConfig.startDate || "";
-document.getElementById('admin-gacha-end-input').value = currentGachaConfig.endDate || "";
-document.getElementById('admin-gacha-cost-single').value = currentGachaConfig.costSingle || 300;
-document.getElementById('admin-gacha-cost-multi').value = currentGachaConfig.costMulti || 3000;
+
+function adminAddGachaBg() {
+    if (!currentGachaConfig) {
+        alert("先にガチャを選択または新規追加してください。");
+        return;
+    }
+    const selectEl = document.getElementById('admin-gacha-bg-select');
+    const url = selectEl.value;
+    const name = selectEl.options[selectEl.selectedIndex].text;
+    if (!url) {
+        alert("背景画像を選択してください。");
+        return;
+    }
+    if (!Array.isArray(currentGachaConfig.banners)) {
+        currentGachaConfig.banners = currentGachaConfig.bannerUrl ? [{ url: currentGachaConfig.bannerUrl, name: '既存バナー' }] : [];
+    }
+    if (currentGachaConfig.banners.length >= 7) {
+        alert("⚠️ ガチャ背景スライドショーに設定できるのは最大7枚までです。");
+        return;
+    }
+    if (currentGachaConfig.banners.some(b => (typeof b === 'string' ? b : b.url) === url)) {
+        alert("すでに背景リストに登録されている画像です。");
+        return;
+    }
+    currentGachaConfig.banners.push({ url: url, name: name });
+    renderAdminGachaBgList();
 }
+
+function adminRemoveGachaBg(index) {
+    if (!currentGachaConfig || !Array.isArray(currentGachaConfig.banners)) return;
+    currentGachaConfig.banners.splice(index, 1);
+    renderAdminGachaBgList();
+}
+
+function renderAdminGachaBgList() {
+    const listEl = document.getElementById('admin-gacha-bg-list');
+    if (!listEl) return;
+    if (!currentGachaConfig) {
+        listEl.innerHTML = "";
+        return;
+    }
+    if (!Array.isArray(currentGachaConfig.banners)) {
+        currentGachaConfig.banners = currentGachaConfig.bannerUrl ? [{ url: currentGachaConfig.bannerUrl, name: '背景画像 1' }] : [];
+    }
+    const bgs = currentGachaConfig.banners;
+    listEl.innerHTML = `<div style="color:#00f5d4; margin-bottom:4px;">登録中の背景 (${bgs.length}/7枚):</div>`;
+    if (bgs.length === 0) {
+        listEl.innerHTML += `<div style="color:#888; font-size:0.75rem;">背景画像が未設定です</div>`;
+        return;
+    }
+    bgs.forEach((bg, idx) => {
+        const bgName = typeof bg === 'string' ? `背景画像 ${idx + 1}` : bg.name;
+        const row = document.createElement('div');
+        row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#222; padding:5px 8px; border-radius:6px; margin-bottom:4px;";
+        row.innerHTML = `
+            <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;">${idx + 1}. ${bgName}</span>
+            <button type="button" onclick="adminRemoveGachaBg(${idx})" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;">削除</button>
+        `;
+        listEl.appendChild(row);
+    });
+}
+
 function adminSaveGachaConfig() {
-if (!currentGachaConfig) {
-alert("保存するガチャが存在しません。新規追加してください。");
-return;
+    if (!currentGachaConfig) {
+        alert("保存するガチャが存在しません。新規追加してください。");
+        return;
+    }
+    currentGachaConfig.title = document.getElementById('admin-gacha-title-input').value;
+    currentGachaConfig.type = document.getElementById('admin-gacha-type-select').value;
+    currentGachaConfig.status = document.getElementById('admin-gacha-status-select').value;
+    currentGachaConfig.manualOverride = true;
+    currentGachaConfig.showStatus = document.getElementById('admin-gacha-show-status').checked;
+    currentGachaConfig.subBoxImage = document.getElementById('admin-gacha-subbox-select') ? document.getElementById('admin-gacha-subbox-select').value : "";
+    if (!Array.isArray(currentGachaConfig.banners)) currentGachaConfig.banners = [];
+    currentGachaConfig.startDate = document.getElementById('admin-gacha-start-input').value;
+    currentGachaConfig.endDate = document.getElementById('admin-gacha-end-input').value;
+    currentGachaConfig.costSingle = Number(document.getElementById('admin-gacha-cost-single').value) || 300;
+    currentGachaConfig.costMulti = Number(document.getElementById('admin-gacha-cost-multi').value) || 3000;
+
+    const idx = gachaList.findIndex(g => g.id === currentGachaConfig.id);
+    if (idx !== -1) gachaList[idx] = currentGachaConfig;
+    localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+    localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
+    populateAdminGachaSwitcher();
+    updateUIUserStatus();
+    alert("🎂 ガチャ設定を保存しました！");
 }
-currentGachaConfig.title = document.getElementById('admin-gacha-title-input').value;
-currentGachaConfig.type = document.getElementById('admin-gacha-type-select').value;
-currentGachaConfig.status = document.getElementById('admin-gacha-status-select').value;
-currentGachaConfig.manualOverride = true;
-currentGachaConfig.showStatus = document.getElementById('admin-gacha-show-status').checked;
-currentGachaConfig.bannerUrl = document.getElementById('admin-gacha-banner-select').value;
-currentGachaConfig.startDate = document.getElementById('admin-gacha-start-input').value;
-currentGachaConfig.endDate = document.getElementById('admin-gacha-end-input').value;
-currentGachaConfig.costSingle = Number(document.getElementById('admin-gacha-cost-single').value) || 300;
-currentGachaConfig.costMulti = Number(document.getElementById('admin-gacha-cost-multi').value) || 3000;
-const idx = gachaList.findIndex(g => g.id === currentGachaConfig.id);
-if (idx !== -1) gachaList[idx] = currentGachaConfig;
-localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
-localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
-populateAdminGachaSwitcher();
-updateUIUserStatus();
-alert("🎂 ガチャ設定を保存しました！");
-}
+
 function adminAddNewGacha() {
-const newId = 'g_' + Date.now();
-const newG = {
-id: newId,
-title: "新規ピックアップガチャ",
-type: "ネオフェス限定",
-status: "開催中",
-manualOverride: false,
-showStatus: true,
-startDate: "2026-11-01T00:00",
-endDate: "2026-11-30T00:00",
-bannerUrl: "",
-costSingle: 300,
-costMulti: 3000
-};
-gachaList.push(newG);
-currentGachaConfig = newG;
-currentGachaId = newId;
-localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
-localStorage.setItem('nexus_current_gacha_id', currentGachaId);
-localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
-populateAdminGachaSwitcher();
-loadCurrentGachaToAdminForm();
-updateUIUserStatus();
-alert("➕ 新規ガチャを追加し選択しました！");
+    const newId = 'g_' + Date.now();
+    const newG = {
+        id: newId,
+        title: "新規ピックアップガチャ",
+        type: "ネオフェス限定",
+        status: "開催中",
+        manualOverride: false,
+        showStatus: true,
+        startDate: "2026-11-01T00:00",
+        endDate: "2026-11-30T00:00",
+        subBoxImage: "",
+        banners: [],
+        costSingle: 300,
+        costMulti: 3000
+    };
+    gachaList.push(newG);
+    currentGachaConfig = newG;
+    currentGachaId = newId;
+    localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+    localStorage.setItem('nexus_current_gacha_id', currentGachaId);
+    localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
+    populateAdminGachaSwitcher();
+    loadCurrentGachaToAdminForm();
+    updateUIUserStatus();
+    alert("➕ 新規ガチャを追加し選択しました！");
 }
 function adminDeleteCurrentGacha() {
 if (!currentGachaConfig) return;
@@ -3090,12 +3398,6 @@ updateUIUserStatus();
 renderHistory();
 alert("🗑️ ガチャを終了・削除し、ヒストリーへ移行しました。");
 }
-}
-function saveManageSettings() {
-adminSaveEventConfig();
-adminSaveGachaConfig();
-closeScreen('manage');
-alert("💾 管理画面のすべての設定を保存しました！");
 }
 function resetManageSettings() {
 if (confirm("⚠️ 管理設定を初期状態にリセットしますか？")) {
@@ -3195,27 +3497,22 @@ function renderGachaScreen() {
     const userGem = currentUser ? Number(currentUser.gem || 0).toLocaleString() : "0";
     const userIconSrc = userAvatarUrl || "https://picsum.photos/id/1069/100/100";
     
-    // 🎞️ ★6・★5・★4のチェックが入った画像のみを抽出してスライドショー対象にする
+// 🎞️ 管理画面で設定した最大7枚の背景スライドショー画像を抽出
     let slideBanners = [];
-    if (Array.isArray(currentGachaConfig.rarityBanners)) {
-        // 設定されたレアリティチェック（★6, ★5, ★4）に合致する画像を抽出
-        slideBanners = currentGachaConfig.rarityBanners
-            .filter(item => item.checked && item.url)
-            .map(item => item.url);
+    if (Array.isArray(currentGachaConfig.banners) && currentGachaConfig.banners.length > 0) {
+        slideBanners = currentGachaConfig.banners
+            .map(b => (typeof b === 'string' ? b : b.url))
+            .filter(Boolean)
+            .slice(0, 7);
+    } else if (currentGachaConfig.bannerUrl) {
+        slideBanners = [currentGachaConfig.bannerUrl];
     }
     if (slideBanners.length === 0) {
-        // フォールバック（従来の配列または単体URL）
-        if (Array.isArray(currentGachaConfig.banners) && currentGachaConfig.banners.length > 0) {
-            slideBanners = currentGachaConfig.banners;
-        } else if (currentGachaConfig.bannerUrl) {
-            slideBanners = [currentGachaConfig.bannerUrl];
-        } else {
-            slideBanners = ["https://picsum.photos/id/1025/600/1000"];
-        }
+        slideBanners = ["https://picsum.photos/id/1025/600/1000"];
     }
 
-    // 🖼️ 左下枠用の個別設定画像（バナーとは別管理）
-    const subBoxImgUrl = currentGachaConfig.subBoxImage || slideBanners[0];
+    // 🖼️ 左下枠用の個別設定画像（背景とは完全に別管理）
+    const subBoxImgUrl = currentGachaConfig.subBoxImage || "";
 
     // 🕒 ホーム・イベント画面と完全に共通化された時計の取得ロジック
     const now = new Date();
@@ -3254,31 +3551,33 @@ function renderGachaScreen() {
             </div>
         </div>
 
-        <!-- 下部エリア (左下: タイトルなし独立小枠 ＆ 右下: ボタン) -->
-        <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-bottom: 5px;">
+               <!-- 下部エリア (左下: タイトル画像 ＆ 右下: 1回引く・10回引くボタン) -->
+        <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-bottom: 5px; gap: 8px;">
             
-            <!-- 左下: 期間 ＆ 管理画面で独立設定した小枠画像（タイトル表記なし） -->
-            <div style="display: flex; flex-direction: column; gap: 4px; width: 52%;">
+            <!-- 左下: 種類・期間 ＆ タイトル画像 -->
+            <div style="display: flex; flex-direction: column; gap: 4px; width: 55%;">
                 <span style="background: #28a745; color: #fff; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; width: fit-content;">${currentGachaConfig.type}</span>
                 <div style="font-size: 0.65rem; color: #eee; text-shadow: 1px 1px 2px #000;">${formatDateStr(currentGachaConfig.startDate)}〜${formatDateStr(currentGachaConfig.endDate)}</div>
                 
-                <div style="background: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 4px; backdrop-filter: blur(4px);">
-                    <div style="width: 100%; height: 60px; background-image: url('${subBoxImgUrl}'); background-size: cover; background-position: center; border-radius: 6px;"></div>
+                <div style="background: rgba(20,20,20,0.85); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; padding: 4px; backdrop-filter: blur(4px); box-shadow: 0 4px 12px rgba(0,0,0,0.6);">
+                    ${subBoxImgUrl 
+                        ? `<img src="${subBoxImgUrl}" alt="ガチャタイトル" style="width: 100%; height: auto; max-height: 85px; object-fit: contain; border-radius: 6px; display: block;">`
+                        : `<div style="width: 100%; height: 60px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; font-size:0.85rem; text-align:center; padding:4px;">${currentGachaConfig.title}</div>`
+                    }
                 </div>
             </div>
 
-            <!-- 右下: 引くボタン -->
-            <div style="display: flex; flex-direction: column; gap: 6px; width: 42%;">
-                <button onclick="pullGacha(1)" style="background: linear-gradient(135deg, #00f5d4, #0088cc); color: #000; border: none; border-radius: 8px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 3px 8px rgba(0,0,0,0.4);">
-                    <div style="font-size: 0.8rem; font-weight: 800;">1回引く</div>
-                    <div style="font-size: 0.7rem; color: #111; font-weight: bold;">💎 ${costSingle.toLocaleString()}</div>
+            <!-- 右下: 1回引く・10回引くボタン -->
+            <div style="display: flex; flex-direction: column; gap: 8px; width: 42%;">
+                <button onclick="pullGacha(1)" style="background: linear-gradient(135deg, #00f5d4, #0088cc); color: #000; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                    <div style="font-size: 0.85rem; font-weight: 800;">1回引く</div>
+                    <div style="font-size: 0.75rem; color: #111; font-weight: bold;">💎 ${costSingle.toLocaleString()}</div>
                 </button>
-                <button onclick="pullGacha(10)" style="background: linear-gradient(135deg, #ffee00, #ff9900); color: #000; border: none; border-radius: 8px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 3px 8px rgba(0,0,0,0.4);">
-                    <div style="font-size: 0.8rem; font-weight: 800;">10回引く</div>
-                    <div style="font-size: 0.7rem; color: #111; font-weight: bold;">💎 ${costMulti.toLocaleString()}</div>
+                <button onclick="pullGacha(10)" style="background: linear-gradient(135deg, #ffee00, #ff9900); color: #000; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                    <div style="font-size: 0.85rem; font-weight: 800;">10回引く</div>
+                    <div style="font-size: 0.75rem; color: #111; font-weight: bold;">💎 ${costMulti.toLocaleString()}</div>
                 </button>
             </div>
-
         </div>
 
         <!-- ︙メニューモーダル (排出率 ＋ チェックされた★4〜6スライドショー対象一覧) -->
@@ -3378,13 +3677,14 @@ async function promptUserLogin() {
             isAdmin = false;
             localStorage.setItem('nexus_is_admin', 'false');
         }
-               currentUser = found;
+             currentUser = found;
         localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
         
-        // 🌐 ログイン時にスプレッドシートから最新データ・アイコン・通貨を確実を受信・反映
+        // 🌐 ログイン時にスプレッドシートから最新データ・アイコン・通貨・個別データを確実に受信・反映
         if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
+            showSyncLoader();
             try {
-                const res = await fetch(GAS_WEB_APP_URL, { 
+                const res = await fetch(GAS_WEB_APP_URL + "?t=" + new Date().getTime(), { 
                     method: "GET", 
                     mode: "cors",
                     redirect: "follow" 
@@ -3392,56 +3692,130 @@ async function promptUserLogin() {
                 if (res.ok) {
                     const data = await res.json();
                     if (data) {
-                        if (data.members) {
-                            memberDatabase = data.members;
-                            // ログイン中のユーザーの最新💎・🪙残高を再適用
+                        // ① メンバーデータ（💎・🪙）の反映
+                        if (data.members && Array.isArray(data.members) && data.members.length > 0) {
+                            data.members.forEach(remoteM => {
+                                const localM = memberDatabase.find(m => m.id === remoteM.id);
+                                if (localM) {
+                                    localM.name = remoteM.name || localM.name;
+                                    localM.gem = Number(remoteM.gem) || 0;
+                                    localM.coin = Number(remoteM.coin) || 0;
+                                } else {
+                                    memberDatabase.push({
+                                        id: remoteM.id,
+                                        name: remoteM.name,
+                                        gem: Number(remoteM.gem) || 0,
+                                        coin: Number(remoteM.coin) || 0,
+                                        pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0
+                                    });
+                                }
+                            });
                             const updatedMe = memberDatabase.find(m => m.id === currentUser.id);
                             if (updatedMe) {
                                 currentUser = updatedMe;
                                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                             }
-                            saveMemberDb();
                         }
-                        if (data.songs && Array.isArray(data.songs)) {
-                            dynamicSongsList = data.songs;
-                            localStorage.setItem('nexus_dynamic_songs', JSON.stringify(dynamicSongsList));
-                            initDynamicPlaylist();
-                        }
-                        if (data.images && Array.isArray(data.images)) {
-                            masterDriveImages = data.images;
-                            localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
-                        }
-                        // 🖼️ アプリ全体のアイコン設定の反映
-                        if (data.appIcon) {
-                            localStorage.setItem(getAppIconKey(), data.appIcon);
-                        }
+
+                        // ② 管理画面設定・イベント・ガチャ・P情報の反映（J1セル）
                         const settings = data.settings || data.appSettings;
                         if (settings) {
                             if (settings.eventsList) {
                                 eventsList = settings.eventsList;
                                 localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
+                                currentEvent = eventsList.find(e => e.id === currentEventId) || eventsList[0] || null;
                             }
                             if (settings.gachaList) {
                                 gachaList = settings.gachaList;
                                 localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+                                currentGachaConfig = gachaList.find(g => g.id === currentGachaId) || gachaList[0] || null;
                             }
                             if (settings.shopItemsList) {
                                 shopItemsList = settings.shopItemsList;
                                 localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
                             }
+                            if (settings.masterDriveImages) {
+                                masterDriveImages = settings.masterDriveImages;
+                                localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+                            }
+                            if (settings.globalNotices) {
+                                globalNotices = settings.globalNotices;
+                                localStorage.setItem(getGlobalNoticesKey(), JSON.stringify(globalNotices));
+                            }
+                            if (settings.globalGifts) {
+                                globalGifts = settings.globalGifts;
+                                localStorage.setItem(getGlobalGiftsKey(), JSON.stringify(globalGifts));
+                            }
                             if (settings.titleBgImages) {
                                 titleBgImages = settings.titleBgImages;
                                 localStorage.setItem(getTitleBgKey(), JSON.stringify(titleBgImages));
                             }
+                            if (settings.appIcon) {
+                                localStorage.setItem(getAppIconKey(), settings.appIcon);
+                            }
+                            if (settings.isLoginLocked !== undefined) {
+                                isLoginLocked = settings.isLoginLocked;
+                                localStorage.setItem('nexus_login_locked', isLoginLocked);
+                            }
+                            if (settings.rankingLocked !== undefined) {
+                                rankingLocked = settings.rankingLocked;
+                                localStorage.setItem('nexus_ranking_locked', rankingLocked);
+                            }
+                            // 全員のイベントP・ボーナス情報の復元
+                            if (settings.memberStats && typeof settings.memberStats === 'object') {
+                                Object.keys(settings.memberStats).forEach(uid => {
+                                    const m = memberDatabase.find(item => item.id === uid);
+                                    if (m && settings.memberStats[uid]) {
+                                        m.pt = Number(settings.memberStats[uid].pt) || 0;
+                                        m.gachaBonus = Number(settings.memberStats[uid].gachaBonus) || 0;
+                                        m.illustBonus = Number(settings.memberStats[uid].illustBonus) || 0;
+                                        m.extraBonus = Number(settings.memberStats[uid].extraBonus) || 0;
+                                    }
+                                });
+                            }
                         }
+
+                        // ③ ログインユーザー個別データの復元（K1セル）
+                        if (data.allPersonalData && data.allPersonalData[currentUser.id]) {
+                            const pData = data.allPersonalData[currentUser.id];
+                            if (Array.isArray(pData.userAlbum)) {
+                                localStorage.setItem(getUserAlbumKey(), JSON.stringify(pData.userAlbum));
+                            }
+                            if (Array.isArray(pData.userSlideshowIds)) {
+                                localStorage.setItem(getUserSlideshowKey(), JSON.stringify(pData.userSlideshowIds));
+                            }
+                            if (pData.userAvatarUrl !== undefined) {
+                                localStorage.setItem(getUserAvatarKey(), pData.userAvatarUrl);
+                            }
+                            if (Array.isArray(pData.userGifts)) {
+                                localStorage.setItem(getUserGiftsKey(), JSON.stringify(pData.userGifts));
+                            }
+                            if (pData.clockColor) {
+                                localStorage.setItem('nexus_clock_color', pData.clockColor);
+                                applyClockColorToAll(pData.clockColor);
+                            }
+                        }
+
+                        localStorage.setItem('nexus_member_db', JSON.stringify(memberDatabase));
                     }
                 }
-            } catch (e) {
+          } catch (e) {
                 console.log("⚠️ ログイン時の一時的なオフライン同期フォールバック:", e);
             }
         }
-   reloadUserData();
+            reloadUserData();
+        fetchGasAppContent();
         
+        playDefaultSongOnLogin();
+        checkAndTriggerFullscreenOnLogin();
+        
+        alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
+        if (isAdmin) openScreen('manage');
+    } else {
+        alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
+    }
+}
+
 // ==========================================
 // 🌐 GASから画像・YouTube楽曲データを取得するグローバル関数
 // ==========================================
@@ -3523,23 +3897,11 @@ async function fetchGasAppContent() {
                 console.log("✅ YouTube楽曲プレイリストを反映しました:", dynamicSongsList.length);
             }
         }
-    } catch (e) {
+       } catch (e) {
         console.error("⚠️ 画像・楽曲用GAS APIからのデータ取得・解析エラー:", e);
         if (typeof initDynamicPlaylist === 'function') initDynamicPlaylist(); // フォールバック
     }
 }
-        fetchGasAppContent();
-        
-        playDefaultSongOnLogin();
-        checkAndTriggerFullscreenOnLogin();
-        
-        alert(`🎉 ログイン成功！\nようこそ、${currentUser.name} さん`);
-        if (isAdmin) openScreen('manage');
-    } else {
-        alert("❌ ログインエラー\n登録メンバーリストに存在しないIDです。");
-    }
-}
-
 
 function saveFullscreenSetting(checkbox) {
 localStorage.setItem(getFullscreenSettingKey(), checkbox.checked ? 'true' : 'false');
@@ -3550,26 +3912,23 @@ exitFullscreenMode();
 }
 }
 function requestFullscreenMode() {
-try {
-if (document.documentElement.requestFullscreen) {
-document.documentElement.requestFullscreen();
-} else if (document.documentElement.webkitRequestFullscreen) {
-document.documentElement.webkitRequestFullscreen();
+    try {
+        const el = document.documentElement;
+        const p = el.requestFullscreen ? el.requestFullscreen() : (el.webkitRequestFullscreen ? el.webkitRequestFullscreen() : null);
+        if (p && typeof p.catch === 'function') {
+            p.catch(() => {}); // ブラウザの自動全画面ブロック時はエラーを出さずスキップ
+        }
+    } catch (e) {}
 }
-} catch (e) {
-console.log("Fullscreen request error:", e);
-}
-}
+
 function exitFullscreenMode() {
-try {
-if (document.exitFullscreen) {
-if (document.fullscreenElement) document.exitFullscreen();
-} else if (document.webkitExitFullscreen) {
-document.webkitExitFullscreen();
-}
-} catch (e) {
-console.log("Exit fullscreen error:", e);
-}
+    try {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) return;
+        const p = document.exitFullscreen ? document.exitFullscreen() : (document.webkitExitFullscreen ? document.webkitExitFullscreen() : null);
+        if (p && typeof p.catch === 'function') {
+            p.catch(() => {});
+        }
+    } catch (e) {}
 }
 function checkAndTriggerFullscreenOnLogin() {
 const isFsOn = localStorage.getItem(getFullscreenSettingKey()) === 'true';
@@ -3580,33 +3939,9 @@ requestFullscreenMode();
 }
 }
 async function adminLogout() {
-    // 🔄 ログアウト時にローカルの全データ・楽曲・画像・全設定をスプレッドシートへ送信（CORS回避）
-    if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
-        try {
-            await fetch(GAS_WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({
-                    logType: "fullSync",
-                    members: memberDatabase,
-                    songs: dynamicSongsList,
-                    images: masterDriveImages,
-                    settings: {
-                        eventsList: eventsList,
-                        gachaList: gachaList,
-                        shopItemsList: shopItemsList,
-                        masterDriveImages: masterDriveImages,
-                        globalNotices: globalNotices,
-                        globalGifts: globalGifts,
-                        titleBgImages: titleBgImages
-                    }
-                })
-            });
-        } catch (e) {
-            console.log("⚠️ ログアウト時の送信スキップ:", e);
-        }
-    }
+    // 🔄 ログアウト時にローカルの全データ・全設定をスプレッドシートへ送信（グルグルマーク連動）
+    await syncDataToGas("fullSync");
+
     isAdmin = false;
     localStorage.setItem('nexus_is_admin', 'false');
     currentUser = null;
@@ -3615,9 +3950,8 @@ async function adminLogout() {
     closeOtherMenu();
     const audioEl = document.getElementById('bgm-audio');
     if (audioEl) audioEl.pause();
-    alert("🔒 ログアウトしました。");
+    alert("🔒 ログアウトしました。（全データをクラウドに保存しました）");
 }
-
 
 function reloadUserData() {
 userAlbum = JSON.parse(localStorage.getItem(getUserAlbumKey())) || [];
@@ -4232,7 +4566,8 @@ async function fetchDriveMasterData() {
 }
 function populateAdminSelects() {
 const gachaSelect = document.getElementById('admin-gacha-img-select');
-const gachaBannerSelect = document.getElementById('admin-gacha-banner-select');
+const gachaSubboxSelect = document.getElementById('admin-gacha-subbox-select');
+const gachaBgSelect = document.getElementById('admin-gacha-bg-select');
 const giftSelect = document.getElementById('admin-gift-img-select');
 const noticeSelect = document.getElementById('admin-notice-img-select');
 const eventImgSelect = document.getElementById('admin-event-img-select');
@@ -4247,7 +4582,8 @@ masterDriveImages.forEach(img => {
 optionsHtml += `<option value="${img.url}">${img.name}</option>`;
 });
 gachaSelect.innerHTML = optionsHtml;
-gachaBannerSelect.innerHTML = `<option value="">(バナーなし)</option>` + optionsHtml;
+if (gachaSubboxSelect) gachaSubboxSelect.innerHTML = `<option value="">(左下画像なし)</option>` + optionsHtml;
+if (gachaBgSelect) gachaBgSelect.innerHTML = `<option value="">(背景画像を選択)</option>` + optionsHtml;
 giftSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
 noticeSelect.innerHTML = `<option value="">(イラストなし)</option>` + optionsHtml;
 eventImgSelect.innerHTML = `<option value="">(画像なし)</option>` + optionsHtml;
@@ -4279,54 +4615,70 @@ html += `<option value="${img.url}">${img.name}</option>`;
 selectEl.innerHTML = html;
 }
 // ガチャ実行と演出コントロール
+// ==========================================
+// 🎂 ガチャ実行・抽選・演出コントロール
+// ==========================================
 async function pullGacha(count) {
     if (!currentGachaConfig) return;
-
-    const costSingle = currentGachaConfig.costSingle || 300;
-    const costMulti = currentGachaConfig.costMulti || 3000;
-    const totalCost = (count === 10) ? costMulti : costSingle * count;
-
-    // ダイヤ残高チェック
-    if (!currentUser || Number(currentUser.gem || 0) < totalCost) {
-        alert("💎 ダイヤが足りないよ！");
+    if (!currentUser) {
+        alert("ガチャを引くにはログインしてください。");
+        promptUserLogin();
         return;
     }
 
-    // ダイヤを消費
-    currentUser.gem = Number(currentUser.gem) - totalCost; saveMemberDb(); // メンバーデータベースとローカルストレージに保存 renderGachaScreen(); // ダイヤ表示更新 
+    const costSingle = Number(currentGachaConfig.costSingle) || 300;
+    const costMulti = Number(currentGachaConfig.costMulti) || 3000;
+    const totalCost = (count === 10) ? costMulti : costSingle * count;
 
-    // 🎲 確率に基づいて結果を事前計算
+    // 最新のユーザーデータを取得してダイヤ残高チェック
+    const userDb = memberDatabase.find(m => m.id === currentUser.id) || currentUser;
+    if (Number(userDb.gem || 0) < totalCost) {
+        alert(`💎 ダイヤが不足しています！\n必要: ${totalCost.toLocaleString()} 💎 (所持: ${Number(userDb.gem || 0).toLocaleString()} 💎)`);
+        return;
+    }
+
+    // 💎 ダイヤ消費＆全UIへ即座に反映
+    userDb.gem = Number(userDb.gem) - totalCost;
+    currentUser.gem = userDb.gem;
+    localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+    saveMemberDb();
+    updateUIUserStatus();
+
+    // 🎲 確率に基づいて結果と設定画像を抽選
     const results = [];
-    let maxRarity = 2; // 今回の最高獲得レアリティ
-
+    let maxRarity = 2;
     for (let i = 0; i < count; i++) {
         const item = rollSingleGacha(currentGachaConfig.type);
         results.push(item);
         if (item.rarityNum > maxRarity) maxRarity = item.rarityNum;
     }
+saveGachaResultsToAlbum(results);
 
-    // 🌟 昇格フラグ（★5以上がある場合、20%の確率で昇格演出にする）
-    let isUpgrade = false;
-    if (maxRarity >= 5 && Math.random() < 0.2) {
-        isUpgrade = true;
+    // 📷 獲得した画像をすべてアルバムへ自動保存
+    if (typeof saveGachaResultsToAlbum === 'function') {
+        saveGachaResultsToAlbum(results);
     }
 
-    // 📳 スマホのバイブレーション実行（端末が対応している場合）
+    // 🔥 昇格フラグ（結果に★5以上がある場合、★4から炎昇格する演出を発生させる）
+    // ※★5以上が1枚でもあれば、最初の玉を★4(赤)にして炎で昇格させます
+    const hasHighRarity = results.some(r => r.rarityNum >= 5);
+    const isUpgrade = hasHighRarity;
+
+    // 📳 バイブレーション
     triggerGachaVibration(maxRarity, isUpgrade);
 
-    // 🎬 演出画面を表示
-    await playGachaAnimation(results, maxRarity, isUpgrade);
+    // 🎬 演出アニメーション再生 → リザルト画面へ
+    await playGachaAnimation(results, maxRarity, isUpgrade, count);
 }
 
-// 🎲 レアリティ抽選ロジック
+// 🎲 レアリティ＆ラインナップ画像抽選ロジック
 function rollSingleGacha(type) {
     const rates = GACHA_RATES[type] || { "★6": 0.4, "★5": 6.6, "★4": 23, "★3": 30, "★2": 40 };
     const rand = Math.random() * 100;
-    
+
     let cum = 0;
     let selectedRarity = "★2";
     let rarityNum = 2;
-
     const tiers = [
         { key: "★6", num: 6 },
         { key: "★5", num: 5 },
@@ -4334,7 +4686,6 @@ function rollSingleGacha(type) {
         { key: "★3", num: 3 },
         { key: "★2", num: 2 }
     ];
-
     for (const t of tiers) {
         cum += (rates[t.key] || 0);
         if (rand <= cum) {
@@ -4344,31 +4695,52 @@ function rollSingleGacha(type) {
         }
     }
 
-    return { rarity: selectedRarity, rarityNum: rarityNum };
+    // 管理画面で登録された該当レアリティの画像を抽出
+    const pool = masterDriveImages.filter(img =>
+        img && img.url && (img.rarity === selectedRarity || (!img.rarity && img.name && img.name.includes(selectedRarity)))
+    );
+
+    let chosenImg = null;
+    if (pool.length > 0) {
+        chosenImg = pool[Math.floor(Math.random() * pool.length)];
+    } else if (masterDriveImages.length > 0) {
+        // 該当レアリティ未登録時のフォールバック
+        const validAll = masterDriveImages.filter(img => img && img.url);
+        if (validAll.length > 0) {
+            chosenImg = validAll[Math.floor(Math.random() * validAll.length)];
+        }
+    }
+
+    return {
+        rarity: selectedRarity,
+        rarityNum: rarityNum,
+        name: chosenImg ? chosenImg.name : `${selectedRarity} イラスト`,
+        url: chosenImg ? chosenImg.url : (currentGachaConfig.subBoxImage || "https://picsum.photos/id/1025/400/600")
+    };
 }
 
-// 📳 振動パターン
+// 📳 指定秒数通りの連続振動パターン（ミリ秒指定・途切れなし）
+function getVibrationDurationMs(maxRarity, isUpgrade) {
+    if (isUpgrade) {
+        // 昇格時: ★4→★5は 7秒(7000ms)、★4→★6は 9秒(9000ms)
+        return (maxRarity === 6) ? 9000 : 7000;
+    }
+    if (maxRarity === 6) return 8000; // ★6: 8秒
+    if (maxRarity === 5) return 5000; // ★5: 5秒
+    if (maxRarity === 4) return 3000; // ★4: 3秒
+    return 1000;                      // ★2・3: 1秒
+}
+
 function triggerGachaVibration(maxRarity, isUpgrade) {
     if (!("vibrate" in navigator)) return;
-    
-    if (isUpgrade) {
-        // 昇格時：ト・ト・トン！→ブブブブッ！
-        navigator.vibrate([100, 50, 100, 50, 300, 100, 500]);
-    } else if (maxRarity === 6) {
-        // ★6確意：長めの重厚な振動
-        navigator.vibrate([200, 100, 200, 100, 600]);
-    } else if (maxRarity === 5) {
-        // ★5：2回振動
-        navigator.vibrate([150, 80, 150]);
-    } else {
-        // 通常：短く1回
-        navigator.vibrate(80);
-    }
+    const totalMs = getVibrationDurationMs(maxRarity, isUpgrade);
+    // 途切れのない連続振動を実行
+    navigator.vibrate(totalMs);
 }
-// 演出モーダル表示・昇格・結果表示
-function playGachaAnimation(results, maxRarity, isUpgrade) {
+
+// 🎬 演出モーダル表示（指定秒数の連続振動 ＆ 昇格タイミング完全同期）
+function playGachaAnimation(results, maxRarity, isUpgrade, count) {
     return new Promise((resolve) => {
-        // 演出用のフルスクリーンモーダル作成
         let animOverlay = document.getElementById('gacha-anim-overlay');
         if (!animOverlay) {
             animOverlay = document.createElement('div');
@@ -4377,113 +4749,312 @@ function playGachaAnimation(results, maxRarity, isUpgrade) {
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background: #000; z-index: 99999; display: flex;
                 flex-direction: column; justify-content: center; align-items: center;
-                transition: background 0.5s;
+                overflow: hidden;
             `;
             document.body.appendChild(animOverlay);
         }
         animOverlay.style.display = 'flex';
+        animOverlay.style.background = '#000';
 
-        // 初期カラー設定（昇格演出の場合はあえて低レアの色で見せる）
-        const initialRarity = isUpgrade ? (maxRarity - 1) : maxRarity;
-        let colorTheme = "#00f5d4"; // 通常
-        if (initialRarity === 5) colorTheme = "#ff9900"; // 金
-        if (initialRarity === 6) colorTheme = "#ff0077"; // 虹/レインボー
+        const initialRarity = isUpgrade ? 4 : maxRarity;
 
-        animOverlay.innerHTML = `
-            <div id="anim-light-sphere" style="
-                width: 150px; height: 150px; border-radius: 50%;
-                background: radial-gradient(circle, ${colorTheme} 0%, rgba(0,0,0,0) 70%);
-                box-shadow: 0 0 50px ${colorTheme};
-                animation: pulseGlow 1.5s infinite alternate;
-                display: flex; justify-content: center; align-items: center;
-            ">
-                <span id="anim-text" style="color: #fff; font-size: 1.5rem; font-weight: bold; text-shadow: 0 0 10px #000;">引き寄せ中...</span>
-            </div>
-            <style>
-                @keyframes pulseGlow {
-                    0% { transform: scale(0.9); opacity: 0.7; }
-                    100% { transform: scale(1.2); opacity: 1; }
-                }
-                @keyframes flashUp {
-                    0% { background: #fff; }
-                    100% { background: #000; }
-                }
-            </style>
-        `;
+        const showMainOrbSequence = () => {
+            // 玉が出現した瞬間に連続振動スタート
+            triggerGachaVibration(maxRarity, isUpgrade);
 
-        // ステップ1：演出待機
-        setTimeout(() => {
-            // 昇格演出が発生する場合
+            animOverlay.innerHTML = `
+                <div id="main-gacha-orb" class="gacha-orb orb-r${initialRarity} orb-shaking" style="width: 140px; height: 140px; transform: scale(1.15); opacity: 1;">
+                    <div id="orb-fire-layer" class="orb-fire-aura" style="display: none;"></div>
+                </div>
+            `;
+            const mainOrb = document.getElementById('main-gacha-orb');
+
             if (isUpgrade) {
-                const sphere = document.getElementById('anim-light-sphere');
-                const text = document.getElementById('anim-text');
-                if (sphere && text) {
-                    // 振動追加
-                    if ("vibrate" in navigator) navigator.vibrate([50, 50, 50, 50, 400]);
-                    
-                    // 色がレインボー/ゴールドに変色
-                    const upColor = (maxRarity === 6) ? "#ff0077" : "#ff9900";
-                    sphere.style.background = `radial-gradient(circle, ${upColor} 0%, rgba(0,0,0,0) 70%)`;
-                    sphere.style.boxShadow = `0 0 80px ${upColor}`;
-                    text.innerText = "⚡昇 格 演 出⚡";
-                    text.style.color = "#ffee00";
-                }
-                setTimeout(() => showResultScreen(results), 1500);
+                // ★4の3秒振動後、炎を纏って昇格（★5なら残り4秒=計7秒、★6なら残り6秒=計9秒）
+                const afterUpgradeMs = (maxRarity === 6) ? 6000 : 4000;
+                setTimeout(() => {
+                    if (mainOrb) {
+                        const fireLayer = document.getElementById('orb-fire-layer');
+                        if (fireLayer) fireLayer.style.display = 'block';
+                        mainOrb.className = `gacha-orb orb-r${maxRarity} orb-shaking`;
+                    }
+                    setTimeout(() => {
+                        if (mainOrb) mainOrb.classList.remove('orb-shaking');
+                        showGachaResultModal(results, count, resolve);
+                    }, afterUpgradeMs);
+                }, 3000);
             } else {
-                showResultScreen(results);
+                // 通常時: ★2・3(1秒) / ★4(3秒) / ★5(5秒) / ★6(8秒)
+                const waitMs = getVibrationDurationMs(maxRarity, false);
+                setTimeout(() => {
+                    if (mainOrb) mainOrb.classList.remove('orb-shaking');
+                    showGachaResultModal(results, count, resolve);
+                }, waitMs);
             }
-        }, 1800);
+        };
 
-        // ステップ2：結果一覧画面
-        function showResultScreen(resList) {
-            animOverlay.style.animation = "flashUp 0.3s forwards";
-            
-            setTimeout(() => {
-                animOverlay.innerHTML = `
-                    <div style="width: 90%; max-width: 400px; text-align: center;">
-                        <h3 style="color: #00f5d4; font-size: 1.4rem; margin-bottom: 15px; text-shadow: 0 0 8px #00f5d4;">🎉 ガチャ獲得結果</h3>
-                        <div style="display: grid; grid-template-columns: repeat(${resList.length > 1 ? 5 : 1}, 1fr); gap: 8px; margin-bottom: 20px;">
-                            ${resList.map((item, idx) => `
-                                <div style="
-                                    background: rgba(30,30,30,0.9); border: 1px solid ${getRarityBorderColor(item.rarityNum)};
-                                    border-radius: 8px; padding: 10px 4px; text-align: center;
-                                    box-shadow: 0 0 8px ${getRarityBorderColor(item.rarityNum)};
-                                ">
-                                    <div style="font-size: 0.9rem; font-weight: bold; color: ${getRarityTextColor(item.rarityNum)};">${item.rarity}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <button id="close-gacha-result-btn" style="
-                            width: 80%; background: linear-gradient(135deg, #00f5d4, #0088cc);
-                            color: #000; border: none; padding: 10px; border-radius: 20px;
-                            font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-                        ">確認</button>
+        if (count === 10) {
+            let miniOrbsHtml = '';
+            const radius = 135;
+            for (let i = 0; i < 10; i++) {
+                const angle = (i / 10) * Math.PI * 2;
+                const x = Math.round(Math.cos(angle) * radius);
+                const y = Math.round(Math.sin(angle) * radius);
+                const rNum = results[i] ? results[i].rarityNum : 2;
+                miniOrbsHtml += `
+                    <div class="mini-gacha-orb orb-r${rNum}" id="mini-orb-${i}"
+                         style="transform: translate(${x}px, ${y}px) scale(1); opacity: 1;">
                     </div>
                 `;
+            }
+            animOverlay.innerHTML = `<div style="position:relative; width:320px; height:320px;">${miniOrbsHtml}</div>`;
 
-                document.getElementById('close-gacha-result-btn').onclick = () => {
-                    animOverlay.style.display = 'none';
-                    resolve();
-                };
-            }, 300);
+            setTimeout(() => {
+                for (let i = 0; i < 10; i++) {
+                    const mOrb = document.getElementById(`mini-orb-${i}`);
+                    if (mOrb) mOrb.style.transform = 'translate(0px, 0px) scale(0.4)';
+                }
+            }, 350);
+
+            setTimeout(() => {
+                showMainOrbSequence();
+            }, 1200);
+        } else {
+            showMainOrbSequence();
         }
     });
 }
+// 🎊 ガチャリザルト画面の表示（設定画像表示 ＆「もう一回引く」ボタン）
+function showGachaResultModal(results, count, resolve) {
+    let animOverlay = document.getElementById('gacha-anim-overlay');
+    if (!animOverlay) return;
 
-// レアリティに応じた枠線・文字色の取得ヘルパー
+    const costSingle = Number(currentGachaConfig.costSingle) || 300;
+    const costMulti = Number(currentGachaConfig.costMulti) || 3000;
+    const retryCost = (count === 10) ? costMulti : costSingle;
+    const retryLabel = (count === 10) ? "もう10回引く" : "もう1回引く";
+
+    let cardsHtml = '';
+    if (count === 1) {
+        // 単発：画面中央に大きく1枚表示
+        const item = results[0];
+        const borderCol = getRarityBorderColor(item.rarityNum);
+        const textCol = getRarityTextColor(item.rarityNum);
+        cardsHtml = `
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; max-width:280px; margin: 0 auto;">
+                <div style="width:100%; aspect-ratio: 3/4; max-height: 52vh; border: 3px solid ${borderCol}; border-radius: 14px; overflow: hidden; box-shadow: 0 0 25px ${borderCol}; background: #111; position: relative;">
+                    <img src="${item.url}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover; display:block;">
+                    <div style="position:absolute; top:8px; left:8px; background:rgba(0,0,0,0.8); color:${textCol}; font-weight:800; font-size:1rem; padding:3px 10px; border-radius:8px; border:1px solid ${borderCol};">
+                        ${item.rarity}
+                    </div>
+                </div>
+                <div style="margin-top:10px; font-size:1rem; font-weight:bold; color:#fff; text-align:center;">${item.name}</div>
+            </div>
+        `;
+    } else {
+        // 10連：2列×5行のグリッドで画像がしっかり見えるサイズで表示
+        cardsHtml = `<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 420px; margin: 0 auto;">`;
+        results.forEach(item => {
+            const borderCol = getRarityBorderColor(item.rarityNum);
+            const textCol = getRarityTextColor(item.rarityNum);
+            cardsHtml += `
+                <div style="background:#181818; border: 2px solid ${borderCol}; border-radius: 10px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.8); display:flex; flex-direction:column;">
+                    <div style="width:100%; height: 120px; position:relative; background:#000;">
+                        <img src="${item.url}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover; display:block;">
+                        <span style="position:absolute; top:4px; left:4px; background:rgba(0,0,0,0.85); color:${textCol}; font-weight:800; font-size:0.75rem; padding:1px 6px; border-radius:4px; border:1px solid ${borderCol};">
+                            ${item.rarity}
+                        </span>
+                    </div>
+                    <div style="padding:5px 6px; font-size:0.72rem; color:#eee; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center;">
+                        ${item.name}
+                    </div>
+                </div>
+            `;
+        });
+        cardsHtml += `</div>`;
+    }
+
+    const userGem = currentUser ? Number(currentUser.gem || 0).toLocaleString() : "0";
+
+    animOverlay.style.background = 'rgba(5, 5, 5, 0.96)';
+    animOverlay.innerHTML = `
+        <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:space-between; padding: 16px 14px 24px 14px; box-sizing:border-box;">
+            <!-- 上部ヘッダー（リザルトタイトル ＆ 所持ダイヤ） -->
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-shrink:0; margin-bottom:10px;">
+                <span style="color:#00f5d4; font-weight:800; font-size:1.1rem;">✨ ガチャ結果</span>
+                <span style="background:rgba(0,0,0,0.7); border:1px solid #00f5d4; color:#00f5d4; padding:4px 10px; border-radius:16px; font-size:0.85rem; font-weight:bold;">
+                    💎 ${userGem}
+                </span>
+            </div>
+
+            <!-- 中央：獲得画像一覧（スクロール対応） -->
+            <div style="flex:1; overflow-y:auto; display:flex; align-items:${count === 1 ? 'center' : 'flex-start'}; justify-content:center; padding: 4px 0;">
+                ${cardsHtml}
+            </div>
+
+            <!-- 下部：閉じる ＆ もう一回引くボタン -->
+            <div style="display:flex; gap:10px; flex-shrink:0; margin-top:12px; width:100%; max-width:420px; margin-left:auto; margin-right:auto;">
+                <button onclick="closeGachaResultModal()" style="flex:1; background:#333; color:#fff; border:1px solid #666; border-radius:10px; padding:12px 8px; font-size:0.95rem; font-weight:bold; cursor:pointer; font-family:inherit;">
+                    閉じる
+                </button>
+                <button onclick="retryGachaFromResult(${count})" style="flex:1.4; background:linear-gradient(135deg, #ffee00, #ff9900); color:#000; border:1px solid #fff; border-radius:10px; padding:10px 8px; cursor:pointer; font-family:inherit; box-shadow:0 4px 12px rgba(255,153,0,0.4);">
+                    <div style="font-size:0.95rem; font-weight:800;">${retryLabel}</div>
+                    <div style="font-size:0.75rem; font-weight:bold; color:#111;">💎 ${retryCost.toLocaleString()}</div>
+                </button>
+            </div>
+        </div>
+    `;
+
+    if (resolve) resolve();
+}
+
+function closeGachaResultModal() {
+    const animOverlay = document.getElementById('gacha-anim-overlay');
+    if (animOverlay) {
+        animOverlay.style.display = 'none';
+        animOverlay.innerHTML = '';
+    }
+    renderGachaScreen();
+}
+
+function retryGachaFromResult(count) {
+    pullGacha(count);
+}
+
+// 📷 ガチャ結果をマイアルバム＆スライドショーへ自動保存する関数
+function saveGachaResultsToAlbum(results) {
+    if (!Array.isArray(results) || results.length === 0) return;
+
+    let addedCount = 0;
+    results.forEach((item, idx) => {
+        if (!item || !item.url || item.url === "undefined") return;
+
+        // すでに同じURLがアルバムにある場合は重複追加しない
+        if (!userAlbum.some(existing => existing.url === item.url)) {
+            const newId = 'gacha_album_' + Date.now() + '_' + idx;
+            userAlbum.push({
+                id: newId,
+                name: item.name || `${item.rarity} イラスト`,
+                url: item.url
+            });
+
+            // スライドショーが7枚未満なら自動でスライドショーにも登録
+            if (userSlideshowIds.length < 7 && !userSlideshowIds.includes(newId)) {
+                userSlideshowIds.push(newId);
+            }
+            addedCount++;
+        }
+    });
+
+    if (addedCount > 0) {
+        saveUserAlbumData();
+        renderAlbum();
+        initSlideshow();
+        populateSettingsAvatarSelect();
+        checkExclamationMarks();
+    }
+}
+
+
+// 🖼️ アルバム画像の全体拡大表示 ＆ ダウンロードモーダル
+function openAlbumImageViewer(url, name, rarity, rarityNum) {
+    let viewer = document.getElementById('album-image-viewer');
+    if (!viewer) {
+        viewer = document.createElement('div');
+        viewer.id = 'album-image-viewer';
+        viewer.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: 100000;
+            display: flex; flex-direction: column; justify-content: space-between;
+            padding: 16px 14px 28px 14px; box-sizing: border-box;
+        `;
+        document.body.appendChild(viewer);
+    }
+
+    const borderCol = getRarityBorderColor(Number(rarityNum) || 2);
+    const textCol = getRarityTextColor(Number(rarityNum) || 2);
+    const safeName = (name || 'gacha_image').replace(/[\\/:*?"<>|]/g, '_');
+
+    viewer.style.display = 'flex';
+    viewer.innerHTML = `
+        <!-- 上部：レアリティ＆画像名＆閉じるボタン -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-shrink:0; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+                <span style="background:rgba(0,0,0,0.8); color:${textCol}; border:1px solid ${borderCol}; padding:2px 8px; border-radius:6px; font-weight:800; font-size:0.85rem; flex-shrink:0;">
+                    ${rarity}
+                </span>
+                <span style="color:#fff; font-weight:bold; font-size:0.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    ${name}
+                </span>
+            </div>
+            <button onclick="closeAlbumImageViewer()" style="background:#333; color:#fff; border:1px solid #666; border-radius:8px; padding:6px 12px; font-size:0.85rem; font-weight:bold; cursor:pointer; flex-shrink:0;">
+                ✕ 閉じる
+            </button>
+        </div>
+
+        <!-- 中央：見切れなしで画像全体を表示（object-fit: contain） -->
+        <div onclick="closeAlbumImageViewer()" style="flex:1; display:flex; align-items:center; justify-content:center; overflow:hidden; margin:12px 0;">
+            <img src="${url}" alt="${name}" onclick="event.stopPropagation()" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:10px; border:2px solid ${borderCol}; box-shadow:0 0 25px rgba(0,0,0,0.9);">
+        </div>
+
+        <!-- 下部：画像ダウンロードボタン -->
+        <div style="display:flex; justify-content:center; flex-shrink:0;">
+            <button onclick="downloadAlbumImage('${url}', '${safeName}')" style="width:100%; max-width:340px; background:linear-gradient(135deg, #00f5d4, #00bbf9); color:#000; border:none; border-radius:10px; padding:13px 16px; font-size:1rem; font-weight:800; cursor:pointer; box-shadow:0 4px 15px rgba(0,245,212,0.4);">
+                📥 画像をダウンロード保存
+            </button>
+        </div>
+    `;
+}
+
+function closeAlbumImageViewer() {
+    const viewer = document.getElementById('album-image-viewer');
+    if (viewer) {
+        viewer.style.display = 'none';
+        viewer.innerHTML = '';
+    }
+}
+
+// 📥 画像ダウンロード処理（外部URL・DataURL両対応）
+async function downloadAlbumImage(url, filename) {
+    try {
+        // fetchでBlob化してダウンロード（別ドメイン画像でも保存ダイアログを出しやすくする）
+        const response = await fetch(url, { mode: 'cors' });
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename + '.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
+    } catch (e) {
+        // CORS制限等でBlob化できない場合は直接リンクで開く/保存
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename + '.png';
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+}
+
+// レアリティに応じた枠線・文字色の取得ヘルパー（★2白 / ★3緑 / ★4赤 / ★5金 / ★6虹）
 function getRarityBorderColor(num) {
-    if (num === 6) return "#ff0077"; // ★6: 濃いピンク/虹
-    if (num === 5) return "#ffcc00"; // ★5: 金
-    if (num === 4) return "#aa00ff"; // ★4: 紫
-    if (num === 3) return "#00aaff"; // ★3: 青
-    return "#888888"; // ★2: 灰
+    if (num === 6) return "#ff00cc"; // ★6: 虹
+    if (num === 5) return "#ffd700"; // ★5: 金
+    if (num === 4) return "#ff334b"; // ★4: 赤
+    if (num === 3) return "#00ff66"; // ★3: 緑
+    return "#ffffff"; // ★2: 白
 }
 function getRarityTextColor(num) {
-    if (num === 6) return "#ff66cc";
+    if (num === 6) return "#ff66ee";
     if (num === 5) return "#ffee00";
-    if (num === 4) return "#d8b4fe";
-    if (num === 3) return "#7dd3fc";
-    return "#ccc";
+    if (num === 4) return "#ff5566";
+    if (num === 3) return "#00ff66";
+    return "#ffffff";
 }
 function getCombinedUserGifts() {
 const personalGifts = JSON.parse(localStorage.getItem(getUserGiftsKey())) || [];
@@ -4679,12 +5250,12 @@ initSlideshow();
 window.addEventListener('DOMContentLoaded', () => { 
     reloadUserData(); 
     fetchDriveMasterData(); 
-    initTitleSlideshow(); // ← 削除または行ごと消
-const savedColor = localStorage.getItem('nexus_clock_color');
-if (savedColor) {
-applyClockColorToAll(savedColor);
-}
-initBattery();
+    initTitleSlideshow();
+    const savedColor = localStorage.getItem('nexus_clock_color');
+    if (savedColor) {
+        applyClockColorToAll(savedColor);
+    }
+    initBattery();
 });
 function updateClock() {
 const now = new Date();
@@ -4796,24 +5367,11 @@ let openedFromTitle = false;
 function closeScreen(name) {
     const target = document.getElementById('screen-' + name);
     if (target) target.classList.remove('active');
-    
-    // 下部メニューの表示を復元
-    const bottomNav = document.getElementById('main-bottom-nav');
-    if (bottomNav) bottomNav.classList.remove('hide-menu');
-    
-    // ホームタブをアクティブに戻す
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    const homeNav = document.getElementById('nav-home');
-    if (homeNav) homeNav.classList.add('active');
-    
-    // タイトル画面から開いていた場合はタイトル画面に戻す
-    if (typeof openedFromTitle !== 'undefined' && openedFromTitle) {
-        const titleScreen = document.getElementById('title-screen');
-        if (titleScreen) titleScreen.classList.remove('hidden');
+    if (openedFromTitle) {
+ document.getElementById('title-screen').classList.remove('hidden');
         openedFromTitle = false;
     }
 }
-
 
 function openScreen(name, fromTitle = false) {
   closeOtherMenu();
@@ -4825,17 +5383,15 @@ function openScreen(name, fromTitle = false) {
   if (name === 'history') markAsViewed('history');
   if (name === 'play') markAsViewed('play');
   if (name === 'gacha') markAsViewed('gacha');
-
   // 🎵 遊戯画面を開いたときはBGMを一時停止
   const audioEl = document.getElementById('bgm-audio');
   if (audioEl) {
       if (name === 'play') {
           audioEl.pause();
-      } else if (!audioEl.paused === false && !isBgmUserPaused && currentUser) {
+           } else if (audioEl.paused && !isBgmUserPaused && currentUser) {
           audioEl.play().catch(() => {});
       }
-  }
-
+}
   const bottomNav = document.getElementById('main-bottom-nav');
   if (bottomNav) {
     bottomNav.classList.remove('hide-menu');
@@ -4870,27 +5426,11 @@ function openScreen(name, fromTitle = false) {
   if (name !== 'home' && document.getElementById('nav-' + name)) {
     document.getElementById('nav-' + name).classList.add('active');
   }
-  const target = document.getElementById('screen-' + name);
+   const target = document.getElementById('screen-' + name);
   if (target) target.classList.add('active');
-}
-
-const bottomNav = document.getElementById('main-bottom-nav');
-if (bottomNav) bottomNav.classList.remove('hide-menu');
-if (name === 'settings') {
-updateUIUserStatus();
-}
-if (!currentUser || openedFromTitle) {
-document.getElementById('title-screen').classList.remove('hidden');
-openedFromTitle = false;
-}
-function switchNav(name) {
-closeOtherMenu();
-closeAllSelectors();
-const bottomNav = document.getElementById('main-bottom-nav');
-if (bottomNav) bottomNav.classList.remove('hide-menu');
-document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
-document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-if (name === 'home') document.getElementById('nav-home').classList.add('active');
+  if (name === 'settings') {
+    updateUIUserStatus();
+  }
 }
 function adjustVolume(val) {
     const vol = val / 100;
@@ -5133,6 +5673,26 @@ function playDefaultSongOnLogin() {
     localStorage.setItem('nexus_bgm_index', 0);
     playBgmByIndex(0, true);
 }
+// 1. ガチャ排出率モーダルの開閉
+function toggleGachaRateModal() {
+    const modal = document.getElementById('gacha-rate-popup-modal');
+    if (!modal) return;
+    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+}
+
+// 2. 管理画面のGAS同期データ表示
+function renderAdminGasDataView() {
+    const container = document.getElementById('admin-gas-fetched-data-container');
+    if (!container) return;
+    container.innerHTML = `
+        <div style="color:#00f5d4; font-weight:bold; margin-bottom:4px;">🖼️ ドライブ画像: ${masterDriveImages.length}件</div>
+        <div style="color:#ffee00; font-weight:bold; margin-bottom:6px;">🎵 YouTube楽曲: ${dynamicSongsList.length}件</div>
+        <div style="font-size:0.75rem; color:#ccc;">
+            ${masterDriveImages.map(img => `・${img.name}`).join('<br>') || '画像データなし'}
+        </div>
+    `;
+}
+
 
 // ==========================================================
 // 🛠️ 修正・追加分: 全画面の閉じる処理 & 管理画面の保存処理
@@ -5147,79 +5707,27 @@ async function switchNav(name) {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     if (name === 'home') document.getElementById('nav-home').classList.add('active');
     
-    // 🔄 メニュー切替時の送受信（Chrome・Safariはもちろん、他ブラウザでも80%以上の成功率を維持）
-    if (currentUser && typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
-        try {
-            await fetch(GAS_WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({
-                    logType: "fullSync",
-                    members: memberDatabase,
-                    songs: dynamicSongsList,
-                    images: masterDriveImages,
-                    settings: {
-                        eventsList: eventsList,
-                        gachaList: gachaList,
-                        shopItemsList: shopItemsList,
-                        masterDriveImages: masterDriveImages,
-                        globalNotices: globalNotices,
-                        globalGifts: globalGifts,
-                        titleBgImages: titleBgImages
-                    }
-                })
-            });
-        } catch (e) {
-            // 他ブラウザで通信ブロックされた場合もアプリの動作を止めないフェイルセーフ
-        }
+    // 🔄 ホームボタン押下時の送受信（右下にグルグル表示）
+    if (currentUser) {
+        await syncDataToGas("navSync");
     }
 }
-
 
 async function saveManageSettings() {
     adminSaveEventConfig();
     adminSaveGachaConfig();
     
-    const settingsPayload = {
-        eventsList: eventsList,
-        gachaList: gachaList,
-        shopItemsList: shopItemsList,
-        masterDriveImages: masterDriveImages,
-        globalNotices: globalNotices,
-        globalGifts: globalGifts,
-        titleBgImages: titleBgImages,
-        members: memberDatabase
-    };
-    
     if (typeof GAS_WEB_APP_URL !== 'undefined' && GAS_WEB_APP_URL) {
-        try {
-            await fetch(GAS_WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({
-                    logType: "saveSettings",
-                    settings: settingsPayload,
-                    members: memberDatabase
-                })
-            });
-            
-            alert("💾 管理画面の設定をすべて保存し、スプレッドシートへデータを送信しました！");
-        } catch (e) {
-            console.log("⚠️ クラウド送信エラー（ローカル保持継続）:", e);
-            alert("⚠️ クラウドへの送信に失敗しましたが、ローカルには正常に保存されました。");
-        }
+        await syncDataToGas("saveSettings");
+        alert("💾 管理画面の設定をすべて保存し、スプレッドシートへデータを送信しました！");
     } else {
         alert("💾 管理画面の設定を保存しました！");
     }
     
     closeScreen('manage');
 }
-
-
-
 setTimeout(initDynamicPlaylist, 500);
 </script>
 </body>
 </html>
+
