@@ -5525,9 +5525,6 @@ let isBgmUserPaused = false;
 // 🎵 指定した番号のBGMを再生するメイン関数
 function playBgmByIndex(index, forceRestart = false) {
     if (!currentUser) return; // 未ログイン時は流さない
-    const titleScreen = document.getElementById('title-screen');
-    if (titleScreen && !titleScreen.classList.contains('hidden')) return; // タイトル画面表示中は流さない
-
     const audioEl = document.getElementById('bgm-audio');
     if (audioEl) audioEl.pause();
     if (index >= customBgmList.length) index = 0; // ループ
@@ -5538,10 +5535,9 @@ function playBgmByIndex(index, forceRestart = false) {
     if (audioEl.src !== song.url || forceRestart) {
         audioEl.src = song.url;
     }
-    // 遊戯画面（screen-play）または楽曲選択画面（screen-player）が開いている時は再生しない
+    // 遊戯画面（screen-play）が開いている時は再生しない
     const playScreen = document.getElementById('screen-play');
-    const playerScreen = document.getElementById('screen-player');
-    const isPlayScreenOpen = (playScreen && playScreen.classList.contains('active')) || (playerScreen && playerScreen.classList.contains('active'));
+    const isPlayScreenOpen = playScreen && playScreen.classList.contains('active');
     if (!isPlayScreenOpen && !isBgmUserPaused) {
         audioEl.play().then(() => {
             updateBgmDisplayUI(song.title);
@@ -5554,7 +5550,6 @@ function playBgmByIndex(index, forceRestart = false) {
     updateBgmDisplayUI(song.title);
     updateSettingsBgmSelect();
 }
-
 
 // 🎵 1曲終わったら自動的に次の曲へ
 const audioElCheck = document.getElementById('bgm-audio');
