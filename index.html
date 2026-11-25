@@ -5383,19 +5383,15 @@ function openScreen(name, fromTitle = false) {
   if (name === 'history') markAsViewed('history');
   if (name === 'play') markAsViewed('play');
   if (name === 'gacha') markAsViewed('gacha');
-
-  // 🎵 遊戯画面または楽曲選択画面を開いたときはBGMを停止
+  // 🎵 遊戯画面を開いたときはBGMを一時停止
   const audioEl = document.getElementById('bgm-audio');
-  const titleScreen = document.getElementById('title-screen');
-  const isTitleVisible = titleScreen && !titleScreen.classList.contains('hidden');
   if (audioEl) {
-      if (name === 'play' || name === 'player') {
+      if (name === 'play') {
           audioEl.pause();
-      } else if (!isTitleVisible && audioEl.paused && !isBgmUserPaused && currentUser) {
+           } else if (audioEl.paused && !isBgmUserPaused && currentUser) {
           audioEl.play().catch(() => {});
       }
-  }
-
+}
   const bottomNav = document.getElementById('main-bottom-nav');
   if (bottomNav) {
     bottomNav.classList.remove('hide-menu');
@@ -5430,7 +5426,7 @@ function openScreen(name, fromTitle = false) {
   if (name !== 'home' && document.getElementById('nav-' + name)) {
     document.getElementById('nav-' + name).classList.add('active');
   }
-  const target = document.getElementById('screen-' + name);
+   const target = document.getElementById('screen-' + name);
   if (target) target.classList.add('active');
   if (name === 'settings') {
     updateUIUserStatus();
@@ -5559,6 +5555,7 @@ function playBgmByIndex(index, forceRestart = false) {
     updateSettingsBgmSelect();
 }
 
+
 // 🎵 1曲終わったら自動的に次の曲へ
 const audioElCheck = document.getElementById('bgm-audio');
 if (audioElCheck) {
@@ -5584,16 +5581,12 @@ function changeBgmFromSettings(index) {
     playBgmByIndex(Number(index), true);
 }
 
-// 🎵 画面のどこかをタップした時に再生を復旧（タイトル画面・遊戯画面・楽曲選択画面以外）
+// 🎵 画面のどこかをタップした時に再生を復旧
 window.addEventListener('click', () => {
-    const titleScreen = document.getElementById('title-screen');
-    if (titleScreen && !titleScreen.classList.contains('hidden')) return;
-
     const audioEl = document.getElementById('bgm-audio');
     if (currentUser && audioEl && !isBgmUserPaused) {
         const playScreen = document.getElementById('screen-play');
-        const playerScreen = document.getElementById('screen-player');
-        const isPlayScreenOpen = (playScreen && playScreen.classList.contains('active')) || (playerScreen && playerScreen.classList.contains('active'));
+        const isPlayScreenOpen = playScreen && playScreen.classList.contains('active');
         if (!isPlayScreenOpen) {
             if (!audioEl.src || audioEl.paused) {
                 playBgmByIndex(currentBgmIndex);
