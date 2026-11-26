@@ -5119,7 +5119,7 @@ function showGachaResultModal(results, count, resolve) {
     const costSingle = (currentGachaConfig.costSingle !== undefined) ? Number(currentGachaConfig.costSingle) : 300;
     const costMulti = (currentGachaConfig.costMulti !== undefined) ? Number(currentGachaConfig.costMulti) : 3000;
     const retryCost = (count === 10) ? costMulti : costSingle;
-    const retryLabel = (count === 10) ? “再度10回引く" : “再度1回引く";
+    const retryLabel = (count === 10) ? ”再度10回引く" : ”再度1回引く";
     const canRetry = (count === 10) ? (currentGachaConfig.allowMulti !== false) : (currentGachaConfig.allowSingle !== false);
 
     let cardsHtml = '';
