@@ -926,10 +926,10 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 </div>
 </div>
 
-<!-- 💖 管理者用: 全ユーザーの💎と🪙の管理・閲覧・変更セクション -->
+<!-- 💖 管理者用: 全ユーザーの💎・🪙・🎟️の管理・閲覧・変更セクション -->
 <div class="admin-section" style="border-color:#00f5d4;">
-<h4 style="color:#00f5d4; border-left-color:#00f5d4;">💎🪙 全ユーザー通貨管理 (ジェム・コイン)</h4>
-<p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">全メンバーの💎ジェムと🪙コインの残高を閲覧・直接変更できます。</p>
+<h4 style="color:#00f5d4; border-left-color:#00f5d4;">💎🪙🎟️ 全ユーザー通貨・チケット管理</h4>
+<p style="font-size:0.75rem; color:#aaa; margin-bottom:8px;">全メンバーの💎ジェム・🪙コイン・🎟️ガチャチケットの残高を閲覧・直接変更できます。</p>
 <div id="admin-user-currency-list" style="background:#222; padding:8px; border-radius:6px; font-size:0.8rem;"></div>
 </div>
 
@@ -1284,9 +1284,14 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 <h4>🎁 プレゼント・一斉送信管理</h4>
 <label style="font-size:0.8rem; color:#aaa;">送信先（複数選択）：</label>
 <div id="admin-gift-target-checkboxes" style="background:#222; padding:8px; border-radius:6px; max-height:120px; overflow-y:auto; margin-bottom:10px; font-size:0.8rem;"></div>
+<label style="font-size:0.75rem; color:#aaa;">プレゼント名:</label>
 <input type="text" id="admin-gift-title" class="admin-input" placeholder="記念報酬">
+<label style="font-size:0.75rem; color:#00f5d4;">💎 ジェム数:</label>
 <input type="number" id="admin-gift-gem" class="admin-input" value="1000">
+<label style="font-size:0.75rem; color:#ffee00;">🪙 コイン数:</label>
 <input type="number" id="admin-gift-coin" class="admin-input" value="500">
+<label style="font-size:0.75rem; color:#ff66ee;">🎟️ ガチャチケット枚数:</label>
+<input type="number" id="admin-gift-ticket" class="admin-input" value="0">
 <label style="font-size:0.8rem; color:#aaa;">添付イラスト（Googleドライブ選択）：</label>
 <select id="admin-gift-img-select" class="admin-input"><option value="">(イラストなし)</option></select>
 <button class="admin-btn" onclick="adminSendGift()">📤 プレゼントを送信する</button>
@@ -1451,14 +1456,14 @@ const GACHA_RATES = {
 "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
 };
 let memberDatabase = JSON.parse(localStorage.getItem('nexus_member_db')) || [
-{ id: "H-25-3-1", name: "ヨウスケ", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "M-24-12-2", name: "Kou", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "N-24-11-3", name: "奨", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "S-24-11-4", name: "MIHO", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "S-24-11-5-o", name: "海惺", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "U-24-11-6-a", name: "タイ", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "N-24-11-7-o", name: "Ayu", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 }
+{ id: "H-25-3-1", name: "ヨウスケ", gem: 5000, coin: 0, ticket: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "M-24-12-2", name: "Kou", gem: 5000, coin: 0, ticket: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "N-24-11-3", name: "奨", gem: 5000, coin: 0, ticket: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "S-24-11-4", name: "MIHO", gem: 5000, coin: 0, ticket: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "S-24-11-5-o", name: "海惺", gem: 5000, coin: 0, ticket: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "U-24-11-6-a", name: "タイ", gem: 5000, coin: 0, ticket: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "N-24-11-7-o", name: "Ayu", gem: 5000, coin: 0, ticket: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, ticket: 999, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 }
 ];
 // 🔄 メンバーデータの保存 ＆ スプレッドシート（GAS）へのクラウド同期（全ブラウザ・クロスドメイン対応版）
 async function saveMemberDb() {
@@ -2771,18 +2776,20 @@ if (!container) return;
 container.innerHTML = "";
 memberDatabase.forEach(m => {
 const row = document.createElement('div');
-row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #333;";
+row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #333; gap:6px;";
 row.innerHTML = `
 <div>
 <span style="font-weight:bold; color:#fff;">👤 m.name</span><spanstyle="font-size:0.7rem;color:#888;">({m.id})</span>
 <div style="font-size:0.75rem; margin-top:2px;">
-<span style="color:#00f5d4;">💎: ${(m.gem || 0).toLocaleString()}</span> | 
-<span style="color:#ffee00;">🪙: ${(m.coin || 0).toLocaleString()}</span>
+<span style="color:#00f5d4;">💎:${(m.gem || 0).toLocaleString()}</span> | 
+<span style="color:#ffee00;">🪙:${(m.coin || 0).toLocaleString()}</span> | 
+<span style="color:#ff66ee;">🎟️:${(m.ticket || 0).toLocaleString()}</span>
 </div>
 </div>
-<div style="display:flex; gap:6px;">
-<button onclick="adminEditUserCurrency('${m.id}', 'gem')" style="background:#00f5d4; color:#000; border:none; padding:4px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem;">💎変更</button>
-<button onclick="adminEditUserCurrency('${m.id}', 'coin')" style="background:#ffee00; color:#000; border:none; padding:4px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem;">🪙変更</button>
+<div style="display:flex; gap:4px; flex-shrink:0;">
+<button onclick="adminEditUserCurrency('${m.id}', 'gem')" style="background:#00f5d4; color:#000; border:none; padding:4px 6px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.7rem;">💎変更</button>
+<button onclick="adminEditUserCurrency('${m.id}', 'coin')" style="background:#ffee00; color:#000; border:none; padding:4px 6px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.7rem;">🪙変更</button>
+<button onclick="adminEditUserCurrency('${m.id}', 'ticket')" style="background:#ff66ee; color:#000; border:none; padding:4px 6px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.7rem;">🎟️変更</button>
 </div>
 `;
 container.appendChild(row);
@@ -2791,12 +2798,20 @@ container.appendChild(row);
 function adminEditUserCurrency(userId, type) {
 const user = memberDatabase.find(m => m.id === userId);
 if (!user) return;
-const labelStr = type === 'gem' ? '💎ジェム' : '🪙コイン';
-const currentVal = type === 'gem' ? (user.gem || 0) : (user.coin || 0);
+let labelStr = '💎ジェム';
+let currentVal = user.gem || 0;
+if (type === 'coin') {
+    labelStr = '🪙コイン';
+    currentVal = user.coin || 0;
+} else if (type === 'ticket') {
+    labelStr = '🎟️ガチャチケット';
+    currentVal = user.ticket || 0;
+}
 const input = prompt(`[${user.name}] の現在の ${labelStr}: ${currentVal.toLocaleString()}\n新しい数量を半角数字で入力してください：`, currentVal);
 if (input !== null && !isNaN(input)) {
 if (type === 'gem') user.gem = Number(input);
-else user.coin = Number(input);
+else if (type === 'coin') user.coin = Number(input);
+else if (type === 'ticket') user.ticket = Number(input);
 saveMemberDb();
 renderAdminUserCurrencyList();
 updateUIUserStatus();
@@ -3650,7 +3665,8 @@ function renderGachaScreen() {
     const costSingle = (currentGachaConfig.costSingle !== undefined) ? Number(currentGachaConfig.costSingle) : 300;
     const costMulti = (currentGachaConfig.costMulti !== undefined) ? Number(currentGachaConfig.costMulti) : 3000;
     
-    const userGem = currentUser ? Number(currentUser.gem || 0).toLocaleString() : "0";
+   const userGem = currentUser ? Number(currentUser.gem || 0).toLocaleString() : "0";
+    const userTicket = currentUser ? Number(currentUser.ticket || 0).toLocaleString() : "0";
     const userIconSrc = userAvatarUrl || "https://picsum.photos/id/1069/100/100";
 
     // 🎯 天井システム計算
@@ -3717,34 +3733,66 @@ function renderGachaScreen() {
 
         <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-bottom: 5px; gap: 8px;">
             
-            <div style="display: flex; flex-direction: column; gap: 4px; width: 55%;">
-                <span style="background: #28a745; color: #fff; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; width: fit-content;">${currentGachaConfig.type}</span>
-                <div style="font-size: 0.65rem; color: #eee; text-shadow: 1px 1px 2px #000;">formatDateStr(currentGachaConfig.startDate)〜{formatDateStr(currentGachaConfig.endDate)}</div>
-                
-                <div style="background: rgba(20,20,20,0.85); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; padding: 4px; backdrop-filter: blur(4px); box-shadow: 0 4px 12px rgba(0,0,0,0.6);">
-                    ${subBoxImgUrl 
-                        ? `<img src="${subBoxImgUrl}" alt="ガチャタイトル" style="width: 100%; height: auto; max-height: 85px; object-fit: contain; border-radius: 6px; display: block;">`
-                        : `<div style="width: 100%; height: 60px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; font-size:0.85rem; text-align:center; padding:4px;">${currentGachaConfig.title}</div>`
-                    }
-                </div>
+           <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+            <div style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 20px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
+                <img src="${userIconSrc}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #00f5d4;">
+                <span style="color: #00f5d4; font-size: 0.82rem; font-weight: bold; text-shadow: 0 0 6px rgba(0,245,212,0.5);">💎 ${userGem}</span>
+                <span style="color: #ff66ee; font-size: 0.82rem; font-weight: bold; text-shadow: 0 0 6px rgba(255,102,238,0.5); border-left: 1px solid rgba(255,255,255,0.25); padding-left: 8px;">🎟️ ${userTicket}</span>
             </div>
-
-            <div style="display: flex; flex-direction: column; gap: 6px; width: 42%;">
+            
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
+                <span style="font-size: 0.7rem; color: #ccc; text-shadow: 1px 1px 2px #000; font-family: ${clockFont};">現在時刻</span>
+                <div id="gacha-live-clock" style="color: ${clockColor}; font-size: 1.6rem; font-weight: bold; font-family: ${clockFont}; text-shadow: 0 0 10px clockColor;font-variant-numeric:tabular-nums;line-height:1.1;">{timeStr}</div>
+                <button onclick="toggleGachaRateModal()" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: #fff; font-size: 1.1rem; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 4px;">︙</button>
+            </div>
+        </div>
+        <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-bottom: 5px; gap: 8px;">
+            
+           <div style="display: flex; flex-direction: column; gap: 6px; width: 42%; max-height: 68vh; overflow-y: auto; padding-right: 2px;">
                 ${pityUiHtml}
                 ${currentGachaConfig.allowSingle !== false ? `
-                <button onclick="pullGacha(1)" style="background: linear-gradient(135deg, #00f5d4, #0088cc); color: #000; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                <button onclick="pullGacha(1)" style="background: linear-gradient(135deg, #00f5d4, #0088cc); color: #000; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.5); flex-shrink: 0;">
                     <div style="font-size: 0.85rem; font-weight: 800;">1回引く</div>
                     <div style="font-size: 0.75rem; color: #111; font-weight: bold;">💎 ${costSingle.toLocaleString()}</div>
                 </button>
                 ` : ''}
                 ${currentGachaConfig.allowMulti !== false ? `
-                <button onclick="pullGacha(10)" style="background: linear-gradient(135deg, #ffee00, #ff9900); color: #000; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                <button onclick="pullGacha(10)" style="background: linear-gradient(135deg, #ffee00, #ff9900); color: #000; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.5); flex-shrink: 0;">
                     <div style="font-size: 0.85rem; font-weight: 800;">10回引く</div>
                     <div style="font-size: 0.75rem; color: #111; font-weight: bold;">💎 ${costMulti.toLocaleString()}</div>
                 </button>
                 ` : ''}
+                ${(currentUser && Number(currentUser.ticket || 0) >= 1 && currentGachaConfig.allowSingle !== false) ? `
+                <button onclick="pullGachaWithTicket('normal', 1)" style="background: linear-gradient(135deg, #f3a6ff, #c84bff); color: #000; border: 1px solid #fff; border-radius: 10px; padding: 7px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(200,75,255,0.45); flex-shrink: 0;">
+                    <div style="font-size: 0.8rem; font-weight: 800;">🎟️ 1回引く</div>
+                    <div style="font-size: 0.7rem; color: #111; font-weight: bold;">チケ1枚 (所持:${Number(currentUser.ticket)})</div>
+                </button>
+                ` : ''}
+                ${(currentUser && Number(currentUser.ticket || 0) >= 10 && currentGachaConfig.allowMulti !== false) ? `
+                <button onclick="pullGachaWithTicket('normal', 10)" style="background: linear-gradient(135deg, #ff77dd, #aa22ee); color: #fff; border: 1px solid #fff; border-radius: 10px; padding: 7px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(255,102,238,0.55); text-shadow: 0 1px 2px rgba(0,0,0,0.6); flex-shrink: 0;">
+                    <div style="font-size: 0.8rem; font-weight: 800;">🎟️ 10回引く</div>
+                    <div style="font-size: 0.7rem; color: #fff; font-weight: bold;">チケ10枚 (所持:${Number(currentUser.ticket)})</div>
+                </button>
+                ` : ''}
+                ${(currentUser && Number(currentUser.ticket4 || 0) > 0) ? `
+                <button onclick="pullGachaWithTicket('star4')" style="background: linear-gradient(135deg, #ff6677, #cc1122); color: #fff; border: 1px solid #ffaaaa; border-radius: 10px; padding: 7px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(255,34,51,0.5); flex-shrink: 0;">
+                    <div style="font-size: 0.8rem; font-weight: 800;">🎟️ ★4確定10連</div>
+                    <div style="font-size: 0.7rem; color: #ffe; font-weight: bold;">チケ1枚 (所持:${Number(currentUser.ticket4)})</div>
+                </button>
+                ` : ''}
+                ${(currentUser && Number(currentUser.ticket5 || 0) > 0) ? `
+                <button onclick="pullGachaWithTicket('star5')" style="background: linear-gradient(135deg, #ffe066, #cc9900); color: #000; border: 1px solid #ffffcc; border-radius: 10px; padding: 7px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(255,215,0,0.5); flex-shrink: 0;">
+                    <div style="font-size: 0.8rem; font-weight: 800;">🎟️ ★5確定10連</div>
+                    <div style="font-size: 0.7rem; color: #111; font-weight: bold;">チケ1枚 (所持:${Number(currentUser.ticket5)})</div>
+                </button>
+                ` : ''}
+                ${(currentUser && Number(currentUser.ticket6 || 0) > 0) ? `
+                <button onclick="pullGachaWithTicket('star6')" style="background: linear-gradient(135deg, #ff66ee, #9933ff, #00f5d4); color: #fff; border: 1px solid #fff; border-radius: 10px; padding: 7px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(255,0,204,0.6); text-shadow: 0 1px 2px #000; flex-shrink: 0;">
+                    <div style="font-size: 0.8rem; font-weight: 800;">🎟️ ★6確定10連</div>
+                    <div style="font-size: 0.7rem; color: #fff; font-weight: bold;">チケ1枚 (所持:${Number(currentUser.ticket6)})</div>
+                </button>
+                ` : ''}
             </div>
-
         <div id="gacha-rate-popup-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; justify-content: center; align-items: center;" onclick="toggleGachaRateModal()">
             <div style="background: #222; border: 2px solid #00f5d4; border-radius: 12px; padding: 15px; width: 90%; max-width: 350px; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
                 <h4 style="color: #00f5d4; margin-bottom: 10px; text-align: center;">📊 ガチャ詳細・排出率 & ラインナップ</h4>
@@ -3849,7 +3897,7 @@ async function promptUserLogin() {
                 if (res.ok) {
                     const data = await res.json();
                     if (data) {
-                        // ① メンバーデータ（💎・🪙）の反映
+                      // ① メンバーデータ（💎・🪙・🎟️チケット4種）の反映
                         if (data.members && Array.isArray(data.members) && data.members.length > 0) {
                             data.members.forEach(remoteM => {
                                 const localM = memberDatabase.find(m => m.id === remoteM.id);
@@ -3857,12 +3905,20 @@ async function promptUserLogin() {
                                     localM.name = remoteM.name || localM.name;
                                     localM.gem = Number(remoteM.gem) || 0;
                                     localM.coin = Number(remoteM.coin) || 0;
+                                    localM.ticket = Number(remoteM.ticket) || 0;
+                                    localM.ticket4 = Number(remoteM.ticket4) || 0;
+                                    localM.ticket5 = Number(remoteM.ticket5) || 0;
+                                    localM.ticket6 = Number(remoteM.ticket6) || 0;
                                 } else {
                                     memberDatabase.push({
                                         id: remoteM.id,
                                         name: remoteM.name,
                                         gem: Number(remoteM.gem) || 0,
                                         coin: Number(remoteM.coin) || 0,
+                                        ticket: Number(remoteM.ticket) || 0,
+                                        ticket4: Number(remoteM.ticket4) || 0,
+                                        ticket5: Number(remoteM.ticket5) || 0,
+                                        ticket6: Number(remoteM.ticket6) || 0,
                                         pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0
                                     });
                                 }
@@ -3873,7 +3929,6 @@ async function promptUserLogin() {
                                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
                             }
                         }
-
                         // ② 管理画面設定・イベント・ガチャ・P情報の反映（J1セル）
                         const settings = data.settings || data.appSettings;
                         if (settings) {
@@ -4595,6 +4650,7 @@ function adminSendGift() {
 const title = document.getElementById('admin-gift-title').value;
 const gem = Number(document.getElementById('admin-gift-gem').value) || 0;
 const coin = Number(document.getElementById('admin-gift-coin').value) || 0;
+const ticket = Number(document.getElementById('admin-gift-ticket').value) || 0;
 const imgUrl = document.getElementById('admin-gift-img-select').value;
 if (!title) {
 alert("プレゼント名を入力してください。");
@@ -4605,6 +4661,7 @@ id: 'gift_' + Date.now(),
 title: title,
 gem: gem,
 coin: coin,
+ticket: ticket,
 imgUrl: imgUrl,
 active: true,
 date: new Date().toLocaleDateString()
@@ -4852,153 +4909,103 @@ saveGachaResultsToAlbum(results);
     const hasHighRarity = results.some(r => r.rarityNum >= 5);
     const isUpgrade = hasHighRarity;
 
-    // 📳 バイブレーション
+// 📳 バイブレーション
     triggerGachaVibration(maxRarity, isUpgrade);
-
-    // 🎬 演出アニメーション再生 → リザルト画面へ
-    await playGachaAnimation(results, maxRarity, isUpgrade, count);
+    // 🎬 演出アニメーション再生 → リザルト画面へ（'gem' を渡す）
+    await playGachaAnimation(results, maxRarity, isUpgrade, count, 'gem');
 }
-// 🎁 天井到達時の★5・★6選択交換モーダル
-function openGachaPityExchangeModal() {
-    if (!currentGachaConfig || !currentGachaConfig.pityEnabled) return;
+
+// 🎟️ チケット消費ガチャ実行処理
+async function pullGachaWithTicket(ticketType) {
+    if (!currentGachaConfig) return;
     if (!currentUser) {
-        alert("ログインしてください。");
-        return;
-    }
-    const pityMax = Number(currentGachaConfig.pityMax) || 200;
-    const currentPulls = getUserGachaCount(currentGachaConfig.id);
-
-    // ラインナップから ★6 と ★5 のイラストを抽出
-    const exchangePool = masterDriveImages.filter(img =>
-        img && img.url && (img.rarity === "★6" || img.rarity === "★5" || (!img.rarity && (img.name.includes("★6") || img.name.includes("★5"))))
-    );
-
-    let modal = document.getElementById('gacha-pity-modal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'gacha-pity-modal';
-        modal.style.cssText = `
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.88); z-index: 100001;
-            display: flex; justify-content: center; align-items: center; padding: 15px;
-        `;
-        modal.onclick = (e) => { if (e.target.id === 'gacha-pity-modal') modal.style.display = 'none'; };
-        document.body.appendChild(modal);
-    }
-
-    const canExchange = currentPulls >= pityMax;
-    let listHtml = "";
-    if (exchangePool.length === 0) {
-        listHtml = `<p style="color:#888; text-align:center; padding:20px 0;">現在交換対象となる★5・★6イラストがラインナップに登録されていません。</p>`;
-    } else {
-        listHtml = `<div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; max-height:55vh; overflow-y:auto; padding:4px;">`;
-        exchangePool.forEach((item, idx) => {
-            const isStar6 = (item.rarity === "★6" || item.name.includes("★6"));
-            const borderCol = isStar6 ? "#ff00cc" : "#ffd700";
-            const badgeText = isStar6 ? "★6" : "★5";
-            listHtml += `
-                <div style="background:#1a1a1a; border:2px solid ${borderCol}; border-radius:10px; overflow:hidden; display:flex; flex-direction:column;">
-                    <div style="position:relative; width:100%; height:110px; background:#000;">
-                        <img src="${item.url}" style="width:100%; height:100%; object-fit:cover;">
-                        <span style="position:absolute; top:4px; left:4px; background:rgba(0,0,0,0.85); color:${borderCol}; font-weight:bold; font-size:0.75rem; padding:1px 6px; border-radius:4px; border:1px solid borderCol;">{badgeText}</span>
-                    </div>
-                    <div style="padding:6px; text-align:center;">
-                        <div style="font-size:0.75rem; font-weight:bold; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:6px;">${item.name}</div>
-                        <button onclick="executeGachaPityExchange(${idx})" canExchange?'':'disabled'style="width:100%;background:{canExchange ? 'linear-gradient(135deg, #ffee00, #ff9900)' : '#444'}; color:canExchange?'#000':'#888';border:none;border-radius:6px;padding:6px;font-weight:bold;font-size:0.75rem;cursor:{canExchange ? 'pointer' : 'not-allowed'};">
-                            ${canExchange ? '🎁 交換する' : `あと${pityMax - currentPulls}回`}
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-        listHtml += `</div>`;
-    }
-
-    modal.style.display = 'flex';
-    modal.innerHTML = `
-        <div style="background:#222; border:2px solid #ffee00; border-radius:14px; padding:16px; width:100%; max-width:380px;" onclick="event.stopPropagation()">
-            <h4 style="color:#ffee00; text-align:center; margin-bottom:6px;">🎁 天井交換所 (★5・★6選択)</h4>
-            <div style="text-align:center; font-size:0.8rem; color:#ccc; margin-bottom:12px;">
-                現在のガチャ回数: <b style="color:#00f5d4;">${currentPulls}</b> / ${pityMax} 回
-            </div>
-            ${listHtml}
-            <button onclick="document.getElementById('gacha-pity-modal').style.display='none'" style="width:100%; margin-top:12px; background:#333; color:#fff; border:1px solid #666; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;">閉じる</button>
-        </div>
-    `;
-}
-
-function executeGachaPityExchange(poolIndex) {
-    if (!currentGachaConfig || !currentGachaConfig.pityEnabled) return;
-    const pityMax = Number(currentGachaConfig.pityMax) || 200;
-    const currentPulls = getUserGachaCount(currentGachaConfig.id);
-    if (currentPulls < pityMax) {
-        alert(`天井回数（${pityMax}回）に到達していません。`);
+        alert("ガチャを引くにはログインしてください。");
+        promptUserLogin();
         return;
     }
 
-    const exchangePool = masterDriveImages.filter(img =>
-        img && img.url && (img.rarity === "★6" || img.rarity === "★5" || (!img.rarity && (img.name.includes("★6") || img.name.includes("★5"))))
-    );
-    const chosen = exchangePool[poolIndex];
-    if (!chosen) return;
+    const userDb = memberDatabase.find(m => m.id === currentUser.id) || currentUser;
+    let count = 1;
+    let guaranteedMinRarity = 2;
+    let ticketKey = 'ticket';
+    let ticketName = 'ガチャチケット';
 
-    if (confirm(`天井ポイント（${pityMax}回分）を消費して\n「${chosen.name}」と交換しますか？`)) {
-        // 天井カウント消費（余剰分は繰り越し）
-        setUserGachaCount(currentGachaConfig.id, currentPulls - pityMax);
-
-        // マイアルバムに保存
-        saveGachaResultsToAlbum([{
-            rarity: chosen.rarity || (chosen.name.includes("★6") ? "★6" : "★5"),
-            name: chosen.name,
-            url: chosen.url
-        }]);
-
-        document.getElementById('gacha-pity-modal').style.display = 'none';
-        renderGachaScreen();
-        syncDataToGas("pityExchange");
-        alert(`🎉 天井交換完了！\n「${chosen.name}」を獲得し、マイアルバムに登録しました！`);
+    if (ticketType === 'normal') {
+        count = 1;
+        guaranteedMinRarity = 2;
+        ticketKey = 'ticket';
+        ticketName = 'ガチャチケット';
+    } else if (ticketType === 'star4') {
+        count = 10;
+        guaranteedMinRarity = 4;
+        ticketKey = 'ticket4';
+        ticketName = '★4確定10連チケット';
+    } else if (ticketType === 'star5') {
+        count = 10;
+        guaranteedMinRarity = 5;
+        ticketKey = 'ticket5';
+        ticketName = '★5確定10連チケット';
+    } else if (ticketType === 'star6') {
+        count = 10;
+        guaranteedMinRarity = 6;
+        ticketKey = 'ticket6';
+        ticketName = '★6確定10連チケット';
     }
-}
-// 🎲 レアリティ＆ラインナップ画像抽選ロジック
-function rollSingleGacha(type) {
-    const rates = GACHA_RATES[type] || { "★6": 0.4, "★5": 6.6, "★4": 23, "★3": 30, "★2": 40 };
-    const rand = Math.random() * 100;
 
-    let cum = 0;
-    let selectedRarity = "★2";
-    let rarityNum = 2;
-    const tiers = [
-        { key: "★6", num: 6 },
-        { key: "★5", num: 5 },
-        { key: "★4", num: 4 },
-        { key: "★3", num: 3 },
-        { key: "★2", num: 2 }
-    ];
-    for (const t of tiers) {
-        cum += (rates[t.key] || 0);
-        if (rand <= cum) {
-            selectedRarity = t.key;
-            rarityNum = t.num;
-            break;
+    if (Number(userDb[ticketKey] || 0) < 1) {
+        alert(`🎟️ ${ticketName}が不足しています！`);
+        return;
+    }
+
+    // 🎟️ チケット1枚消費 ＆ ガチャ回数カウント加算
+    userDb[ticketKey] = Number(userDb[ticketKey]) - 1;
+    currentUser[ticketKey] = userDb[ticketKey];
+    localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+    addUserGachaCount(currentGachaConfig.id, count);
+    saveMemberDb();
+    updateUIUserStatus();
+    renderGachaScreen();
+
+    // 🎲 抽選（10連確定チケットの場合は10枠目を確定レアリティに差し替え）
+    const results = [];
+    let maxRarity = 2;
+    for (let i = 0; i < count; i++) {
+        let item;
+        if (i === count - 1 && guaranteedMinRarity > 2) {
+            item = rollGuaranteedRarityGacha(guaranteedMinRarity);
+        } else {
+            item = rollSingleGacha(currentGachaConfig.type);
         }
+        results.push(item);
+        if (item.rarityNum > maxRarity) maxRarity = item.rarityNum;
     }
 
-    // 管理画面で登録された該当レアリティの画像を抽出
+    if (typeof saveGachaResultsToAlbum === 'function') {
+        saveGachaResultsToAlbum(results);
+    }
+
+    const hasHighRarity = results.some(r => r.rarityNum >= 5);
+    const isUpgrade = hasHighRarity;
+
+    triggerGachaVibration(maxRarity, isUpgrade);
+    await playGachaAnimation(results, maxRarity, isUpgrade, count, ticketType);
+}
+
+// 🎯 確定レアリティ枠の抽選ヘルパー
+function rollGuaranteedRarityGacha(rarityNum) {
+    const selectedRarity = "★" + rarityNum;
     const pool = masterDriveImages.filter(img =>
         img && img.url && (img.rarity === selectedRarity || (!img.rarity && img.name && img.name.includes(selectedRarity)))
     );
-
     let chosenImg = null;
     if (pool.length > 0) {
         chosenImg = pool[Math.floor(Math.random() * pool.length)];
     } else if (masterDriveImages.length > 0) {
-        // 該当レアリティ未登録時のフォールバック
         const validAll = masterDriveImages.filter(img => img && img.url);
         if (validAll.length > 0) {
             chosenImg = validAll[Math.floor(Math.random() * validAll.length)];
         }
     }
-
     return {
         rarity: selectedRarity,
         rarityNum: rarityNum,
@@ -5007,27 +5014,8 @@ function rollSingleGacha(type) {
     };
 }
 
-// 📳 指定秒数通りの連続振動パターン（ミリ秒指定・途切れなし）
-function getVibrationDurationMs(maxRarity, isUpgrade) {
-    if (isUpgrade) {
-        // 昇格時: ★4→★5は 7秒(7000ms)、★4→★6は 9秒(9000ms)
-        return (maxRarity === 6) ? 9000 : 7000;
-    }
-    if (maxRarity === 6) return 8000; // ★6: 8秒
-    if (maxRarity === 5) return 5000; // ★5: 5秒
-    if (maxRarity === 4) return 3000; // ★4: 3秒
-    return 1000;                      // ★2・3: 1秒
-}
-
-function triggerGachaVibration(maxRarity, isUpgrade) {
-    if (!("vibrate" in navigator)) return;
-    const totalMs = getVibrationDurationMs(maxRarity, isUpgrade);
-    // 途切れのない連続振動を実行
-    navigator.vibrate(totalMs);
-}
-
 // 🎬 演出モーダル表示（指定秒数の連続振動 ＆ 昇格タイミング完全同期）
-function playGachaAnimation(results, maxRarity, isUpgrade, count) {
+function playGachaAnimation(results, maxRarity, isUpgrade, count, pullMode = 'gem') {
     return new Promise((resolve) => {
         let animOverlay = document.getElementById('gacha-anim-overlay');
         if (!animOverlay) {
@@ -5043,20 +5031,16 @@ function playGachaAnimation(results, maxRarity, isUpgrade, count) {
         }
         animOverlay.style.display = 'flex';
         animOverlay.style.background = '#000';
-
         const initialRarity = isUpgrade ? 4 : maxRarity;
-
         const showMainOrbSequence = () => {
             // 玉が出現した瞬間に連続振動スタート
             triggerGachaVibration(maxRarity, isUpgrade);
-
             animOverlay.innerHTML = `
                 <div id="main-gacha-orb" class="gacha-orb orb-r${initialRarity} orb-shaking" style="width: 140px; height: 140px; transform: scale(1.15); opacity: 1;">
                     <div id="orb-fire-layer" class="orb-fire-aura" style="display: none;"></div>
                 </div>
             `;
             const mainOrb = document.getElementById('main-gacha-orb');
-
             if (isUpgrade) {
                 // ★4の3秒振動後、炎を纏って昇格（★5なら残り4秒=計7秒、★6なら残り6秒=計9秒）
                 const afterUpgradeMs = (maxRarity === 6) ? 6000 : 4000;
@@ -5068,7 +5052,7 @@ function playGachaAnimation(results, maxRarity, isUpgrade, count) {
                     }
                     setTimeout(() => {
                         if (mainOrb) mainOrb.classList.remove('orb-shaking');
-                        showGachaResultModal(results, count, resolve);
+                        showGachaResultModal(results, count, resolve, pullMode);
                     }, afterUpgradeMs);
                 }, 3000);
             } else {
@@ -5076,11 +5060,10 @@ function playGachaAnimation(results, maxRarity, isUpgrade, count) {
                 const waitMs = getVibrationDurationMs(maxRarity, false);
                 setTimeout(() => {
                     if (mainOrb) mainOrb.classList.remove('orb-shaking');
-                    showGachaResultModal(results, count, resolve);
+                    showGachaResultModal(results, count, resolve, pullMode);
                 }, waitMs);
             }
         };
-
         if (count === 10) {
             let miniOrbsHtml = '';
             const radius = 135;
@@ -5096,14 +5079,12 @@ function playGachaAnimation(results, maxRarity, isUpgrade, count) {
                 `;
             }
             animOverlay.innerHTML = `<div style="position:relative; width:320px; height:320px;">${miniOrbsHtml}</div>`;
-
             setTimeout(() => {
                 for (let i = 0; i < 10; i++) {
                     const mOrb = document.getElementById(`mini-orb-${i}`);
                     if (mOrb) mOrb.style.transform = 'translate(0px, 0px) scale(0.4)';
                 }
             }, 350);
-
             setTimeout(() => {
                 showMainOrbSequence();
             }, 1200);
@@ -5112,15 +5093,59 @@ function playGachaAnimation(results, maxRarity, isUpgrade, count) {
         }
     });
 }
-// 🎊 ガチャリザルト画面の表示（設定画像表示 ＆「もう一回引く」ボタン）
-function showGachaResultModal(results, count, resolve) {
+// 🎊 ガチャリザルト画面の表示（設定画像表示 ＆「もう一回引く」ボタン・チケット再抽選対応）
+function showGachaResultModal(results, count, resolve, pullMode = 'gem') {
     let animOverlay = document.getElementById('gacha-anim-overlay');
     if (!animOverlay) return;
     const costSingle = (currentGachaConfig.costSingle !== undefined) ? Number(currentGachaConfig.costSingle) : 300;
     const costMulti = (currentGachaConfig.costMulti !== undefined) ? Number(currentGachaConfig.costMulti) : 3000;
     const retryCost = (count === 10) ? costMulti : costSingle;
-    const retryLabel = (count === 10) ? 再度10回引く : 再度1回引く;
-    const canRetry = (count === 10) ? (currentGachaConfig.allowMulti !== false) : (currentGachaConfig.allowSingle !== false);
+    const retryLabel = (count === 10) ? "再度10回引く" : "再度1回引く";
+    const canRetryGem = (count === 10) ? (currentGachaConfig.allowMulti !== false) : (currentGachaConfig.allowSingle !== false);
+
+    // 🎟️ チケット残数確認（現在のpullModeに対応するチケット、または単発/10連に使えるチケットがあれば判定）
+    const userDb = currentUser ? (memberDatabase.find(m => m.id === currentUser.id) || currentUser) : null;
+    let ticketRetryHtml = '';
+    if (userDb) {
+        let activeTicketMode = null;
+        let activeTicketCount = 0;
+        let activeTicketLabel = '';
+        let activeTicketBg = '';
+        let activeTicketColor = '#000';
+
+        if (pullMode === 'star6' && Number(userDb.ticket6 || 0) > 0) {
+            activeTicketMode = 'star6';
+            activeTicketCount = Number(userDb.ticket6);
+            activeTicketLabel = '🎟️ 再度★6確定10連';
+            activeTicketBg = 'linear-gradient(135deg, #ff66ee, #9933ff, #00f5d4)';
+            activeTicketColor = '#fff';
+        } else if (pullMode === 'star5' && Number(userDb.ticket5 || 0) > 0) {
+            activeTicketMode = 'star5';
+            activeTicketCount = Number(userDb.ticket5);
+            activeTicketLabel = '🎟️ 再度★5確定10連';
+            activeTicketBg = 'linear-gradient(135deg, #ffe066, #cc9900)';
+        } else if (pullMode === 'star4' && Number(userDb.ticket4 || 0) > 0) {
+            activeTicketMode = 'star4';
+            activeTicketCount = Number(userDb.ticket4);
+            activeTicketLabel = '🎟️ 再度★4確定10連';
+            activeTicketBg = 'linear-gradient(135deg, #ff6677, #cc1122)';
+            activeTicketColor = '#fff';
+        } else if (count === 1 && Number(userDb.ticket || 0) > 0) {
+            activeTicketMode = 'normal';
+            activeTicketCount = Number(userDb.ticket);
+            activeTicketLabel = '🎟️ 再度1回引く';
+            activeTicketBg = 'linear-gradient(135deg, #e0e0e0, #999999)';
+        }
+
+        if (activeTicketMode && activeTicketCount > 0) {
+            ticketRetryHtml = `
+                <button onclick="retryGachaWithTicketFromResult('activeTicketMode')"style="flex:1.4;background:{activeTicketBg}; color:${activeTicketColor}; border:1px solid #fff; border-radius:10px; padding:10px 6px; cursor:pointer; font-family:inherit; box-shadow:0 4px 12px rgba(255,255,255,0.25);">
+                    <div style="font-size:0.85rem; font-weight:800;">${activeTicketLabel}</div>
+                    <div style="font-size:0.7rem; font-weight:bold;">チケ1枚 (残:${activeTicketCount})</div>
+                </button>
+            `;
+        }
+    }
 
     let cardsHtml = '';
     if (count === 1) {
@@ -5161,9 +5186,7 @@ function showGachaResultModal(results, count, resolve) {
         });
         cardsHtml += `</div>`;
     }
-
     const userGem = currentUser ? Number(currentUser.gem || 0).toLocaleString() : "0";
-
     animOverlay.style.background = 'rgba(5, 5, 5, 0.96)';
     animOverlay.innerHTML = `
         <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:space-between; padding: 16px 14px 24px 14px; box-sizing:border-box;">
@@ -5174,29 +5197,27 @@ function showGachaResultModal(results, count, resolve) {
                     💎 ${userGem}
                 </span>
             </div>
-
             <!-- 中央：獲得画像一覧（スクロール対応） -->
             <div style="flex:1; overflow-y:auto; display:flex; align-items:${count === 1 ? 'center' : 'flex-start'}; justify-content:center; padding: 4px 0;">
                 ${cardsHtml}
             </div>
-
-           <!-- 下部：閉じる ＆ もう一回引くボタン -->
-            <div style="display:flex; gap:10px; flex-shrink:0; margin-top:12px; width:100%; max-width:420px; margin-left:auto; margin-right:auto;">
-                <button onclick="closeGachaResultModal()" style="flex:1; background:#333; color:#fff; border:1px solid #666; border-radius:10px; padding:12px 8px; font-size:0.95rem; font-weight:bold; cursor:pointer; font-family:inherit;">
+            <!-- 下部：閉じる ＆ チケット再抽選 ＆ ダイヤもう一回引くボタン -->
+            <div style="display:flex; gap:8px; flex-shrink:0; margin-top:12px; width:100%; max-width:420px; margin-left:auto; margin-right:auto;">
+                <button onclick="closeGachaResultModal()" style="flex:1; background:#333; color:#fff; border:1px solid #666; border-radius:10px; padding:12px 6px; font-size:0.9rem; font-weight:bold; cursor:pointer; font-family:inherit;">
                     閉じる
                 </button>
-                ${canRetry ? `
-                <button onclick="retryGachaFromResult(${count})" style="flex:1.4; background:linear-gradient(135deg, #ffee00, #ff9900); color:#000; border:1px solid #fff; border-radius:10px; padding:10px 8px; cursor:pointer; font-family:inherit; box-shadow:0 4px 12px rgba(255,153,0,0.4);">
-                    <div style="font-size:0.95rem; font-weight:800;">${retryLabel}</div>
-                    <div style="font-size:0.75rem; font-weight:bold; color:#111;">💎 ${retryCost.toLocaleString()}</div>
+                ${ticketRetryHtml}
+                ${canRetryGem ? `
+                <button onclick="retryGachaFromResult(${count})" style="flex:1.4; background:linear-gradient(135deg, #ffee00, #ff9900); color:#000; border:1px solid #fff; border-radius:10px; padding:10px 6px; cursor:pointer; font-family:inherit; box-shadow:0 4px 12px rgba(255,153,0,0.4);">
+                    <div style="font-size:0.85rem; font-weight:800;">${retryLabel}</div>
+                    <div style="font-size:0.7rem; font-weight:bold; color:#111;">💎 ${retryCost.toLocaleString()}</div>
                 </button>
                 ` : ''}
             </div>
-
-
+        </div>
+    `;
     if (resolve) resolve();
 }
-
 function closeGachaResultModal() {
     const animOverlay = document.getElementById('gacha-anim-overlay');
     if (animOverlay) {
@@ -5205,9 +5226,11 @@ function closeGachaResultModal() {
     }
     renderGachaScreen();
 }
-
 function retryGachaFromResult(count) {
     pullGacha(count);
+}
+function retryGachaWithTicketFromResult(ticketType) {
+    pullGachaWithTicket(ticketType);
 }
 
 // 📷 ガチャ結果をマイアルバム＆スライドショーへ自動保存する関数
@@ -5372,7 +5395,7 @@ ${gift.imgUrl ? `<img src="${gift.imgUrl}" alt="${gift.title}">` : `<div style="
 </div>
 <div class="album-card-info">
 <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px;">${gift.title}</div>
-<div style="font-size:0.7rem; color:#00f5d4; margin-bottom:6px;">💎:+gift.gem||0|🪙:+{gift.coin || 0}</div>
+<div style="font-size:0.68rem; color:#00f5d4; margin-bottom:6px;">💎:+gift.gem||0|🪙:+{gift.coin || 0}${gift.ticket ? ` | 🎟️:+${gift.ticket}` : ''}</div>
 <div style="display:flex; gap:4px;">
 <button onclick="event.stopPropagation(); claimGift(${index})" style="flex:1; background:#00f5d4; color:#000; border:none; padding:4px; border-radius:4px; font-weight:bold; font-size:0.75rem; cursor:pointer;">受け取る</button>
 <button onclick="event.stopPropagation(); deleteGift(${index})" style="flex:1; background:#ff334b; color:#fff; border:none; padding:4px; border-radius:4px; font-weight:bold; font-size:0.75rem; cursor:pointer;">削除</button>
@@ -5396,6 +5419,7 @@ if (currentUser) {
 let userDb = memberDatabase.find(m => m.id === currentUser.id) || currentUser;
 userDb.gem = (Number(userDb.gem) || 0) + (Number(gift.gem) || 0);
 userDb.coin = (Number(userDb.coin) || 0) + (Number(gift.coin) || 0);
+userDb.ticket = (Number(userDb.ticket) || 0) + (Number(gift.ticket) || 0);
 saveMemberDb();
 }
 
