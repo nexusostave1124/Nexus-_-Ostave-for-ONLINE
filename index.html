@@ -537,6 +537,10 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
 #sync-loading-spinner.active {
     display: flex;
 }
+.@keyframes spinSyncLoader {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 .spinner-circle {
     width: 20px;
     height: 20px;
@@ -545,6 +549,7 @@ padding: 30px 20px; text-align: center; z-index: 20; width: 85%; max-width: 320p
     border-radius: 50%;
     animation: spinSyncLoader 0.8s linear infinite;
 }
+
 /* 👇 ここから追加 */
 @keyframes orbShake {
     0%, 100% { transform: translate(0, 0) scale(1.15); }
@@ -1368,7 +1373,7 @@ function hideSyncLoader() {
     }
 }
 
-// 📦 GASへ送信する最新データ一式（全体設定 ＋ 個人データ ＋ メンバー情報）を組み立てる関数
+// 📦 GASへ送信する最新データ一式（全体設定 ＋ 個人データ ＋ プレイヤーデータ ＋ メンバー情報）を組み立てる関数
 function buildSyncPayload(logTypeName) {
     const memberStats = {};
     memberDatabase.forEach(m => {
@@ -1379,14 +1384,36 @@ function buildSyncPayload(logTypeName) {
             extraBonus: Number(m.extraBonus) || 0
         };
     });
+    const activePlayer = currentUser
+        ? (memberDatabase.find(m => m.id === currentUser.id) || currentUser)
+        : null;
 
     const payload = {
         logType: logTypeName,
         members: memberDatabase,
+        playerData: activePlayer ? {
+            id: activePlayer.id,
+            name: activePlayer.name,
+            gem: Number(activePlayer.gem) || 0,
+            coin: Number(activePlayer.coin) || 0,
+            ticket: Number(activePlayer.ticket) || 0,
+            ticket4: Number(activePlayer.ticket4) || 0,
+            ticket5: Number(activePlayer.ticket5) || 0,
+            ticket6: Number(activePlayer.ticket6) || 0,
+            select5: Number(activePlayer.select5) || 0,
+            select6: Number(activePlayer.select6) || 0,
+            pt: Number(activePlayer.pt) || 0,
+            gachaBonus: Number(activePlayer.gachaBonus) || 0,
+            illustBonus: Number(activePlayer.illustBonus) || 0,
+            extraBonus: Number(activePlayer.extraBonus) || 0,
+            batteryLevel: activePlayer.batteryLevel,
+            isCharging: activePlayer.isCharging
+        } : null,
         settings: {
             eventsList: eventsList,
             gachaList: gachaList,
             shopItemsList: shopItemsList,
+            shopHistory: JSON.parse(localStorage.getItem('nexus_shop_history')) || [],
             masterDriveImages: masterDriveImages,
             globalNotices: globalNotices,
             globalGifts: globalGifts,
@@ -1397,19 +1424,215 @@ function buildSyncPayload(logTypeName) {
             memberStats: memberStats
         }
     };
-
-       if (currentUser) {
+    if (currentUser) {
         payload.personalData = {
             userId: currentUser.id,
+            playerData: payload.playerData,
             userAlbum: JSON.parse(localStorage.getItem(getUserAlbumKey())) || [],
             userSlideshowIds: JSON.parse(localStorage.getItem(getUserSlideshowKey())) || [],
             userAvatarUrl: localStorage.getItem(getUserAvatarKey()) || "",
             userGifts: JSON.parse(localStorage.getItem(getUserGiftsKey())) || [],
+            claimedGlobalGifts: JSON.parse(localStorage.getItem('nexus_claimed_global_' + currentUser.id)) || [],
             userGachaPity: JSON.parse(localStorage.getItem(getUserGachaPityKey())) || {},
+            slotData: JSON.parse(localStorage.getItem(getSlotUserKey())) || null,
+            bgmIndex: Number(localStorage.getItem('nexus_bgm_index')) || 0,
             clockColor: localStorage.getItem('nexus_clock_color') || "c-red"
         };
     }
     return payload;
+}
+
+// 📥 GASから最新データを取得してローカル＆画面に反映する共通関数（グルグルマーク連動）
+async function fetchLatestDataFromGas() {
+    if (typeof GAS_WEB_APP_URL === 'undefined' || !GAS_WEB_APP_URL) return false;
+    showSyncLoader();
+    try {
+        const sep = GAS_WEB_APP_URL.includes('?') ? '&' : '?';
+        const res = await fetch(GAS_WEB_APP_URL + sep + "t=" + new Date().getTime(), {
+            method: "GET",
+            mode: "cors",
+            redirect: "follow"
+        });
+        if (!res.ok) return false;
+        const data = await res.json();
+        if (!data) return false;
+
+        // 1. メンバー・プレイヤーデータの反映
+        if (Array.isArray(data.members) && data.members.length > 0) {
+            data.members.forEach(remoteM => {
+                if (!remoteM || !remoteM.id) return;
+                const localM = memberDatabase.find(m => m.id === remoteM.id);
+                if (localM) {
+                    localM.name = remoteM.name || localM.name;
+                    localM.gem = remoteM.gem !== undefined ? Number(remoteM.gem) : (Number(localM.gem) || 0);
+                    localM.coin = remoteM.coin !== undefined ? Number(remoteM.coin) : (Number(localM.coin) || 0);
+                    localM.ticket = remoteM.ticket !== undefined ? Number(remoteM.ticket) : (Number(localM.ticket) || 0);
+                    localM.ticket4 = remoteM.ticket4 !== undefined ? Number(remoteM.ticket4) : (Number(localM.ticket4) || 0);
+                    localM.ticket5 = remoteM.ticket5 !== undefined ? Number(remoteM.ticket5) : (Number(localM.ticket5) || 0);
+                    localM.ticket6 = remoteM.ticket6 !== undefined ? Number(remoteM.ticket6) : (Number(localM.ticket6) || 0);
+                    localM.select5 = remoteM.select5 !== undefined ? Number(remoteM.select5) : (Number(localM.select5) || 0);
+                    localM.select6 = remoteM.select6 !== undefined ? Number(remoteM.select6) : (Number(localM.select6) || 0);
+                    if (remoteM.pt !== undefined) localM.pt = Number(remoteM.pt) || 0;
+                    if (remoteM.gachaBonus !== undefined) localM.gachaBonus = Number(remoteM.gachaBonus) || 0;
+                    if (remoteM.illustBonus !== undefined) localM.illustBonus = Number(remoteM.illustBonus) || 0;
+                    if (remoteM.extraBonus !== undefined) localM.extraBonus = Number(remoteM.extraBonus) || 0;
+                } else {
+                    memberDatabase.push({
+                        id: remoteM.id,
+                        name: remoteM.name || remoteM.id,
+                        gem: Number(remoteM.gem) || 0,
+                        coin: Number(remoteM.coin) || 0,
+                        ticket: Number(remoteM.ticket) || 0,
+                        ticket4: Number(remoteM.ticket4) || 0,
+                        ticket5: Number(remoteM.ticket5) || 0,
+                        ticket6: Number(remoteM.ticket6) || 0,
+                        select5: Number(remoteM.select5) || 0,
+                        select6: Number(remoteM.select6) || 0,
+                        pt: Number(remoteM.pt) || 0,
+                        gachaBonus: Number(remoteM.gachaBonus) || 0,
+                        illustBonus: Number(remoteM.illustBonus) || 0,
+                        extraBonus: Number(remoteM.extraBonus) || 0
+                    });
+                }
+            });
+        }
+
+        // 2. 全体設定・プレゼント・交換所・お知らせ・画像の反映
+        const settings = data.settings || data.appSettings;
+        if (settings) {
+            if (Array.isArray(settings.eventsList)) {
+                eventsList = settings.eventsList;
+                localStorage.setItem('nexus_events_list', JSON.stringify(eventsList));
+                currentEvent = eventsList.find(e => e.id === currentEventId) || eventsList[0] || null;
+            }
+            if (Array.isArray(settings.gachaList)) {
+                gachaList = settings.gachaList;
+                localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+                currentGachaConfig = gachaList.find(g => g.id === currentGachaId) || gachaList[0] || null;
+            }
+            if (Array.isArray(settings.shopItemsList)) {
+                shopItemsList = settings.shopItemsList;
+                localStorage.setItem('nexus_shop_items', JSON.stringify(shopItemsList));
+            }
+            if (Array.isArray(settings.shopHistory)) {
+                localStorage.setItem('nexus_shop_history', JSON.stringify(settings.shopHistory));
+            }
+            if (Array.isArray(settings.masterDriveImages)) {
+                masterDriveImages = settings.masterDriveImages;
+                localStorage.setItem('nexus_master_gacha_images', JSON.stringify(masterDriveImages));
+            }
+            if (Array.isArray(settings.globalNotices)) {
+                globalNotices = settings.globalNotices;
+                localStorage.setItem(getGlobalNoticesKey(), JSON.stringify(globalNotices));
+            }
+            if (Array.isArray(settings.globalGifts)) {
+                globalGifts = settings.globalGifts;
+                localStorage.setItem(getGlobalGiftsKey(), JSON.stringify(globalGifts));
+            }
+            if (Array.isArray(settings.titleBgImages)) {
+                titleBgImages = settings.titleBgImages;
+                localStorage.setItem(getTitleBgKey(), JSON.stringify(titleBgImages));
+            }
+            if (settings.appIcon !== undefined) {
+                if (settings.appIcon) localStorage.setItem(getAppIconKey(), settings.appIcon);
+                else localStorage.removeItem(getAppIconKey());
+            }
+            if (settings.isLoginLocked !== undefined) {
+                isLoginLocked = Boolean(settings.isLoginLocked);
+                localStorage.setItem('nexus_login_locked', isLoginLocked);
+            }
+            if (settings.rankingLocked !== undefined) {
+                rankingLocked = Boolean(settings.rankingLocked);
+                localStorage.setItem('nexus_ranking_locked', rankingLocked);
+            }
+            if (settings.memberStats && typeof settings.memberStats === 'object') {
+                Object.keys(settings.memberStats).forEach(uid => {
+                    const m = memberDatabase.find(item => item.id === uid);
+                    if (m && settings.memberStats[uid]) {
+                        m.pt = Number(settings.memberStats[uid].pt) || 0;
+                        m.gachaBonus = Number(settings.memberStats[uid].gachaBonus) || 0;
+                        m.illustBonus = Number(settings.memberStats[uid].illustBonus) || 0;
+                        m.extraBonus = Number(settings.memberStats[uid].extraBonus) || 0;
+                    }
+                });
+            }
+        }
+
+        // 3. ログイン中ユーザーの個別プレイヤーデータ・獲得画像・プレゼントの反映
+        if (currentUser) {
+            const pData = (data.allPersonalData && data.allPersonalData[currentUser.id])
+                ? data.allPersonalData[currentUser.id]
+                : (data.personalData && data.personalData.userId === currentUser.id ? data.personalData : null);
+
+            if (pData) {
+                const pPlayer = pData.playerData || data.playerData;
+                if (pPlayer) {
+                    const m = memberDatabase.find(item => item.id === currentUser.id);
+                    if (m) {
+                        if (pPlayer.name) m.name = pPlayer.name;
+                        if (pPlayer.gem !== undefined) m.gem = Number(pPlayer.gem) || 0;
+                        if (pPlayer.coin !== undefined) m.coin = Number(pPlayer.coin) || 0;
+                        if (pPlayer.ticket !== undefined) m.ticket = Number(pPlayer.ticket) || 0;
+                        if (pPlayer.ticket4 !== undefined) m.ticket4 = Number(pPlayer.ticket4) || 0;
+                        if (pPlayer.ticket5 !== undefined) m.ticket5 = Number(pPlayer.ticket5) || 0;
+                        if (pPlayer.ticket6 !== undefined) m.ticket6 = Number(pPlayer.ticket6) || 0;
+                        if (pPlayer.select5 !== undefined) m.select5 = Number(pPlayer.select5) || 0;
+                        if (pPlayer.select6 !== undefined) m.select6 = Number(pPlayer.select6) || 0;
+                        if (pPlayer.pt !== undefined) m.pt = Number(pPlayer.pt) || 0;
+                    }
+                }
+                if (Array.isArray(pData.userAlbum)) {
+                    const cleanAlbum = pData.userAlbum.filter(item => item && item.url && item.url !== "undefined");
+                    localStorage.setItem(getUserAlbumKey(currentUser.id), JSON.stringify(cleanAlbum));
+                }
+                if (Array.isArray(pData.userSlideshowIds)) {
+                    localStorage.setItem(getUserSlideshowKey(currentUser.id), JSON.stringify(pData.userSlideshowIds));
+                }
+                if (pData.userAvatarUrl !== undefined) {
+                    if (pData.userAvatarUrl) localStorage.setItem(getUserAvatarKey(), pData.userAvatarUrl);
+                    else localStorage.removeItem(getUserAvatarKey());
+                }
+                if (Array.isArray(pData.userGifts)) {
+                    localStorage.setItem(getUserGiftsKey(), JSON.stringify(pData.userGifts));
+                }
+                if (Array.isArray(pData.claimedGlobalGifts)) {
+                    localStorage.setItem('nexus_claimed_global_' + currentUser.id, JSON.stringify(pData.claimedGlobalGifts));
+                }
+                if (pData.userGachaPity && typeof pData.userGachaPity === 'object') {
+                    localStorage.setItem(getUserGachaPityKey(currentUser.id), JSON.stringify(pData.userGachaPity));
+                }
+                if (pData.slotData && typeof pData.slotData === 'object') {
+                    localStorage.setItem(getSlotUserKey(), JSON.stringify(pData.slotData));
+                }
+                if (pData.bgmIndex !== undefined) {
+                    currentBgmIndex = Number(pData.bgmIndex) || 0;
+                    localStorage.setItem('nexus_bgm_index', currentBgmIndex);
+                }
+                if (pData.clockColor) {
+                    localStorage.setItem('nexus_clock_color', pData.clockColor);
+                    applyClockColorToAll(pData.clockColor);
+                }
+            }
+
+            const updatedMe = memberDatabase.find(m => m.id === currentUser.id);
+            if (updatedMe) {
+                currentUser = updatedMe;
+                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+            }
+        }
+
+        localStorage.setItem('nexus_member_db', JSON.stringify(memberDatabase));
+        reloadUserData();
+        renderShopScreen();
+        return true;
+    } catch (e) {
+        console.log("⚠️ クラウド受信エラー（ローカル動作継続）:", e);
+        return false;
+    } finally {
+        setTimeout(() => {
+            hideSyncLoader();
+        }, 400);
+    }
 }
 
 // 🌐 GASへデータを送信する共通関数（グルグルマーク連動）
@@ -3027,7 +3250,7 @@ function buyShopItem(itemId) {
         personalGifts.push(giftObj);
         localStorage.setItem(getUserGiftsKey(), JSON.stringify(personalGifts));
 
-        // 📜 交換履歴に記録する処理を追加
+               // 📜 交換履歴に記録する処理を追加
         const now = new Date();
         const dateStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
         let shopHistory = JSON.parse(localStorage.getItem('nexus_shop_history')) || [];
@@ -3040,7 +3263,10 @@ function buyShopItem(itemId) {
             date: dateStr
         });
         localStorage.setItem('nexus_shop_history', JSON.stringify(shopHistory));
-
+        if (typeof syncDataToGas === 'function') {
+            syncDataToGas("shopExchange");
+            setTimeout(() => { fetchLatestDataFromGas(); }, 600);
+        }
         alert(`🎁 交換成功！「${item.name}」をプレゼントBOXに送りました。`);
     }
 }
@@ -5270,14 +5496,12 @@ function retryGachaFromResult(count) {
     pullGacha(count);
 }
 
-// 📷 ガチャ結果をマイアルバム＆スライドショーへ自動保存する関数
+// 📷 ガチャ結果をマイアルバム＆スライドショーへ自動保存＆送受信する関数
 function saveGachaResultsToAlbum(results) {
     if (!Array.isArray(results) || results.length === 0) return;
-
     let addedCount = 0;
     results.forEach((item, idx) => {
         if (!item || !item.url || item.url === "undefined") return;
-
         // すでに同じURLがアルバムにある場合は重複追加しない
         if (!userAlbum.some(existing => existing.url === item.url)) {
             const newId = 'gacha_album_' + Date.now() + '_' + idx;
@@ -5286,7 +5510,6 @@ function saveGachaResultsToAlbum(results) {
                 name: item.name || `${item.rarity} イラスト`,
                 url: item.url
             });
-
             // スライドショーが7枚未満なら自動でスライドショーにも登録
             if (userSlideshowIds.length < 7 && !userSlideshowIds.includes(newId)) {
                 userSlideshowIds.push(newId);
@@ -5294,16 +5517,17 @@ function saveGachaResultsToAlbum(results) {
             addedCount++;
         }
     });
-
     if (addedCount > 0) {
         saveUserAlbumData();
         renderAlbum();
         initSlideshow();
         populateSettingsAvatarSelect();
         checkExclamationMarks();
+        if (typeof syncDataToGas === 'function') {
+            syncDataToGas("gachaAlbumSync");
+        }
     }
 }
-
 
 // 🖼️ アルバム画像の全体拡大表示 ＆ ダウンロードモーダル
 function openAlbumImageViewer(url, name, rarity, rarityNum) {
@@ -5452,13 +5676,13 @@ grid.appendChild(card);
 function claimGift(index) {
 const combinedGifts = getCombinedUserGifts();
 const gift = combinedGifts[index];
+if (!gift) return;
 if (currentUser) {
 let userDb = memberDatabase.find(m => m.id === currentUser.id) || currentUser;
 userDb.gem = (Number(userDb.gem) || 0) + (Number(gift.gem) || 0);
 userDb.coin = (Number(userDb.coin) || 0) + (Number(gift.coin) || 0);
 saveMemberDb();
 }
-
 if (gift.imgUrl) {
 const newAlbumItem = { id: 'gift_img_' + Date.now(), name: gift.title, url: gift.imgUrl };
 if (!userAlbum.some(i => i.url === gift.imgUrl)) {
@@ -5481,6 +5705,10 @@ localStorage.setItem('nexus_claimed_global_' + (currentUser ? currentUser.id : '
 }
 updateUIUserStatus();
 renderGifts();
+if (typeof syncDataToGas === 'function') {
+syncDataToGas("claimGift");
+setTimeout(() => { fetchLatestDataFromGas(); }, 600);
+}
 alert(`🎁 「${gift.title}」を受け取りました！`);
 }
 function deleteGift(index) {
@@ -5498,8 +5726,12 @@ localStorage.setItem('nexus_claimed_global_' + (currentUser ? currentUser.id : '
 }
 renderGifts();
 updateUIUserStatus();
+if (typeof syncDataToGas === 'function') {
+syncDataToGas("deleteGift");
 }
 }
+}
+
 function renderNotices() {
 const container = document.getElementById('notice-list-container');
 if (!container) return;
@@ -5708,7 +5940,13 @@ function fallbackBatteryMock(el1, el2) {
 if (el1) { el1.className = "battery-status c-green"; el1.innerText = "100%"; }
 if (el2) { el2.className = "battery-status c-green"; el2.innerText = "100%"; }
 }
-function toggleOtherMenu() { document.getElementById('other-modal').classList.add('active'); }
+async function toggleOtherMenu() {
+    document.getElementById('other-modal').classList.add('active');
+    if (currentUser && typeof syncDataToGas === 'function') {
+        await syncDataToGas("navOtherSync");
+        await fetchLatestDataFromGas();
+    }
+}
 function closeOtherMenu() { document.getElementById('other-modal').classList.remove('active'); }
 
 let openedFromTitle = false;
@@ -5775,10 +6013,17 @@ function openScreen(name, fromTitle = false) {
   if (name !== 'home' && document.getElementById('nav-' + name)) {
     document.getElementById('nav-' + name).classList.add('active');
   }
-   const target = document.getElementById('screen-' + name);
+    const target = document.getElementById('screen-' + name);
   if (target) target.classList.add('active');
   if (name === 'settings') {
     updateUIUserStatus();
+  }
+  if (currentUser && (name === 'event' || name === 'gacha' || name === 'play') && typeof syncDataToGas === 'function') {
+    syncDataToGas("navScreenSync_" + name).then(() => {
+      if (typeof fetchLatestDataFromGas === 'function') {
+        fetchLatestDataFromGas();
+      }
+    });
   }
 }
 function adjustVolume(val) {
@@ -6055,10 +6300,15 @@ async function switchNav(name) {
     document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     if (name === 'home') document.getElementById('nav-home').classList.add('active');
-    
-    // 🔄 ホームボタン押下時の送受信（右下にグルグル表示）
+    if (name === 'event') document.getElementById('nav-event').classList.add('active');
+    if (name === 'gacha') document.getElementById('nav-gacha').classList.add('active');
+    if (name === 'play') document.getElementById('nav-play').classList.add('active');
+    if (name === 'other') document.getElementById('nav-other').classList.add('active');
+
+    // 🔄 下ボタン押下時の送受信＆最新データ反映（右下にグルグル表示）
     if (currentUser) {
-        await syncDataToGas("navSync");
+        await syncDataToGas("navSync_" + name);
+        await fetchLatestDataFromGas();
     }
 }
 
@@ -6079,6 +6329,8 @@ setTimeout(initDynamicPlaylist, 500);
 </script>
 </body>
 </html>
+
+
 
 
 
