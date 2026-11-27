@@ -3404,6 +3404,67 @@ function adminResetGachaRatesToDefault() {
     document.getElementById('admin-gacha-rate-3').value = defRates["★3"] ?? 0;
     document.getElementById('admin-gacha-rate-2').value = defRates["★2"] ?? 0;
 }
+function adminAddGachaBg() {
+    if (!currentGachaConfig) {
+        alert("対象のガチャが存在しません。");
+        return;
+    }
+    const sel = document.getElementById('admin-gacha-bg-select');
+    if (!sel) return;
+    const url = sel.value;
+    const name = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : url;
+    if (!url) {
+        alert("背景画像を選択してください。");
+        return;
+    }
+    if (!Array.isArray(currentGachaConfig.banners)) {
+        currentGachaConfig.banners = [];
+    }
+    if (currentGachaConfig.banners.length >= 7) {
+        alert("ガチャ背景スライドショーには最大7枚まで登録できます。");
+        return;
+    }
+    const exists = currentGachaConfig.banners.some(b => (typeof b === 'string' ? b : b.url) === url);
+    if (exists) {
+        alert("すでに追加されている画像です。");
+        return;
+    }
+    currentGachaConfig.banners.push({ url: url, name: name });
+    const idx = gachaList.findIndex(g => g.id === currentGachaConfig.id);
+    if (idx !== -1) gachaList[idx] = currentGachaConfig;
+    localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+    localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
+    renderAdminGachaBgList();
+    renderGachaScreen();
+}
+function adminRemoveGachaBg(index) {
+    if (!currentGachaConfig || !Array.isArray(currentGachaConfig.banners)) return;
+    currentGachaConfig.banners.splice(index, 1);
+    const idx = gachaList.findIndex(g => g.id === currentGachaConfig.id);
+    if (idx !== -1) gachaList[idx] = currentGachaConfig;
+    localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
+    localStorage.setItem('nexus_gacha_config', JSON.stringify(currentGachaConfig));
+    renderAdminGachaBgList();
+    renderGachaScreen();
+}
+function renderAdminGachaBgList() {
+    const listEl = document.getElementById('admin-gacha-bg-list');
+    if (!listEl) return;
+    const banners = (currentGachaConfig && Array.isArray(currentGachaConfig.banners)) ? currentGachaConfig.banners : [];
+    listEl.innerHTML = `<div style="color:#00f5d4; margin-bottom:4px;">登録中 (${banners.length}/7枚):</div>`;
+    if (banners.length === 0) {
+        listEl.innerHTML += `<div style="color:#888; font-size:0.75rem;">未登録（デフォルト背景が表示されます）</div>`;
+        return;
+    }
+    banners.forEach((b, index) => {
+        const bUrl = (typeof b === 'string') ? b : b.url;
+        const bName = (typeof b === 'string') ? b : (b.name || b.url);
+        const row = document.createElement('div');
+        row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#222; padding:6px; border-radius:6px; margin-bottom:4px;";
+        row.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;">${index + 1}. ${bName}</span><button type="button" onclick="adminRemoveGachaBg(${index})" style="background:#ff334b; color:#fff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">削除</button>`;
+        listEl.appendChild(row);
+    });
+}
 function loadCurrentGachaToAdminForm() {
     if (!currentGachaConfig) {
         document.getElementById('admin-gacha-title-input').value = "";
@@ -3413,8 +3474,10 @@ function loadCurrentGachaToAdminForm() {
         if (document.getElementById('admin-gacha-subbox-select')) document.getElementById('admin-gacha-subbox-select').value = "";
         document.getElementById('admin-gacha-start-input').value = "";
         document.getElementById('admin-gacha-end-input').value = "";
-        document.getElementById('admin-gacha-cost-single').value = (currentGachaConfig.costSingle !== undefined) ? currentGachaConfig.costSingle : 300;
-    document.getElementById('admin-gacha-cost-multi').value = (currentGachaConfig.costMulti !== undefined) ? currentGachaConfig.costMulti : 3000;
+        document.getElementById('admin-gacha-cost-single').value = 300;
+        document.getElementById('admin-gacha-cost-multi').value = 3000;
+        if (document.getElementById('admin-gacha-allow-single')) document.getElementById('admin-gacha-allow-single').checked = true;
+        if (document.getElementById('admin-gacha-allow-multi')) document.getElementById('admin-gacha-allow-multi').checked = true;
         if (document.getElementById('admin-gacha-pity-enabled')) document.getElementById('admin-gacha-pity-enabled').checked = false;
         if (document.getElementById('admin-gacha-pity-max')) document.getElementById('admin-gacha-pity-max').value = 200;
         renderAdminGachaBgList();
@@ -3429,16 +3492,22 @@ function loadCurrentGachaToAdminForm() {
     }
     document.getElementById('admin-gacha-start-input').value = currentGachaConfig.startDate || "";
     document.getElementById('admin-gacha-end-input').value = currentGachaConfig.endDate || "";
-    document.getElementById('admin-gacha-cost-single').value = currentGachaConfig.costSingle || 300;
-    document.getElementById('admin-gacha-cost-multi').value = currentGachaConfig.costMulti || 3000;
+    document.getElementById('admin-gacha-cost-single').value = (currentGachaConfig.costSingle !== undefined) ? currentGachaConfig.costSingle : 300;
+    document.getElementById('admin-gacha-cost-multi').value = (currentGachaConfig.costMulti !== undefined) ? currentGachaConfig.costMulti : 3000;
+    if (document.getElementById('admin-gacha-allow-single')) {
+        document.getElementById('admin-gacha-allow-single').checked = currentGachaConfig.allowSingle !== false;
+    }
+    if (document.getElementById('admin-gacha-allow-multi')) {
+        document.getElementById('admin-gacha-allow-multi').checked = currentGachaConfig.allowMulti !== false;
+    }
     if (document.getElementById('admin-gacha-pity-enabled')) {
         document.getElementById('admin-gacha-pity-enabled').checked = currentGachaConfig.pityEnabled === true;
     }
     if (document.getElementById('admin-gacha-pity-max')) {
         document.getElementById('admin-gacha-pity-max').value = currentGachaConfig.pityMax || 200;
     }
+    renderAdminGachaBgList();
 }
-
 function adminSaveGachaConfig() {
     if (!currentGachaConfig) {
         alert("保存するガチャが存在しません。新規追加してください。");
@@ -3451,15 +3520,25 @@ function adminSaveGachaConfig() {
     currentGachaConfig.showStatus = document.getElementById('admin-gacha-show-status').checked;
     currentGachaConfig.subBoxImage = document.getElementById('admin-gacha-subbox-select') ? document.getElementById('admin-gacha-subbox-select').value : "";
     if (!Array.isArray(currentGachaConfig.banners)) currentGachaConfig.banners = [];
+    currentGachaConfig.banners = currentGachaConfig.banners.slice(0, 7);
     currentGachaConfig.startDate = document.getElementById('admin-gacha-start-input').value;
     currentGachaConfig.endDate = document.getElementById('admin-gacha-end-input').value;
-
-  // 👇 【修正】0が入力されてもそのまま保存されるように変更
+    if (document.getElementById('admin-gacha-allow-single')) {
+        currentGachaConfig.allowSingle = document.getElementById('admin-gacha-allow-single').checked;
+    }
+    if (document.getElementById('admin-gacha-allow-multi')) {
+        currentGachaConfig.allowMulti = document.getElementById('admin-gacha-allow-multi').checked;
+    }
+    if (document.getElementById('admin-gacha-pity-enabled')) {
+        currentGachaConfig.pityEnabled = document.getElementById('admin-gacha-pity-enabled').checked;
+    }
+    if (document.getElementById('admin-gacha-pity-max')) {
+        currentGachaConfig.pityMax = Number(document.getElementById('admin-gacha-pity-max').value) || 200;
+    }
     const singleVal = document.getElementById('admin-gacha-cost-single').value;
     const multiVal = document.getElementById('admin-gacha-cost-multi').value;
     currentGachaConfig.costSingle = (singleVal === "") ? 300 : Number(singleVal);
     currentGachaConfig.costMulti = (multiVal === "") ? 3000 : Number(multiVal);
-
     const idx = gachaList.findIndex(g => g.id === currentGachaConfig.id);
     if (idx !== -1) gachaList[idx] = currentGachaConfig;
     localStorage.setItem('nexus_gacha_list', JSON.stringify(gachaList));
@@ -3467,7 +3546,7 @@ function adminSaveGachaConfig() {
     
     populateAdminGachaSwitcher();
     updateUIUserStatus();
-    renderGachaScreen(); // 👈 ガチャ画面のUIも即時更新
+    renderGachaScreen();
     if (typeof syncDataToGas === 'function') syncDataToGas("saveGacha");
     alert(`🎂 ガチャ設定を保存しました！\n(天井: ${currentGachaConfig.pityEnabled ? 'ON / ' + currentGachaConfig.pityMax + '回' : 'OFF'})`);
 }
@@ -3669,12 +3748,13 @@ function renderGachaScreen() {
     container.innerHTML = `
     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding: 10px 10px 95px 10px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
         
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden;">
+               <div id="gacha-slideshow-bg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden;">
             ${slideBanners.map((url, idx) => `
-                <div class="gacha-slide-banner" data-index="${idx}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('${url}'); background-size: cover; background-position: center; opacity: ${idx === 0 ? '1' : '0'}; transition: opacity 1s ease-in-out; filter: brightness(0.85);"></div>
+                <img class="gacha-slide-banner" data-index="${idx}" src="${url}" alt="ガチャ背景${idx + 1}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: ${idx === 0 ? '1' : '0'}; transition: opacity 1s ease-in-out; filter: brightness(0.85); pointer-events: none;">
             `).join('')}
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%); z-index: 1;"></div>
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%); z-index: 1; pointer-events: none;"></div>
         </div>
+
 
         <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
             <div style="display: flex; align-items: center; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 20px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
@@ -3738,16 +3818,25 @@ function renderGachaScreen() {
     </div>
     `;
 
+       if (window.gachaSlideInterval) {
+        clearInterval(window.gachaSlideInterval);
+        window.gachaSlideInterval = null;
+    }
     if (slideBanners.length > 1) {
-        if (window.gachaSlideInterval) clearInterval(window.gachaSlideInterval);
         let currentSlide = 0;
         window.gachaSlideInterval = setInterval(() => {
             const slides = container.querySelectorAll('.gacha-slide-banner');
-            if (!slides || slides.length === 0) {
+            if (!slides || slides.length <= 1) {
                 clearInterval(window.gachaSlideInterval);
+                window.gachaSlideInterval = null;
                 return;
             }
-            slides[currentSlide].style.opacity = '0';
+            if (currentSlide >= slides.length) {
+                currentSlide = 0;
+            }
+            slides.forEach((slide, i) => {
+                slide.style.opacity = (i === currentSlide) ? '0' : (i === ((currentSlide + 1) % slides.length) ? '1' : '0');
+            });
             currentSlide = (currentSlide + 1) % slides.length;
             slides[currentSlide].style.opacity = '1';
         }, 4000);
