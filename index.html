@@ -1445,14 +1445,14 @@ const GACHA_RATES = {
 "限定/恒常": { "★6": 0, "★5": 0, "★4": 0, "★3": 0, "★2": 0 }
 };
 let memberDatabase = JSON.parse(localStorage.getItem('nexus_member_db')) || [
-{ id: "H-25-3-1", name: "ヨウスケ", gem: 5000, coin: 0, ticket: 0, ticket4: 0, ticket5: 0, ticket6: 0, select5: 0, select6: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "M-24-12-2", name: "Kou", gem: 5000, coin: 0, ticket: 0, ticket4: 0, ticket5: 0, ticket6: 0, select5: 0, select6: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "N-24-11-3", name: "奨", gem: 5000, coin: 0, ticket: 0, ticket4: 0, ticket5: 0, ticket6: 0, select5: 0, select6: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "S-24-11-4", name: "MIHO", gem: 5000, coin: 0, ticket: 0, ticket4: 0, ticket5: 0, ticket6: 0, select5: 0, select6: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "S-24-11-5-o", name: "海惺", gem: 5000, coin: 0, ticket: 0, ticket4: 0, ticket5: 0, ticket6: 0, select5: 0, select6: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "U-24-11-6-a", name: "タイ", gem: 5000, coin: 0, ticket: 0, ticket4: 0, ticket5: 0, ticket6: 0, select5: 0, select6: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "N-24-11-7-o", name: "Ayu", gem: 5000, coin: 0, ticket: 0, ticket4: 0, ticket5: 0, ticket6: 0, select5: 0, select6: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
-{ id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, ticket: 999, ticket4: 99, ticket5: 99, ticket6: 99, select5: 99, select6: 99, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 }
+{ id: "H-25-3-1", name: "ヨウスケ", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "M-24-12-2", name: "Kou", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "N-24-11-3", name: "奨", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "S-24-11-4", name: "MIHO", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "S-24-11-5-o", name: "海惺", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "U-24-11-6-a", name: "タイ", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "N-24-11-7-o", name: "Ayu", gem: 5000, coin: 0, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 },
+{ id: "A-24-11-9-a", name: "ネオ", gem: 999999999, coin: 999999, pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0 }
 ];
 // 🔄 メンバーデータの保存 ＆ スプレッドシート（GAS）へのクラウド同期（全ブラウザ・クロスドメイン対応版）
 async function saveMemberDb() {
@@ -2763,34 +2763,18 @@ if (!container) return;
 container.innerHTML = "";
 memberDatabase.forEach(m => {
 const row = document.createElement('div');
-row.style.cssText = "display:flex; flex-direction:column; padding:8px 0; border-bottom:1px solid #333; gap:6px;";
+row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #333;";
 row.innerHTML = `
-<div style="display:flex; justify-content:space-between; align-items:center;">
-    <div>
-        <span style="font-weight:bold; color:#fff;">👤 ${m.name}</span> <span style="font-size:0.7rem; color:#888;">(${m.id})</span>
-    </div>
-    <div style="font-size:0.75rem;">
-        <span style="color:#00f5d4;">💎:${(m.gem || 0).toLocaleString()}</span> | 
-        <span style="color:#ffee00;">🪙:${(m.coin || 0).toLocaleString()}</span>
-    </div>
+<div>
+<span style="font-weight:bold; color:#fff;">👤 ${m.name}</span> <span style="font-size:0.7rem; color:#888;">(${m.id})</span>
+<div style="font-size:0.75rem; margin-top:2px;">
+<span style="color:#00f5d4;">💎: ${(m.gem || 0).toLocaleString()}</span> | 
+<span style="color:#ffee00;">🪙: ${(m.coin || 0).toLocaleString()}</span>
 </div>
-<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:4px; font-size:0.7rem; background:#181818; padding:6px; border-radius:6px;">
-    <div style="color:#ff66ee;">通常チケ: <b>${Number(m.ticket || 0)}</b></div>
-    <div style="color:#ff5566;">★4確定: <b>${Number(m.ticket4 || 0)}</b></div>
-    <div style="color:#ffee00;">★5確定: <b>${Number(m.ticket5 || 0)}</b></div>
-    <div style="color:#ff66ee;">★6確定: <b>${Number(m.ticket6 || 0)}</b></div>
-    <div style="color:#00f5d4;">★5セレクト: <b>${Number(m.select5 || 0)}</b></div>
-    <div style="color:#ff9900;">★6セレクト: <b>${Number(m.select6 || 0)}</b></div>
 </div>
-<div style="display:flex; flex-wrap:wrap; gap:4px;">
-    <button onclick="adminEditUserCurrency('${m.id}', 'gem')" style="background:#00f5d4; color:#000; border:none; padding:4px 6px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.68rem;">💎変更</button>
-    <button onclick="adminEditUserCurrency('${m.id}', 'coin')" style="background:#ffee00; color:#000; border:none; padding:4px 6px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.68rem;">🪙変更</button>
-    <button onclick="adminEditUserCurrency('${m.id}', 'ticket')" style="background:#e0e0e0; color:#000; border:none; padding:4px 6px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.68rem;">🎟️通常</button>
-    <button onclick="adminEditUserCurrency('${m.id}', 'ticket4')" style="background:#ff5566; color:#fff; border:none; padding:4px 6px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.68rem;">🎟️★4確定</button>
-    <button onclick="adminEditUserCurrency('${m.id}', 'ticket5')" style="background:#ffd700; color:#000; border:none; padding:4px 6px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.68rem;">🎟️★5確定</button>
-    <button onclick="adminEditUserCurrency('${m.id}', 'ticket6')" style="background:#ff66ee; color:#fff; border:none; padding:4px 6px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.68rem;">🎟️★6確定</button>
-    <button onclick="adminEditUserCurrency('${m.id}', 'select5')" style="background:#00bbff; color:#000; border:none; padding:4px 6px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.68rem;">🌟★5セレ</button>
-    <button onclick="adminEditUserCurrency('${m.id}', 'select6')" style="background:#ff9900; color:#000; border:none; padding:4px 6px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.68rem;">🌈★6セレ</button>
+<div style="display:flex; gap:6px;">
+<button onclick="adminEditUserCurrency('${m.id}', 'gem')" style="background:#00f5d4; color:#000; border:none; padding:4px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem;">💎変更</button>
+<button onclick="adminEditUserCurrency('${m.id}', 'coin')" style="background:#ffee00; color:#000; border:none; padding:4px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem;">🪙変更</button>
 </div>
 `;
 container.appendChild(row);
@@ -2799,25 +2783,12 @@ container.appendChild(row);
 function adminEditUserCurrency(userId, type) {
 const user = memberDatabase.find(m => m.id === userId);
 if (!user) return;
-const labelMap = {
-    gem: '💎ジェム',
-    coin: '🪙コイン',
-    ticket: '🎟️ガチャチケット',
-    ticket4: '🎟️★4以上確定チケット',
-    ticket5: '🎟️★5確定チケット',
-    ticket6: '🎟️★6確定チケット',
-    select5: '🌟★5セレクトチケット',
-    select6: '🌈★6セレクトチケット'
-};
-const labelStr = labelMap[type] || type;
-const currentVal = Number(user[type]) || 0;
+const labelStr = type === 'gem' ? '💎ジェム' : '🪙コイン';
+const currentVal = type === 'gem' ? (user.gem || 0) : (user.coin || 0);
 const input = prompt(`[${user.name}] の現在の ${labelStr}: ${currentVal.toLocaleString()}\n新しい数量を半角数字で入力してください：`, currentVal);
 if (input !== null && !isNaN(input)) {
-user[type] = Number(input);
-if (currentUser && currentUser.id === user.id) {
-    currentUser[type] = Number(input);
-    localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-}
+if (type === 'gem') user.gem = Number(input);
+else user.coin = Number(input);
 saveMemberDb();
 renderAdminUserCurrencyList();
 updateUIUserStatus();
@@ -3718,11 +3689,9 @@ function renderGachaScreen() {
             </div>
         </div>
 
-               <!-- 下部エリア (左下: タイトル画像 ＆ 右下: 1回引く・10回引くボタン) -->
-        <div style="position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-bottom: 5px; gap: 8px; pointer-events: none;">
+        <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-bottom: 5px; gap: 8px;">
             
-            <!-- 左下: 種類・期間 ＆ タイトル画像 -->
-            <div style="display: flex; flex-direction: column; gap: 4px; width: 55%; pointer-events: auto;">
+            <div style="display: flex; flex-direction: column; gap: 4px; width: 55%;">
                 <span style="background: #28a745; color: #fff; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; width: fit-content;">${currentGachaConfig.type}</span>
                 <div style="font-size: 0.65rem; color: #eee; text-shadow: 1px 1px 2px #000;">${formatDateStr(currentGachaConfig.startDate)}〜${formatDateStr(currentGachaConfig.endDate)}</div>
                 
@@ -3734,13 +3703,13 @@ function renderGachaScreen() {
                 </div>
             </div>
 
-            <!-- 右下: 1回引く・10回引くボタン -->
-            <div style="display: flex; flex-direction: column; gap: 8px; width: 42%; position: relative; z-index: 20; pointer-events: auto;">
-                <button type="button" onclick="pullGacha(1)" style="background: linear-gradient(135deg, #00f5d4, #0088cc); color: #000; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative; z-index: 21;">
+            <div style="display: flex; flex-direction: column; gap: 6px; width: 42%;">
+                ${pityUiHtml}
+                <button onclick="pullGacha(1)" style="background: linear-gradient(135deg, #00f5d4, #0088cc); color: #000; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
                     <div style="font-size: 0.85rem; font-weight: 800;">1回引く</div>
                     <div style="font-size: 0.75rem; color: #111; font-weight: bold;">💎 ${costSingle.toLocaleString()}</div>
                 </button>
-                <button type="button" onclick="pullGacha(10)" style="background: linear-gradient(135deg, #ffee00, #ff9900); color: #000; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative; z-index: 21;">
+                <button onclick="pullGacha(10)" style="background: linear-gradient(135deg, #ffee00, #ff9900); color: #000; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 6px; text-align: center; cursor: pointer; font-family:inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
                     <div style="font-size: 0.85rem; font-weight: 800;">10回引く</div>
                     <div style="font-size: 0.75rem; color: #111; font-weight: bold;">💎 ${costMulti.toLocaleString()}</div>
                 </button>
@@ -3851,7 +3820,7 @@ async function promptUserLogin() {
                 if (res.ok) {
                     const data = await res.json();
                     if (data) {
-                                                                    // ① メンバーデータ（💎・🪙・🎟️チケット6種）の反映
+                        // ① メンバーデータ（💎・🪙）の反映
                         if (data.members && Array.isArray(data.members) && data.members.length > 0) {
                             data.members.forEach(remoteM => {
                                 const localM = memberDatabase.find(m => m.id === remoteM.id);
@@ -3859,24 +3828,12 @@ async function promptUserLogin() {
                                     localM.name = remoteM.name || localM.name;
                                     localM.gem = Number(remoteM.gem) || 0;
                                     localM.coin = Number(remoteM.coin) || 0;
-                                    localM.ticket = Number(remoteM.ticket) || 0;
-                                    localM.ticket4 = Number(remoteM.ticket4) || 0;
-                                    localM.ticket5 = Number(remoteM.ticket5) || 0;
-                                    localM.ticket6 = Number(remoteM.ticket6) || 0;
-                                    localM.select5 = Number(remoteM.select5) || 0;
-                                    localM.select6 = Number(remoteM.select6) || 0;
                                 } else {
                                     memberDatabase.push({
                                         id: remoteM.id,
                                         name: remoteM.name,
                                         gem: Number(remoteM.gem) || 0,
                                         coin: Number(remoteM.coin) || 0,
-                                        ticket: Number(remoteM.ticket) || 0,
-                                        ticket4: Number(remoteM.ticket4) || 0,
-                                        ticket5: Number(remoteM.ticket5) || 0,
-                                        ticket6: Number(remoteM.ticket6) || 0,
-                                        select5: Number(remoteM.select5) || 0,
-                                        select6: Number(remoteM.select6) || 0,
                                         pt: 0, gachaBonus: 0, illustBonus: 0, extraBonus: 0
                                     });
                                 }
@@ -5199,7 +5156,7 @@ function showGachaResultModal(results, count, resolve) {
                     閉じる
                 </button>
                 <button onclick="retryGachaFromResult(${count})" style="flex:1.4; background:linear-gradient(135deg, #ffee00, #ff9900); color:#000; border:1px solid #fff; border-radius:10px; padding:10px 8px; cursor:pointer; font-family:inherit; box-shadow:0 4px 12px rgba(255,153,0,0.4);">
-                
+                    <div style="font-size:0.95rem; font-weight:800;">${retryLabel}</div>
                     <div style="font-size:0.75rem; font-weight:bold; color:#111;">💎 ${retryCost.toLocaleString()}</div>
                 </button>
             </div>
@@ -6031,4 +5988,3 @@ setTimeout(initDynamicPlaylist, 500);
 </script>
 </body>
 </html>
-
