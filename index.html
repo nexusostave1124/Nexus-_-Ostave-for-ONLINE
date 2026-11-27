@@ -4900,12 +4900,11 @@ async function pullGacha(count) {
         results.push(item);
         if (item.rarityNum > maxRarity) maxRarity = item.rarityNum;
     }
-saveGachaResultsToAlbum(results);
-
-    // 📷 獲得した画像をすべてアルバムへ自動保存
+   // 📷 獲得した画像をすべてアルバムへ自動保存
     if (typeof saveGachaResultsToAlbum === 'function') {
         saveGachaResultsToAlbum(results);
     }
+
 
     // 🔥 昇格フラグ（結果に★5以上がある場合、★4から炎昇格する演出を発生させる）
     // ※★5以上が1枚でもあれば、最初の玉を★4(赤)にして炎で昇格させます
@@ -5093,30 +5092,27 @@ function playGachaAnimation(results, maxRarity, isUpgrade, count) {
         if (!animOverlay) {
             animOverlay = document.createElement('div');
             animOverlay.id = 'gacha-anim-overlay';
-            animOverlay.style.cssText = `
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: #000; z-index: 99999; display: flex;
-                flex-direction: column; justify-content: center; align-items: center;
-                overflow: hidden;
-            `;
             document.body.appendChild(animOverlay);
         }
-        animOverlay.style.display = 'flex';
-        animOverlay.style.background = '#000';
-
+        animOverlay.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+            background: #000; z-index: 100002; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            overflow: hidden;
+        `;
+        const safeResults = (Array.isArray(results) && results.length > 0)
+            ? results
+            : [rollSingleGacha(currentGachaConfig ? currentGachaConfig.type : "ネオフェス限定")];
         const initialRarity = isUpgrade ? 4 : maxRarity;
-
         const showMainOrbSequence = () => {
             // 玉が出現した瞬間に連続振動スタート
             triggerGachaVibration(maxRarity, isUpgrade);
-
             animOverlay.innerHTML = `
                 <div id="main-gacha-orb" class="gacha-orb orb-r${initialRarity} orb-shaking" style="width: 140px; height: 140px; transform: scale(1.15); opacity: 1;">
                     <div id="orb-fire-layer" class="orb-fire-aura" style="display: none;"></div>
                 </div>
             `;
             const mainOrb = document.getElementById('main-gacha-orb');
-
             if (isUpgrade) {
                 // ★4の3秒振動後、炎を纏って昇格（★5なら残り4秒=計7秒、★6なら残り6秒=計9秒）
                 const afterUpgradeMs = (maxRarity === 6) ? 6000 : 4000;
@@ -5128,7 +5124,7 @@ function playGachaAnimation(results, maxRarity, isUpgrade, count) {
                     }
                     setTimeout(() => {
                         if (mainOrb) mainOrb.classList.remove('orb-shaking');
-                        showGachaResultModal(results, count, resolve);
+                        showGachaResultModal(safeResults, count, resolve);
                     }, afterUpgradeMs);
                 }, 3000);
             } else {
@@ -5136,11 +5132,10 @@ function playGachaAnimation(results, maxRarity, isUpgrade, count) {
                 const waitMs = getVibrationDurationMs(maxRarity, false);
                 setTimeout(() => {
                     if (mainOrb) mainOrb.classList.remove('orb-shaking');
-                    showGachaResultModal(results, count, resolve);
+                    showGachaResultModal(safeResults, count, resolve);
                 }, waitMs);
             }
         };
-
         if (count === 10) {
             let miniOrbsHtml = '';
             const radius = 135;
@@ -5148,7 +5143,7 @@ function playGachaAnimation(results, maxRarity, isUpgrade, count) {
                 const angle = (i / 10) * Math.PI * 2;
                 const x = Math.round(Math.cos(angle) * radius);
                 const y = Math.round(Math.sin(angle) * radius);
-                const rNum = results[i] ? results[i].rarityNum : 2;
+                const rNum = safeResults[i] ? safeResults[i].rarityNum : 2;
                 miniOrbsHtml += `
                     <div class="mini-gacha-orb orb-r${rNum}" id="mini-orb-${i}"
                          style="transform: translate(${x}px, ${y}px) scale(1); opacity: 1;">
@@ -5156,14 +5151,12 @@ function playGachaAnimation(results, maxRarity, isUpgrade, count) {
                 `;
             }
             animOverlay.innerHTML = `<div style="position:relative; width:320px; height:320px;">${miniOrbsHtml}</div>`;
-
             setTimeout(() => {
                 for (let i = 0; i < 10; i++) {
                     const mOrb = document.getElementById(`mini-orb-${i}`);
                     if (mOrb) mOrb.style.transform = 'translate(0px, 0px) scale(0.4)';
                 }
             }, 350);
-
             setTimeout(() => {
                 showMainOrbSequence();
             }, 1200);
@@ -5175,16 +5168,24 @@ function playGachaAnimation(results, maxRarity, isUpgrade, count) {
 // 🎊 ガチャリザルト画面の表示（設定画像表示 ＆「もう一回引く」ボタン）
 function showGachaResultModal(results, count, resolve) {
     let animOverlay = document.getElementById('gacha-anim-overlay');
-    if (!animOverlay) return;
-
-    const costSingle = (currentGachaConfig.costSingle !== undefined) ? Number(currentGachaConfig.costSingle) : 300;
-    const costMulti = (currentGachaConfig.costMulti !== undefined) ? Number(currentGachaConfig.costMulti) : 3000;
+    if (!animOverlay) {
+        animOverlay = document.createElement('div');
+        animOverlay.id = 'gacha-anim-overlay';
+        document.body.appendChild(animOverlay);
+    }
+    const gachaCfg = currentGachaConfig || {};
+    const costSingle = (gachaCfg.costSingle !== undefined) ? Number(gachaCfg.costSingle) : 300;
+    const costMulti = (gachaCfg.costMulti !== undefined) ? Number(gachaCfg.costMulti) : 3000;
     const retryCost = (count === 10) ? costMulti : costSingle;
+    const retryLabel = (count === 10) ? "もう10回引く" : "もう1回引く";
+    const list = (Array.isArray(results) && results.length > 0)
+        ? results
+        : [rollSingleGacha(gachaCfg.type || "ネオフェス限定")];
 
     let cardsHtml = '';
     if (count === 1) {
         // 単発：画面中央に大きく1枚表示
-        const item = results[0];
+        const item = list[0];
         const borderCol = getRarityBorderColor(item.rarityNum);
         const textCol = getRarityTextColor(item.rarityNum);
         cardsHtml = `
@@ -5201,7 +5202,7 @@ function showGachaResultModal(results, count, resolve) {
     } else {
         // 10連：2列×5行のグリッドで画像がしっかり見えるサイズで表示
         cardsHtml = `<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 420px; margin: 0 auto;">`;
-        results.forEach(item => {
+        list.forEach(item => {
             const borderCol = getRarityBorderColor(item.rarityNum);
             const textCol = getRarityTextColor(item.rarityNum);
             cardsHtml += `
@@ -5222,10 +5223,14 @@ function showGachaResultModal(results, count, resolve) {
     }
 
     const userGem = currentUser ? Number(currentUser.gem || 0).toLocaleString() : "0";
-
-    animOverlay.style.background = 'rgba(5, 5, 5, 0.96)';
+    animOverlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+        background: rgba(5, 5, 5, 0.96); z-index: 100002; display: flex;
+        flex-direction: column; justify-content: center; align-items: stretch;
+        overflow: hidden;
+    `;
     animOverlay.innerHTML = `
-        <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:space-between; padding: 16px 14px 24px 14px; box-sizing:border-box;">
+        <div style="width:100%; height:100%; min-height:0; display:flex; flex-direction:column; justify-content:space-between; padding: 16px 14px 24px 14px; box-sizing:border-box;">
             <!-- 上部ヘッダー（リザルトタイトル ＆ 所持ダイヤ） -->
             <div style="display:flex; justify-content:space-between; align-items:center; flex-shrink:0; margin-bottom:10px;">
                 <span style="color:#00f5d4; font-weight:800; font-size:1.1rem;">✨ ガチャ結果</span>
@@ -5233,25 +5238,22 @@ function showGachaResultModal(results, count, resolve) {
                     💎 ${userGem}
                 </span>
             </div>
-
             <!-- 中央：獲得画像一覧（スクロール対応） -->
-            <div style="flex:1; overflow-y:auto; display:flex; align-items:${count === 1 ? 'center' : 'flex-start'}; justify-content:center; padding: 4px 0;">
+            <div style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; display:flex; align-items:${count === 1 ? 'center' : 'flex-start'}; justify-content:center; padding: 4px 0;">
                 ${cardsHtml}
             </div>
-
             <!-- 下部：閉じる ＆ もう一回引くボタン -->
             <div style="display:flex; gap:10px; flex-shrink:0; margin-top:12px; width:100%; max-width:420px; margin-left:auto; margin-right:auto;">
                 <button onclick="closeGachaResultModal()" style="flex:1; background:#333; color:#fff; border:1px solid #666; border-radius:10px; padding:12px 8px; font-size:0.95rem; font-weight:bold; cursor:pointer; font-family:inherit;">
                     閉じる
                 </button>
                 <button onclick="retryGachaFromResult(${count})" style="flex:1.4; background:linear-gradient(135deg, #ffee00, #ff9900); color:#000; border:1px solid #fff; border-radius:10px; padding:10px 8px; cursor:pointer; font-family:inherit; box-shadow:0 4px 12px rgba(255,153,0,0.4);">
-                    <div style="font-size:0.95rem; font-weight:800;">${retryLabel}</div>
+                    <div style="font-size:0.9rem; font-weight:800; color:#111;">${retryLabel}</div>
                     <div style="font-size:0.75rem; font-weight:bold; color:#111;">💎 ${retryCost.toLocaleString()}</div>
                 </button>
             </div>
         </div>
     `;
-
     if (resolve) resolve();
 }
 
@@ -6077,3 +6079,6 @@ setTimeout(initDynamicPlaylist, 500);
 </script>
 </body>
 </html>
+
+
+
